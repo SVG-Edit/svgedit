@@ -116,8 +116,9 @@ class Editor extends EditorStartup {
     this.topPanel = new TopPanel(this)
     this.layersPanel = new LayersPanel(this)
     this.mainMenu = new MainMenu(this)
+    // makes svgEditor accessible as a global variable
     window.svgEditor = this
-  }
+  } // end Constructor
 
   /**
    *

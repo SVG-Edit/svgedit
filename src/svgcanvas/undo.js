@@ -27,7 +27,7 @@ let svgCanvas = null
 * @param {module:undo.undoContext} undoContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
   canvas.undoMgr = getUndoManager()
 }

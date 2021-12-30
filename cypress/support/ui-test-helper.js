@@ -1,5 +1,4 @@
 export const approveStorage = () => {
-  // JFH will need to be chnaged when dialog is changed...
   cy.get('#storage_ok').click()
 }
 
@@ -21,4 +20,11 @@ export const selectEnglish = () => {
   openEditorPreferences()
   cy.get('#lang_select').select('en')
   cy.get('#tool_prefs_save').click()
+}
+
+export const testSnapshot = () => {
+  cy.window().then((win) => { // access to the remote Window so we can get the svgEditor variable
+    const svgContent = win.svgEditor.svgCanvas.getSvgString()
+    cy.wrap(unescape(svgContent)).toMatchSnapshot()
+  })
 }

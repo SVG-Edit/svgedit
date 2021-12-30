@@ -10,7 +10,7 @@ import { NS } from './namespaces.js'
 import * as hstry from './history.js'
 import * as pathModule from './path.js'
 import {
-  isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref, getVisibleElements,
+  isNullish, getStrokedBBoxDefaultVisible, setHref, getElement, getHref, getVisibleElements,
   findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes, getFeGaussianBlur
 } from './utilities.js'
 import {
@@ -854,7 +854,7 @@ export const ungroupSelectedElement = function () {
   }
   if (g.tagName === 'use') {
     // Somehow doesn't have data set, so retrieve
-    const symbol = getElem(getHref(g).substr(1))
+    const symbol = getElement(getHref(g).substr(1))
     dataStorage.put(g, 'symbol', symbol)
     dataStorage.put(g, 'ref', symbol)
     convertToGroup(g)
@@ -940,7 +940,7 @@ export const updateCanvas = function (w, h) {
     y
   })
 
-  const bgImg = getElem('background_image')
+  const bgImg = getElement('background_image')
   if (bgImg) {
     assignAttributes(bgImg, {
       width: '100%',

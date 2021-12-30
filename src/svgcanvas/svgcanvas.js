@@ -48,7 +48,7 @@ import {
 import { sanitizeSvg } from './sanitize.js'
 import { getReverseNS, NS } from './namespaces.js'
 import {
-  assignAttributes, cleanupElement, getElem, getUrlFromAttr,
+  assignAttributes, cleanupElement, getElement, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle,
   getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, init as utilsInit,
@@ -147,6 +147,7 @@ class SvgCanvas {
     this.bSpline = { x: 0, y: 0 }
     this.nextPos = { x: 0, y: 0 }
     this.idprefix = 'svg_' // Prefix string for element IDs
+    this.encodableImages = {}
 
     this.curConfig = { // Default configuration options
       show_outside_canvas: true,
@@ -521,7 +522,7 @@ class SvgCanvas {
     Object.values(attrs).forEach((val) => {
       if (val && val.startsWith('url(')) {
         const id = getUrlFromAttr(val).substr(1)
-        const ref = getElem(id)
+        const ref = getElement(id)
         if (!ref) {
           findDefs().append(this.removedElements[id])
           delete this.removedElements[id]
@@ -744,7 +745,7 @@ class SvgCanvas {
     if (elem) {
       const filterUrl = elem.getAttribute('filter')
       if (filterUrl) {
-        const blur = getElem(elem.id + '_blur')
+        const blur = getElement(elem.id + '_blur')
         if (blur) {
           val = blur.firstChild.getAttribute('stdDeviation')
         } else {
@@ -876,7 +877,7 @@ class SvgCanvas {
     this.setHref = setHref
     this.getBBox = utilsGetBBox
     this.getRotationAngle = getRotationAngle
-    this.getElem = getElem
+    this.getElement = getElement
     this.getRefElem = getRefElem
     this.assignAttributes = assignAttributes
     this.cleanupElement = cleanupElement

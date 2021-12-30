@@ -72,7 +72,7 @@ export default {
       if (!m || m.length !== 2) {
         return null
       }
-      return svgCanvas.getElem(m[1])
+      return svgCanvas.getElement(m[1])
     }
 
     /**
@@ -101,7 +101,7 @@ export default {
     */
     const addMarker = (id, seType) => {
       const selElems = svgCanvas.getSelectedElements()
-      let marker = svgCanvas.getElem(id)
+      let marker = svgCanvas.getElement(id)
       if (marker) { return undefined }
       if (seType === '' || seType === 'nomarker') { return undefined }
       const el = selElems[0]

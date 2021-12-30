@@ -1,10 +1,6 @@
 import {
-  visitAndApproveStorage
+  visitAndApproveStorage, testSnapshot
 } from '../../support/ui-test-helper.js'
-
-const testSnapshot = () => {
-  cy.get('#svgcontent').cleanSnapshot()
-}
 
 describe('use all parts of svg-edit', function () {
   before(() => {

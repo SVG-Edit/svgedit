@@ -15,7 +15,6 @@
  * Color Picker page: {@link http://johndyer.name/photoshop-like-javascript-color-picker/}
  */
 /* eslint-disable max-len */
-/* gl#bals svgEditor */
 import ColorValuePicker from './ColorValuePicker.js'
 import Slider from './Slider.js'
 import { findPos, mergeDeep } from './Util.js'

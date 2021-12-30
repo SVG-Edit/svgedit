@@ -1016,7 +1016,7 @@ export let getRotationAngle = function (elem, toRad) {
 * @returns {Element} Reference element
 */
 export const getRefElem = function (attrVal) {
-  return getElem(getUrlFromAttr(attrVal).substr(1))
+  return getElement(getUrlFromAttr(attrVal).substr(1))
 }
 /**
 * Get the reference element associated with the given attribute value.
@@ -1041,11 +1041,11 @@ export const getFeGaussianBlur = function (ele) {
 
 /**
 * Get a DOM element by ID within the SVG root element.
-* @function module:utilities.getElem
+* @function module:utilities.getElement
 * @param {string} id - String with the element's new ID
 * @returns {?Element}
 */
-export const getElem = (id) => {
+export const getElement = (id) => {
   // querySelector lookup
   return svgroot_.querySelector('#' + id)
 }

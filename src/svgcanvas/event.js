@@ -5,7 +5,7 @@
  * @copyright 2011 Jeff Schiller
  */
 import {
-  assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
+  assignAttributes, cleanupElement, getElement, getRotationAngle, snapToGrid, walkTree,
   isNullish, preventClickDefault, setHref, getBBox
 } from './utilities.js'
 import {
@@ -98,7 +98,7 @@ export const mouseMoveEvent = (evt) => {
   const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm())
   const mouseX = pt.x * zoom
   const mouseY = pt.y * zoom
-  const shape = getElem(svgCanvas.getId())
+  const shape = getElement(svgCanvas.getId())
 
   let realX = mouseX / zoom
   let x = realX
@@ -555,7 +555,7 @@ export const mouseUpEvent = (evt) => {
   const x = mouseX / zoom
   const y = mouseY / zoom
 
-  let element = getElem(svgCanvas.getId())
+  let element = getElement(svgCanvas.getId())
   let keep = false
 
   const realX = x

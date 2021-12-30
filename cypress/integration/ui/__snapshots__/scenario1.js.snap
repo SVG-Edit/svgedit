@@ -1,91 +1,28 @@
 exports[`use all parts of svg-edit > check tool_source_set #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer"><title>Layer 1</title></g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_shape #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <path
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      d="m208.99746606586632,203.82033218045854 c4.117685576066451,-11.81303239035457 20.250912669179264,0 0,15.18818450188445 c-20.250912669179264,-15.18818450188445 -4.117685576066451,-27.00121689223902 0,-15.18818450188445 z"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      transform="rotate(43.2545 208.997 209.008)"
-    ></path>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <path d="m208.99747,203.82033c4.11769,-11.81303 20.25091,0 0,15.18818c-20.25091,-15.18818 -4.11769,-27.00122 0,-15.18818z" fill="#FF0000" id="svg_1" stroke="#000000" stroke-width="5" transform="rotate(43.2545 208.997 209.008)"/>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_image #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <path
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      d="m208.99746606586632,203.82033218045854 c4.117685576066451,-11.81303239035457 20.250912669179264,0 0,15.18818450188445 c-20.250912669179264,-15.18818450188445 -4.117685576066451,-27.00121689223902 0,-15.18818450188445 z"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      transform="rotate(43.2545 208.997 209.008)"
-    ></path>
-    <image
-      x="295"
-      y="295"
-      width="20"
-      height="20"
-      id="svg_2"
-      opacity="0.5"
-      style="pointer-events:inherit"
-      xlink:href="./images/logo.svg"
-    >
-      <animate
-        attributeName="opacity"
-        begin="indefinite"
-        dur="0.2"
-        fill="freeze"
-        to="1"
-      ></animate>
-    </image>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <g class="layer">
+  <title>Layer 1</title>
+  <path d="m208.99747,203.82033c4.11769,-11.81303 20.25091,0 0,15.18818c-20.25091,-15.18818 -4.11769,-27.00122 0,-15.18818z" fill="#FF0000" id="svg_1" stroke="#000000" stroke-width="5" transform="rotate(43.2545 208.997 209.008)"/>
+  <image height="20" id="svg_2" opacity="0.5" width="20" x="295" xlink:href="./images/logo.svg" y="295">
+   <animate attributeName="opacity" begin="indefinite" dur="0.2" fill="freeze" to="1"/>
+  </image>
+ </g>
 </svg>
 `;

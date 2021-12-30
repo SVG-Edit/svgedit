@@ -259,7 +259,7 @@ export const convertToNum = function (attr, val) {
 * @param {Element} selectedElement
 * @returns {boolean} Whether the unit is valid
 */
-export const isValidUnit = function (attr, val, selectedElement) {
+export const isValidUnit = (attr, val, selectedElement) => {
   if (unitAttrs.includes(attr)) {
     // True if it's just a number
     if (!isNaN(val)) {
@@ -277,14 +277,14 @@ export const isValidUnit = function (attr, val, selectedElement) {
     // and the id value is valid.
 
     let result = false
-    // because getElem() can throw an exception in the case of an invalid id
+    // because getElement() can throw an exception in the case of an invalid id
     // (according to https://www.w3.org/TR/xml-id/ IDs must be a NCName)
     // we wrap it in an exception and only return true if the ID was valid and
     // not already present
     try {
       const elem = elementContainer_.getElement(val)
       result = (!elem || elem === selectedElement)
-    } catch (e) { /* empty fn */ }
+    } catch (e) { console.error(e) }
     return result
   }
   return true

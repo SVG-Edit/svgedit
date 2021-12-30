@@ -5,7 +5,7 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import { getElem, assignAttributes, cleanupElement } from './utilities.js'
+import { getElement, assignAttributes, cleanupElement } from './utilities.js'
 import { NS } from './namespaces.js'
 
 let svgCanvas = null
@@ -67,7 +67,7 @@ export const getJsonFromSvgElements = (data) => {
 export const addSVGElementsFromJson = function (data) {
   if (typeof data === 'string') return svgdoc_.createTextNode(data)
 
-  let shape = getElem(data.attr.id)
+  let shape = getElement(data.attr.id)
   // if shape is a path but we need to create a rect/ellipse, then remove the path
   const currentLayer = svgCanvas.getDrawing().getCurrentLayer()
   if (shape && data.element !== shape.tagName) {

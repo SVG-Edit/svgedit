@@ -13,7 +13,7 @@ import {
 } from './math.js'
 import {
   assignAttributes, getRotationAngle, isNullish,
-  getElem
+  getElement
 } from './utilities.js'
 
 let svgCanvas = null
@@ -95,9 +95,9 @@ export const getPointFromGripMethod = function (pt, pth) {
 * @returns {Element}
 */
 export const getGripContainerMethod = function () {
-  let c = getElem('pathpointgrip_container')
+  let c = getElement('pathpointgrip_container')
   if (!c) {
-    const parentElement = getElem('selectorParentGroup')
+    const parentElement = getElement('selectorParentGroup')
     c = document.createElementNS(NS.SVG, 'g')
     parentElement.append(c)
     c.id = 'pathpointgrip_container'
@@ -117,7 +117,7 @@ export const addPointGripMethod = function (index, x, y) {
   // create the container of all the point grips
   const pointGripContainer = getGripContainerMethod()
 
-  let pointGrip = getElem('pathpointgrip_' + index)
+  let pointGrip = getElement('pathpointgrip_' + index)
   // create it
   if (!pointGrip) {
     pointGrip = document.createElementNS(NS.SVG, 'circle')
@@ -164,7 +164,7 @@ export const addPointGripMethod = function (index, x, y) {
 * @returns {SVGCircleElement}
 */
 export const addCtrlGripMethod = function (id) {
-  let pointGrip = getElem('ctrlpointgrip_' + id)
+  let pointGrip = getElement('ctrlpointgrip_' + id)
   if (pointGrip) { return pointGrip }
 
   pointGrip = document.createElementNS(NS.SVG, 'circle')
@@ -192,7 +192,7 @@ export const addCtrlGripMethod = function (id) {
 * @returns {SVGLineElement}
 */
 export const getCtrlLineMethod = function (id) {
-  let ctrlLine = getElem('ctrlLine_' + id)
+  let ctrlLine = getElement('ctrlLine_' + id)
   if (ctrlLine) { return ctrlLine }
 
   ctrlLine = document.createElementNS(NS.SVG, 'line')
@@ -299,7 +299,7 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
 */
 export const getSegSelectorMethod = function (seg, update) {
   const { index } = seg
-  let segLine = getElem('segline_' + index)
+  let segLine = getElement('segline_' + index)
   if (!segLine) {
     const pointGripContainer = getGripContainerMethod()
     // create segline

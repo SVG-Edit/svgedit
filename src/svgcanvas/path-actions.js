@@ -14,7 +14,7 @@ import {
   transformListToTransform
 } from './math.js'
 import {
-  assignAttributes, getElem, getRotationAngle, snapToGrid, isNullish,
+  assignAttributes, getElement, getRotationAngle, snapToGrid, isNullish,
   getBBox
 } from './utilities.js'
 
@@ -338,7 +338,7 @@ export const pathActionsMethod = (function () {
         const zoom = svgCanvas.getZoom()
         let x = mouseX / zoom
         let y = mouseY / zoom
-        let stretchy = getElem('path_stretch_line')
+        let stretchy = getElement('path_stretch_line')
         newPoint = [x, y]
 
         if (svgCanvas.getGridSnapping()) {
@@ -356,7 +356,7 @@ export const pathActionsMethod = (function () {
             'stroke-width': '0.5',
             fill: 'none'
           })
-          getElem('selectorParentGroup').append(stretchy)
+          getElement('selectorParentGroup').append(stretchy)
         }
         stretchy.setAttribute('display', 'inline')
 
@@ -404,7 +404,7 @@ export const pathActionsMethod = (function () {
           // Remove previous path object if previously created
           svgCanvas.removePath_(id)
 
-          const newpath = getElem(id)
+          const newpath = getElement(id)
           let newseg
           let sSeg
           const len = seglist.numberOfItems
@@ -624,7 +624,7 @@ export const pathActionsMethod = (function () {
             svgCanvas.replacePathSeg(6, index, [ptX, ptY, lastX, lastY, altX, altY], drawnPath)
           }
         } else {
-          const stretchy = getElem('path_stretch_line')
+          const stretchy = getElement('path_stretch_line')
           if (stretchy) {
             const prev = seglist.getItem(index)
             if (prev.pathSegType === 6) {
@@ -709,7 +709,7 @@ export const pathActionsMethod = (function () {
       if (svgCanvas.getCurrentMode() === 'path') {
         newPoint = null
         if (!drawnPath) {
-          element = getElem(svgCanvas.getId())
+          element = getElement(svgCanvas.getId())
           svgCanvas.setStarted(false)
           firstCtrl = null
         }
@@ -853,11 +853,11 @@ export const pathActionsMethod = (function () {
       const drawnPath = svgCanvas.getDrawnPath()
       currentPath = null
       if (drawnPath) {
-        const elem = getElem(svgCanvas.getId())
-        const psl = getElem('path_stretch_line')
+        const elem = getElement(svgCanvas.getId())
+        const psl = getElement('path_stretch_line')
         psl.parentNode.removeChild(psl)
         elem.parentNode.removeChild(elem)
-        const pathpointgripContainer = getElem('pathpointgrip_container')
+        const pathpointgripContainer = getElement('pathpointgrip_container')
         const elements = pathpointgripContainer.querySelectorAll('*')
         Array.prototype.forEach.call(elements, function (el) {
           el.setAttribute('display', 'none')

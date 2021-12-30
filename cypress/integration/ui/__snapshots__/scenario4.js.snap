@@ -1,947 +1,197 @@
 exports[`use all parts of svg-edit > check tool_source_set #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer"><title>Layer 1</title></g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_rect #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      opacity="0.5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-    >
-      <animate
-        attributeName="opacity"
-        begin="indefinite"
-        dur="0.2"
-        fill="freeze"
-        to="1"
-      ></animate>
-    </rect>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#FF0000" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" width="100" x="150" y="150">
+   <animate attributeName="opacity" begin="indefinite" dur="0.2" fill="freeze" to="1"/>
+  </rect>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_fhrect #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      opacity="0.5"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-    >
-      <animate
-        attributeName="opacity"
-        begin="indefinite"
-        dur="0.2"
-        fill="freeze"
-        to="1"
-      ></animate>
-    </rect>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#FF0000" height="50" id="svg_1" stroke="#000000" stroke-width="5" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" opacity="0.5" stroke="#000000" stroke-width="5" width="120" x="350" y="230">
+   <animate attributeName="opacity" begin="indefinite" dur="0.2" fill="freeze" to="1"/>
+  </rect>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_square #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      opacity="0.5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-    >
-      <animate
-        attributeName="opacity"
-        begin="indefinite"
-        dur="0.2"
-        fill="freeze"
-        to="1"
-      ></animate>
-    </rect>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#FF0000" height="50" id="svg_1" stroke="#000000" stroke-width="5" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="50" id="svg_3" opacity="0.5" stroke="#000000" stroke-width="5" width="50" x="225" y="300">
+   <animate attributeName="opacity" begin="indefinite" dur="0.2" fill="freeze" to="1"/>
+  </rect>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_rect_change_fill_color #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" height="50" id="svg_1" stroke="#000000" stroke-width="5" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_rect_change_rotation #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" height="50" id="svg_1" stroke="#000000" stroke-width="5" transform="rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_rect_change_blur #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      transform="rotate(25 200 175)"
-      filter="url(#svg_1_blur)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" stroke="#000000" stroke-width="5" transform="rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_rect_change_opacity #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="350"
-      y="230"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_fhrect_change_x_y_coordinate #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="120"
-      height="100"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" stroke-width="5" width="120" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_fhrect_change_width_height #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="145"
-      height="125"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      style="pointer-events:inherit"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_square_clone #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="145"
-      height="125"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" width="50" x="225" y="300"/>
+  <rect fill="#FF0000" height="50" id="svg_4" stroke="#000000" stroke-width="5" width="50" x="245" y="320"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_square_bring_to_back #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="145"
-      height="125"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" width="50" x="225" y="300"/>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_4" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="245" y="320"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_square_bring_to_front #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="145"
-      height="125"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_4" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="245" y="320"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;
 
 exports[`use all parts of svg-edit > check tool_square_change_corner_radius #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="375"
-      y="255"
-      width="145"
-      height="125"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-      rx="25"
-      ry="25"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
-`;
-
-exports[`use all parts of svg-edit > check tool_rect_change_to_path #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <rect
-      fill="#ffff00"
-      stroke="#000000"
-      stroke-width="5"
-      x="150"
-      y="150"
-      width="100"
-      height="50"
-      id="svg_1"
-      fill-opacity="1"
-      stroke-opacity="1"
-      filter="url(#svg_1_blur)"
-      opacity="0.5"
-      transform="rotate(25 200 175)"
-    ></rect>
-    <path
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      opacity="0.5"
-      d="M375,255 L520,255 L520,380 L375,380 L375,255 Z"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></path>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-      rx="25"
-      ry="25"
-    ></rect>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="225"
-      y="300"
-      width="50"
-      height="50"
-      id="svg_3"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
-`;
-
-exports[`use all parts of svg-edit > check tool_rect_delete #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <path
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      opacity="0.5"
-      d="M375,255 L520,255 L520,380 L375,380 L375,255 Z"
-      id="svg_2"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></path>
-    <rect
-      fill="#FF0000"
-      stroke="#000000"
-      stroke-width="5"
-      x="245"
-      y="320"
-      width="50"
-      height="50"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_4"
-      rx="25"
-      ry="25"
-    ></rect>
-  </g>
-  <defs>
-    <filter id="svg_1_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_4" rx="25" ry="25" stroke="#000000" stroke-width="5" width="50" x="245" y="320"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="225" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
 </svg>
 `;

@@ -1,10 +1,6 @@
 import {
-  visitAndApproveStorage
+  visitAndApproveStorage, testSnapshot
 } from '../../support/ui-test-helper.js'
-
-const testSnapshot = () => {
-  cy.get('#svgcontent').cleanSnapshot()
-}
 
 describe('use all parts of svg-edit', function () {
   before(() => {
@@ -56,7 +52,7 @@ describe('use all parts of svg-edit', function () {
   it('check tool_path_change_seg_type', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#svg_1').dblclick({ force: true })
-    cy.get('#seg_type').shadow().find('select').select('6').should('have.value', '6')
+    cy.get('#seg_type').shadow().find('select').select('6', { force: true }).should('have.value', '6')
     cy.get('#ctrlpointgrip_3c1')
       .trigger('mousedown', { force: true })
       .trigger('mousemove', 130, 175, { force: true })

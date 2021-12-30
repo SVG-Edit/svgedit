@@ -6,7 +6,6 @@
 
 import { NS } from './namespaces.js'
 import { convertToNum } from '../common/units.js'
-import { isWebkit } from '../common/browser.js'
 import { getRotationAngle, getHref, getBBox, getRefElem, isNullish } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
@@ -155,7 +154,7 @@ export const recalculateDimensions = function (selected) {
 
   // If it still has a single [M] or [R][M], return null too (prevents BatchCommand from being returned).
   switch (selected.tagName) {
-  // Ignore these elements, as they can absorb the [M]
+    // Ignore these elements, as they can absorb the [M]
     case 'line':
     case 'polyline':
     case 'polygon':
@@ -609,24 +608,22 @@ export const recalculateDimensions = function (selected) {
 
     // Check if it has a gradient with userSpaceOnUse, in which case
     // adjust it by recalculating the matrix transform.
-    // TODO: Make this work in Webkit using transformlist.SVGTransformList
-    if (!isWebkit()) {
-      const fill = selected.getAttribute('fill')
-      if (fill && fill.startsWith('url(')) {
-        const paint = getRefElem(fill)
-        if (paint) {
-          let type = 'pattern'
-          if (paint?.tagName !== type) type = 'gradient'
-          const attrVal = paint.getAttribute(type + 'Units')
-          if (attrVal === 'userSpaceOnUse') {
-            // Update the userSpaceOnUse element
-            m = transformListToTransform(tlist).matrix
-            const gtlist = paint.transform.baseVal
-            const gmatrix = transformListToTransform(gtlist).matrix
-            m = matrixMultiply(m, gmatrix)
-            const mStr = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')'
-            paint.setAttribute(type + 'Transform', mStr)
-          }
+
+    const fill = selected.getAttribute('fill')
+    if (fill && fill.startsWith('url(')) {
+      const paint = getRefElem(fill)
+      if (paint) {
+        let type = 'pattern'
+        if (paint?.tagName !== type) type = 'gradient'
+        const attrVal = paint.getAttribute(type + 'Units')
+        if (attrVal === 'userSpaceOnUse') {
+          // Update the userSpaceOnUse element
+          m = transformListToTransform(tlist).matrix
+          const gtlist = paint.transform.baseVal
+          const gmatrix = transformListToTransform(gtlist).matrix
+          m = matrixMultiply(m, gmatrix)
+          const mStr = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')'
+          paint.setAttribute(type + 'Transform', mStr)
         }
       }
     }

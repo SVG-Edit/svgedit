@@ -10,7 +10,7 @@ import {
   transformPoint, getMatrix
 } from './math.js'
 import {
-  assignAttributes, getElem, getBBox as utilsGetBBox
+  assignAttributes, getElement, getBBox as utilsGetBBox
 } from './utilities.js'
 import {
   supportsGoodTextCharPos
@@ -67,7 +67,7 @@ export const textActionsMethod = (function () {
     if (!empty) {
       textinput.setSelectionRange(index, index)
     }
-    cursor = getElem('text_cursor')
+    cursor = getElement('text_cursor')
     if (!cursor) {
       cursor = document.createElementNS(NS.SVG, 'line')
       assignAttributes(cursor, {
@@ -75,7 +75,7 @@ export const textActionsMethod = (function () {
         stroke: '#333',
         'stroke-width': 1
       })
-      getElem('selectorParentGroup').append(cursor)
+      getElement('selectorParentGroup').append(cursor)
     }
 
     if (!blinker) {
@@ -117,7 +117,7 @@ export const textActionsMethod = (function () {
       textinput.setSelectionRange(start, end)
     }
 
-    selblock = getElem('text_selectblock')
+    selblock = getElement('text_selectblock')
     if (!selblock) {
       selblock = document.createElementNS(NS.SVG, 'path')
       assignAttributes(selblock, {
@@ -126,7 +126,7 @@ export const textActionsMethod = (function () {
         opacity: 0.5,
         style: 'pointer-events:none'
       })
-      getElem('selectorParentGroup').append(selblock)
+      getElement('selectorParentGroup').append(selblock)
     }
 
     const startbb = chardata[start]

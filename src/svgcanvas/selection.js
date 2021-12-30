@@ -423,7 +423,7 @@ export const setRotationAngle = function (val, preventUndo) {
     )
     svgCanvas.call('changed', selectedElements)
   }
-  // const pointGripContainer = getElem('pathpointgrip_container');
+  // const pointGripContainer = getElement('pathpointgrip_container');
   // if (elem.nodeName === 'path' && pointGripContainer) {
   //   pathActions.setPointContainerTransform(elem.getAttribute('transform'));
   // }

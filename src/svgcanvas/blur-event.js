@@ -31,19 +31,15 @@ export const setBlurNoUndo = function (val) {
   if (val === 0) {
     // Don't change the StdDev, as that will hide the element.
     // Instead, just remove the value for "filter"
-    svgCanvas.changeSelectedAttributeNoUndoMethod('filter', '')
+    svgCanvas.changeSelectedAttributeNoUndo('filter', '')
     svgCanvas.setFilterHidden(true)
   } else {
     const elem = selectedElements[0]
     if (svgCanvas.getFilterHidden()) {
-      svgCanvas.changeSelectedAttributeNoUndoMethod('filter', 'url(#' + elem.id + '_blur)')
-    }
-    if (svgCanvas.isWebkit()) {
-      elem.removeAttribute('filter')
-      elem.setAttribute('filter', 'url(#' + elem.id + '_blur)')
+      svgCanvas.changeSelectedAttributeNoUndo('filter', 'url(#' + elem.id + '_blur)')
     }
     const filter = svgCanvas.getFilter()
-    svgCanvas.changeSelectedAttributeNoUndoMethod('stdDeviation', val, [filter.firstChild])
+    svgCanvas.changeSelectedAttributeNoUndo('stdDeviation', val, [filter.firstChild])
     svgCanvas.setBlurOffsets(filter, val)
   }
 }
@@ -77,8 +73,7 @@ export const setBlurOffsets = function (filterElem, stdDev) {
       width: '200%',
       height: '200%'
     }, 100)
-    // Removing these attributes hides text in Chrome (see Issue 579)
-  } else if (!svgCanvas.isWebkit()) {
+  } else {
     filterElem.removeAttribute('x')
     filterElem.removeAttribute('y')
     filterElem.removeAttribute('width')
@@ -107,7 +102,7 @@ export const setBlur = function (val, complete) {
   // Looks for associated blur, creates one if not found
   const elem = selectedElements[0]
   const elemId = elem.id
-  svgCanvas.setFilter(svgCanvas.getElem(elemId + '_blur'))
+  svgCanvas.setFilter(svgCanvas.getElement(elemId + '_blur'))
 
   val -= 0
 

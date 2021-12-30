@@ -977,7 +977,7 @@ export const setUseDataMethod = function (parent) {
   Array.prototype.forEach.call(elems, function (el, _) {
     const dataStorage = svgCanvas.getDataStorage()
     const id = svgCanvas.getHref(el).substr(1)
-    const refElem = svgCanvas.getElem(id)
+    const refElem = svgCanvas.getElement(id)
     if (!refElem) { return }
     dataStorage.put(el, 'ref', refElem)
     if (refElem.tagName === 'symbol' || refElem.tagName === 'svg') {

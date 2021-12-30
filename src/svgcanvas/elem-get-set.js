@@ -8,7 +8,7 @@ import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js'
 import { NS } from './namespaces.js'
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
-  walkTree, isNullish, getHref, setHref, getElem
+  walkTree, isNullish, getHref, setHref, getElement
 } from './utilities.js'
 import {
   convertToNum
@@ -356,7 +356,7 @@ export const setColorMethod = function (type, val, preventUndo) {
       svgCanvas.changeSelectedAttribute(type, val, elems)
       svgCanvas.call('changed', elems)
     } else {
-      svgCanvas.changeSelectedAttributeNoUndoMethod(type, val, elems)
+      svgCanvas.changeSelectedAttributeNoUndo(type, val, elems)
     }
   }
 }
@@ -883,10 +883,10 @@ export const setSegTypeMethod = function (newType) {
 * @returns {void}
 */
 export const setBackgroundMethod = function (color, url) {
-  const bg = getElem('canvasBackground')
+  const bg = getElement('canvasBackground')
   const border = bg.querySelector('rect')
-  let bgImg = getElem('background_image')
-  let bgPattern = getElem('background_pattern')
+  let bgImg = getElement('background_image')
+  let bgPattern = getElement('background_pattern')
   border.setAttribute('fill', color === 'chessboard' ? '#fff' : color)
   if (color === 'chessboard') {
     if (!bgPattern) {

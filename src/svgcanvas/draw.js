@@ -10,7 +10,7 @@ import HistoryRecordingService from './historyrecording.js'
 
 import { NS } from './namespaces.js'
 import {
-  toXml, getElem
+  toXml, getElement
 } from './utilities.js'
 import {
   copyElem as utilCopyElem
@@ -1013,7 +1013,7 @@ export const setContext = function (elem) {
   const dataStorage = svgCanvas.getDataStorage()
   leaveContext()
   if (typeof elem === 'string') {
-    elem = getElem(elem)
+    elem = getElement(elem)
   }
 
   // Edit inside this group
