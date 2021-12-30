@@ -30,7 +30,7 @@ export default {
     await loadExtensionTranslation(svgEditor)
     const { ChangeElementCommand } = svgCanvas.history
     // svgdoc = S.svgroot.parentNode.ownerDocument,
-    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd) }
+    const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const currentStyle = {
       fillPaint: 'red',
       fillOpacity: 1.0,

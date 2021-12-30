@@ -33,7 +33,7 @@ export default {
     const svgEditor = this
     const { svgCanvas } = svgEditor
     const { BatchCommand, RemoveElementCommand, InsertElementCommand } = svgCanvas.history
-    const { $id, addSVGElemensFromJson: addElem } = svgCanvas
+    const { $id, addSVGElementsFromJson: addElem } = svgCanvas
     const mtypes = ['start', 'mid', 'end']
     const markerElems = ['line', 'path', 'polyline', 'polygon']
 

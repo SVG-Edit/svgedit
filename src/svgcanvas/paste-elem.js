@@ -87,7 +87,7 @@ export const pasteElementsMethod = function (type, x, y) {
     const elem = clipb[len]
     if (!elem) { continue }
 
-    const copy = svgCanvas.addSVGElemensFromJson(elem)
+    const copy = svgCanvas.addSVGElementsFromJson(elem)
     pasted.push(copy)
     batchCmd.addSubCommand(new InsertElementCommand(copy))
 

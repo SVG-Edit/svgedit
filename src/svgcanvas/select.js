@@ -495,7 +495,7 @@ export class SelectorManager {
  */
 /**
  * @function module:select.SVGFactory#createSVGElement
- * @param {module:utilities.EditorContext#addSVGElemensFromJson} jsonMap
+ * @param {module:utilities.EditorContext#addSVGElementsFromJson} jsonMap
  * @returns {SVGElement}
  */
 /**

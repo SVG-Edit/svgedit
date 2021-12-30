@@ -115,7 +115,7 @@ export const setBlur = function (val, complete) {
     }
   } else {
     // Not found, so create
-    const newblur = svgCanvas.addSVGElemensFromJson({
+    const newblur = svgCanvas.addSVGElementsFromJson({
       element: 'feGaussianBlur',
       attr: {
         in: 'SourceGraphic',
@@ -123,7 +123,7 @@ export const setBlur = function (val, complete) {
       }
     })
 
-    svgCanvas.setFilter(svgCanvas.addSVGElemensFromJson({
+    svgCanvas.setFilter(svgCanvas.addSVGElementsFromJson({
       element: 'filter',
       attr: {
         id: elemId + '_blur'

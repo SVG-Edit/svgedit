@@ -452,7 +452,7 @@ export const groupSelectedElements = function (type, urlArg) {
   const batchCmd = new BatchCommand(cmdStr)
 
   // create and insert the group element
-  const g = svgCanvas.addSVGElemensFromJson({
+  const g = svgCanvas.addSVGElementsFromJson({
     element: type,
     attr: {
       id: svgCanvas.getNextId()

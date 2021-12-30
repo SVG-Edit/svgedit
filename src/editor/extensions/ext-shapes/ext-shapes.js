@@ -66,7 +66,7 @@ export default {
         startClientPos.x = opts.event.clientX
         startClientPos.y = opts.event.clientY
 
-        curShape = canv.addSVGElemensFromJson({
+        curShape = canv.addSVGElementsFromJson({
           element: 'path',
           curStyles: true,
           attr: {

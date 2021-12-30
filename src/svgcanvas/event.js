@@ -697,7 +697,7 @@ export const mouseUpEvent = (evt) => {
     case 'fhellipse':
       if ((svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')) > 0 &&
         (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')) > 0) {
-        element = svgCanvas.addSVGElemensFromJson({
+        element = svgCanvas.addSVGElementsFromJson({
           element: 'ellipse',
           curStyles: true,
           attr: {
@@ -715,7 +715,7 @@ export const mouseUpEvent = (evt) => {
     case 'fhrect':
       if ((svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')) > 0 &&
         (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')) > 0) {
-        element = svgCanvas.addSVGElemensFromJson({
+        element = svgCanvas.addSVGElementsFromJson({
           element: 'rect',
           curStyles: true,
           attr: {
@@ -1102,7 +1102,7 @@ export const mouseDownEvent = (evt) => {
       svgCanvas.setDAttr(realX + ',' + realY + ' ')
       // Commented out as doing nothing now:
       // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-      svgCanvas.addSVGElemensFromJson({
+      svgCanvas.addSVGElementsFromJson({
         element: 'polyline',
         curStyles: true,
         attr: {
@@ -1121,7 +1121,7 @@ export const mouseDownEvent = (evt) => {
       break
     case 'image': {
       svgCanvas.setStarted(true)
-      const newImage = svgCanvas.addSVGElemensFromJson({
+      const newImage = svgCanvas.addSVGElementsFromJson({
         element: 'image',
         attr: {
           x,
@@ -1144,7 +1144,7 @@ export const mouseDownEvent = (evt) => {
       svgCanvas.setStarted(true)
       svgCanvas.setStartX(x)
       svgCanvas.setStartY(y)
-      svgCanvas.addSVGElemensFromJson({
+      svgCanvas.addSVGElementsFromJson({
         element: 'rect',
         curStyles: true,
         attr: {
@@ -1160,7 +1160,7 @@ export const mouseDownEvent = (evt) => {
     case 'line': {
       svgCanvas.setStarted(true)
       const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width
-      svgCanvas.addSVGElemensFromJson({
+      svgCanvas.addSVGElementsFromJson({
         element: 'line',
         curStyles: true,
         attr: {
@@ -1183,7 +1183,7 @@ export const mouseDownEvent = (evt) => {
       break
     } case 'circle':
       svgCanvas.setStarted(true)
-      svgCanvas.addSVGElemensFromJson({
+      svgCanvas.addSVGElementsFromJson({
         element: 'circle',
         curStyles: true,
         attr: {
@@ -1197,7 +1197,7 @@ export const mouseDownEvent = (evt) => {
       break
     case 'ellipse':
       svgCanvas.setStarted(true)
-      svgCanvas.addSVGElemensFromJson({
+      svgCanvas.addSVGElementsFromJson({
         element: 'ellipse',
         curStyles: true,
         attr: {
@@ -1212,7 +1212,7 @@ export const mouseDownEvent = (evt) => {
       break
     case 'text':
       svgCanvas.setStarted(true)
-      /* const newText = */ svgCanvas.addSVGElemensFromJson({
+      /* const newText = */ svgCanvas.addSVGElementsFromJson({
         element: 'text',
         curStyles: true,
         attr: {

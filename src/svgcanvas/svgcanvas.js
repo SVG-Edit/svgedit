@@ -319,7 +319,7 @@ class SvgCanvas {
   setStartTransform (transform) { this.startTransform = transform }
   getZoom () { return this.zoom }
   round (val) { return Number.parseInt(val * this.zoom) / this.zoom }
-  createSVGElement (jsonMap) { return this.addSVGElemensFromJson(jsonMap) }
+  createSVGElement (jsonMap) { return this.addSVGElementsFromJson(jsonMap) }
   getContainer () { return this.container }
   setStarted (s) { this.started = s }
   getRubberBox () { return this.rubberBox }
@@ -805,7 +805,8 @@ class SvgCanvas {
   * Otherwise the resulting path element is returned.
   */
   convertToPath (elem, getBBox) {
-    if (isNullish(elem)) {
+    // if elems not given, recursively call convertPath for all selected elements.
+    if (!elem) {
       const elems = this.selectedElements
       elems.forEach((el) => {
         if (el) { this.convertToPath(el) }
@@ -813,7 +814,7 @@ class SvgCanvas {
       return undefined
     }
     if (getBBox) {
-      return getBBoxOfElementAsPath(elem, this.addSVGElemensFromJson, this.pathActions)
+      return getBBoxOfElementAsPath(elem, this.addSVGElementsFromJson, this.pathActions)
     }
     // TODO: Why is this applying attributes from this.curShape, then inside utilities.convertToPath it's pulling addition attributes from elem?
     // TODO: If convertToPath is called with one elem, this.curShape and elem are probably the same; but calling with multiple is a bug or cool feature.
@@ -829,10 +830,7 @@ class SvgCanvas {
       opacity: this.curShape.opacity,
       visibility: 'hidden'
     }
-    return convertToPath(
-      elem, attrs, this.addSVGElemensFromJson, this.pathActions,
-      this.clearSelection, this.addToSelection, history, this.addCommandToHistory
-    )
+    return convertToPath(elem, attrs, this) // call convertToPath from utilities.js
   }
 
   /**
@@ -848,7 +846,7 @@ class SvgCanvas {
 
   initializeSvgCanvasMethods () {
     this.getJsonFromSvgElements = getJsonFromSvgElements
-    this.addSVGElemensFromJson = addSVGElementsFromJson
+    this.addSVGElementsFromJson = addSVGElementsFromJson
     this.clearSvgContentElement = clearSvgContentElementInit
     this.textActions = textActionsMethod
     this.getIntersectionList = getIntersectionListMethod

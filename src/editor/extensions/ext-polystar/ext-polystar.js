@@ -28,7 +28,7 @@ export default {
     const svgEditor = this
     const { svgCanvas } = svgEditor
     const { ChangeElementCommand } = svgCanvas.history
-    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd) }
+    const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const { $id } = svgCanvas
     let selElems
     let started
@@ -244,7 +244,7 @@ export default {
           const sRgb = svgCanvas.getColor('stroke')
           const sWidth = svgCanvas.getStrokeWidth()
           started = true
-          newFO = svgCanvas.addSVGElemensFromJson({
+          newFO = svgCanvas.addSVGElementsFromJson({
             element: 'polygon',
             attr: {
               cx: opts.start_x,
@@ -273,7 +273,7 @@ export default {
           // ccSRgbEl = sRgb.substring(1, rgb.length);
           const sWidth = svgCanvas.getStrokeWidth()
           started = true
-          newFO = svgCanvas.addSVGElemensFromJson({
+          newFO = svgCanvas.addSVGElementsFromJson({
             element: 'polygon',
             attr: {
               cx: opts.start_x,

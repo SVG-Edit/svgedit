@@ -50,7 +50,7 @@ export const init = function (canvas) {
 * @function module:svgcanvas.SvgCanvas#svgCanvasToString
 * @returns {string} The SVG image for output
 */
-export const svgCanvasToString = function () {
+export const svgCanvasToString = () => {
   // keep calling it until there are none to remove
   while (svgCanvas.removeUnusedDefElems() > 0) { } // eslint-disable-line no-empty
 

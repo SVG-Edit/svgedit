@@ -50,7 +50,7 @@ describe('use all parts of svg-edit', function () {
     testSnapshot()
   })
   it('check tool_path_change_seg_type', function () {
-    cy.get('#svg_1').click({ force: true })
+    // cy.get('#svg_1').click({ force: true })
     cy.get('#svg_1').dblclick({ force: true })
     cy.get('#seg_type').shadow().find('select').select('6', { force: true }).should('have.value', '6')
     cy.get('#ctrlpointgrip_3c1')
@@ -60,7 +60,7 @@ describe('use all parts of svg-edit', function () {
     testSnapshot()
   })
   it('check tool_path_change_clone_node', function () {
-    cy.get('#svg_1').click({ force: true })
+    // cy.get('#svg_1').click({ force: true })
     cy.get('#svg_1').dblclick({ force: true })
     cy.get('#tool_node_clone').click({ force: true })
     cy.get('#pathpointgrip_4')

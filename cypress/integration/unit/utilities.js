@@ -19,7 +19,7 @@ describe('utilities', function () {
    * @param {module:utilities.SVGElementJSON} json
    * @returns {SVGElement}
    */
-  function mockaddSVGElemensFromJson (json) {
+  function mockaddSVGElementsFromJson (json) {
     const elem = mockCreateSVGElement(json)
     svgroot.append(elem)
     return elem
@@ -72,6 +72,15 @@ describe('utilities', function () {
    */
   function mockAddCommandToHistory () {
     mockCount.addCommandToHistory++
+  }
+
+  const mockSvgCanvas = {
+    addSVGElementsFromJson: mockaddSVGElementsFromJson,
+    pathActions: mockPathActions,
+    clearSelection: mockClearSelection,
+    addToSelection: mockAddToSelection,
+    history: mockHistory,
+    addCommandToHistory: mockAddCommandToHistory
   }
 
   let svg; let svgroot
@@ -245,8 +254,8 @@ describe('utilities', function () {
      * Wrap `utilities.getBBoxOfElementAsPath` to convert bbox to object for testing.
      * @type {module:utilities.getBBoxOfElementAsPath}
      */
-    function getBBoxOfElementAsPath (elem, addSVGElemensFromJson, pathActions) {
-      const bbox = utilities.getBBoxOfElementAsPath(elem, addSVGElemensFromJson, pathActions)
+    function getBBoxOfElementAsPath (elem, addSVGElementsFromJson, pathActions) {
+      const bbox = utilities.getBBoxOfElementAsPath(elem, addSVGElementsFromJson, pathActions)
       return utilities.bboxToObj(bbox) // need this for assert.equal() to work.
     }
 
@@ -255,7 +264,7 @@ describe('utilities', function () {
       attr: { id: 'path', d: 'M0,1 Z' }
     })
     svgroot.append(elem)
-    let bbox = getBBoxOfElementAsPath(elem, mockaddSVGElemensFromJson, mockPathActions)
+    let bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementsFromJson, mockPathActions)
     assert.deepEqual(bbox, { x: 0, y: 1, width: 0, height: 0 })
     elem.remove()
 
@@ -264,7 +273,7 @@ describe('utilities', function () {
       attr: { id: 'rect', x: '0', y: '1', width: '5', height: '10' }
     })
     svgroot.append(elem)
-    bbox = getBBoxOfElementAsPath(elem, mockaddSVGElemensFromJson, mockPathActions)
+    bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementsFromJson, mockPathActions)
     assert.deepEqual(bbox, { x: 0, y: 1, width: 5, height: 10 })
     elem.remove()
 
@@ -273,7 +282,7 @@ describe('utilities', function () {
       attr: { id: 'line', x1: '0', y1: '1', x2: '5', y2: '6' }
     })
     svgroot.append(elem)
-    bbox = getBBoxOfElementAsPath(elem, mockaddSVGElemensFromJson, mockPathActions)
+    bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementsFromJson, mockPathActions)
     assert.deepEqual(bbox, { x: 0, y: 1, width: 5, height: 5 })
     elem.remove()
 
@@ -294,7 +303,7 @@ describe('utilities', function () {
       attr: { id: 'rect', x: '0', y: '1', width: '5', height: '10' }
     })
     svgroot.append(elem)
-    const path = convertToPath(elem, attrs, mockaddSVGElemensFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory)
+    const path = convertToPath(elem, attrs, mockSvgCanvas)
     assert.equal(path.getAttribute('d'), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z')
     assert.equal(path.getAttribute('visibilituy'), null)
     assert.equal(path.id, 'rect')
@@ -322,7 +331,7 @@ describe('utilities', function () {
       getAttribute () { return '' },
       parentNode: svgroot
     }
-    const path = convertToPath(elem, attrs, mockaddSVGElemensFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory)
+    const path = convertToPath(elem, attrs, mockSvgCanvas)
     assert.equal(path, null)
     assert.equal(elem.parentNode, svgroot)
     assert.equal(mockHistorySubCommands.length, 0)

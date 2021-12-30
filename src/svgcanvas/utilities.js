@@ -26,7 +26,7 @@ let svgroot_ = null
 * @typedef {PlainObject} module:utilities.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
 * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element.
-*   An `id` should be set so that {@link module:utilities.EditorContext#addSVGElemensFromJson} can later re-identify the element for modification or replacement.
+*   An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementsFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:utilities.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -46,7 +46,7 @@ let svgroot_ = null
  * Create a new SVG element based on the given object keys/values and add it
  * to the current layer.
  * The element will be run through `cleanupElement` before being returned.
- * @function module:utilities.EditorContext#addSVGElemensFromJson
+ * @function module:utilities.EditorContext#addSVGElementsFromJson
  * @param {module:utilities.SVGElementJSON} data
  * @returns {Element} The new element
 */
@@ -667,12 +667,12 @@ export const getExtraAttributesForConvertToPath = function (elem) {
 * Get the BBox of an element-as-path.
 * @function module:utilities.getBBoxOfElementAsPath
 * @param {Element} elem - The DOM element to be probed
-* @param {module:utilities.EditorContext#addSVGElemensFromJson} addSVGElemensFromJson - Function to add the path element to the current layer. See canvas.addSVGElemensFromJson
+* @param {module:utilities.EditorContext#addSVGElementsFromJson} addSVGElementsFromJson - Function to add the path element to the current layer. See canvas.addSVGElementsFromJson
 * @param {module:path.pathActions} pathActions - If a transform exists, `pathActions.resetOrientation()` is used. See: canvas.pathActions.
 * @returns {DOMRect|false} The resulting path's bounding box object.
 */
-export const getBBoxOfElementAsPath = function (elem, addSVGElemensFromJson, pathActions) {
-  const path = addSVGElemensFromJson({
+export const getBBoxOfElementAsPath = function (elem, addSVGElementsFromJson, pathActions) {
+  const path = addSVGElementsFromJson({
     element: 'path',
     attr: getExtraAttributesForConvertToPath(elem)
   })
@@ -713,7 +713,7 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElemensFromJson, pat
 * @function module:utilities.convertToPath
 * @param {Element} elem - The DOM element to be converted
 * @param {module:utilities.SVGElementJSON} attrs - Apply attributes to new path. see canvas.convertToPath
-* @param {module:utilities.EditorContext#addSVGElemensFromJson} addSVGElemensFromJson - Function to add the path element to the current layer. See canvas.addSVGElemensFromJson
+* @param {module:utilities.EditorContext#addSVGElementsFromJson} addSVGElementsFromJson - Function to add the path element to the current layer. See canvas.addSVGElementsFromJson
 * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 * @param {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection} clearSelection - see [canvas.clearSelection]{@link module:svgcanvas.SvgCanvas#clearSelection}
 * @param {module:path.EditorContext#addToSelection} addToSelection - see [canvas.addToSelection]{@link module:svgcanvas.SvgCanvas#addToSelection}
@@ -721,16 +721,13 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElemensFromJson, pat
 * @param {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory} addCommandToHistory - see [canvas.addCommandToHistory]{@link module:svgcanvas~addCommandToHistory}
 * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
 */
-export const convertToPath = (
-  elem, attrs, addSVGElemensFromJson, pathActions,
-  clearSelection, addToSelection, hstry, addCommandToHistory
-) => {
-  const batchCmd = new hstry.BatchCommand('Convert element to Path')
+export const convertToPath = (elem, attrs, svgCanvas) => {
+  const batchCmd = new svgCanvas.history.BatchCommand('Convert element to Path')
 
   // Any attribute on the element not covered by the passed-in attributes
   attrs = mergeDeep(attrs, getExtraAttributesForConvertToPath(elem))
 
-  const path = addSVGElemensFromJson({
+  const path = svgCanvas.addSVGElementsFromJson({
     element: 'path',
     attr: attrs
   })
@@ -758,21 +755,21 @@ export const convertToPath = (
     if (eltrans) {
       const tlist = path.transform.baseVal
       if (hasMatrixTransform(tlist)) {
-        pathActions.resetOrientation(path)
+        svgCanvas.pathActions.resetOrientation(path)
       }
     }
 
     const { nextSibling } = elem
-    batchCmd.addSubCommand(new hstry.RemoveElementCommand(elem, nextSibling, parent))
-    batchCmd.addSubCommand(new hstry.InsertElementCommand(path))
+    batchCmd.addSubCommand(new svgCanvas.history.RemoveElementCommand(elem, nextSibling, parent))
+    batchCmd.addSubCommand(new svgCanvas.history.InsertElementCommand(path))
 
-    clearSelection()
+    svgCanvas.clearSelection()
     elem.remove()
     path.setAttribute('id', id)
     path.removeAttribute('visibility')
-    addToSelection([path], true)
+    svgCanvas.addToSelection([path], true)
 
-    addCommandToHistory(batchCmd)
+    svgCanvas.addCommandToHistory(batchCmd)
 
     return path
   }
@@ -812,11 +809,11 @@ function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasAMatrixTransform) {
 * Get bounding box that includes any transforms.
 * @function module:utilities.getBBoxWithTransform
 * @param {Element} elem - The DOM element to be converted
-* @param {module:utilities.EditorContext#addSVGElemensFromJson} addSVGElemensFromJson - Function to add the path element to the current layer. See canvas.addSVGElemensFromJson
+* @param {module:utilities.EditorContext#addSVGElementsFromJson} addSVGElementsFromJson - Function to add the path element to the current layer. See canvas.addSVGElementsFromJson
 * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 * @returns {module:utilities.BBoxObject|module:math.TransformedBox|DOMRect} A single bounding box object
 */
-export const getBBoxWithTransform = function (elem, addSVGElemensFromJson, pathActions) {
+export const getBBoxWithTransform = function (elem, addSVGElementsFromJson, pathActions) {
   // TODO: Fix issue with rotated groups. Currently they work
   // fine in FF, but not in other browsers (same problem mentioned
   // in Issue 339 comment #2).
@@ -838,14 +835,14 @@ export const getBBoxWithTransform = function (elem, addSVGElemensFromJson, pathA
       // TODO: why ellipse and not circle
       const elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon']
       if (elemNames.includes(elem.tagName)) {
-        goodBb = getBBoxOfElementAsPath(elem, addSVGElemensFromJson, pathActions)
+        goodBb = getBBoxOfElementAsPath(elem, addSVGElementsFromJson, pathActions)
         bb = goodBb
       } else if (elem.tagName === 'rect') {
         // Look for radius
         const rx = Number(elem.getAttribute('rx'))
         const ry = Number(elem.getAttribute('ry'))
         if (rx || ry) {
-          goodBb = getBBoxOfElementAsPath(elem, addSVGElemensFromJson, pathActions)
+          goodBb = getBBoxOfElementAsPath(elem, addSVGElementsFromJson, pathActions)
           bb = goodBb
         }
       }
@@ -882,18 +879,18 @@ function getStrokeOffsetForBBox (elem) {
 * Get the bounding box for one or more stroked and/or transformed elements.
 * @function module:utilities.getStrokedBBox
 * @param {Element[]} elems - Array with DOM elements to check
-* @param {module:utilities.EditorContext#addSVGElemensFromJson} addSVGElemensFromJson - Function to add the path element to the current layer. See canvas.addSVGElemensFromJson
+* @param {module:utilities.EditorContext#addSVGElementsFromJson} addSVGElementsFromJson - Function to add the path element to the current layer. See canvas.addSVGElementsFromJson
 * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 * @returns {module:utilities.BBoxObject|module:math.TransformedBox|DOMRect} A single bounding box object
 */
-export const getStrokedBBox = function (elems, addSVGElemensFromJson, pathActions) {
+export const getStrokedBBox = function (elems, addSVGElementsFromJson, pathActions) {
   if (!elems || !elems.length) { return false }
 
   let fullBb
   elems.forEach(function (elem) {
     if (fullBb) { return }
     if (!elem.parentNode) { return }
-    fullBb = getBBoxWithTransform(elem, addSVGElemensFromJson, pathActions)
+    fullBb = getBBoxWithTransform(elem, addSVGElementsFromJson, pathActions)
   })
 
   // This shouldn't ever happen...
@@ -916,7 +913,7 @@ export const getStrokedBBox = function (elems, addSVGElemensFromJson, pathAction
     maxY += offset
   } else {
     elems.forEach(function (elem) {
-      const curBb = getBBoxWithTransform(elem, addSVGElemensFromJson, pathActions)
+      const curBb = getBBoxWithTransform(elem, addSVGElementsFromJson, pathActions)
       if (curBb) {
         const offset = getStrokeOffsetForBBox(elem)
         minX = Math.min(minX, curBb.x - offset)
@@ -972,7 +969,7 @@ export const getStrokedBBoxDefaultVisible = function (elems) {
   if (!elems) { elems = getVisibleElements() }
   return getStrokedBBox(
     elems,
-    svgCanvas.addSVGElemensFromJson,
+    svgCanvas.addSVGElementsFromJson,
     svgCanvas.pathActions
   )
 }

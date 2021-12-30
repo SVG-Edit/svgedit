@@ -48,7 +48,7 @@ describe('path', function () {
     const [mockPathContext, mockUtilitiesContext] = getMockContexts()
     pathModule.init(mockPathContext)
     utilities.init(mockUtilitiesContext)
-    Path(path)
+    new Path(path) // eslint-disable-line no-new
 
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L')
     assert.equal(path.pathSegList.getItem(1).x, 10)
@@ -68,7 +68,7 @@ describe('path', function () {
     const [mockPathContext, mockUtilitiesContext] = getMockContexts()
     pathModule.init(mockPathContext)
     utilities.init(mockUtilitiesContext)
-    Path(path)
+    new Path(path) // eslint-disable-line no-new
 
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L')
     assert.equal(path.pathSegList.getItem(1).x, 10)
@@ -124,7 +124,7 @@ describe('path', function () {
     const [mockPathContext, mockUtilitiesContext] = getMockContexts()
     pathModule.init(mockPathContext)
     utilities.init(mockUtilitiesContext)
-    Path(path)
+    new Path(path) // eslint-disable-line no-new
 
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L')
     assert.equal(path.pathSegList.getItem(1).x, 10)
@@ -144,7 +144,7 @@ describe('path', function () {
     const [mockPathContext, mockUtilitiesContext] = getMockContexts()
     pathModule.init(mockPathContext)
     utilities.init(mockUtilitiesContext)
-    Path(path)
+    new Path(path) // eslint-disable-line no-new
 
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'C')
     assert.equal(path.pathSegList.getItem(1).x1, 11)

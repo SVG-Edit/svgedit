@@ -24,7 +24,8 @@ export const selectEnglish = () => {
 
 export const testSnapshot = () => {
   cy.window().then((win) => { // access to the remote Window so we can get the svgEditor variable
-    const svgContent = win.svgEditor.svgCanvas.getSvgString()
-    cy.wrap(unescape(svgContent)).toMatchSnapshot()
+    const svgString = win.svgEditor.svgCanvas.getSvgString()
+    const svgDom = new DOMParser().parseFromString(svgString, 'text/html').querySelector('body')
+    cy.wrap(svgDom).toMatchSnapshot()
   })
 }

@@ -307,7 +307,7 @@ export const pathActionsMethod = (function () {
       }
       d = d.join(' ')
 
-      element = svgCanvas.addSVGElemensFromJson({
+      element = svgCanvas.addSVGElementsFromJson({
         element: 'path',
         curStyles: true,
         attr: {
@@ -366,7 +366,7 @@ export const pathActionsMethod = (function () {
         const drawnPath = svgCanvas.getDrawnPath()
         if (!drawnPath) {
           const dAttr = 'M' + x + ',' + y + ' ' // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-          /* drawnPath = */ svgCanvas.setDrawnPath(svgCanvas.addSVGElemensFromJson({
+          /* drawnPath = */ svgCanvas.setDrawnPath(svgCanvas.addSVGElementsFromJson({
             element: 'path',
             curStyles: true,
             attr: {

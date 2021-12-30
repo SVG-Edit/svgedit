@@ -61,7 +61,7 @@ export const getJsonFromSvgElements = (data) => {
 /**
 * This should really be an intersection implementing all rather than a union.
 * @name module:json.addSVGElementsFromJson
-* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElemensFromJson}
+* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementsFromJson}
 */
 
 export const addSVGElementsFromJson = function (data) {
