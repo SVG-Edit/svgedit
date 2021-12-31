@@ -102,7 +102,7 @@ class Editor extends EditorStartup {
       {
         key: ['delete/backspace', true],
         fn: () => {
-          if (!isNullish(this.selectedElement) || this.multiselected) { this.svgCanvas.deleteSelectedElements() }
+          if (this.selectedElement || this.multiselected) { this.svgCanvas.deleteSelectedElements() }
         }
       },
       { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer() } },
@@ -489,9 +489,9 @@ class Editor extends EditorStartup {
     // if this.elems[1] is present, then we have more than one element
     this.selectedElement = (elems.length === 1 || isNullish(elems[1]) ? elems[0] : null)
     this.multiselected = (elems.length >= 2 && !isNullish(elems[1]))
-    if (!isNullish(this.selectedElement) && !isNode) {
+    if (this.selectedElement && !isNode) {
       this.topPanel.update()
-    } // if (!isNullish(elem))
+    } // if (elem)
 
     // Deal with pathedit mode
     this.topPanel.togglePathEditMode(isNode, elems)
@@ -742,7 +742,7 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   cutSelected () {
-    if (!isNullish(this.selectedElement) || this.multiselected) {
+    if (this.selectedElement || this.multiselected) {
       this.svgCanvas.cutSelectedElements()
     }
   }
@@ -752,7 +752,7 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   copySelected () {
-    if (!isNullish(this.selectedElement) || this.multiselected) {
+    if (this.selectedElement || this.multiselected) {
       this.svgCanvas.copySelectedElements()
     }
   }
@@ -774,7 +774,7 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   moveUpDownSelected (dir) {
-    if (!isNullish(this.selectedElement)) {
+    if (this.selectedElement) {
       this.svgCanvas.moveUpDownSelected(dir)
     }
   }
@@ -785,7 +785,7 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   moveSelected (dx, dy) {
-    if (!isNullish(this.selectedElement) || this.multiselected) {
+    if (this.selectedElement || this.multiselected) {
       if (this.configObj.curConfig.gridSnapping) {
         // Use grid snap value regardless of zoom level
         const multi = this.svgCanvas.getZoom() * this.configObj.curConfig.snappingStep
@@ -818,7 +818,7 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   rotateSelected (cw, step) {
-    if (isNullish(this.selectedElement) || this.multiselected) { return }
+    if (!this.selectedElement || this.multiselected) { return }
     if (!cw) { step *= -1 }
     const angle = Number.parseFloat($id('angle').value) + step
     this.svgCanvas.setRotationAngle(angle)

@@ -12,7 +12,7 @@ import {
   transformPoint, getMatrix
 } from './math.js'
 import {
-  assignAttributes, getRotationAngle, isNullish,
+  assignAttributes, getRotationAngle,
   getElement
 } from './utilities.js'
 
@@ -635,7 +635,7 @@ export class Path {
         seg.next.prev = seg
         seg.mate = segs[startI]
         seg.addGrip()
-        if (isNullish(this.first_seg)) {
+        if (!this.first_seg) {
           this.first_seg = seg
         }
       } else if (!nextSeg) {
@@ -907,7 +907,7 @@ export class Path {
   */
   selectPt (pt, ctrlNum) {
     this.clearSelection()
-    if (isNullish(pt)) {
+    if (!pt) {
       this.eachSeg(function (i) {
         // 'this' is the segment here.
         if (this.prev) {

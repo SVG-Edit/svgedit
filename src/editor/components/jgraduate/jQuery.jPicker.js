@@ -1337,34 +1337,34 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         </tr>
         <tr class="Hue">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_hue_radio')}"><input type="radio" value="h"${settings.color.mode === 'h' ? ' checked="checked"' : ''}/>H:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.h : ''}" title="${i18next.t('config.jpicker_tooltip_hue_textbox')}"/>&nbsp;&deg;</td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.h : ''}" title="${i18next.t('config.jpicker_tooltip_hue_textbox')}"/>&nbsp;&deg;</td>
         </tr>
         <tr class="Saturation">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_saturation_radio')}"><input type="radio" value="s"${settings.color.mode === 's' ? ' checked="checked"' : ''}/>S:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.s : ''}" title="${i18next.t('config.jpicker_tooltip_saturation_textbox')}"/>&nbsp;%</td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.s : ''}" title="${i18next.t('config.jpicker_tooltip_saturation_textbox')}"/>&nbsp;%</td>
         </tr>
         <tr class="Value">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_value_radio')}"><input type="radio" value="v"${settings.color.mode === 'v' ? ' checked="checked"' : ''}/>V:</label><br/><br/></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.v : ''}" title="${i18next.t('config.jpicker_tooltip_value_textbox')}"/>&nbsp;%<br/><br/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.v : ''}" title="${i18next.t('config.jpicker_tooltip_value_textbox')}"/>&nbsp;%<br/><br/></td>
         </tr>
         <tr class="Red">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_red_radio')}"><input type="radio" value="r"${settings.color.mode === 'r' ? ' checked="checked"' : ''}/>R:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.r : ''}" title="${i18next.t('config.jpicker_tooltip_red_textbox')}"/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.r : ''}" title="${i18next.t('config.jpicker_tooltip_red_textbox')}"/></td>
         </tr>
         <tr class="Green">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_green_radio')}"><input type="radio" value="g"${settings.color.mode === 'g' ? ' checked="checked"' : ''}/>G:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.g : ''}" title="${i18next.t('config.jpicker_tooltip_green_textbox')}"/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.g : ''}" title="${i18next.t('config.jpicker_tooltip_green_textbox')}"/></td>
         </tr>
         <tr class="Blue">
           <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_blue_radio')}"><input type="radio" value="b"${settings.color.mode === 'b' ? ' checked="checked"' : ''}/>B:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.b : ''}" title="${i18next.t('config.jpicker_tooltip_blue_textbox')}"/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${all ? all.b : ''}" title="${i18next.t('config.jpicker_tooltip_blue_textbox')}"/></td>
         </tr>
         <tr class="Alpha">
           <td class="Radio">${win.alphaSupport ? `<label title="${i18next.t('config.jpicker_tooltip_alpha_radio')}"><input type="radio" value="a"${settings.color.mode === 'a' ? ' checked="checked"' : ''}/>A:</label>` : '&nbsp;'}</td>
-          <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="${i18next.t('config.jpicker_tooltip_alpha_textbox')}"/>&nbsp;%` : '&nbsp;'}</td>
+          <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${all ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="${i18next.t('config.jpicker_tooltip_alpha_textbox')}"/>&nbsp;%` : '&nbsp;'}</td>
         </tr>
         <tr class="Hex">
-          <td colspan="2" class="Text"><label title="${i18next.t('config.jpicker_tooltip_hex_textbox')}">#:<input type="text" maxlength="6" class="Hex" value="${!isNullish(all) ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${!isNullish(all) ? all.ahex.substring(6) : ''}" title="${i18next.t('config.jpicker_tooltip_hex_alpha')}"/></td>` : '&nbsp;'}
+          <td colspan="2" class="Text"><label title="${i18next.t('config.jpicker_tooltip_hex_textbox')}">#:<input type="text" maxlength="6" class="Hex" value="${all ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${all ? all.ahex.substring(6) : ''}" title="${i18next.t('config.jpicker_tooltip_hex_alpha')}"/></td>` : '&nbsp;'}
         </tr>
       </tbody></table>`
     if (win.expandable) {
@@ -1455,7 +1455,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       win.expandable && win.bindToInput ? win.input : null,
       win.alphaPrecision
     )
-    const hex = !isNullish(all) ? all.hex : null
+    const hex = all ? all.hex : null
     const preview = tbody.querySelector('#Preview')
     const button = tbody.querySelector('#Button')
     activePreview = preview.querySelector('#Active')
@@ -1523,7 +1523,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       iconColor.style.backgroundColor = (hex && '#' + hex) || 'transparent'
       iconAlpha = that.icon.querySelector('.Alpha')
       setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png')
-      setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (!isNullish(all) ? all.a : 0)) * 100) / 255, 4))
+      setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (all ? all.a : 0)) * 100) / 255, 4))
       iconImage = that.icon.querySelector('.Image')
       iconImage.style.backgroundImage = 'url(\'' + images.clientPath + images.picker.file + '\')'
       iconImage.addEventListener('click', iconImageClicked)
@@ -1531,7 +1531,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         win.input.style.backgroundColor = (hex && '#' + hex) || 'transparent'
         win.input.style.color = isNullish(all) || all.v > 75 ? '#000000' : '#ffffff'
       }
-      const moveBar = tbody.querySelector('.Move')
+      moveBar = tbody.querySelector('.Move')
       moveBar.addEventListener('mousedown', moveBarMouseDown)
       color.active.bind(expandableColorChanged)
     } else {
@@ -1658,7 +1658,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   let iconColor = null // iconColor for popup icon
   let iconAlpha = null // iconAlpha for popup icon
   let iconImage = null // iconImage popup icon
-  const moveBar = null // drag bar
+  let moveBar = null // drag bar
   Object.assign(that, {
     // public properties, methods, and callbacks
     commitCallback, // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"

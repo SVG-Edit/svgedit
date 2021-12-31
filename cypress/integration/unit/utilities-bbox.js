@@ -37,7 +37,7 @@ describe('utilities bbox', function () {
   }
   const mockPathActions = {
     resetOrientation (pth) {
-      if (utilities.isNullish(pth) || pth.nodeName !== 'path') { return false }
+      if (pth?.nodeName !== 'path') { return false }
       const tlist = pth.transform.baseVal
       const m = math.transformListToTransform(tlist).matrix
       tlist.clear()

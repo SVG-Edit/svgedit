@@ -7,7 +7,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { toXml, walkTree, isNullish } from './utilities.js'
+import { toXml, walkTree } from './utilities.js'
 
 /**
  * This class encapsulates the concept of a layer in the drawing. It can be constructed with
@@ -114,7 +114,7 @@ class Layer {
    */
   getOpacity () {
     const opacity = this.group_.getAttribute('opacity')
-    if (isNullish(opacity)) {
+    if (!opacity) {
       return 1
     }
     return Number.parseFloat(opacity)
@@ -218,7 +218,7 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
  */
 function addLayerClass (elem) {
   const classes = elem.getAttribute('class')
-  if (isNullish(classes) || !classes.length) {
+  if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
     elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)

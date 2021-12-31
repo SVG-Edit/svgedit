@@ -7,7 +7,7 @@
  */
 
 import { isTouch, isWebkit } from '../common/browser.js' // , isOpera
-import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilities.js'
+import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
 import { transformListToTransform, transformBox, transformPoint } from './math.js'
 
 let svgCanvas
@@ -439,7 +439,7 @@ export class SelectorManager {
   * @returns {void}
   */
   releaseSelector (elem) {
-    if (isNullish(elem)) { return }
+    if (!elem) { return }
     const N = this.selectors.length
     const sel = this.selectorMap[elem.id]
     if (sel && !sel.locked) {

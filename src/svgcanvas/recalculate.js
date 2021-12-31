@@ -6,7 +6,7 @@
 
 import { NS } from './namespaces.js'
 import { convertToNum } from '../common/units.js'
-import { getRotationAngle, getHref, getBBox, getRefElem, isNullish } from './utilities.js'
+import { getRotationAngle, getHref, getBBox, getRefElem } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
 import {
@@ -231,7 +231,7 @@ export const recalculateDimensions = function (selected) {
 
   // if we haven't created an initial array in polygon/polyline/path, then
   // make a copy of initial values and include the transform
-  if (isNullish(initial)) {
+  if (!initial) {
     initial = mergeDeep({}, changes)
     for (const [attr, val] of Object.entries(initial)) {
       initial[attr] = convertToNum(attr, val)

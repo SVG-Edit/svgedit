@@ -10,7 +10,7 @@ import { shortFloat } from '../common/units.js'
 import { transformPoint } from './math.js'
 import {
   getRotationAngle, getBBox,
-  getRefElem, findDefs, isNullish,
+  getRefElem, findDefs,
   getBBox as utilsGetBBox
 } from './utilities.js'
 import {
@@ -209,10 +209,6 @@ export let path = null
  * @param {string} cm The mode
  * @returns {string} The same mode as passed in
 */
-/**
- * @function module:path.EditorContext#getDrawnPath
- * @returns {SVGPathElement|null}
- */
 /**
  * @function module:path.EditorContext#setDrawnPath
  * @param {SVGPathElement|null} dp
@@ -501,7 +497,7 @@ export const recalcRotatedPath = () => {
 
     const rvals = getRotVals(seg.x, seg.y)
     const points = [rvals.x, rvals.y]
-    if (!isNullish(seg.x1) && !isNullish(seg.x2)) {
+    if (seg.x1 && seg.x2) {
       const cVals1 = getRotVals(seg.x1, seg.y1)
       const cVals2 = getRotVals(seg.x2, seg.y2)
       points.splice(points.length, 0, cVals1.x, cVals1.y, cVals2.x, cVals2.y)
