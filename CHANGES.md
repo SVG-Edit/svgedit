@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## 7.1.0
+- Large refactoring of svgcanvas (a lot of remaining work with the goal to separate in its own package).This explains the move to a minor version 
+- move to a new linter (standard).
+- Several issues fixed
 ## 7.0.2
 - create an IIFE build.
 ## 7.0.1
