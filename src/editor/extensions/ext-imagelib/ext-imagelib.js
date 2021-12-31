@@ -233,9 +233,7 @@ export default {
         }
         // Else fall through
         default:
-        // TODO: See if there's a way to base64 encode the binary data stream
-        // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
-
+          // TODO: See if there's a way to base64 encode the binary data stream
           // Assume it's raw image data
           // importImage(str);
 

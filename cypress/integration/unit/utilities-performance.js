@@ -116,7 +116,7 @@ describe('utilities performance', function () {
 
   const mockPathActions = {
     resetOrientation (path) {
-      if (utilities.isNullish(path) || path.nodeName !== 'path') { return false }
+      if (path?.nodeName !== 'path') { return false }
       const tlist = path.transform.baseVal
       const m = math.transformListToTransform(tlist).matrix
       tlist.clear()

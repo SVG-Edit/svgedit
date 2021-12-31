@@ -14,7 +14,7 @@ import {
   transformListToTransform
 } from './math.js'
 import {
-  assignAttributes, getElement, getRotationAngle, snapToGrid, isNullish,
+  assignAttributes, getElement, getRotationAngle, snapToGrid,
   getBBox
 } from './utilities.js'
 
@@ -541,7 +541,7 @@ export const pathActionsMethod = (function () {
       // Start selection box
       if (!path.dragging) {
         let rubberBox = svgCanvas.getRubberBox()
-        if (isNullish(rubberBox)) {
+        if (!rubberBox) {
           rubberBox = svgCanvas.setRubberBox(
             svgCanvas.selectorManager.getRubberBandBox()
           )
@@ -875,7 +875,7 @@ export const pathActionsMethod = (function () {
     * @returns {false|void}
     */
     resetOrientation (pth) {
-      if (isNullish(pth) || pth.nodeName !== 'path') { return false }
+      if (pth?.nodeName !== 'path') { return false }
       const tlist = pth.transform.baseVal
       const m = transformListToTransform(tlist).matrix
       tlist.clear()
@@ -1007,7 +1007,7 @@ export const pathActionsMethod = (function () {
         return true
       })
 
-      if (isNullish(openPt)) {
+      if (!openPt) {
         // Single path, so close last seg
         openPt = path.segs.length - 1
       }

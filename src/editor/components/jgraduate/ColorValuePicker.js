@@ -12,14 +12,6 @@ function toFixedNumeric (value, precision) {
   return Math.round(value * (10 ** precision)) / (10 ** precision)
 }
 /**
- * Whether a value is `null` or `undefined`.
- * @param {any} val
- * @returns {boolean}
- */
-const isNullish = (val) => {
-  return val === null || val === undefined
-}
-/**
  * Controls for all the input elements for the typing in color values.
  */
 export default class ColorValuePicker {
@@ -39,7 +31,7 @@ export default class ColorValuePicker {
      * @returns {Event|false|void}
      */
     function keyDown (e) {
-      if (e.target.value === '' && e.target !== hex && ((!isNullish(bindedHex) && e.target !== bindedHex) || isNullish(bindedHex))) return undefined
+      if (e.target.value === '' && e.target !== hex && ((bindedHex && e.target !== bindedHex) || !bindedHex)) return undefined
       if (!validateKey(e)) return e
       switch (e.target) {
         case red:
@@ -137,8 +129,8 @@ export default class ColorValuePicker {
     */
     function keyUp (e) {
       if (e.target.value === '' && e.target !== hex &&
-        ((!isNullish(bindedHex) && e.target !== bindedHex) ||
-        isNullish(bindedHex))) return undefined
+        ((bindedHex && e.target !== bindedHex) ||
+        !bindedHex)) return undefined
       if (!validateKey(e)) return e
       switch (e.target) {
         case red:
@@ -181,7 +173,7 @@ export default class ColorValuePicker {
           break
         case ahex:
           ahex.value = ahex.value.replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2)
-          color.val('a', !isNullish(ahex.value) ? Number.parseInt(ahex.value, 16) : null, e.target)
+          color.val('a', ahex.value ? Number.parseInt(ahex.value, 16) : null, e.target)
           break
       }
       return undefined
@@ -192,7 +184,7 @@ export default class ColorValuePicker {
     * @returns {void}
     */
     function blur (e) {
-      if (!isNullish(color.value)) {
+      if (color.value) {
         switch (e.target) {
           case red:
             color.value = 'r'
@@ -274,16 +266,16 @@ export default class ColorValuePicker {
     */
     function colorChanged (ui, context) {
       const all = ui.val('all')
-      if (context !== red) red.value = (!isNullish(all) ? all.r : '')
-      if (context !== green) green.value = (!isNullish(all) ? all.g : '')
-      if (context !== blue) blue.value = (!isNullish(all) ? all.b : '')
-      if (alpha && context !== alpha) alpha.value = (!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '')
-      if (context !== hue) hue.value = (!isNullish(all) ? all.h : '')
-      if (context !== saturation) saturation.value = (!isNullish(all) ? all.s : '')
-      if (context !== value) value.value = (!isNullish(all) ? all.v : '')
-      if (context !== hex && ((bindedHex && context !== bindedHex) || !bindedHex)) hex.value = (!isNullish(all) ? all.hex : '')
-      if (bindedHex && context !== bindedHex && context !== hex) bindedHex.value = (!isNullish(all) ? all.hex : '')
-      if (ahex && context !== ahex) ahex.value = (!isNullish(all) ? all.ahex.substring(6) : '')
+      if (context !== red) red.value = (all ? all.r : '')
+      if (context !== green) green.value = (all ? all.g : '')
+      if (context !== blue) blue.value = (all ? all.b : '')
+      if (alpha && context !== alpha) alpha.value = (all ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '')
+      if (context !== hue) hue.value = (all ? all.h : '')
+      if (context !== saturation) saturation.value = (all ? all.s : '')
+      if (context !== value) value.value = (all ? all.v : '')
+      if (context !== hex && ((bindedHex && context !== bindedHex) || !bindedHex)) hex.value = (all ? all.hex : '')
+      if (bindedHex && context !== bindedHex && context !== hex) bindedHex.value = (all ? all.hex : '')
+      if (ahex && context !== ahex) ahex.value = (all ? all.ahex.substring(6) : '')
     }
     /**
     * Unbind all events and null objects.

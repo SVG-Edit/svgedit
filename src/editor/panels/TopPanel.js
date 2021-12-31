@@ -409,7 +409,7 @@ class TopPanel {
         '#group'
       )
 
-      // if (!isNullish(elem))
+      // if (elem)
     } else if (this.multiselected) {
       this.displayTool('multiselected_panel')
       menuItems.setAttribute('enablemenuitems', '#group')

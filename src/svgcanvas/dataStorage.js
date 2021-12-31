@@ -18,7 +18,7 @@ const dataStorage = {
   },
   remove: function (element, key) {
     const ret = this._storage.get(element).delete(key)
-    if (!this._storage.get(element).size === 0) {
+    if (this._storage.get(element).size === 0) {
       this._storage.delete(element)
     }
     return ret

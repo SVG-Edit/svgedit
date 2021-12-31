@@ -6,7 +6,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import { getHref, setHref, getRotationAngle, isNullish, getBBox } from './utilities.js'
+import { getHref, setHref, getRotationAngle, getBBox } from './utilities.js'
 
 /**
 * Group: Undo/Redo history management.
@@ -255,7 +255,7 @@ export class RemoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      if (isNullish(this.nextSibling) && window.console) {
+      if (!this.nextSibling && window.console) {
         console.error('Reference element was lost')
       }
       this.parent.insertBefore(this.elem, this.nextSibling) // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
@@ -581,7 +581,7 @@ export class UndoManager {
     const oldValues = new Array(i); const elements = new Array(i)
     while (i--) {
       const elem = elems[i]
-      if (isNullish(elem)) { continue }
+      if (!elem) { continue }
       elements[i] = elem
       oldValues[i] = elem.getAttribute(attrName)
     }
@@ -606,7 +606,7 @@ export class UndoManager {
     let i = changeset.elements.length
     while (i--) {
       const elem = changeset.elements[i]
-      if (isNullish(elem)) { continue }
+      if (!elem) { continue }
       const changes = {}
       changes[attrName] = changeset.oldValues[i]
       if (changes[attrName] !== elem.getAttribute(attrName)) {

@@ -32,7 +32,7 @@ Please let us know with an issue or a discussions if you wish to contribute.
 
 Thanks to **Netlify**, you can test the following builds: 
 
-### [Try SVGEdit 7.0.0 here](https://svgedit.netlify.app/editor/index.html)
+### [Try SVGEdit 7.1.0 here](https://svgedit.netlify.app/editor/index.html)
 
 [Try SVGEdit 5.1.0 here](https://6098683962bf91702907ee33--svgedit.netlify.app/editor/svg-editor.html)
 
