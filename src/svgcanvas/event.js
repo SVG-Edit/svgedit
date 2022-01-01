@@ -34,7 +34,7 @@ export const init = (canvas) => {
   svgCanvas = canvas
 }
 
-export const getBsplinePoint = (t) => {
+const getBsplinePoint = (t) => {
   const spline = { x: 0, y: 0 }
   const p0 = { x: svgCanvas.getControllPoint2('x'), y: svgCanvas.getControllPoint2('y') }
   const p1 = { x: svgCanvas.getControllPoint1('x'), y: svgCanvas.getControllPoint1('y') }
@@ -70,6 +70,25 @@ export const getBsplinePoint = (t) => {
   }
 }
 
+// update the dummy transform in our transform list
+// to be a translate. We need to check if there was a transformation
+// to avoid loosing it
+const updateTransformList = (svgRoot, element, dx, dy) => {
+  const xform = svgRoot.createSVGTransform()
+  xform.setTranslate(dx, dy)
+  const tlist = element.transform?.baseVal
+  if (tlist.numberOfItems) {
+    const firstItem = tlist.getItem(0)
+    if (firstItem.type === 2) { // SVG_TRANSFORM_TRANSLATE = 2
+      tlist.replaceItem(xform, 0)
+    } else {
+      tlist.insertItemBefore(xform, 0)
+    }
+  } else {
+    tlist.appendItem(xform)
+  }
+}
+
 /**
  *
  * @param {MouseEvent} evt
@@ -78,12 +97,16 @@ export const getBsplinePoint = (t) => {
  * @returns {void}
  */
 export const mouseMoveEvent = (evt) => {
+  // if the mouse is move without dragging an element, just return.
+  if (!svgCanvas.getStarted()) { return }
+  if (evt.button === 1 || svgCanvas.spaceKey) { return }
+
+  evt.preventDefault()
+
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
   const svgRoot = svgCanvas.getSvgRoot()
-
-  if (!svgCanvas.getStarted()) { return }
-  if (evt.button === 1 || svgCanvas.spaceKey) { return }
+  const selected = selectedElements[0]
 
   let i
   let xya
@@ -94,7 +117,7 @@ export const mouseMoveEvent = (evt) => {
   let len
   let angle
   let box
-  let selected = selectedElements[0]
+
   const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm())
   const mouseX = pt.x * zoom
   const mouseY = pt.y * zoom
@@ -110,14 +133,13 @@ export const mouseMoveEvent = (evt) => {
     y = snapToGrid(y)
   }
 
-  evt.preventDefault()
   let tlist
   switch (svgCanvas.getCurrentMode()) {
     case 'select': {
-    // we temporarily use a translate on the element(s) being dragged
-    // this transform is removed upon mousing up and the element is
-    // relocated to the new location
-      if (selectedElements[0] !== null) {
+      // we temporarily use a translate on the element(s) being dragged
+      // this transform is removed upon mousing up and the element is
+      // relocated to the new location
+      if (selected) {
         dx = x - svgCanvas.getStartX()
         dy = y - svgCanvas.getStartY()
         if (svgCanvas.getCurConfig().gridSnapping) {
@@ -125,35 +147,20 @@ export const mouseMoveEvent = (evt) => {
           dy = snapToGrid(dy)
         }
 
-        if (dx !== 0 || dy !== 0) {
-          len = selectedElements.length
-          for (i = 0; i < len; ++i) {
-            selected = selectedElements[i]
-            if (isNullish(selected)) { break }
-            // update the dummy transform in our transform list
-            // to be a translate
-            const xform = svgRoot.createSVGTransform()
-            tlist = selected.transform?.baseVal
-            // Note that if Webkit and there's no ID for this
-            // element, the dummy transform may have gotten lost.
-            // This results in unexpected behaviour
-
-            xform.setTranslate(dx, dy)
-            if (tlist.numberOfItems) {
-              tlist.replaceItem(xform, 0)
-            } else {
-              tlist.appendItem(xform)
+        if (dx || dy) {
+          selectedElements.forEach((el) => {
+            if (el) {
+              updateTransformList(svgRoot, el, dx, dy)
+              // update our internal bbox that we're tracking while dragging
+              svgCanvas.selectorManager.requestSelector(el).resize()
             }
-
-            // update our internal bbox that we're tracking while dragging
-            svgCanvas.selectorManager.requestSelector(selected).resize()
-          }
-
+          })
           svgCanvas.call('transition', selectedElements)
         }
       }
       break
-    } case 'multiselect': {
+    }
+    case 'multiselect': {
       realX *= zoom
       realY *= zoom
       assignAttributes(svgCanvas.getRubberBox(), {
@@ -194,10 +201,11 @@ export const mouseMoveEvent = (evt) => {
       }
 
       break
-    } case 'resize': {
-    // we track the resize bounding box and translate/scale the selected element
-    // while the mouse is down, when mouse goes up, we use this to recalculate
-    // the shape's coordinates
+    }
+    case 'resize': {
+      // we track the resize bounding box and translate/scale the selected element
+      // while the mouse is down, when mouse goes up, we use this to recalculate
+      // the shape's coordinates
       tlist = selected.transform.baseVal
       const hasMatrix = hasMatrixTransform(tlist)
       box = hasMatrix ? svgCanvas.getInitBbox() : getBBox(selected)
@@ -285,7 +293,8 @@ export const mouseMoveEvent = (evt) => {
       svgCanvas.call('transition', selectedElements)
 
       break
-    } case 'zoom': {
+    }
+    case 'zoom': {
       realX *= zoom
       realY *= zoom
       assignAttributes(svgCanvas.getRubberBox(), {
@@ -295,13 +304,15 @@ export const mouseMoveEvent = (evt) => {
         height: Math.abs(realY - svgCanvas.getRStartY() * zoom)
       }, 100)
       break
-    } case 'text': {
+    }
+    case 'text': {
       assignAttributes(shape, {
         x,
         y
       }, 1000)
       break
-    } case 'line': {
+    }
+    case 'line': {
       if (svgCanvas.getCurConfig().gridSnapping) {
         x = snapToGrid(x)
         y = snapToGrid(y)
@@ -319,12 +330,10 @@ export const mouseMoveEvent = (evt) => {
       shape.setAttribute('x2', x2)
       shape.setAttribute('y2', y2)
       break
-    } case 'foreignObject':
-    // fall through
+    }
+    case 'foreignObject': // fall through
     case 'square':
-    // fall through
     case 'rect':
-    // fall through
     case 'image': {
       const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey
       let
@@ -355,7 +364,8 @@ export const mouseMoveEvent = (evt) => {
       }, 1000)
 
       break
-    } case 'circle': {
+    }
+    case 'circle': {
       cx = Number(shape.getAttribute('cx'))
       cy = Number(shape.getAttribute('cy'))
       let rad = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))
@@ -364,7 +374,8 @@ export const mouseMoveEvent = (evt) => {
       }
       shape.setAttribute('r', rad)
       break
-    } case 'ellipse': {
+    }
+    case 'ellipse': {
       cx = Number(shape.getAttribute('cx'))
       cy = Number(shape.getAttribute('cy'))
       if (svgCanvas.getCurConfig().gridSnapping) {
@@ -387,8 +398,8 @@ export const mouseMoveEvent = (evt) => {
     }
     // Fallthrough
     case 'fhpath': {
-    // dAttr += + realX + ',' + realY + ' ';
-    // shape.setAttribute('points', dAttr);
+      // dAttr += + realX + ',' + realY + ' ';
+      // shape.setAttribute('points', dAttr);
       svgCanvas.setEnd('x', realX)
       svgCanvas.setEnd('y', realY)
       if (svgCanvas.getControllPoint2('x') && svgCanvas.getControllPoint2('y')) {
@@ -421,9 +432,9 @@ export const mouseMoveEvent = (evt) => {
       svgCanvas.setControllPoint1('y', svgCanvas.getStart('y'))
       svgCanvas.setStart({ x: svgCanvas.getEnd('x'), y: svgCanvas.getEnd('y') })
       break
-    // update path stretch line coordinates
-    } case 'path':
-    // fall through
+      // update path stretch line coordinates
+    }
+    case 'path': // fall through
     case 'pathedit': {
       x *= zoom
       y *= zoom
@@ -461,7 +472,8 @@ export const mouseMoveEvent = (evt) => {
       svgCanvas.pathActions.mouseMove(x, y)
 
       break
-    } case 'textedit': {
+    }
+    case 'textedit': {
       x *= zoom
       y *= zoom
       // if (svgCanvas.getRubberBox() && svgCanvas.getRubberBox().getAttribute('display') !== 'none') {
@@ -476,7 +488,8 @@ export const mouseMoveEvent = (evt) => {
       svgCanvas.textActions.mouseMove(mouseX, mouseY)
 
       break
-    } case 'rotate': {
+    }
+    case 'rotate': {
       box = getBBox(selected)
       cx = box.x + box.width / 2
       cy = box.y + box.height / 2
@@ -496,19 +509,21 @@ export const mouseMoveEvent = (evt) => {
       svgCanvas.setRotationAngle(angle < -180 ? (360 + angle) : angle, true)
       svgCanvas.call('transition', selectedElements)
       break
-    } default:
+    }
+    default:
+      console.error(`unknown mode=${svgCanvas.getCurrentMode()}`)
       break
   }
 
   /**
-* The mouse has moved on the canvas area.
-* @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
-* @type {PlainObject}
-* @property {MouseEvent} event The event object
-* @property {Float} mouse_x x coordinate on canvas
-* @property {Float} mouse_y y coordinate on canvas
-* @property {Element} selected Refers to the first selected element
-*/
+  * The mouse has moved on the canvas area.
+  * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
+  * @type {PlainObject}
+  * @property {MouseEvent} event The event object
+  * @property {Float} mouse_x x coordinate on canvas
+  * @property {Float} mouse_y y coordinate on canvas
+  * @property {Element} selected Refers to the first selected element
+  */
   svgCanvas.runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseMove} */ {
     event: evt,
     mouse_x: mouseX,
@@ -543,12 +558,13 @@ export const mouseOutEvent = () => {
 * @returns {void}
 */
 export const mouseUpEvent = (evt) => {
+  if (evt.button === 2) { return }
+  if (!svgCanvas.getStarted()) { return }
+
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
-  if (evt.button === 2) { return }
   const tempJustSelected = svgCanvas.getJustSelected()
   svgCanvas.setJustSelected(null)
-  if (!svgCanvas.getStarted()) { return }
   const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm())
   const mouseX = pt.x * zoom
   const mouseY = pt.y * zoom
@@ -566,7 +582,7 @@ export const mouseUpEvent = (evt) => {
   svgCanvas.setStarted(false)
   let t
   switch (svgCanvas.getCurrentMode()) {
-  // intentionally fall-through to select here
+    // intentionally fall-through to select here
     case 'resize':
     case 'multiselect':
       if (svgCanvas.getRubberBox()) {
@@ -577,9 +593,9 @@ export const mouseUpEvent = (evt) => {
     // Fallthrough
     case 'select':
       if (selectedElements[0]) {
-      // if we only have one selected element
+        // if we only have one selected element
         if (!selectedElements[1]) {
-        // set our current stroke/fill properties to the element's
+          // set our current stroke/fill properties to the element's
           const selected = selectedElements[0]
           switch (selected.tagName) {
             case 'g':
@@ -587,6 +603,10 @@ export const mouseUpEvent = (evt) => {
             case 'image':
             case 'foreignObject':
               break
+            case 'text':
+              svgCanvas.setCurText('font_size', selected.getAttribute('font-size'))
+              svgCanvas.setCurText('font_family', selected.getAttribute('font-family'))
+            // fallthrough
             default:
               svgCanvas.setCurProperties('fill', selected.getAttribute('fill'))
               svgCanvas.setCurProperties('fill_opacity', selected.getAttribute('fill-opacity'))
@@ -596,11 +616,6 @@ export const mouseUpEvent = (evt) => {
               svgCanvas.setCurProperties('stroke_dasharray', selected.getAttribute('stroke-dasharray'))
               svgCanvas.setCurProperties('stroke_linejoin', selected.getAttribute('stroke-linejoin'))
               svgCanvas.setCurProperties('stroke_linecap', selected.getAttribute('stroke-linecap'))
-          }
-
-          if (selected.tagName === 'text') {
-            svgCanvas.setCurText('font_size', selected.getAttribute('font-size'))
-            svgCanvas.setCurText('font_family', selected.getAttribute('font-family'))
           }
           svgCanvas.selectorManager.requestSelector(selected).showGrips(true)
         }
@@ -612,13 +627,13 @@ export const mouseUpEvent = (evt) => {
           for (let i = 0; i < len; ++i) {
             if (isNullish(selectedElements[i])) { break }
           }
-        // no change in position/size, so maybe we should move to pathedit
+          // no change in position/size, so maybe we should move to pathedit
         } else {
           t = evt.target
           if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
             svgCanvas.pathActions.select(selectedElements[0])
-          // if it was a path
-          // else, if it was selected and this is a shift-click, remove it from selection
+            // if it was a path
+            // else, if it was selected and this is a shift-click, remove it from selection
           } else if (evt.shiftKey && tempJustSelected !== t) {
             svgCanvas.removeFromSelection([t])
           }
@@ -648,10 +663,10 @@ export const mouseUpEvent = (evt) => {
       })
       return
     } case 'fhpath': {
-    // Check that the path contains at least 2 points; a degenerate one-point path
-    // causes problems.
-    // Webkit ignores how we set the points attribute with commas and uses space
-    // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
+      // Check that the path contains at least 2 points; a degenerate one-point path
+      // causes problems.
+      // Webkit ignores how we set the points attribute with commas and uses space
+      // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
       svgCanvas.setSumDistance(0)
       svgCanvas.setControllPoint2('x', 0)
       svgCanvas.setControllPoint2('y', 0)
@@ -736,7 +751,7 @@ export const mouseUpEvent = (evt) => {
       svgCanvas.textActions.start(element)
       break
     case 'path': {
-    // set element to null here so that it is not removed nor finalized
+      // set element to null here so that it is not removed nor finalized
       element = null
       // continue to be set to true so that mouseMove happens
       svgCanvas.setStarted(true)
@@ -768,7 +783,7 @@ export const mouseUpEvent = (evt) => {
       svgCanvas.call('changed', selectedElements)
       break
     } default:
-    // This could occur in an extension
+      // This could occur in an extension
       break
   }
 
@@ -786,7 +801,7 @@ export const mouseUpEvent = (evt) => {
     mouse_y: mouseY
   }, true)
 
-  extResult.forEach(function (r) {
+  extResult.forEach((r) => {
     if (r) {
       keep = r.keep || keep;
       ({ element } = r)
@@ -847,7 +862,7 @@ export const mouseUpEvent = (evt) => {
 
     // Ideally this would be done on the endEvent of the animation,
     // but that doesn't seem to be supported in Webkit
-    setTimeout(function () {
+    setTimeout(() => {
       if (cAni) { cAni.remove() }
       element.setAttribute('opacity', curShape.opacity)
       element.setAttribute('style', 'pointer-events:inherit')
@@ -1003,12 +1018,12 @@ export const mouseDownEvent = (evt) => {
       if (rightClick) { svgCanvas.setStarted(false) }
 
       if (mouseTarget !== svgRoot) {
-      // if this element is not yet selected, clear selection and select it
+        // if this element is not yet selected, clear selection and select it
         if (!selectedElements.includes(mouseTarget)) {
-        // only clear selection if shift is not pressed (otherwise, add
-        // element to selection)
+          // only clear selection if shift is not pressed (otherwise, add
+          // element to selection)
           if (!evt.shiftKey) {
-          // No need to do the call here as it will be done on addToSelection
+            // No need to do the call here as it will be done on addToSelection
             svgCanvas.clearSelection(true)
           }
           svgCanvas.addToSelection([mouseTarget])
@@ -1018,8 +1033,8 @@ export const mouseDownEvent = (evt) => {
         // else if it's a path, go into pathedit mode in mouseup
 
         if (!rightClick) {
-        // insert a dummy transform so if the element(s) are moved it will have
-        // a transform to use for its translate
+          // insert a dummy transform so if the element(s) are moved it will have
+          // a transform to use for its translate
           for (const selectedElement of selectedElements) {
             if (isNullish(selectedElement)) { continue }
             const slist = selectedElement.transform?.baseVal
@@ -1250,7 +1265,7 @@ export const mouseDownEvent = (evt) => {
       svgCanvas.undoMgr.beginUndoableChange('transform', selectedElements)
       break
     default:
-    // This could occur in an extension
+      // This could occur in an extension
       break
   }
 
