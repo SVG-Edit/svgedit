@@ -10,7 +10,7 @@ import { getRotationAngle, getHref, getBBox, getRefElem } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
 import {
-  matrixMultiply, transformPoint, transformListToTransform,
+  isIdentity, matrixMultiply, transformPoint, transformListToTransform,
   hasMatrixTransform
 } from './math.js'
 import {
@@ -19,6 +19,28 @@ import {
 
 let svgCanvas
 
+/**
+* @interface module:recalculate.EditorContext
+*/
+/**
+ * @function module:recalculate.EditorContext#getSvgRoot
+ * @returns {SVGSVGElement} The root DOM element
+ */
+/**
+ * @function module:recalculate.EditorContext#getStartTransform
+ * @returns {string}
+*/
+/**
+ * @function module:recalculate.EditorContext#setStartTransform
+ * @param {string} transform
+ * @returns {void}
+ */
+
+/**
+* @function module:recalculate.init
+* @param {module:recalculate.EditorContext} editorContext
+* @returns {void}
+*/
 export const init = (canvas) => {
   svgCanvas = canvas
 }
@@ -54,15 +76,96 @@ export const recalculateDimensions = (selected) => {
   const svgroot = svgCanvas.getSvgRoot()
   const dataStorage = svgCanvas.getDataStorage()
   const tlist = selected.transform?.baseVal
+  // remove any unnecessary transforms
+  if (tlist && tlist.numberOfItems > 0) {
+    let k = tlist.numberOfItems
+    const noi = k
+    while (k--) {
+      const xform = tlist.getItem(k)
+      if (xform.type === 0) {
+        tlist.removeItem(k)
+        // remove identity matrices
+      } else if (xform.type === 1) {
+        if (isIdentity(xform.matrix)) {
+          if (noi === 1) {
+            // Overcome Chrome bug (though only when noi is 1) with
+            //    `removeItem` preventing `removeAttribute` from
+            //    subsequently working
+            // See https://bugs.chromium.org/p/chromium/issues/detail?id=843901
+            selected.removeAttribute('transform')
+            return null
+          }
+          tlist.removeItem(k)
+        }
+        // remove zero-degree rotations
+      } else if (xform.type === 4 && xform.angle === 0) {
+        tlist.removeItem(k)
+      }
+    }
+    // End here if all it has is a rotation
+    if (tlist.numberOfItems === 1 &&
+      getRotationAngle(selected)) { return null }
+  }
 
   // if this element had no transforms, we are done
   if (!tlist || tlist.numberOfItems === 0) {
+    // Chrome apparently had a bug that requires clearing the attribute first.
+    selected.setAttribute('transform', '')
+    // However, this still next line currently doesn't work at all in Chrome
+    selected.removeAttribute('transform')
+    // selected.transform.baseVal.clear(); // Didn't help for Chrome bug
     return null
   }
 
-  // consolidate transforms using standard SVG
-  tlist.consolidate()
+  // TODO: Make this work for more than 2
+  if (tlist) {
+    let mxs = []
+    let k = tlist.numberOfItems
+    while (k--) {
+      const xform = tlist.getItem(k)
+      if (xform.type === 1) {
+        mxs.push([xform.matrix, k])
+      } else if (mxs.length) {
+        mxs = []
+      }
+    }
+    if (mxs.length === 2) {
+      const mNew = svgroot.createSVGTransformFromMatrix(matrixMultiply(mxs[1][0], mxs[0][0]))
+      tlist.removeItem(mxs[0][1])
+      tlist.removeItem(mxs[1][1])
+      tlist.insertItemBefore(mNew, mxs[1][1])
+    }
 
+    // combine matrix + translate
+    k = tlist.numberOfItems
+    if (k >= 2 && tlist.getItem(k - 2).type === 1 && tlist.getItem(k - 1).type === 2) {
+      const mt = svgroot.createSVGTransform()
+
+      const m = matrixMultiply(
+        tlist.getItem(k - 2).matrix,
+        tlist.getItem(k - 1).matrix
+      )
+      mt.setMatrix(m)
+      tlist.removeItem(k - 2)
+      tlist.removeItem(k - 2)
+      tlist.appendItem(mt)
+    }
+  }
+
+  // If it still has a single [M] or [R][M], return null too (prevents BatchCommand from being returned).
+  switch (selected.tagName) {
+    // Ignore these elements, as they can absorb the [M]
+    case 'line':
+    case 'polyline':
+    case 'polygon':
+    case 'path':
+      break
+    default:
+      if ((tlist.numberOfItems === 1 && tlist.getItem(0).type === 1) ||
+        (tlist.numberOfItems === 2 && tlist.getItem(0).type === 1 && tlist.getItem(0).type === 4)) {
+        return null
+      }
+  }
   // Grouped SVG element
   const gsvg = (dataStorage.has(selected, 'gsvg')) ? dataStorage.get(selected, 'gsvg') : undefined
   // we know we have some transforms, so set up return variable
@@ -200,6 +303,22 @@ export const recalculateDimensions = (selected) => {
           if (!childTlist) { continue }
 
           const m = transformListToTransform(childTlist).matrix
+
+          // Convert a matrix to a scale if applicable
+          // if (hasMatrixTransform(childTlist) && childTlist.numberOfItems == 1) {
+          //   if (m.b==0 && m.c==0 && m.e==0 && m.f==0) {
+          //     childTlist.removeItem(0);
+          //     const translateOrigin = svgroot.createSVGTransform(),
+          //       scale = svgroot.createSVGTransform(),
+          //       translateBack = svgroot.createSVGTransform();
+          //     translateOrigin.setTranslate(0, 0);
+          //     scale.setScale(m.a, m.d);
+          //     translateBack.setTranslate(0, 0);
+          //     childTlist.appendItem(translateBack);
+          //     childTlist.appendItem(scale);
+          //     childTlist.appendItem(translateOrigin);
+          //   }
+          // }
 
           const angle = getRotationAngle(child)
           oldStartTransform = svgCanvas.getStartTransform()

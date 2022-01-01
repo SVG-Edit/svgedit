@@ -301,7 +301,7 @@ class SvgCanvas {
   getSelectedElements () { return this.selectedElements }
   setSelectedElements (key, value) { this.selectedElements[key] = value }
   setEmptySelectedElements () { this.selectedElements = [] }
-  getSvgRoot () { return this.svgroot } // @returns {SVGSVGElement} The root DOM element
+  getSvgRoot () { return this.svgroot }
   getDOMDocument () { return this.svgdoc }
   getDOMContainer () { return this.container }
   getCurConfig () { return this.curConfig }
