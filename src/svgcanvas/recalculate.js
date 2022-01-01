@@ -112,12 +112,9 @@ export const recalculateDimensions = (selected) => {
   } // switch on element type to get initial values
 
   if (attrs.length) {
-    Array.prototype.forEach.call(attrs, (attr) => {
-      changes[attr] = selected.getAttribute(attr)
+    attrs.forEach((attr) => {
+      changes[attr] = convertToNum(attr, selected.getAttribute(attr))
     })
-    for (const [attr, val] of Object.entries(changes)) {
-      changes[attr] = convertToNum(attr, val)
-    }
   } else if (gsvg) {
     // GSVG exception
     changes = {
@@ -168,7 +165,9 @@ export const recalculateDimensions = (selected) => {
         }
       }
     }
+
     const N = tlist.numberOfItems
+    console.log(N)
     let tx = 0; let ty = 0; let operation = 0
 
     let firstM

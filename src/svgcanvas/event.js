@@ -571,6 +571,7 @@ export const mouseUpEvent = (evt) => {
   const x = mouseX / zoom
   const y = mouseY / zoom
 
+  console.log(svgCanvas.getId())
   let element = getElement(svgCanvas.getId())
   let keep = false
 
