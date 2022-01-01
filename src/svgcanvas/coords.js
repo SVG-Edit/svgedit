@@ -36,7 +36,7 @@ let svgCanvas = null
 * @param {module:svgcanvas.SvgCanvas#event:pointsAdded} editorContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 

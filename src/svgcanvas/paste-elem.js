@@ -14,7 +14,7 @@ let svgCanvas = null
 * @param {module:paste-elem.pasteContext} pasteContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 

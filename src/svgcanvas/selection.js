@@ -26,7 +26,7 @@ let svgCanvas = null
  * @param {module:selection.selectionContext} selectionContext
  * @returns {void}
  */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 
@@ -37,7 +37,7 @@ export const init = function (canvas) {
  * @type {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
  * @fires module:selection.SvgCanvas#event:selected
  */
-export const clearSelectionMethod = function (noCall) {
+export const clearSelectionMethod = (noCall) => {
   const selectedElements = svgCanvas.getSelectedElements()
   selectedElements.forEach((elem) => {
     if (!elem) {
@@ -59,7 +59,7 @@ export const clearSelectionMethod = function (noCall) {
  * @type {module:path.EditorContext#addToSelection}
  * @fires module:selection.SvgCanvas#event:selected
  */
-export const addToSelectionMethod = function (elemsToAdd, showGrips) {
+export const addToSelectionMethod = (elemsToAdd, showGrips) => {
   const selectedElements = svgCanvas.getSelectedElements()
   if (!elemsToAdd.length) {
     return
@@ -115,7 +115,7 @@ export const addToSelectionMethod = function (elemsToAdd, showGrips) {
   // make sure the elements are in the correct order
   // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 
-  selectedElements.sort(function (a, b) {
+  selectedElements.sort((a, b) => {
     if (a && b && a.compareDocumentPosition) {
       return 3 - (b.compareDocumentPosition(a) & 6)
     }
@@ -134,7 +134,7 @@ export const addToSelectionMethod = function (elemsToAdd, showGrips) {
  * @name module:svgcanvas.SvgCanvas#getMouseTarget
  * @type {module:path.EditorContext#getMouseTarget}
  */
-export const getMouseTargetMethod = function (evt) {
+export const getMouseTargetMethod = (evt) => {
   if (!evt) {
     return null
   }
@@ -212,12 +212,12 @@ export const getMouseTargetMethod = function (evt) {
  * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
  */
 /* eslint-enable max-len */
-export const runExtensionsMethod = function (
+export const runExtensionsMethod = (
   action,
   vars,
   returnArray,
   nameFilter
-) {
+) => {
   let result = returnArray ? [] : false
   for (const [name, ext] of Object.entries(svgCanvas.getExtensions())) {
     if (nameFilter && !nameFilter(name)) {
@@ -245,7 +245,7 @@ export const runExtensionsMethod = function (
  * @param {Element} parent - The parent DOM element to search within
  * @returns {ElementAndBBox[]} An array with objects that include:
  */
-export const getVisibleElementsAndBBoxes = function (parent) {
+export const getVisibleElementsAndBBoxes = (parent) => {
   if (!parent) {
     const svgContent = svgCanvas.getSvgContent()
     parent = svgContent.children // Prevent layers from being included
@@ -272,7 +272,7 @@ export const getVisibleElementsAndBBoxes = function (parent) {
  * @param {SVGRect} rect
  * @returns {Element[]|NodeList} Bbox elements
  */
-export const getIntersectionListMethod = function (rect) {
+export const getIntersectionListMethod = (rect) => {
   const zoom = svgCanvas.getZoom()
   if (!svgCanvas.getRubberBox()) {
     return null
@@ -335,7 +335,7 @@ export const getIntersectionListMethod = function (rect) {
  * @param {Element} elem - SVG element to wrap
  * @returns {void}
  */
-export const groupSvgElem = function (elem) {
+export const groupSvgElem = (elem) => {
   const dataStorage = svgCanvas.getDataStorage()
   const g = document.createElementNS(NS.SVG, 'g')
   elem.replaceWith(g)
@@ -350,7 +350,7 @@ export const groupSvgElem = function (elem) {
  * @param {XMLDocument} newDoc - The SVG DOM document
  * @returns {void}
  */
-export const prepareSvg = function (newDoc) {
+export const prepareSvg = (newDoc) => {
   svgCanvas.sanitizeSvg(newDoc.documentElement)
 
   // convert paths into absolute commands
@@ -371,7 +371,7 @@ export const prepareSvg = function (newDoc) {
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {void}
  */
-export const setRotationAngle = function (val, preventUndo) {
+export const setRotationAngle = (val, preventUndo) => {
   const selectedElements = svgCanvas.getSelectedElements()
   // ensure val is the proper type
   val = Number.parseFloat(val)
@@ -441,7 +441,7 @@ export const setRotationAngle = function (val, preventUndo) {
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {void}
  */
-export const recalculateAllSelectedDimensions = function () {
+export const recalculateAllSelectedDimensions = () => {
   const text =
     svgCanvas.getCurrentResizeMode() === 'none' ? 'position' : 'size'
   const batchCmd = new BatchCommand(text)

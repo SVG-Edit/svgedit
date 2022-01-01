@@ -25,7 +25,7 @@ let svgdoc_ = null
 * @param {module:json.jsonContext} jsonContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
   svgdoc_ = canvas.getDOMDocument()
 }

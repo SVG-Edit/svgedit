@@ -80,7 +80,7 @@ let svgroot_ = null
 * @param {module:utilities.EditorContext} canvas
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
   svgroot_ = canvas.getSvgRoot()
 }

@@ -23,7 +23,7 @@ let svgCanvas = null
 * @param {module:text-actions.svgCanvas} textActionsContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 

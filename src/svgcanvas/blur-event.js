@@ -12,7 +12,7 @@ let svgCanvas = null
 * @param {module:blur.blurContext} blurContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 

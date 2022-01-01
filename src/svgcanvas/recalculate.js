@@ -41,7 +41,7 @@ let svgCanvas
 * @param {module:recalculate.EditorContext} editorContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 
@@ -53,7 +53,7 @@ export const init = function (canvas) {
 * @param {Float} ty - The translation's y value
 * @returns {void}
 */
-export const updateClipPath = function (attr, tx, ty) {
+export const updateClipPath = (attr, tx, ty) => {
   const path = getRefElem(attr).firstChild
   const cpXform = path.transform.baseVal
   const newxlate = svgCanvas.getSvgRoot().createSVGTransform()
@@ -71,7 +71,7 @@ export const updateClipPath = function (attr, tx, ty) {
 * @param {Element} selected - The DOM element to recalculate
 * @returns {Command} Undo command object with the resulting change
 */
-export const recalculateDimensions = function (selected) {
+export const recalculateDimensions = (selected) => {
   if (!selected) return null
   const svgroot = svgCanvas.getSvgRoot()
   const dataStorage = svgCanvas.getDataStorage()
@@ -215,7 +215,7 @@ export const recalculateDimensions = function (selected) {
   } // switch on element type to get initial values
 
   if (attrs.length) {
-    Array.prototype.forEach.call(attrs, function (attr) {
+    Array.prototype.forEach.call(attrs, (attr) => {
       changes[attr] = selected.getAttribute(attr)
     })
     for (const [attr, val] of Object.entries(changes)) {
