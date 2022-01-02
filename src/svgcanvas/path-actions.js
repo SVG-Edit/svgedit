@@ -26,7 +26,7 @@ let path = null
 * @param {module:path-actions.svgCanvas} pathActionsContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 

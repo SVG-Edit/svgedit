@@ -754,7 +754,7 @@ let svgCanvas
 * @param {module:draw.DrawCanvasInit} canvas
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas
 }
 
