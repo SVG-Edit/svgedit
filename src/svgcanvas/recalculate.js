@@ -270,7 +270,6 @@ export const recalculateDimensions = (selected) => {
     }
 
     const N = tlist.numberOfItems
-    console.log(N)
     let tx = 0; let ty = 0; let operation = 0
 
     let firstM

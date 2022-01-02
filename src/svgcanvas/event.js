@@ -571,7 +571,6 @@ export const mouseUpEvent = (evt) => {
   const x = mouseX / zoom
   const y = mouseY / zoom
 
-  console.log(svgCanvas.getId())
   let element = getElement(svgCanvas.getId())
   let keep = false
 
@@ -1012,6 +1011,13 @@ export const mouseDownEvent = (evt) => {
   svgCanvas.setStartTransform(mouseTarget.getAttribute('transform'))
 
   const tlist = mouseTarget.transform.baseVal
+  // consolidate transforms using standard SVG but keep the transformation used for the move/scale
+  if (tlist.numberOfItems > 1) {
+    const firstTransform = tlist.getItem(0)
+    tlist.removeItem(0)
+    tlist.consolidate()
+    tlist.insertItemBefore(firstTransform, 0)
+  }
   switch (svgCanvas.getCurrentMode()) {
     case 'select':
       svgCanvas.setStarted(true)
