@@ -10,7 +10,7 @@ import { NS } from './namespaces.js'
 import * as hstry from './history.js'
 import * as pathModule from './path.js'
 import {
-  isNullish, getStrokedBBoxDefaultVisible, setHref, getElement, getHref, getVisibleElements,
+  getStrokedBBoxDefaultVisible, setHref, getElement, getHref, getVisibleElements,
   findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes, getFeGaussianBlur
 } from './utilities.js'
 import {
@@ -37,6 +37,19 @@ let svgCanvas = null
 */
 export const init = (canvas) => {
   svgCanvas = canvas
+  svgCanvas.copySelectedElements = copySelectedElements
+  svgCanvas.groupSelectedElements = groupSelectedElements // Wraps all the selected elements in a group (`g`) element.
+  svgCanvas.pushGroupProperties = pushGroupProperty // Pushes all appropriate parent group properties down to its children
+  svgCanvas.ungroupSelectedElement = ungroupSelectedElement // Unwraps all the elements in a selected group (`g`) element
+  svgCanvas.moveToTopSelectedElement = moveToTopSelectedElem // Repositions the selected element to the bottom in the DOM to appear on top
+  svgCanvas.moveToBottomSelectedElement = moveToBottomSelectedElem // Repositions the selected element to the top in the DOM to appear under other elements
+  svgCanvas.moveUpDownSelected = moveUpDownSelected // Moves the select element up or down the stack, based on the visibly
+  svgCanvas.moveSelectedElements = moveSelectedElements // Moves selected elements on the X/Y axis.
+  svgCanvas.cloneSelectedElements = cloneSelectedElements // Create deep DOM copies (clones) of all selected elements and move them slightly
+  svgCanvas.alignSelectedElements = alignSelectedElements // Aligns selected elements.
+  svgCanvas.updateCanvas = updateCanvas // Updates the editor canvas width/height/position after a zoom has occurred.
+  svgCanvas.cycleElement = cycleElement // Select the next/previous element within the current layer.
+  svgCanvas.deleteSelectedElements = deleteSelectedElements // Removes all selected elements from the DOM and adds the change to the history
 }
 
 /**
@@ -46,9 +59,9 @@ export const init = (canvas) => {
 * @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
-export const moveToTopSelectedElem = function () {
+const moveToTopSelectedElem = () => {
   const [selected] = svgCanvas.getSelectedElements()
-  if (!isNullish(selected)) {
+  if (selected) {
     const t = selected
     const oldParent = t.parentNode
     const oldNextSibling = t.nextSibling
@@ -69,9 +82,9 @@ export const moveToTopSelectedElem = function () {
 * @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
-export const moveToBottomSelectedElem = function () {
+const moveToBottomSelectedElem = () => {
   const [selected] = svgCanvas.getSelectedElements()
-  if (!isNullish(selected)) {
+  if (selected) {
     let t = selected
     const oldParent = t.parentNode
     const oldNextSibling = t.nextSibling
@@ -102,7 +115,7 @@ export const moveToBottomSelectedElem = function () {
 * @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
-export const moveUpDownSelected = function (dir) {
+const moveUpDownSelected = (dir) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const selected = selectedElements[0]
   if (!selected) { return }
@@ -113,7 +126,7 @@ export const moveUpDownSelected = function (dir) {
   const list = svgCanvas.getIntersectionList(getStrokedBBoxDefaultVisible([selected]))
   if (dir === 'Down') { list.reverse() }
 
-  Array.prototype.forEach.call(list, function (el) {
+  Array.prototype.forEach.call(list, (el) => {
     if (!foundCur) {
       if (el === selected) {
         foundCur = true
@@ -151,7 +164,7 @@ export const moveUpDownSelected = function (dir) {
 * @returns {BatchCommand|void} Batch command for the move
 */
 
-export const moveSelectedElements = function (dx, dy, undoable = true) {
+const moveSelectedElements = (dx, dy, undoable = true) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
   // if undoable is not sent, default to true
@@ -206,7 +219,7 @@ export const moveSelectedElements = function (dx, dy, undoable = true) {
 * @param {Float} y Float with the distance to move on the y-axis
 * @returns {void}
 */
-export const cloneSelectedElements = function (x, y) {
+const cloneSelectedElements = (x, y) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const currentGroup = svgCanvas.getCurrentGroup()
   let i; let elem
@@ -214,7 +227,7 @@ export const cloneSelectedElements = function (x, y) {
   // find all the elements selected (stop at first null)
   const len = selectedElements.length
 
-  function index (el) {
+  const index = (el) => {
     if (!el) return -1
     let i = 0
     do {
@@ -229,13 +242,13 @@ export const cloneSelectedElements = function (x, y) {
 * @param {Element} b
 * @returns {Integer}
 */
-  function sortfunction (a, b) {
+  const sortfunction = (a, b) => {
     return (index(b) - index(a))
   }
   selectedElements.sort(sortfunction)
   for (i = 0; i < len; ++i) {
     elem = selectedElements[i]
-    if (isNullish(elem)) { break }
+    if (!elem) { break }
   }
   // use slice to quickly get the subset of elements we need
   const copiedElements = selectedElements.slice(0, i)
@@ -264,7 +277,7 @@ export const cloneSelectedElements = function (x, y) {
 * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
 * @returns {void}
 */
-export const alignSelectedElements = function (type, relativeTo) {
+const alignSelectedElements = (type, relativeTo) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const bboxes = [] // angles = [];
   const len = selectedElements.length
@@ -273,7 +286,7 @@ export const alignSelectedElements = function (type, relativeTo) {
   let miny = Number.MAX_VALUE; let maxy = Number.MIN_VALUE
   let curwidth = Number.MIN_VALUE; let curheight = Number.MIN_VALUE
   for (let i = 0; i < len; ++i) {
-    if (isNullish(selectedElements[i])) { break }
+    if (!selectedElements[i]) { break }
     const elem = selectedElements[i]
     bboxes[i] = getStrokedBBoxDefaultVisible([elem])
 
@@ -326,7 +339,7 @@ export const alignSelectedElements = function (type, relativeTo) {
   const dx = new Array(len)
   const dy = new Array(len)
   for (let i = 0; i < len; ++i) {
-    if (isNullish(selectedElements[i])) { break }
+    if (!selectedElements[i]) { break }
     // const elem = selectedElements[i];
     const bbox = bboxes[i]
     dx[i] = 0
@@ -368,7 +381,7 @@ export const alignSelectedElements = function (type, relativeTo) {
 * @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
-export const deleteSelectedElements = function () {
+const deleteSelectedElements = () => {
   const selectedElements = svgCanvas.getSelectedElements()
   const batchCmd = new BatchCommand('Delete Elements')
   const len = selectedElements.length
@@ -376,7 +389,7 @@ export const deleteSelectedElements = function () {
 
   for (let i = 0; i < len; ++i) {
     const selected = selectedElements[i]
-    if (isNullish(selected)) { break }
+    if (!selected) { break }
 
     let parent = selected.parentNode
     let t = selected
@@ -411,7 +424,7 @@ export const deleteSelectedElements = function () {
 * @function module:selected-elem.SvgCanvas#copySelectedElements
 * @returns {void}
 */
-export const copySelectedElements = function () {
+const copySelectedElements = () => {
   const selectedElements = svgCanvas.getSelectedElements()
   const data =
     JSON.stringify(selectedElements.map((x) => svgCanvas.getJsonFromSvgElements(x)))
@@ -431,7 +444,7 @@ export const copySelectedElements = function () {
 * @param {string} [urlArg]
 * @returns {void}
 */
-export const groupSelectedElements = function (type, urlArg) {
+const groupSelectedElements = (type, urlArg) => {
   const selectedElements = svgCanvas.getSelectedElements()
   if (!type) { type = 'g' }
   let cmdStr = ''
@@ -467,7 +480,7 @@ export const groupSelectedElements = function (type, urlArg) {
   let i = selectedElements.length
   while (i--) {
     let elem = selectedElements[i]
-    if (isNullish(elem)) { continue }
+    if (!elem) { continue }
 
     if (elem.parentNode.tagName === 'a' && elem.parentNode.childNodes.length === 1) {
       elem = elem.parentNode
@@ -492,7 +505,7 @@ export const groupSelectedElements = function (type, urlArg) {
 * @param {boolean} undoable
 * @returns {BatchCommand|void}
 */
-export const pushGroupProperty = function (g, undoable) {
+const pushGroupProperty = (g, undoable) => {
   const children = g.childNodes
   const len = children.length
   const xform = g.getAttribute('transform')
@@ -686,7 +699,7 @@ export const pushGroupProperty = function (g, undoable) {
 * @fires module:selected-elem.SvgCanvas#event:selected
 * @returns {void}
 */
-export const convertToGroup = function (elem) {
+const convertToGroup = (elem) => {
   const selectedElements = svgCanvas.getSelectedElements()
   if (!elem) {
     elem = selectedElements[0]
@@ -807,7 +820,7 @@ export const convertToGroup = function (elem) {
 
     // recalculate dimensions on the top-level children so that unnecessary transforms
     // are removed
-    walkTreePost(g, function (n) {
+    walkTreePost(g, (n) => {
       try {
         recalculateDimensions(n)
       } catch (e) {
@@ -817,7 +830,7 @@ export const convertToGroup = function (elem) {
 
     // Give ID for any visible element missing one
     const visElems = g.querySelectorAll(svgCanvas.getVisElems())
-    Array.prototype.forEach.call(visElems, function (el) {
+    Array.prototype.forEach.call(visElems, (el) => {
       if (!el.id) { el.id = svgCanvas.getNextId() }
     })
 
@@ -840,7 +853,7 @@ export const convertToGroup = function (elem) {
 * @function module:selected-elem.SvgCanvas#ungroupSelectedElement
 * @returns {void}
 */
-export const ungroupSelectedElement = function () {
+const ungroupSelectedElement = () => {
   const selectedElements = svgCanvas.getSelectedElements()
   const dataStorage = svgCanvas.getDataStorage()
   let g = selectedElements[0]
@@ -915,22 +928,22 @@ export const ungroupSelectedElement = function () {
 * @fires module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
 * @returns {module:svgcanvas.CanvasInfo}
 */
-export const updateCanvas = function (w, h) {
+const updateCanvas = (w, h) => {
   svgCanvas.getSvgRoot().setAttribute('width', w)
   svgCanvas.getSvgRoot().setAttribute('height', h)
   const zoom = svgCanvas.getZoom()
   const bg = document.getElementById('canvasBackground')
   const oldX = Number(svgCanvas.getSvgContent().getAttribute('x'))
   const oldY = Number(svgCanvas.getSvgContent().getAttribute('y'))
-  const x = ((w - this.contentW * zoom) / 2)
-  const y = ((h - this.contentH * zoom) / 2)
+  const x = ((w - svgCanvas.contentW * zoom) / 2)
+  const y = ((h - svgCanvas.contentH * zoom) / 2)
 
   assignAttributes(svgCanvas.getSvgContent(), {
-    width: this.contentW * zoom,
-    height: this.contentH * zoom,
+    width: svgCanvas.contentW * zoom,
+    height: svgCanvas.contentH * zoom,
     x,
     y,
-    viewBox: '0 0 ' + this.contentW + ' ' + this.contentH
+    viewBox: '0 0 ' + svgCanvas.contentW + ' ' + svgCanvas.contentH
   })
 
   assignAttributes(bg, {
@@ -977,7 +990,7 @@ export const updateCanvas = function (w, h) {
 * @fires module:svgcanvas.SvgCanvas#event:selected
 * @returns {void}
 */
-export const cycleElement = function (next) {
+const cycleElement = (next) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const currentGroup = svgCanvas.getCurrentGroup()
   let num
@@ -985,7 +998,7 @@ export const cycleElement = function (next) {
   let elem = false
   const allElems = getVisibleElements(currentGroup || svgCanvas.getCurrentDrawing().getCurrentLayer())
   if (!allElems.length) { return }
-  if (isNullish(curElem)) {
+  if (!curElem) {
     num = next ? allElems.length - 1 : 0
     elem = allElems[num]
   } else {

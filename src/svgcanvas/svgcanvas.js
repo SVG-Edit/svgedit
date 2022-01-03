@@ -30,18 +30,10 @@ import {
 import {
   init as textActionsInit, textActionsMethod
 } from './text-actions.js'
-import {
-  init as eventInit, mouseMoveEvent, mouseUpEvent, mouseOutEvent,
-  dblClickEvent, mouseDownEvent, DOMMouseScrollEvent
-} from './event.js'
+import { init as eventInit } from './event.js'
 import { init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson } from './json.js'
 import * as elemGetSet from './elem-get-set.js'
-import {
-  init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
-  moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements,
-  deleteSelectedElements, copySelectedElements, groupSelectedElements, pushGroupProperty,
-  ungroupSelectedElement, cycleElement, updateCanvas
-} from './selected-elem.js'
+import { init as selectedElemInit } from './selected-elem.js'
 import {
   init as blurInit, setBlurNoUndo, setBlurOffsets, setBlur
 } from './blur-event.js'
@@ -249,14 +241,14 @@ class SvgCanvas {
       e.preventDefault()
       return false
     }
-    container.addEventListener('mousedown', mouseDownEvent)
-    container.addEventListener('mousemove', mouseMoveEvent)
+    container.addEventListener('mousedown', this.mouseDownEvent)
+    container.addEventListener('mousemove', this.mouseMoveEvent)
     container.addEventListener('click', handleLinkInCanvas)
-    container.addEventListener('dblclick', dblClickEvent)
-    container.addEventListener('mouseup', mouseUpEvent)
-    container.addEventListener('mouseleave', mouseOutEvent)
-    container.addEventListener('mousewheel', DOMMouseScrollEvent)
-    container.addEventListener('DOMMouseScroll', DOMMouseScrollEvent)
+    container.addEventListener('dblclick', this.dblClickEvent)
+    container.addEventListener('mouseup', this.mouseUpEvent)
+    container.addEventListener('mouseleave', this.mouseOutEvent)
+    container.addEventListener('mousewheel', this.DOMMouseScrollEvent)
+    container.addEventListener('DOMMouseScroll', this.DOMMouseScrollEvent)
 
     // Alias function
     this.linkControlPoints = pathActions.linkControlPoints
@@ -886,19 +878,7 @@ class SvgCanvas {
     this.prepareSvg = prepareSvg // Runs the SVG Document through the sanitizer and then updates its paths.
     this.setRotationAngle = setRotationAngle // Removes any old rotations if present, prepends a new rotation at the transformed center.
     this.recalculateAllSelectedDimensions = recalculateAllSelectedDimensions // Runs `recalculateDimensions` on selected elements,adding changes to a single batch command.
-    this.copySelectedElements = copySelectedElements
     this.pasteElements = pasteElementsMethod // Remembers the current selected elements on the clipboard.
-    this.groupSelectedElements = groupSelectedElements // Wraps all the selected elements in a group (`g`) element.
-    this.pushGroupProperties = pushGroupProperty // Pushes all appropriate parent group properties down to its children
-    this.ungroupSelectedElement = ungroupSelectedElement // Unwraps all the elements in a selected group (`g`) element
-    this.moveToTopSelectedElement = moveToTopSelectedElem // Repositions the selected element to the bottom in the DOM to appear on top
-    this.moveToBottomSelectedElement = moveToBottomSelectedElem // Repositions the selected element to the top in the DOM to appear under other elements
-    this.moveUpDownSelected = moveUpDownSelected // Moves the select element up or down the stack, based on the visibly
-    this.moveSelectedElements = moveSelectedElements // Moves selected elements on the X/Y axis.
-    this.cloneSelectedElements = cloneSelectedElements // Create deep DOM copies (clones) of all selected elements and move them slightly
-    this.alignSelectedElements = alignSelectedElements // Aligns selected elements.
-    this.updateCanvas = updateCanvas // Updates the editor canvas width/height/position after a zoom has occurred.
-    this.cycleElement = cycleElement // Select the next/previous element within the current layer.
     this.getMouseTarget = getMouseTargetMethod
     this.removeUnusedDefElems = removeUnusedDefElemsMethod // remove DOM elements inside the `<defs>` if they are notreferred to,
     this.svgCanvasToString = svgCanvasToString // Main function to set up the SVG content for output.
@@ -954,7 +934,6 @@ class SvgCanvas {
     this.setPaint = elemGetSet.setPaintMethod // Set a color/gradient to a fill/stroke.
     this.changeSelectedAttributeNoUndo = changeSelectedAttributeNoUndoMethod // This function makes the changes to the elements. It does not add the change to the history stack.
     this.changeSelectedAttribute = changeSelectedAttributeMethod // Change the given/selected element and add the original value to the history stack.
-    this.deleteSelectedElements = deleteSelectedElements // Removes all selected elements from the DOM and adds the change to the history
     this.setBlurNoUndo = setBlurNoUndo // Sets the `stdDeviation` blur value on the selected element without being undoable.
     this.setBlurOffsets = setBlurOffsets // Sets the `x`, `y`, `width`, `height` values of the filter element in order to make the blur not be clipped. Removes them if not neeeded.
     this.setBlur = setBlur // Adds/updates the blur filter to the selected element.

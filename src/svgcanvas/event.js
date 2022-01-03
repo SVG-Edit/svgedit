@@ -32,6 +32,12 @@ let svgCanvas = null
 */
 export const init = (canvas) => {
   svgCanvas = canvas
+  svgCanvas.mouseDownEvent = mouseDownEvent
+  svgCanvas.mouseMoveEvent = mouseMoveEvent
+  svgCanvas.dblClickEvent = dblClickEvent
+  svgCanvas.mouseUpEvent = mouseUpEvent
+  svgCanvas.mouseOutEvent = mouseOutEvent
+  svgCanvas.DOMMouseScrollEvent = DOMMouseScrollEvent
 }
 
 const getBsplinePoint = (t) => {
@@ -96,7 +102,7 @@ const updateTransformList = (svgRoot, element, dx, dy) => {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseMove
  * @returns {void}
  */
-export const mouseMoveEvent = (evt) => {
+const mouseMoveEvent = (evt) => {
   // if the mouse is move without dragging an element, just return.
   if (!svgCanvas.getStarted()) { return }
   if (evt.button === 1 || svgCanvas.spaceKey) { return }
@@ -511,7 +517,7 @@ export const mouseMoveEvent = (evt) => {
       break
     }
     default:
-      console.error(`unknown mode=${svgCanvas.getCurrentMode()}`)
+      // A mode can be defined by an extenstion
       break
   }
 
@@ -536,7 +542,7 @@ export const mouseMoveEvent = (evt) => {
 *
 * @returns {void}
 */
-export const mouseOutEvent = () => {
+const mouseOutEvent = () => {
   const { $id } = svgCanvas
   if (svgCanvas.getCurrentMode() !== 'select' && svgCanvas.getStarted()) {
     const event = new Event('mouseup')
@@ -557,14 +563,16 @@ export const mouseOutEvent = () => {
 * @fires module:svgcanvas.SvgCanvas#event:ext_mouseUp
 * @returns {void}
 */
-export const mouseUpEvent = (evt) => {
+const mouseUpEvent = (evt) => {
   if (evt.button === 2) { return }
   if (!svgCanvas.getStarted()) { return }
 
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
+
   const tempJustSelected = svgCanvas.getJustSelected()
   svgCanvas.setJustSelected(null)
+
   const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm())
   const mouseX = pt.x * zoom
   const mouseY = pt.y * zoom
@@ -625,7 +633,7 @@ export const mouseUpEvent = (evt) => {
         if (realX !== svgCanvas.getRStartX() || realY !== svgCanvas.getRStartY()) {
           const len = selectedElements.length
           for (let i = 0; i < len; ++i) {
-            if (isNullish(selectedElements[i])) { break }
+            if (!selectedElements[i]) { break }
           }
           // no change in position/size, so maybe we should move to pathedit
         } else {
@@ -650,9 +658,7 @@ export const mouseUpEvent = (evt) => {
       }
       return
     case 'zoom': {
-      if (!isNullish(svgCanvas.getRubberBox())) {
-        svgCanvas.getRubberBox().setAttribute('display', 'none')
-      }
+      svgCanvas.getRubberBox()?.setAttribute('display', 'none')
       const factor = evt.shiftKey ? 0.5 : 2
       svgCanvas.call('zoomed', {
         x: Math.min(svgCanvas.getRStartX(), realX),
@@ -809,7 +815,7 @@ export const mouseUpEvent = (evt) => {
     }
   })
 
-  if (!keep && !isNullish(element)) {
+  if (!keep && element) {
     svgCanvas.getCurrentDrawing().releaseId(svgCanvas.getId())
     element.remove()
     element = null
@@ -834,7 +840,7 @@ export const mouseUpEvent = (evt) => {
       svgCanvas.setMode('select')
       svgCanvas.selectOnly([t], true)
     }
-  } else if (!isNullish(element)) {
+  } else if (element) {
     /**
 * @name module:svgcanvas.SvgCanvas#addedNew
 * @type {boolean}
@@ -885,7 +891,7 @@ export const mouseUpEvent = (evt) => {
   svgCanvas.setStartTransform(null)
 }
 
-export const dblClickEvent = (evt) => {
+const dblClickEvent = (evt) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const evtTarget = evt.target
   const parent = evtTarget.parentNode
@@ -935,7 +941,7 @@ export const dblClickEvent = (evt) => {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
  * @returns {void}
  */
-export const mouseDownEvent = (evt) => {
+const mouseDownEvent = (evt) => {
   const dataStorage = svgCanvas.getDataStorage()
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
@@ -993,7 +999,7 @@ export const mouseDownEvent = (evt) => {
   // if it is a selector grip, then it must be a single element selected,
   // set the mouseTarget to that and update the mode to rotate/resize
 
-  if (mouseTarget === svgCanvas.selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
+  if (mouseTarget === svgCanvas.selectorManager.selectorParentGroup && selectedElements[0]) {
     const grip = evt.target
     const griptype = dataStorage.get(grip, 'type')
     // rotating
@@ -1043,7 +1049,7 @@ export const mouseDownEvent = (evt) => {
           // insert a dummy transform so if the element(s) are moved it will have
           // a transform to use for its translate
           for (const selectedElement of selectedElements) {
-            if (isNullish(selectedElement)) { continue }
+            if (!selectedElement) { continue }
             const slist = selectedElement.transform?.baseVal
             if (slist.numberOfItems) {
               slist.insertItemBefore(svgRoot.createSVGTransform(), 0)
@@ -1055,7 +1061,7 @@ export const mouseDownEvent = (evt) => {
       } else if (!rightClick) {
         svgCanvas.clearSelection()
         svgCanvas.setCurrentMode('multiselect')
-        if (isNullish(svgCanvas.getRubberBox())) {
+        if (!svgCanvas.getRubberBox()) {
           svgCanvas.setRubberBox(svgCanvas.selectorManager.getRubberBandBox())
         }
         svgCanvas.setRStartX(svgCanvas.getRStartX() * zoom)
@@ -1304,7 +1310,7 @@ export const mouseDownEvent = (evt) => {
  * @fires module:event.SvgCanvas#event:zoomDone
  * @returns {void}
  */
-export const DOMMouseScrollEvent = (e) => {
+const DOMMouseScrollEvent = (e) => {
   const zoom = svgCanvas.getZoom()
   const { $id } = svgCanvas
   if (!e.shiftKey) { return }
