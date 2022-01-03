@@ -255,7 +255,7 @@ export class RemoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      if (!this.nextSibling && window.console) {
+      if (!this.nextSibling) {
         console.error('Reference element was lost')
       }
       this.parent.insertBefore(this.elem, this.nextSibling) // Don't use `before` or `prepend` as `this.nextSibling` may be `null`

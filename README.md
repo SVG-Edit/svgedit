@@ -41,6 +41,9 @@ Thanks to **Netlify**, you can test the following builds:
 Additional tip: you may try a version released on NPM using unpkg for example with version 7.1.0:
 [https://unpkg.com/svgedit@7.1.0/dist/editor/index.html](https://unpkg.com/svgedit@7.1.0/dist/editor/index.html)
 
+Prior V7 for example with version 3.2.0:
+[https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
+
 ## Installation
 
 ### Quick install
