@@ -240,9 +240,9 @@ export default {
       },
       mouseDown (opts) {
         if (svgCanvas.getMode() === 'star') {
-          const rgb = svgCanvas.getColor('fill')
-          const sRgb = svgCanvas.getColor('stroke')
-          const sWidth = svgCanvas.getStrokeWidth()
+          const fill = svgCanvas.getColor('fill')
+          const stroke = svgCanvas.getColor('stroke')
+          const strokeWidth = svgCanvas.getStrokeWidth()
           started = true
           newFO = svgCanvas.addSVGElementsFromJson({
             element: 'polygon',
@@ -256,9 +256,9 @@ export default {
               radialshift: $id('radialShift').value,
               r2: 0,
               orient: 'point',
-              fill: rgb,
-              strokecolor: sRgb,
-              strokeWidth: sWidth
+              fill,
+              stroke,
+              'stroke-width': strokeWidth
             }
           })
           return {
@@ -266,12 +266,9 @@ export default {
           }
         }
         if (svgCanvas.getMode() === 'polygon') {
-          // const e = opts.event;
-          const rgb = svgCanvas.getColor('fill')
-          // const ccRgbEl = rgb.substring(1, rgb.length);
-          const sRgb = svgCanvas.getColor('stroke')
-          // ccSRgbEl = sRgb.substring(1, rgb.length);
-          const sWidth = svgCanvas.getStrokeWidth()
+          const fill = svgCanvas.getColor('fill')
+          const stroke = svgCanvas.getColor('stroke')
+          const strokeWidth = svgCanvas.getStrokeWidth()
           started = true
           newFO = svgCanvas.addSVGElementsFromJson({
             element: 'polygon',
@@ -283,9 +280,9 @@ export default {
               sides: $id('polySides').value,
               orient: 'x',
               edge: 0,
-              fill: rgb,
-              strokecolor: sRgb,
-              strokeWidth: sWidth
+              fill,
+              stroke,
+              'stroke-width': strokeWidth
             }
           })
 
@@ -305,8 +302,8 @@ export default {
           const point = Number(newFO.getAttribute('point'))
           const orient = newFO.getAttribute('orient')
           const fill = newFO.getAttribute('fill')
-          const strokecolor = newFO.getAttribute('strokecolor')
-          const strokeWidth = Number(newFO.getAttribute('strokeWidth'))
+          const stroke = newFO.getAttribute('stroke')
+          const strokeWidth = Number(newFO.getAttribute('stroke-width'))
           const radialshift = Number(newFO.getAttribute('radialshift'))
 
           let x = opts.mouse_x
@@ -352,7 +349,7 @@ export default {
           }
           newFO.setAttribute('points', polyPoints)
           newFO.setAttribute('fill', fill)
-          newFO.setAttribute('stroke', strokecolor)
+          newFO.setAttribute('stroke', stroke)
           newFO.setAttribute('stroke-width', strokeWidth)
           /* const shape = */ newFO.getAttribute('shape')
 
@@ -366,8 +363,8 @@ export default {
           const sides = Number(newFO.getAttribute('sides'))
           // const orient = newFO.getAttribute('orient');
           const fill = newFO.getAttribute('fill')
-          const strokecolor = newFO.getAttribute('strokecolor')
-          const strokeWidth = Number(newFO.getAttribute('strokeWidth'))
+          const stroke = newFO.getAttribute('stroke')
+          const strokeWidth = Number(newFO.getAttribute('stroke-width'))
 
           let x = opts.mouse_x
           let y = opts.mouse_y
@@ -390,7 +387,7 @@ export default {
           // const poly = newFO.createElementNS(NS.SVG, 'polygon');
           newFO.setAttribute('points', points)
           newFO.setAttribute('fill', fill)
-          newFO.setAttribute('stroke', strokecolor)
+          newFO.setAttribute('stroke', stroke)
           newFO.setAttribute('stroke-width', strokeWidth)
           return {
             started: true

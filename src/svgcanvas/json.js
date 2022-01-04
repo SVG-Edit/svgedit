@@ -64,7 +64,7 @@ export const getJsonFromSvgElements = (data) => {
 * @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementsFromJson}
 */
 
-export const addSVGElementsFromJson = function (data) {
+export const addSVGElementsFromJson = (data) => {
   if (typeof data === 'string') return svgdoc_.createTextNode(data)
 
   let shape = getElement(data.attr.id)
@@ -86,7 +86,7 @@ export const addSVGElementsFromJson = function (data) {
     assignAttributes(shape, {
       fill: curShape.fill,
       stroke: curShape.stroke,
-      'stroke-width': curShape.stroke_width,
+      'stroke-width': curShape.strokeWidth,
       'stroke-dasharray': curShape.stroke_dasharray,
       'stroke-linejoin': curShape.stroke_linejoin,
       'stroke-linecap': curShape.stroke_linecap,
