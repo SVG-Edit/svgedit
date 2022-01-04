@@ -102,24 +102,6 @@ describe('use various parts of svg-edit', function () {
       .find('#Ok').eq(0).click({ force: true })
     testSnapshot()
   })
-  it('check tool_text_anchor_start', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_start')
-      .click({ force: true })
-    testSnapshot()
-  })
-  it('check tool_text_anchor_middle', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_middle')
-      .click({ force: true })
-    testSnapshot()
-  })
-  it('check tool_text_anchor_end', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_end')
-      .click({ force: true })
-    testSnapshot()
-  })
   it('check tool_text_change_rotation', function () {
     cy.get('#svg_2').click({ force: true })
     for (let n = 0; n < 5; n++) {
@@ -179,6 +161,24 @@ describe('use various parts of svg-edit', function () {
   it('check tool_text_change_font_family', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_font_family').shadow().find('select').select('Serif')
+    testSnapshot()
+  })
+  it('check tool_text_decoration_underline', function () {
+    cy.get('#svg_1').click({ force: true })
+    cy.get('#tool_text_decoration_underline')
+      .click({ force: true })
+    testSnapshot()
+  })
+  it('check tool_text_decoration_linethrough', function () {
+    cy.get('#svg_1').click({ force: true })
+    cy.get('#tool_text_decoration_linethrough')
+      .click({ force: true })
+    testSnapshot()
+  })
+  it('check tool_text_decoration_overline', function () {
+    cy.get('#svg_1').click({ force: true })
+    cy.get('#tool_text_decoration_overline')
+      .click({ force: true })
     testSnapshot()
   })
 })

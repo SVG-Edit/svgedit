@@ -594,6 +594,56 @@ export const setBoldMethod = function (b) {
 }
 
 /**
+ * Check whether selected element has the given text decoration value or not.
+ * @returns {boolean} Indicates whether or not element has the text decoration value
+ */
+export const hasTextDecorationMethod = function (value) {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const attribute = selected.getAttribute('text-decoration') || ''
+    return attribute.includes(value)
+  }
+
+  return false
+}
+
+/**
+ * Adds the given text decoration value
+ * @param value The text decoration value
+ * @returns {void}
+ */
+export const addTextDecorationMethod = function (value) {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const oldValue = selected.getAttribute('text-decoration') || ''
+    svgCanvas.changeSelectedAttribute('text-decoration', (oldValue + ' ' + value).trim())
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
+ * Removes the given text decoration value
+ * @param value The text decoration value
+ * @returns {void}
+ */
+export const removeTextDecorationMethod = function (value) {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const actualValues = selected.getAttribute('text-decoration') || ''
+    svgCanvas.changeSelectedAttribute('text-decoration', actualValues.replace(value, '').trim())
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
 * Check whether selected element is in italics or not.
 * @function module:svgcanvas.SvgCanvas#getItalic
 * @returns {boolean} Indicates whether or not element is italic
@@ -638,7 +688,7 @@ export const setTextAnchorMethod = function (value) {
     isNullish(selectedElements[1])) {
     svgCanvas.changeSelectedAttribute('text-anchor', value)
   }
-  if (!selectedElements[0].textContent) {
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
     svgCanvas.textActions.setCursor()
   }
 }

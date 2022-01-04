@@ -903,6 +903,9 @@ class SvgCanvas {
     this.setBold = elemGetSet.setBoldMethod // Make the selected element bold or normal.
     this.getItalic = elemGetSet.getItalicMethod // Check whether selected element is in italics or not.
     this.setItalic = elemGetSet.setItalicMethod // Make the selected element italic or normal.
+    this.hasTextDecoration = elemGetSet.hasTextDecorationMethod // Check whether the selected element has the given text decoration or not.
+    this.addTextDecoration = elemGetSet.addTextDecorationMethod // Adds the given value to the text decoration
+    this.removeTextDecoration = elemGetSet.removeTextDecorationMethod // Removes the given value from the text decoration
     this.setTextAnchor = elemGetSet.setTextAnchorMethod // Set the new text anchor.
     this.getFontFamily = elemGetSet.getFontFamilyMethod // The current font family
     this.setFontFamily = elemGetSet.setFontFamilyMethod // Set the new font family.
