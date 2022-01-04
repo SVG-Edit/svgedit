@@ -102,24 +102,6 @@ describe('use various parts of svg-edit', function () {
       .find('#Ok').eq(0).click({ force: true })
     testSnapshot()
   })
-  it('check tool_text_anchor_start', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_start')
-      .click({ force: true })
-    testSnapshot()
-  })
-  it('check tool_text_anchor_middle', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_middle')
-      .click({ force: true })
-    testSnapshot()
-  })
-  it('check tool_text_anchor_end', function () {
-    cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_text_anchor_end')
-      .click({ force: true })
-    testSnapshot()
-  })
   it('check tool_text_change_rotation', function () {
     cy.get('#svg_2').click({ force: true })
     for (let n = 0; n < 5; n++) {

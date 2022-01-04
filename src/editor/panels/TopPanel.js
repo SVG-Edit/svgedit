@@ -353,28 +353,9 @@ class TopPanel {
           $id('tool_italic').pressed = this.editor.svgCanvas.getItalic()
           $id('tool_bold').pressed = this.editor.svgCanvas.getBold()
           $id('tool_font_family').setAttribute('value', elem.getAttribute('font-family'))
+          $id('tool_text_anchor').setAttribute('value', elem.getAttribute('text-anchor'))
           $id('font_size').value = elem.getAttribute('font-size')
           $id('text').value = elem.textContent
-          const textAnchorStart = $id('tool_text_anchor_start')
-          const textAnchorMiddle = $id('tool_text_anchor_middle')
-          const textAnchorEnd = $id('tool_text_anchor_end')
-          switch (elem.getAttribute('text-anchor')) {
-            case 'start':
-              textAnchorStart.pressed = true
-              textAnchorMiddle.pressed = false
-              textAnchorEnd.pressed = false
-              break
-            case 'middle':
-              textAnchorStart.pressed = false
-              textAnchorMiddle.pressed = true
-              textAnchorEnd.pressed = false
-              break
-            case 'end':
-              textAnchorStart.pressed = false
-              textAnchorMiddle.pressed = false
-              textAnchorEnd.pressed = true
-              break
-          }
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
             setTimeout(() => {
@@ -764,13 +745,12 @@ class TopPanel {
   }
 
   /**
+   * Sets the text anchor value
    *
-   * @param {string} value "start","end" or "middle"
    * @returns {false}
    */
-  clickTextAnchor (value) {
-    this.editor.svgCanvas.setTextAnchor(value)
-    this.updateContextPanel()
+  clickTextAnchor (evt) {
+    this.editor.svgCanvas.setTextAnchor(evt.detail.value)
     return false
   }
 
@@ -889,9 +869,7 @@ class TopPanel {
     $id('tool_ungroup').addEventListener('click', this.clickGroup.bind(this))
     $id('tool_bold').addEventListener('click', this.clickBold.bind(this))
     $id('tool_italic').addEventListener('click', this.clickItalic.bind(this))
-    $id('tool_text_anchor_start').addEventListener('click', () => this.clickTextAnchor.bind(this)('start'))
-    $id('tool_text_anchor_middle').addEventListener('click', () => this.clickTextAnchor.bind(this)('middle'))
-    $id('tool_text_anchor_end').addEventListener('click', () => this.clickTextAnchor.bind(this)('end'))
+    $id('tool_text_anchor').addEventListener('change', (evt) => this.clickTextAnchor.bind(this)(evt))
     $id('tool_unlink_use').addEventListener('click', this.clickGroup.bind(this))
     $id('image_url').addEventListener('change', (evt) => { this.setImageURL(evt.currentTarget.value) });
 

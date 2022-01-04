@@ -638,7 +638,7 @@ export const setTextAnchorMethod = function (value) {
     isNullish(selectedElements[1])) {
     svgCanvas.changeSelectedAttribute('text-anchor', value)
   }
-  if (!selectedElements[0].textContent) {
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
     svgCanvas.textActions.setCursor()
   }
 }
