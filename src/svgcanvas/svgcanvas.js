@@ -237,7 +237,7 @@ class SvgCanvas {
     elemGetSet.init(this)
 
     // prevent links from being followed in the canvas
-    const handleLinkInCanvas = function (e) {
+    const handleLinkInCanvas = (e) => {
       e.preventDefault()
       return false
     }
@@ -396,7 +396,6 @@ class SvgCanvas {
   setbSpline (value) { this.bSpline = value }
   setNextPos (value) { this.nextPos = value }
   setNextParameter (value) { this.nextParameter = value }
-  setCurProperties (key, value) { this.curProperties[key] = value }
   setCurText (key, value) { this.curText[key] = value }
   setFreehand (key, value) { this.freehand[key] = value }
   setCurBBoxes (value) { this.curBBoxes = value }
@@ -424,6 +423,7 @@ class SvgCanvas {
   getrefAttrs () { return refAttrs }
   getcanvg () { return canvg }
   setCanvas (key, value) { this[key] = value }
+  setCurProperties (key, value) { this.curProperties[key] = value }
   getCurProperties (key) { return this.curProperties[key] }
   setCurShape (key, value) { this.curShape[key] = value }
   gettingSelectorManager () { return this.selectorManager }
@@ -508,7 +508,7 @@ class SvgCanvas {
   restoreRefElements (elem) {
     // Look for missing reference elements, restore any found
     const attrs = {}
-    refAttrs.forEach(function (item, _) {
+    refAttrs.forEach((item, _) => {
       attrs[item] = elem.getAttribute(item)
     })
     Object.values(attrs).forEach((val) => {
@@ -557,7 +557,7 @@ class SvgCanvas {
   flashStorage () {
     const data = sessionStorage.getItem(CLIPBOARD_ID)
     localStorage.setItem(CLIPBOARD_ID, data)
-    setTimeout(function () {
+    setTimeout(() => {
       localStorage.removeItem(CLIPBOARD_ID)
     }, 1)
   }
@@ -581,7 +581,7 @@ class SvgCanvas {
   * @returns {void}
   */
   removeFromSelection (elemsToRemove) {
-    if (isNullish(this.selectedElements[0])) { return }
+    if (!this.selectedElements[0]) { return }
     if (!elemsToRemove.length) { return }
 
     // find every element and remove it from our array copy
