@@ -637,3 +637,96 @@ exports[`use various parts of svg-edit > check tool_text_change_font_family #0`]
   </svg>
 </body>
 `;
+
+exports[`use various parts of svg-edit > check tool_text_decoration_underline #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use various parts of svg-edit > check tool_text_decoration_linethrough #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use various parts of svg-edit > check tool_text_decoration_overline #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through overline"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;

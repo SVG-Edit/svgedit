@@ -352,6 +352,9 @@ class TopPanel {
           this.displayTool('text_panel')
           $id('tool_italic').pressed = this.editor.svgCanvas.getItalic()
           $id('tool_bold').pressed = this.editor.svgCanvas.getBold()
+          $id('tool_text_decoration_underline').pressed = this.editor.svgCanvas.hasTextDecoration('underline')
+          $id('tool_text_decoration_linethrough').pressed = this.editor.svgCanvas.hasTextDecoration('line-through')
+          $id('tool_text_decoration_overline').pressed = this.editor.svgCanvas.hasTextDecoration('overline')
           $id('tool_font_family').setAttribute('value', elem.getAttribute('font-family'))
           $id('tool_text_anchor').setAttribute('value', elem.getAttribute('text-anchor'))
           $id('font_size').value = elem.getAttribute('font-size')
@@ -745,6 +748,22 @@ class TopPanel {
   }
 
   /**
+   * Handles the click on the text decoration buttons
+   *
+   * @param value The text decoration value
+   * @returns {boolean} false
+   */
+  clickTextDecoration(value) {
+    if(this.editor.svgCanvas.hasTextDecoration(value)) {
+      this.editor.svgCanvas.removeTextDecoration(value)
+    } else {
+      this.editor.svgCanvas.addTextDecoration(value)
+    }
+    this.updateContextPanel();
+    return false;
+  }
+
+  /**
    * Sets the text anchor value
    *
    * @returns {false}
@@ -869,6 +888,9 @@ class TopPanel {
     $id('tool_ungroup').addEventListener('click', this.clickGroup.bind(this))
     $id('tool_bold').addEventListener('click', this.clickBold.bind(this))
     $id('tool_italic').addEventListener('click', this.clickItalic.bind(this))
+    $id('tool_text_decoration_underline').addEventListener('click', () => this.clickTextDecoration.bind(this)('underline'))
+    $id('tool_text_decoration_linethrough').addEventListener('click', () => this.clickTextDecoration.bind(this)('line-through'))
+    $id('tool_text_decoration_overline').addEventListener('click', () => this.clickTextDecoration.bind(this)('overline'))
     $id('tool_text_anchor').addEventListener('change', (evt) => this.clickTextAnchor.bind(this)(evt))
     $id('tool_unlink_use').addEventListener('click', this.clickGroup.bind(this))
     $id('image_url').addEventListener('change', (evt) => { this.setImageURL(evt.currentTarget.value) });

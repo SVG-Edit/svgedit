@@ -129,8 +129,13 @@
     </se-spin-input>
   </div>
   <div class="text_panel">
+    <!-- Text styles -->
     <se-button id="tool_bold" title="properties.bold" src="bold.svg" shortcut="B"></se-button>
     <se-button id="tool_italic" title="properties.italic" src="italic.svg" shortcut="I"></se-button>
+    <se-button id="tool_text_decoration_underline" title="properties.text_decoration_underline" src="text_decoration_underline.svg"></se-button>
+    <se-button id="tool_text_decoration_linethrough" title="properties.text_decoration_linethrough" src="text_decoration_linethrough.svg"></se-button>
+    <se-button id="tool_text_decoration_overline" title="properties.text_decoration_overline" src="text_decoration_overline.svg"></se-button>
+
     <!-- Font Size-->
     <se-select id="tool_font_family" label="properties.font_family_label"
                options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times"
@@ -144,6 +149,7 @@
       <se-list-item id="tool_text_anchor_middle" value="middle" title="properties.text_anchor_middle" src="anchor_middle.svg" img-height="25px"></se-list-item>
       <se-list-item id="tool_text_anchor_end" value="end" title="properties.text_anchor_end" src="anchor_end.svg" img-height="25px"></se-list-item>
     </se-list>
+
   </div>
   <!-- Not visible, but still used -->
   <input id="text" type="text" size="35"/>
