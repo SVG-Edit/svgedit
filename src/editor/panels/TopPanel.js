@@ -96,7 +96,7 @@ class TopPanel {
           break
         case 'g':
         case 'a': {
-        // Look for common styles
+          // Look for common styles
           const childs = this.selectedElement.getElementsByTagName('*')
           let gWidth = null
           for (i = 0, len = childs.length; i < len; i++) {
@@ -753,14 +753,14 @@ class TopPanel {
    * @param value The text decoration value
    * @returns {boolean} false
    */
-  clickTextDecoration(value) {
-    if(this.editor.svgCanvas.hasTextDecoration(value)) {
+  clickTextDecoration (value) {
+    if (this.editor.svgCanvas.hasTextDecoration(value)) {
       this.editor.svgCanvas.removeTextDecoration(value)
     } else {
       this.editor.svgCanvas.addTextDecoration(value)
     }
-    this.updateContextPanel();
-    return false;
+    this.updateContextPanel()
+    return false
   }
 
   /**

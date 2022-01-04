@@ -166,19 +166,19 @@ describe('use various parts of svg-edit', function () {
   it('check tool_text_decoration_underline', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_underline')
-    .click({ force: true })
+      .click({ force: true })
     testSnapshot()
   })
   it('check tool_text_decoration_linethrough', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_linethrough')
-    .click({ force: true })
+      .click({ force: true })
     testSnapshot()
   })
   it('check tool_text_decoration_overline', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_overline')
-    .click({ force: true })
+      .click({ force: true })
     testSnapshot()
   })
 })

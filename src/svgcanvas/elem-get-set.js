@@ -598,15 +598,15 @@ export const setBoldMethod = function (b) {
  * @returns {boolean} Indicates whether or not element has the text decoration value
  */
 export const hasTextDecorationMethod = function (value) {
-  const selectedElements = svgCanvas.getSelectedElements();
-  const selected = selectedElements[0];
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
 
   if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
-    const attribute = selected.getAttribute('text-decoration') || '';
-    return attribute.includes(value);
+    const attribute = selected.getAttribute('text-decoration') || ''
+    return attribute.includes(value)
   }
 
-  return false;
+  return false
 }
 
 /**
@@ -615,10 +615,10 @@ export const hasTextDecorationMethod = function (value) {
  * @returns {void}
  */
 export const addTextDecorationMethod = function (value) {
-  const selectedElements = svgCanvas.getSelectedElements();
-  const selected = selectedElements[0];
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
   if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
-    const oldValue = selected.getAttribute('text-decoration') || '';
+    const oldValue = selected.getAttribute('text-decoration') || ''
     svgCanvas.changeSelectedAttribute('text-decoration', (oldValue + ' ' + value).trim())
   }
   if (selectedElements.length > 0 && !selectedElements[0].textContent) {
@@ -632,10 +632,10 @@ export const addTextDecorationMethod = function (value) {
  * @returns {void}
  */
 export const removeTextDecorationMethod = function (value) {
-  const selectedElements = svgCanvas.getSelectedElements();
-  const selected = selectedElements[0];
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
   if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
-    const actualValues = selected.getAttribute('text-decoration') || '';
+    const actualValues = selected.getAttribute('text-decoration') || ''
     svgCanvas.changeSelectedAttribute('text-decoration', actualValues.replace(value, '').trim())
   }
   if (selectedElements.length > 0 && !selectedElements[0].textContent) {
