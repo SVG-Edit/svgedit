@@ -762,7 +762,6 @@ export const setFontSizeMethod = (val) => {
 export const getTextMethod = () => {
   const selectedElements = svgCanvas.getSelectedElements()
   const selected = selectedElements[0]
-  if (!selected) { return '' }
   return (selected) ? selected.textContent : ''
 }
 
