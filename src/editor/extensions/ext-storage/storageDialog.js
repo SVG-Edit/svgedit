@@ -101,7 +101,7 @@ export class SeStorageDialog extends HTMLElement {
         node.setAttribute('title', newValue)
         break
       default:
-      // super.attributeChangedCallback(name, oldValue, newValue);
+        // super.attributeChangedCallback(name, oldValue, newValue);
         break
     }
   }
@@ -128,11 +128,14 @@ export class SeStorageDialog extends HTMLElement {
    */
   connectedCallback () {
     const onSubmitHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
-        trigger: action,
-        select: this.$storageInput.value,
-        checkbox: this.$rememberInput.checked
-      }})
+      const triggerEvent = new CustomEvent('change',
+        {
+          detail: {
+            trigger: action,
+            select: this.$storageInput.value,
+            checkbox: this.$rememberInput.checked
+          }
+        })
       this.dispatchEvent(triggerEvent)
     }
     this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'))
