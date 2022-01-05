@@ -91,7 +91,7 @@ export const setGroupTitleMethod = (val) => {
   const batchCmd = new BatchCommand('Set Label')
 
   let title
-  if (!val.length) {
+  if (val.length === 0) {
     // Remove title element
     const tsNextSibling = ts.nextSibling
     batchCmd.addSubCommand(new RemoveElementCommand(ts[0], tsNextSibling, elem))
@@ -175,7 +175,7 @@ export const setResolutionMethod = (x, y) => {
       const visEls = getVisibleElements()
       svgCanvas.addToSelection(visEls)
       const dx = []; const dy = []
-      visEls.forEach(function (_item, _i) {
+      visEls.forEach((_item, _i) => {
         dx.push(bbox.x * -1)
         dy.push(bbox.y * -1)
       })
@@ -245,7 +245,7 @@ export const setBBoxZoomMethod = (val, editorW, editorH) => {
   const selectedElements = svgCanvas.getSelectedElements()
   let spacer = 0.85
   let bb
-  const calcZoom = function (bb) {
+  const calcZoom = (bb) => {
     if (!bb) { return false }
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100
@@ -267,7 +267,7 @@ export const setBBoxZoomMethod = (val, editorW, editorH) => {
   switch (val) {
     case 'selection': {
       if (!selectedElements[0]) { return undefined }
-      const selectedElems = selectedElements.map(function (n, _) {
+      const selectedElems = selectedElements.map((n, _) => {
         if (n) {
           return n
         }
@@ -304,7 +304,7 @@ export const setZoomMethod = (zoomLevel) => {
   const res = svgCanvas.getResolution()
   svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel)
   svgCanvas.setZoom(zoomLevel)
-  selectedElements.forEach(function (elem) {
+  selectedElements.forEach((elem) => {
     if (!elem) { return }
     svgCanvas.selectorManager.requestSelector(elem).resize()
   })
@@ -321,7 +321,7 @@ export const setZoomMethod = (zoomLevel) => {
 * @fires module:elem-get-set.SvgCanvas#event:changed
 * @returns {void}
 */
-export const setColorMethod = function (type, val, preventUndo) {
+export const setColorMethod = (type, val, preventUndo) => {
   const selectedElements = svgCanvas.getSelectedElements()
   svgCanvas.setCurShape(type, val)
   svgCanvas.setCurProperties(type + '_paint', { type: 'solidColor' })
@@ -426,7 +426,7 @@ export const findDuplicateGradient = (grad) => {
       }
 
       let diff = false
-      radAttrs.forEach(function (attr) {
+      radAttrs.forEach((attr) => {
         if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true }
       })
 
@@ -548,7 +548,7 @@ export const setStrokeAttrMethod = (attr, val) => {
     const elem = selectedElements[i]
     if (elem) {
       if (elem.tagName === 'g') {
-        walkTree(elem, function (e) { if (e.nodeName !== 'g') { elems.push(e) } })
+        walkTree(elem, (e) => { if (e.nodeName !== 'g') { elems.push(e) } })
       } else {
         elems.push(elem)
       }
@@ -914,7 +914,7 @@ export const removeHyperlinkMethod = () => {
 * @param {Integer} newType - New segment type. See {@link https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg} for list
 * @returns {void}
 */
-export const setSegTypeMethod = function (newType) {
+export const setSegTypeMethod = (newType) => {
   svgCanvas.pathActions.setSegType(newType)
 }
 

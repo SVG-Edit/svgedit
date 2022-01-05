@@ -45,7 +45,7 @@ export const init = (canvas) => {
  * @name module:coords.remapElement
  * @type {module:path.EditorContext#remapElement}
 */
-export const remapElement = function (selected, changes, m) {
+export const remapElement = (selected, changes, m) => {
   const remap = (x, y) => transformPoint(x, y, m)
   const scalew = (w) => m.a * w
   const scaleh = (h) => m.d * h
