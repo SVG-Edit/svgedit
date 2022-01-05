@@ -44,7 +44,7 @@ import {
   findDefs, getHref, setHref, getRefElem, getRotationAngle,
   getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, init as utilsInit,
-  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
+  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, blankPageObjectURL,
   $id, $qa, $qq, getFeGaussianBlur, stringToHTML, insertChildAtIndex
 } from './utilities.js'
 import {
@@ -191,9 +191,9 @@ class SvgCanvas {
     allProperties.text = SvgCanvas.mergeDeep({}, allProperties.shape)
     allProperties.text = SvgCanvas.mergeDeep(allProperties.text, {
       fill: '#000000',
-      stroke_width: this.curConfig.text && this.curConfig.text.stroke_width,
-      font_size: this.curConfig.text && this.curConfig.text.font_size,
-      font_family: this.curConfig.text && this.curConfig.text.font_family
+      stroke_width: this.curConfig.text?.stroke_width,
+      font_size: this.curConfig.text?.font_size,
+      font_family: this.curConfig.text?.font_family
     })
     this.curText = allProperties.text // Current text style properties
 
@@ -450,7 +450,7 @@ class SvgCanvas {
   setMode (name) {
     this.pathActions.clear(true)
     this.textActions.clear()
-    this.curProperties = (this.selectedElements[0] && this.selectedElements[0].nodeName === 'text') ? this.curText : this.curShape
+    this.curProperties = (this.selectedElements[0]?.nodeName === 'text') ? this.curText : this.curShape
     this.currentMode = name
   }
 
@@ -512,7 +512,7 @@ class SvgCanvas {
       attrs[item] = elem.getAttribute(item)
     })
     Object.values(attrs).forEach((val) => {
-      if (val && val.startsWith('url(')) {
+      if (val?.startsWith('url(')) {
         const id = getUrlFromAttr(val).substr(1)
         const ref = getElement(id)
         if (!ref) {
@@ -955,7 +955,6 @@ class SvgCanvas {
 SvgCanvas.$id = $id
 SvgCanvas.$qq = $qq
 SvgCanvas.$qa = $qa
-SvgCanvas.isNullish = isNullish
 SvgCanvas.encode64 = encode64
 SvgCanvas.decode64 = decode64
 SvgCanvas.mergeDeep = mergeDeep

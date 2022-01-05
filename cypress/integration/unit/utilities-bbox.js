@@ -476,10 +476,7 @@ describe('utilities bbox', function () {
    * @param {module:math.XYObject} origin
    * @returns {module:math.XYObject}
    */
-  function rotatePoint (point, angle, origin) {
-    if (!origin) {
-      origin = { x: 0, y: 0 }
-    }
+  function rotatePoint (point, angle, origin = { x: 0, y: 0 }) {
     const x = point.x - origin.x
     const y = point.y - origin.y
     const theta = radians(angle)

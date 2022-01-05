@@ -45,7 +45,7 @@ export const init = (canvas) => {
  * @name module:coords.remapElement
  * @type {module:path.EditorContext#remapElement}
 */
-export const remapElement = function (selected, changes, m) {
+export const remapElement = (selected, changes, m) => {
   const remap = (x, y) => transformPoint(x, y, m)
   const scalew = (w) => m.a * w
   const scaleh = (h) => m.d * h
@@ -62,7 +62,7 @@ export const remapElement = function (selected, changes, m) {
 
   ['fill', 'stroke'].forEach((type) => {
     const attrVal = selected.getAttribute(type)
-    if (attrVal && attrVal.startsWith('url(') && (m.a < 0 || m.d < 0)) {
+    if (attrVal?.startsWith('url(') && (m.a < 0 || m.d < 0)) {
       const grad = getRefElem(attrVal)
       const newgrad = grad.cloneNode(true)
       if (m.a < 0) {

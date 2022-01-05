@@ -464,7 +464,7 @@ export class Segment {
       this.type === 10 ? ptObjToArrMethod(this.type, item) : curPts
     )
 
-    if (this.next && this.next.ctrlpts) {
+    if (this.next?.ctrlpts) {
       const next = this.next.item
       const nextPts = [
         next.x, next.y,
@@ -626,7 +626,7 @@ export class Path {
         }
         // Remember that this is a starter seg
         startI = i
-      } else if (nextSeg && nextSeg.type === 1) {
+      } else if (nextSeg?.type === 1) {
         // This is the last real segment of a closed sub-path
         // Next is first seg after "M"
         seg.next = segs[startI + 1]

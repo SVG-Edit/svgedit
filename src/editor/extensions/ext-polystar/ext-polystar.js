@@ -421,7 +421,7 @@ export default {
         let i = selElems.length
         while (i--) {
           const elem = selElems[i]
-          if (elem && elem.getAttribute('shape') === 'star') {
+          if (elem?.getAttribute('shape') === 'star') {
             if (opts.selectedElement && !opts.multiselected) {
               $id('starNumPoints').value = elem.getAttribute('point')
               $id('radialShift').value = elem.getAttribute('radialshift')
@@ -429,7 +429,7 @@ export default {
             } else {
               showPanel(false, 'star')
             }
-          } else if (elem && elem.getAttribute('shape') === 'regularPoly') {
+          } else if (elem?.getAttribute('shape') === 'regularPoly') {
             if (opts.selectedElement && !opts.multiselected) {
               $id('polySides').value = elem.getAttribute('sides')
               showPanel(true, 'polygon')

@@ -6,7 +6,7 @@
  */
 import {
   assignAttributes, cleanupElement, getElement, getRotationAngle, snapToGrid, walkTree,
-  isNullish, preventClickDefault, setHref, getBBox
+  preventClickDefault, setHref, getBBox
 } from './utilities.js'
 import {
   convertAttrs
@@ -465,7 +465,7 @@ const mouseMoveEvent = (evt) => {
         ({ x, y } = xya)
       }
 
-      if (svgCanvas.getRubberBox() && svgCanvas.getRubberBox().getAttribute('display') !== 'none') {
+      if (svgCanvas.getRubberBox()?.getAttribute('display') !== 'none') {
         realX *= zoom
         realY *= zoom
         assignAttributes(svgCanvas.getRubberBox(), {
@@ -482,15 +482,6 @@ const mouseMoveEvent = (evt) => {
     case 'textedit': {
       x *= zoom
       y *= zoom
-      // if (svgCanvas.getRubberBox() && svgCanvas.getRubberBox().getAttribute('display') !== 'none') {
-      //   assignAttributes(svgCanvas.getRubberBox(), {
-      //     x: Math.min(svgCanvas.getStartX(), x),
-      //     y: Math.min(svgCanvas.getStartY(), y),
-      //     width: Math.abs(x - svgCanvas.getStartX()),
-      //     height: Math.abs(y - svgCanvas.getStartY())
-      //   }, 100);
-      // }
-
       svgCanvas.textActions.mouseMove(mouseX, mouseY)
 
       break
@@ -638,7 +629,7 @@ const mouseUpEvent = (evt) => {
           // no change in position/size, so maybe we should move to pathedit
         } else {
           t = evt.target
-          if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
+          if (selectedElements[0].nodeName === 'path' && !selectedElements[1]) {
             svgCanvas.pathActions.select(selectedElements[0])
             // if it was a path
             // else, if it was selected and this is a shift-click, remove it from selection
@@ -832,8 +823,8 @@ const mouseUpEvent = (evt) => {
     // then go to Select mode.
     // WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
     if ((svgCanvas.getCurrentMode() !== 'path' || !svgCanvas.getDrawnPath()) &&
-      t && t.parentNode &&
-      t.parentNode.id !== 'selectorParentGroup' &&
+      t &&
+      t.parentNode?.id !== 'selectorParentGroup' &&
       t.id !== 'svgcanvas' && t.id !== 'svgroot'
     ) {
       // switch into "select" mode if we've clicked on an element
@@ -1078,7 +1069,7 @@ const mouseDownEvent = (evt) => {
       break
     case 'zoom':
       svgCanvas.setStarted(true)
-      if (isNullish(svgCanvas.getRubberBox())) {
+      if (!svgCanvas.getRubberBox()) {
         svgCanvas.setRubberBox(svgCanvas.selectorManager.getRubberBandBox())
       }
       assignAttributes(svgCanvas.getRubberBox(), {
@@ -1299,7 +1290,7 @@ const mouseDownEvent = (evt) => {
   }, true)
 
   extResult.forEach((r) => {
-    if (r && r.started) {
+    if (r?.started) {
       svgCanvas.setStarted(true)
     }
   })

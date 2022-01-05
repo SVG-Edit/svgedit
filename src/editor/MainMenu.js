@@ -167,7 +167,7 @@ class MainMenu {
           </head>
           <body><h1>${loadingImage}</h1></body>
         <html>`
-        if (typeof URL !== 'undefined' && URL.createObjectURL) {
+        if (URL?.createObjectURL) {
           const blob = new Blob([popHTML], { type: 'text/html' })
           popURL = URL.createObjectURL(blob)
         } else {

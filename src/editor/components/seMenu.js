@@ -112,19 +112,6 @@ export class SeMenu extends HTMLElement {
   set src (value) {
     this.setAttribute('src', value)
   }
-  /**
-   * @function connectedCallback
-   * @returns {void}
-   */
-  /* connectedCallback () {
-    this.$menu.addEventListener('openedchange', (e) => {
-      e.preventDefault();
-      const selectedItem = e?.detail?.closeResult;
-      if (selectedItem !== undefined && selectedItem?.id !== undefined) {
-        document.getElementById(selectedItem.id).click();
-      }
-    });
-  } */
 }
 
 // Register

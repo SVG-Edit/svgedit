@@ -291,7 +291,7 @@ export default class ConfigObj {
         let { source } = this.urldata
         if (!source) { // urldata.source may have been null if it ended with '='
           const src = searchParams.get('source')
-          if (src && src.startsWith('data:')) {
+          if (src?.startsWith('data:')) {
             source = src
           }
         }

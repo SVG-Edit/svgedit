@@ -51,7 +51,7 @@ export const pasteElementsMethod = function (type, x, y) {
 * @returns {void}
 */
   function checkIDs (elem) {
-    if (elem.attr && elem.attr.id) {
+    if (elem.attr?.id) {
       changedIDs[elem.attr.id] = svgCanvas.getNextId()
       elem.attr.id = changedIDs[elem.attr.id]
     }

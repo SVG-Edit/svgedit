@@ -1088,7 +1088,7 @@ export const convertGradientsMethod = function (elem) {
 
         // If has transform, convert
         const tlist = grad.gradientTransform.baseVal
-        if (tlist && tlist.numberOfItems > 0) {
+        if (tlist?.numberOfItems > 0) {
           const m = transformListToTransform(tlist).matrix
           const pt1 = transformPoint(gCoords.x1, gCoords.y1, m)
           const pt2 = transformPoint(gCoords.x2, gCoords.y2, m)
