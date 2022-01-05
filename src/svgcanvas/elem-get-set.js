@@ -708,7 +708,7 @@ export const setFontFamilyMethod = (val) => {
   const selectedElements = svgCanvas.getSelectedElements()
   svgCanvas.setCurText('font_family', val)
   svgCanvas.changeSelectedAttribute('font-family', val)
-  if (selectedElements[0] && !selectedElements[0].textContent) {
+  if (!selectedElements[0]?.textContent) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -750,7 +750,7 @@ export const setFontSizeMethod = (val) => {
   const selectedElements = svgCanvas.getSelectedElements()
   svgCanvas.setCurText('font_size', val)
   svgCanvas.changeSelectedAttribute('font-size', val)
-  if (selectedElements[0] && !selectedElements[0].textContent) {
+  if (!selectedElements[0]?.textContent) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -895,9 +895,6 @@ export const setRectRadiusMethod = (val) => {
 */
 export const makeHyperlinkMethod = (url) => {
   svgCanvas.groupSelectedElements('a', url)
-
-  // TODO: If element is a single "g", convert to "a"
-  //  if (selectedElements.length > 1 && selectedElements[1]) {
 }
 
 /**

@@ -269,7 +269,7 @@ export default {
           curMeta = pending[id]
           let title
           if (svgStr) {
-            if (curMeta && curMeta.name) {
+            if (curMeta?.name) {
               title = curMeta.name
             } else {
             // Try to find a title
@@ -299,7 +299,7 @@ export default {
               submit.removeAttribute('disabled')
             }
           } else {
-            if (curMeta && curMeta.preview_url) {
+            if (curMeta?.preview_url) {
               title = curMeta.name || ''
               entry = document.createElement('span')
               const img = document.createElement('img')

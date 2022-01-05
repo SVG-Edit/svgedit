@@ -127,7 +127,7 @@ function setAttrs (elem, attrs) {
   } else {
     Object.entries(attrs).forEach(([aname, val]) => {
       const prop = elem[aname]
-      if (prop && prop.constructor === 'SVGLength') {
+      if (prop?.constructor === 'SVGLength') {
         prop.baseVal.value = val
       } else {
         elem.setAttribute(aname, val)

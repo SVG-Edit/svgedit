@@ -287,7 +287,7 @@ export const bboxToObj = function ({ x, y, width, height }) {
 * @returns {void}
 */
 export const walkTree = function (elem, cbFn) {
-  if (elem && elem.nodeType === 1) {
+  if (elem?.nodeType === 1) {
     cbFn(elem)
     let i = elem.childNodes.length
     while (i--) {
@@ -1061,7 +1061,7 @@ export const assignAttributes = function (elem, attrs, suspendLength, unitCheck)
     const ns = (key.substr(0, 4) === 'xml:'
       ? NS.XML
       : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null)
-    if (isNullish(value)) {
+    if (!value) {
       if (ns) {
         elem.removeAttributeNS(ns, key)
       } else {

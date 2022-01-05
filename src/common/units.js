@@ -98,7 +98,7 @@ export const init = function (elementContainer) {
  * @function module:units.getTypeMap
  * @returns {module:units.TypeMap} The unit object with values for each unit
 */
-export const getTypeMap = function () {
+export const getTypeMap = () => {
   return typeMap_
 }
 
@@ -118,7 +118,7 @@ export const getTypeMap = function () {
 * @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
 * with comma-separated floats
 */
-export const shortFloat = function (val) {
+export const shortFloat = (val) => {
   const digits = elementContainer_.getRoundDigits()
   if (!isNaN(val)) {
     return Number(Number(val).toFixed(digits))
@@ -136,7 +136,7 @@ export const shortFloat = function (val) {
 * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
 * @returns {Float}
 */
-export const convertUnit = function (val, unit) {
+export const convertUnit = (val, unit) => {
   unit = unit || elementContainer_.getBaseUnit()
   // baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
   // const val = baseVal.valueInSpecifiedUnits;
@@ -153,38 +153,7 @@ export const convertUnit = function (val, unit) {
 * @param {string} val - Attribute value to convert
 * @returns {void}
 */
-export const setUnitAttr = function (elem, attr, val) {
-  //  if (!isNaN(val)) {
-  // New value is a number, so check currently used unit
-  // const oldVal = elem.getAttribute(attr);
-
-  // Enable this for alternate mode
-  // if (oldVal !== null && (isNaN(oldVal) || elementContainer_.getBaseUnit() !== 'px')) {
-  //   // Old value was a number, so get unit, then convert
-  //   let unit;
-  //   if (oldVal.substr(-1) === '%') {
-  //     const res = getResolution();
-  //     unit = '%';
-  //     val *= 100;
-  //     if (wAttrs.includes(attr)) {
-  //       val = val / res.w;
-  //     } else if (hAttrs.includes(attr)) {
-  //       val = val / res.h;
-  //     } else {
-  //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-  //     }
-  //   } else {
-  //     if (elementContainer_.getBaseUnit() !== 'px') {
-  //       unit = elementContainer_.getBaseUnit();
-  //     } else {
-  //       unit = oldVal.substr(-2);
-  //     }
-  //     val = val / typeMap_[unit];
-  //   }
-  //
-  // val += unit;
-  // }
-  // }
+export const setUnitAttr = (elem, attr, val) => {
   elem.setAttribute(attr, val)
 }
 
@@ -205,7 +174,7 @@ const attrsToConvert = {
 * @param {Element} element - A DOM element whose attributes should be converted
 * @returns {void}
 */
-export const convertAttrs = function (element) {
+export const convertAttrs = (element) => {
   const elName = element.tagName
   const unit = elementContainer_.getBaseUnit()
   const attrs = attrsToConvert[elName]
@@ -228,7 +197,7 @@ export const convertAttrs = function (element) {
 * @param {string} val - Attribute value to convert
 * @returns {Float} The converted number
 */
-export const convertToNum = function (attr, val) {
+export const convertToNum = (attr, val) => {
   // Return a number if that's what it already is
   if (!isNaN(val)) { return val - 0 }
   if (val.substr(-1) === '%') {

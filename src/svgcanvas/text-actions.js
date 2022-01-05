@@ -426,7 +426,7 @@ export const textActionsMethod = (function () {
         svgCanvas.call('selected', [curtext])
         svgCanvas.addToSelection([curtext], true)
       }
-      if (curtext && !curtext.textContent.length) {
+      if (!curtext?.textContent.length) {
         // No content, so delete
         svgCanvas.deleteSelectedElements()
       }

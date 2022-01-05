@@ -77,7 +77,7 @@ export const recalculateDimensions = (selected) => {
   const dataStorage = svgCanvas.getDataStorage()
   const tlist = selected.transform?.baseVal
   // remove any unnecessary transforms
-  if (tlist && tlist.numberOfItems > 0) {
+  if (tlist?.numberOfItems > 0) {
     let k = tlist.numberOfItems
     const noi = k
     while (k--) {
@@ -608,7 +608,7 @@ export const recalculateDimensions = (selected) => {
     // adjust it by recalculating the matrix transform.
 
     const fill = selected.getAttribute('fill')
-    if (fill && fill.startsWith('url(')) {
+    if (fill?.startsWith('url(')) {
       const paint = getRefElem(fill)
       if (paint) {
         let type = 'pattern'

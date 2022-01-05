@@ -29,7 +29,7 @@ import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
 import { getParentsUntil } from './components/jgraduate/Util.js'
 
-const { $id, $qa, isNullish, decode64, blankPageObjectURL } = SvgCanvas
+const { $id, $qa, decode64, blankPageObjectURL } = SvgCanvas
 
 /**
  *
@@ -487,8 +487,8 @@ class Editor extends EditorStartup {
     }
     const isNode = mode === 'pathedit'
     // if this.elems[1] is present, then we have more than one element
-    this.selectedElement = (elems.length === 1 || isNullish(elems[1]) ? elems[0] : null)
-    this.multiselected = (elems.length >= 2 && !isNullish(elems[1]))
+    this.selectedElement = (elems.length === 1 || !elems[1] ? elems[0] : null)
+    this.multiselected = (elems.length >= 2 && elems[1])
     if (this.selectedElement && !isNode) {
       this.topPanel.update()
     } // if (elem)
@@ -520,7 +520,7 @@ class Editor extends EditorStartup {
       return
     }
 
-    this.multiselected = (elems.length >= 2 && !isNullish(elems[1]))
+    this.multiselected = (elems.length >= 2 && elems[1])
     // Only updating fields for single elements for now
     if (!this.multiselected) {
       switch (mode) {
@@ -552,7 +552,7 @@ class Editor extends EditorStartup {
     }
 
     elems.forEach((elem) => {
-      const isSvgElem = (elem && elem.tagName === 'svg')
+      const isSvgElem = (elem?.tagName === 'svg')
       if (isSvgElem || this.svgCanvas.isLayer(elem)) {
         this.layersPanel.populateLayers()
         // if the element changed was the svg, then it could be a resolution change
@@ -561,8 +561,7 @@ class Editor extends EditorStartup {
         }
         // Update selectedElement if element is no longer part of the image.
         // This occurs for the text elements in Firefox
-      } else if (elem && this.selectedElement && isNullish(this.selectedElement.parentNode)) {
-        // || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
+      } else if (elem && !this.selectedElement?.parentNode) {
         this.selectedElement = elem
       }
     })

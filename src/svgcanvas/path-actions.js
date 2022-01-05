@@ -284,7 +284,7 @@ export const pathActionsMethod = (function () {
         // the control points on both sides
         if (prevCtlPt) {
           const newpts = svgCanvas.smoothControlPoints(prevCtlPt, ct1, curpos)
-          if (newpts && newpts.length === 2) {
+          if (newpts?.length === 2) {
             const prevArr = d[d.length - 1].split(',')
             prevArr[2] = newpts[0].x
             prevArr[3] = newpts[0].y
@@ -736,7 +736,7 @@ export const pathActionsMethod = (function () {
         if (!evt.shiftKey && !hasMoved) {
           path.selectPt(lastPt)
         }
-      } else if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
+      } else if (rubberBox?.getAttribute('display') !== 'none') {
         // Done with multi-node-select
         rubberBox.setAttribute('display', 'none')
 

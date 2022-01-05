@@ -7,7 +7,7 @@
 import * as draw from './draw.js'
 import * as hstry from './history.js'
 import {
-  getRotationAngle, getBBox as utilsGetBBox, isNullish, setHref, getStrokedBBoxDefaultVisible
+  getRotationAngle, getBBox as utilsGetBBox, setHref, getStrokedBBoxDefaultVisible
 } from './utilities.js'
 import {
   isGecko
@@ -67,7 +67,7 @@ export const getUndoManager = () => {
           } else if (!isApply) {
             svgCanvas.restoreRefElements(cmd.elem)
           }
-          if (cmd.elem && cmd.elem.tagName === 'use') {
+          if (cmd.elem?.tagName === 'use') {
             svgCanvas.setUseData(cmd.elem)
           }
         } else if (cmdType === 'ChangeElementCommand') {
@@ -149,7 +149,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 
   while (i--) {
     let elem = elems[i]
-    if (isNullish(elem)) { continue }
+    if (!elem) { continue }
 
     // Set x,y vals on elements that don't have them
     if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
@@ -164,7 +164,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
     // TODO: Missing statement body
     // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
     let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr)
-    if (isNullish(oldval)) { oldval = '' }
+    if (!oldval) { oldval = '' }
     if (oldval !== String(newValue)) {
       if (attr === '#text') {
         // const oldW = utilsGetBBox(elem).width;

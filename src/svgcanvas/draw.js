@@ -482,7 +482,7 @@ export class Drawing {
     for (let i = 0; i < numchildren; ++i) {
       const child = this.svgElem_.childNodes.item(i)
       // for each g, find its layer name
-      if (child && child.nodeType === 1) {
+      if (child?.nodeType === 1) {
         if (child.tagName === 'g') {
           childgroups = true
           const name = findLayerNameInGroup(child)

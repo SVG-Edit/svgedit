@@ -150,7 +150,7 @@ class Layer {
     const len = this.group_.childNodes.length
     for (let i = 0; i < len; ++i) {
       const child = this.group_.childNodes.item(i)
-      if (child && child.tagName === 'title') {
+      if (child?.tagName === 'title') {
         return child
       }
     }

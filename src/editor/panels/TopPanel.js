@@ -187,7 +187,7 @@ class TopPanel {
         ? this.editor.configObj.curConfig.baseUnit
         : null
 
-    const isNode = currentMode === 'pathedit' // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
+    const isNode = currentMode === 'pathedit'
     const menuItems = document.getElementById('se-cmenu_canvas')
     this.hideTool('selected_panel')
     this.hideTool('multiselected_panel')
