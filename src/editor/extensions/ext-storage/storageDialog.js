@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import storageDialogHTML from './storageDialog.html'
 
 const template = document.createElement('template')
@@ -138,10 +139,8 @@ export class SeStorageDialog extends HTMLElement {
         })
       this.dispatchEvent(triggerEvent)
     }
-    this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'))
-    this.$okBtn.addEventListener('touchend', (evt) => onSubmitHandler(evt, 'ok'))
-    this.$cancelBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'cancel'))
-    this.$cancelBtn.addEventListener('touchend', (evt) => onSubmitHandler(evt, 'cancel'))
+    svgEditor.$click(this.$okBtn, (evt) => onSubmitHandler(evt, 'ok'))
+    svgEditor.$click(this.$cancelBtn, (evt) => onSubmitHandler(evt, 'cancel'))
   }
 
   /**

@@ -232,7 +232,7 @@ export class SESpinInput extends HTMLElement {
       this.value = e.target.value
       this.dispatchEvent(this.$event)
     })
-    this.$input.addEventListener('click', (e) => {
+    svgEditor.$click(this.$input, (e) => {
       e.preventDefault()
       this.value = e.target.value
       this.dispatchEvent(this.$event)

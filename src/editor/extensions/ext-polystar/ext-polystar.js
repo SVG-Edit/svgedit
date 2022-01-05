@@ -29,7 +29,7 @@ export default {
     const { svgCanvas } = svgEditor
     const { ChangeElementCommand } = svgCanvas.history
     const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
-    const { $id } = svgCanvas
+    const { $id, $click } = svgCanvas
     let selElems
     let started
     let newFO
@@ -90,14 +90,14 @@ export default {
           `
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 10)
         // handler
-        $id('tool_star').addEventListener('click', () => {
+        $click($id('tool_star'), () => {
           if (this.leftPanel.updateLeftPanel('tool_star')) {
             svgCanvas.setMode('star')
             showPanel(true, 'star')
             showPanel(false, 'polygon')
           }
         })
-        $id('tool_polygon').addEventListener('click', () => {
+        $click($id('tool_polygon'), () => {
           if (this.leftPanel.updateLeftPanel('tool_polygon')) {
             svgCanvas.setMode('polygon')
             showPanel(true, 'polygon')

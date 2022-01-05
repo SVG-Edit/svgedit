@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import cMenuDialogHTML from './cmenuDialog.html'
 const template = document.createElement('template')
 template.innerHTML = cMenuDialogHTML
@@ -228,17 +229,17 @@ export class SeCMenuDialog extends HTMLElement {
     }
     this._workarea.addEventListener('contextmenu', onMenuOpenHandler)
     this._workarea.addEventListener('mousedown', onMenuCloseHandler)
-    this.$cutLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'cut'))
-    this.$copyLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'copy'))
-    this.$pasteLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'paste'))
-    this.$pasteInPlaceLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'paste_in_place'))
-    this.$deleteLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'delete'))
-    this.$groupLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'group'))
-    this.$ungroupLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'ungroup'))
-    this.$moveFrontLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_front'))
-    this.$moveUpLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_up'))
-    this.$moveDownLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_down'))
-    this.$moveBackLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_back'))
+    svgEditor.$click(this.$cutLink, (evt) => onMenuClickHandler(evt, 'cut'))
+    svgEditor.$click(this.$copyLink, (evt) => onMenuClickHandler(evt, 'copy'))
+    svgEditor.$click(this.$pasteLink, (evt) => onMenuClickHandler(evt, 'paste'))
+    svgEditor.$click(this.$pasteInPlaceLink, (evt) => onMenuClickHandler(evt, 'paste_in_place'))
+    svgEditor.$click(this.$deleteLink, (evt) => onMenuClickHandler(evt, 'delete'))
+    svgEditor.$click(this.$groupLink, (evt) => onMenuClickHandler(evt, 'group'))
+    svgEditor.$click(this.$ungroupLink, (evt) => onMenuClickHandler(evt, 'ungroup'))
+    svgEditor.$click(this.$moveFrontLink, (evt) => onMenuClickHandler(evt, 'move_front'))
+    svgEditor.$click(this.$moveUpLink, (evt) => onMenuClickHandler(evt, 'move_up'))
+    svgEditor.$click(this.$moveDownLink, (evt) => onMenuClickHandler(evt, 'move_down'))
+    svgEditor.$click(this.$moveBackLink, (evt) => onMenuClickHandler(evt, 'move_back'))
   }
 }
 

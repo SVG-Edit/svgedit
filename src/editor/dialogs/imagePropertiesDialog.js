@@ -1,3 +1,5 @@
+
+/* globals svgEditor */
 import { isValidUnit } from '../../common/units.js'
 import imagePropertiesDialogHTML from './imagePropertiesDialog.html'
 
@@ -341,8 +343,8 @@ export class SeImgPropDialog extends HTMLElement {
       this.dispatchEvent(closeEvent)
     }
     this.$resolution.addEventListener('change', onChangeHandler)
-    this.$saveBtn.addEventListener('click', onSaveHandler)
-    this.$cancelBtn.addEventListener('click', onCancelHandler)
+    svgEditor.$click(this.$saveBtn, onSaveHandler)
+    svgEditor.$click(this.$cancelBtn, onCancelHandler)
     this.$dialog.addEventListener('close', onCancelHandler)
     this.eventlisten = true
   }

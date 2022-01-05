@@ -1,7 +1,7 @@
 import SvgCanvas from '../../svgcanvas/svgcanvas.js'
 import leftPanelHTML from './LeftPanel.html'
 
-const { $id, $qa } = SvgCanvas
+const { $id, $qa, $click } = SvgCanvas
 
 /*
  * register actions for left panel
@@ -186,7 +186,7 @@ class LeftPanel {
    * @type {module}
    */
   add (id, handler) {
-    $id(id).addEventListener('click', () => {
+    $click($id(id), () => {
       if (this.updateLeftPanel(id)) {
         handler()
       }
@@ -202,22 +202,22 @@ class LeftPanel {
     template.innerHTML = leftPanelHTML
     this.editor.$svgEditor.append(template.content.cloneNode(true))
     // register actions for left panel
-    $id('tool_select').addEventListener('click', this.clickSelect.bind(this))
-    $id('tool_fhpath').addEventListener('click', this.clickFHPath.bind(this))
-    $id('tool_text').addEventListener('click', this.clickText.bind(this))
-    $id('tool_image').addEventListener('click', this.clickImage.bind(this))
-    $id('tool_zoom').addEventListener('click', this.clickZoom.bind(this))
+    $click($id('tool_select'), this.clickSelect.bind(this))
+    $click($id('tool_fhpath'), this.clickFHPath.bind(this))
+    $click($id('tool_text'), this.clickText.bind(this))
+    $click($id('tool_image'), this.clickImage.bind(this))
+    $click($id('tool_zoom'), this.clickZoom.bind(this))
     $id('tool_zoom').addEventListener('dblclick', this.dblclickZoom.bind(this))
-    $id('tool_path').addEventListener('click', this.clickPath.bind(this))
-    $id('tool_line').addEventListener('click', this.clickLine.bind(this))
+    $click($id('tool_path'), this.clickPath.bind(this))
+    $click($id('tool_line'), this.clickLine.bind(this))
 
     // flyout
-    $id('tool_rect').addEventListener('click', this.clickRect.bind(this))
-    $id('tool_square').addEventListener('click', this.clickSquare.bind(this))
-    $id('tool_fhrect').addEventListener('click', this.clickFHRect.bind(this))
-    $id('tool_ellipse').addEventListener('click', this.clickEllipse.bind(this))
-    $id('tool_circle').addEventListener('click', this.clickCircle.bind(this))
-    $id('tool_fhellipse').addEventListener('click', this.clickFHEllipse.bind(this))
+    $click($id('tool_rect'), this.clickRect.bind(this))
+    $click($id('tool_square'), this.clickSquare.bind(this))
+    $click($id('tool_fhrect'), this.clickFHRect.bind(this))
+    $click($id('tool_ellipse'), this.clickEllipse.bind(this))
+    $click($id('tool_circle'), this.clickCircle.bind(this))
+    $click($id('tool_fhellipse'), this.clickFHEllipse.bind(this))
   }
 }
 

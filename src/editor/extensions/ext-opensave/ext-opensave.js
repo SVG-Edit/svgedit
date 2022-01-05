@@ -37,7 +37,7 @@ export default {
   async init (_S) {
     const svgEditor = this
     const { svgCanvas } = svgEditor
-    const { $id } = svgCanvas
+    const { $id, $click } = svgCanvas
     await loadExtensionTranslation(svgEditor)
     /**
     * @param {Event} e
@@ -250,11 +250,11 @@ export default {
         svgCanvas.insertChildAtIndex($id('main_button'), importButtonTemplate, 4)
 
         // handler
-        $id('tool_clear').addEventListener('click', clickClear.bind(this))
-        $id('tool_open').addEventListener('click', clickOpen.bind(this))
-        $id('tool_save').addEventListener('click', clickSave.bind(this, 'save'))
-        $id('tool_save_as').addEventListener('click', clickSave.bind(this, 'saveas'))
-        $id('tool_import').addEventListener('click', () => imgImport.click())
+        $click($id('tool_clear'), clickClear.bind(this))
+        $click($id('tool_open'), clickOpen.bind(this))
+        $click($id('tool_save'), clickSave.bind(this, 'save'))
+        $click($id('tool_save_as'), clickSave.bind(this, 'saveas'))
+        $click($id('tool_import'), () => imgImport.click())
       }
     }
   }

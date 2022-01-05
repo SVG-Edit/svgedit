@@ -45,7 +45,7 @@ import {
   getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, init as utilsInit,
   getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, blankPageObjectURL,
-  $id, $qa, $qq, getFeGaussianBlur, stringToHTML, insertChildAtIndex
+  $id, $qa, $qq, $click, getFeGaussianBlur, stringToHTML, insertChildAtIndex
 } from './utilities.js'
 import {
   matrixMultiply, hasMatrixTransform, transformListToTransform
@@ -243,7 +243,7 @@ class SvgCanvas {
     }
     container.addEventListener('mousedown', this.mouseDownEvent)
     container.addEventListener('mousemove', this.mouseMoveEvent)
-    container.addEventListener('click', handleLinkInCanvas)
+    $click(container, handleLinkInCanvas)
     container.addEventListener('dblclick', this.dblClickEvent)
     container.addEventListener('mouseup', this.mouseUpEvent)
     container.addEventListener('mouseleave', this.mouseOutEvent)
@@ -947,6 +947,7 @@ class SvgCanvas {
     this.$id = $id
     this.$qq = $qq
     this.$qa = $qa
+    this.$click = $click
   }
 } // End class
 
@@ -955,6 +956,7 @@ class SvgCanvas {
 SvgCanvas.$id = $id
 SvgCanvas.$qq = $qq
 SvgCanvas.$qa = $qa
+SvgCanvas.$click = $click
 SvgCanvas.encode64 = encode64
 SvgCanvas.decode64 = decode64
 SvgCanvas.mergeDeep = mergeDeep
