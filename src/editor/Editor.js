@@ -29,7 +29,7 @@ import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
 import { getParentsUntil } from './components/jgraduate/Util.js'
 
-const { $id, $qa, decode64, blankPageObjectURL } = SvgCanvas
+const { $id, $qa, $click, decode64, blankPageObjectURL } = SvgCanvas
 
 /**
  *
@@ -55,6 +55,7 @@ class Editor extends EditorStartup {
     this.storagePromptState = 'ignore'
 
     this.svgCanvas = null
+    this.$click = $click
     this.isReady = false
     this.customExportImage = false
     this.customExportPDF = false
