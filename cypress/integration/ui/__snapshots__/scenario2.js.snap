@@ -31,7 +31,6 @@ exports[`use all parts of svg-edit > check tool_circle #0`] = `
         opacity="0.5"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       >
         <animate
           attributeName="opacity"
@@ -63,7 +62,6 @@ exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -74,7 +72,6 @@ exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       >
         <animate
           attributeName="opacity"
@@ -106,7 +103,6 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -116,7 +112,6 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
       <ellipse
         cx="114"
@@ -127,7 +122,6 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
       >
         <animate
           attributeName="opacity"
@@ -159,7 +153,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -169,7 +162,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
       <ellipse
         cx="114"
@@ -179,7 +171,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
     </g>
@@ -204,7 +195,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -215,7 +205,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
       <ellipse
         cx="114"
@@ -225,7 +214,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
     </g>
@@ -250,7 +238,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -261,7 +248,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
       <ellipse
@@ -272,7 +258,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
         transform="rotate(25 114 189)"
       ></ellipse>
     </g>
@@ -297,7 +282,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_blur #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -308,7 +292,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_blur #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
       <ellipse
@@ -320,7 +303,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_blur #0`] = `
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
         transform="rotate(25 114 189)"
       ></ellipse>
     </g>
@@ -350,7 +332,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_cx_cy_coordinate 
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -361,7 +342,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_cx_cy_coordinate 
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
       <ellipse
@@ -373,7 +353,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_cx_cy_coordinate 
         rx="55"
         ry="25"
         stroke="#000000"
-        stroke-width="5"
         transform="rotate(25 139 214)"
       ></ellipse>
     </g>
@@ -403,7 +382,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rx_ry_radius #0`]
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="299"
@@ -414,7 +392,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rx_ry_radius #0`]
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0)"
       ></ellipse>
       <ellipse
@@ -426,7 +403,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rx_ry_radius #0`]
         rx="80"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="rotate(25 139 214)"
       ></ellipse>
     </g>
@@ -458,7 +434,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_back #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
       <circle
         cx="150"
@@ -467,7 +442,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_back #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="139"
@@ -478,7 +452,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_back #0`] = `
         rx="80"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
       ></ellipse>
     </g>
@@ -508,7 +481,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_front #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="139"
@@ -519,7 +491,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_front #0`] = `
         rx="80"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
       ></ellipse>
       <ellipse
@@ -531,7 +502,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_front #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
     </g>
     <defs>
@@ -560,7 +530,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
         id="svg_1"
         r="111.8034"
         stroke="#000000"
-        stroke-width="5"
       ></circle>
       <ellipse
         cx="139"
@@ -571,7 +540,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
         rx="80"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
         transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
       ></ellipse>
       <ellipse
@@ -583,7 +551,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
       <ellipse
         cx="319"
@@ -594,7 +561,6 @@ exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
         rx="60"
         ry="50"
         stroke="#000000"
-        stroke-width="5"
       ></ellipse>
     </g>
     <defs>

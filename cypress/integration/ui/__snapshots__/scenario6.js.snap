@@ -35,8 +35,6 @@ exports[`use all parts of svg-edit > check tool_polygon #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       >
         <animate
           attributeName="opacity"
@@ -73,8 +71,6 @@ exports[`use all parts of svg-edit > check tool_polygon_clone #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
       <polygon
         cx="325"
@@ -88,8 +84,6 @@ exports[`use all parts of svg-edit > check tool_polygon_clone #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
@@ -118,8 +112,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
       <polygon
         class="svg_2_class"
@@ -134,8 +126,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
         transform="rotate(25 350.145 270)"
       ></polygon>
     </g>
@@ -165,8 +155,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_blur #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
       <polygon
         class="svg_2_class"
@@ -182,8 +170,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_blur #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
         transform="rotate(25 350.145 270)"
       ></polygon>
     </g>
@@ -218,8 +204,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_opacity #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
       <polygon
         class="svg_2_class"
@@ -236,8 +220,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_opacity #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
         transform="rotate(25 350.145 270)"
       ></polygon>
     </g>
@@ -275,8 +257,6 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_back #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
         transform="rotate(25 350.145 270)"
       ></polygon>
       <polygon
@@ -291,8 +271,6 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_back #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
     <defs>
@@ -326,8 +304,6 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_front #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
       <polygon
         class="svg_2_class"
@@ -344,8 +320,6 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_front #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
         transform="rotate(25 350.145 270)"
       ></polygon>
     </g>
@@ -380,8 +354,6 @@ exports[`use all parts of svg-edit > check tool_polygon_delete #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
@@ -410,8 +382,6 @@ exports[`use all parts of svg-edit > check tool_polygon_align_to_page #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
@@ -440,8 +410,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_stroke_width #0`]
         sides="5"
         stroke="#000000"
         stroke-width="15"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
@@ -470,8 +438,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_stoke_fill_color 
         sides="5"
         stroke="#0000bf"
         stroke-width="15"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
@@ -500,8 +466,6 @@ exports[`use all parts of svg-edit > check tool_polygon_change_sides #0`] = `
         sides="6"
         stroke="#0000bf"
         stroke-width="15"
-        strokewidth="5"
-        strokecolor="#000000"
       ></polygon>
     </g>
   </svg>
