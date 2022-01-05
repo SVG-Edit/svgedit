@@ -191,7 +191,6 @@ exports[`use all parts of svg-edit > check tool_star_change_blur #0`] = `
         starradiusmultiplier="3"
         stroke="#000000"
         stroke-width="5"
-        strokecolor="#000000"
         transform="rotate(25 320 163.634)"
       ></polygon>
     </g>
