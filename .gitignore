@@ -9,7 +9,6 @@ coverage
 instrumented
 .nyc_output
 .vscode
-.eslintcache
 .DS_Store
 .idea
 dist

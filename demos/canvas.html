@@ -16,21 +16,25 @@
     <div>
       [<button onclick="canvas.setMode('select')">Select</button>
       <button onclick="canvas.setMode('circle')">Circle</button>
-      <button onclick="canvas.setMode('rect')">Rect</button>]
+      <button onclick="canvas.setMode('rect')">Rect</button>
+      <button onclick="canvas.setMode('text')">Text</button>]
       <button onclick="fill('#ff0000')">Fill Red</button>
       <button onclick="canvas.deleteSelectedElements()">Delete Selected</button>
       <button onclick="canvas.clear(); canvas.updateCanvas(width, height);">Clear All</button>
       <button onclick="alert(canvas.getSvgString())">Get SVG</button>
     </div>
-
+    <!-- Not visible, but useful -->
+    <input id="text" style="width:0;height:0;opacity: 0"/>
     <script type="module">
 /* globals canvas */
-import SvgCanvas from '../src/svgcanvas/svgcanvas.js';
+import SvgCanvas from '../src/svgcanvas/svgcanvas.js'
 
-const container = document.querySelector('#editorContainer');
-const { width, height } = { width: 500, height: 300 };
-window.width = width;
-window.height = height;
+const container = document.querySelector('#editorContainer')
+const { width, height } = { width: 500, height: 300 }
+window.width = width
+window.height = height
+
+const hiddenTextTagId = 'text'
 
 const config = {
   initFill: { color: 'FFFFFF', opacity: 1 },
@@ -40,16 +44,27 @@ const config = {
   imgPath: '../src/editor/images',
   dimensions: [ width, height ],
   baseUnit: 'px'
-};
+}
 
-window.canvas = new SvgCanvas(container, config);
-canvas.updateCanvas(width, height);
+window.canvas = new SvgCanvas(container, config)
+canvas.updateCanvas(width, height)
 
 window.fill = function (colour) {
-  canvas.getSelectedElems().forEach((el) => {
-    el.setAttribute('fill', colour);
-  });
-};
+  canvas.getSelectedElements().forEach((el) => {
+    el.setAttribute('fill', colour)
+  })
+}
+
+const hiddenTextTag = window.canvas.$id(hiddenTextTagId)
+window.canvas.textActions.setInputElem(hiddenTextTag)
+
+const addListenerMulti = (element, eventNames, listener) => {
+  eventNames.split(' ').forEach((eventName) => element.addEventListener(eventName, listener, false))
+}
+
+addListenerMulti(hiddenTextTag, 'keyup input', (evt) => {
+  window.canvas.setTextContent(evt.currentTarget.value)
+})
     </script>
   </body>
 </html>

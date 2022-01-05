@@ -1,17 +1,17 @@
-import { NS } from '../../../instrumented/common/namespaces.js';
-import * as sanitize from '../../../instrumented/svgcanvas/sanitize.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
+import * as sanitize from '../../../instrumented/svgcanvas/sanitize.js'
 
 describe('sanitize', function () {
-  const svg = document.createElementNS(NS.SVG, 'svg');
+  const svg = document.createElementNS(NS.SVG, 'svg')
 
   it('Test sanitizeSvg() strips ws from style attr', function () {
-    const rect = document.createElementNS(NS.SVG, 'rect');
-    rect.setAttribute('style', 'stroke: blue ;\t\tstroke-width :\t\t40;');
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('style', 'stroke: blue ;\t\tstroke-width :\t\t40;')
     // sanitizeSvg() requires the node to have a parent and a document.
-    svg.append(rect);
-    sanitize.sanitizeSvg(rect);
+    svg.append(rect)
+    sanitize.sanitizeSvg(rect)
 
-    assert.equal(rect.getAttribute('stroke'), 'blue');
-    assert.equal(rect.getAttribute('stroke-width'), '40');
-  });
-});
+    assert.equal(rect.getAttribute('stroke'), 'blue')
+    assert.equal(rect.getAttribute('stroke-width'), '40')
+  })
+})

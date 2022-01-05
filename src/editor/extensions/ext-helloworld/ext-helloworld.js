@@ -13,45 +13,40 @@
 *  will show the user the point on the canvas that was clicked on.
 */
 
-const name = "helloworld";
+const name = 'helloworld'
 
 const loadExtensionTranslation = async function (svgEditor) {
-  let translationModule;
-  const lang = svgEditor.configObj.pref('lang');
+  let translationModule
+  const lang = svgEditor.configObj.pref('lang')
   try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${lang}.js`);
+    translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/en.js`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
+    translationModule = await import('./locale/en.js')
   }
-  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
-};
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
+}
 
 export default {
   name,
   async init ({ _importLocale }) {
-    const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
-    await loadExtensionTranslation(svgEditor);
-    const { svgCanvas } = svgEditor;
-    const { $id } = svgCanvas;
+    const svgEditor = this
+    await loadExtensionTranslation(svgEditor)
+    const { svgCanvas } = svgEditor
+    const { $id } = svgCanvas
     return {
       name: svgEditor.i18next.t(`${name}:name`),
-      callback() {
+      callback () {
         // Add the button and its handler(s)
-        const buttonTemplate = document.createElement("template");
-        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
-        // eslint-disable-next-line no-unsanitized/property
+        const buttonTemplate = document.createElement('template')
+        const title = `${name}:buttons.0.title`
         buttonTemplate.innerHTML = `
-        <se-button id="hello_world" title="${title}" src="${imgPath}/hello_world.svg"></se-button>
-        `;
-        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
-        $id('hello_world').addEventListener("click", () => {
-          svgCanvas.setMode('hello_world');
-        });
+        <se-button id="hello_world" title="${title}" src="hello_world.svg"></se-button>
+        `
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true))
+        $id('hello_world').addEventListener('click', () => {
+          svgCanvas.setMode('hello_world')
+        })
       },
       // This is triggered when the main mouse button is pressed down
       // on the editor canvas (not the tool panels)
@@ -60,9 +55,9 @@ export default {
         if (svgCanvas.getMode() === 'hello_world') {
           // The returned object must include "started" with
           // a value of true in order for mouseUp to be triggered
-          return { started: true };
+          return { started: true }
         }
-        return undefined;
+        return undefined
       },
 
       // This is triggered from anywhere, but "started" must have been set
@@ -70,18 +65,18 @@ export default {
       mouseUp (opts) {
         // Check the mode on mouseup
         if (svgCanvas.getMode() === 'hello_world') {
-          const zoom = svgCanvas.getZoom();
+          const zoom = svgCanvas.getZoom()
 
           // Get the actual coordinate by dividing by the zoom value
-          const x = opts.mouse_x / zoom;
-          const y = opts.mouse_y / zoom;
+          const x = opts.mouse_x / zoom
+          const y = opts.mouse_y / zoom
 
           // We do our own formatting
-          const text = svgEditor.i18next.t(`${name}:text`, { x, y });
+          const text = svgEditor.i18next.t(`${name}:text`, { x, y })
           // Show the text using the custom alert function
-          alert(text);
+          alert(text)
         }
       }
-    };
+    }
   }
-};
+}

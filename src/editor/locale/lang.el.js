@@ -69,9 +69,13 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Αλλαγή περιεχόμενο κειμένου',
+    font_family_label: 'Font:',
     font_family: 'Αλλαγή γραμματοσειράς Οικογένεια',
     font_size: 'Αλλαγή μεγέθους γραμματοσειράς',
     bold: 'Bold Text',
+    text_decoration_underline: 'Underline',
+    text_decoration_linethrough: 'Line-Through',
+    text_decoration_overline: 'Overline',
     italic: 'Πλάγιους',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
@@ -205,7 +209,7 @@ export default {
     snapping_onoff: 'Snapping on/off',
     snapping_stepsize: 'Snapping Step-Size:',
     grid_color: 'Grid color',
-    done: "Done",
+    done: 'Done',
     change_xxx_color: 'Change xxx color',
     pick_paint_opavity: 'Pick a {{newValue}} Paint and Opacity',
     open_color_picker: 'Click To Open Color Picker',
@@ -290,4 +294,4 @@ export default {
     editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
     source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
-};
+}

@@ -8,4 +8,4 @@ export default {
   storageNoPrefs: '本地不保存配置参数',
   rememberLabel: '记住选择?',
   rememberTooltip: '如果您勾选记住选择，将不再弹出本窗口.'
-};
+}

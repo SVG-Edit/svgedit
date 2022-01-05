@@ -5,11 +5,11 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import { getElem, assignAttributes, cleanupElement } from './utilities.js';
-import { NS } from '../common/namespaces.js';
+import { getElement, assignAttributes, cleanupElement } from './utilities.js'
+import { NS } from './namespaces.js'
 
-let jsonContext_ = null;
-let svgdoc_ = null;
+let svgCanvas = null
+let svgdoc_ = null
 
 /**
  * @function module:json.jsonContext#getSelectedElements
@@ -25,10 +25,10 @@ let svgdoc_ = null;
 * @param {module:json.jsonContext} jsonContext
 * @returns {void}
 */
-export const init = function (jsonContext) {
-  jsonContext_ = jsonContext;
-  svgdoc_ = jsonContext.getDOMDocument();
-};
+export const init = (canvas) => {
+  svgCanvas = canvas
+  svgdoc_ = canvas.getDOMDocument()
+}
 /**
 * @function module:json.getJsonFromSvgElements Iterate element and return json format
 * @param {ArgumentsArray} data - element
@@ -36,57 +36,57 @@ export const init = function (jsonContext) {
 */
 export const getJsonFromSvgElements = (data) => {
   // Text node
-  if (data.nodeType === 3) return data.nodeValue;
+  if (data.nodeType === 3) return data.nodeValue
 
   const retval = {
     element: data.tagName,
     // namespace: nsMap[data.namespaceURI],
     attr: {},
     children: []
-  };
+  }
 
   // Iterate attributes
   for (let i = 0, attr; (attr = data.attributes[i]); i++) {
-    retval.attr[attr.name] = attr.value;
+    retval.attr[attr.name] = attr.value
   }
 
   // Iterate children
   for (let i = 0, node; (node = data.childNodes[i]); i++) {
-    retval.children[i] = getJsonFromSvgElements(node);
+    retval.children[i] = getJsonFromSvgElements(node)
   }
 
-  return retval;
-};
+  return retval
+}
 
 /**
 * This should really be an intersection implementing all rather than a union.
 * @name module:json.addSVGElementsFromJson
-* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementFromJson}
+* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementsFromJson}
 */
 
-export const addSVGElementsFromJson = function (data) {
-  if (typeof data === 'string') return svgdoc_.createTextNode(data);
+export const addSVGElementsFromJson = (data) => {
+  if (typeof data === 'string') return svgdoc_.createTextNode(data)
 
-  let shape = getElem(data.attr.id);
+  let shape = getElement(data.attr.id)
   // if shape is a path but we need to create a rect/ellipse, then remove the path
-  const currentLayer = jsonContext_.getDrawing().getCurrentLayer();
+  const currentLayer = svgCanvas.getDrawing().getCurrentLayer()
   if (shape && data.element !== shape.tagName) {
-    shape.remove();
-    shape = null;
+    shape.remove()
+    shape = null
   }
   if (!shape) {
-    const ns = data.namespace || NS.SVG;
-    shape = svgdoc_.createElementNS(ns, data.element);
+    const ns = data.namespace || NS.SVG
+    shape = svgdoc_.createElementNS(ns, data.element)
     if (currentLayer) {
-      (jsonContext_.getCurrentGroup() || currentLayer).append(shape);
+      (svgCanvas.getCurrentGroup() || currentLayer).append(shape)
     }
   }
-  const curShape = jsonContext_.getCurShape();
+  const curShape = svgCanvas.getCurShape()
   if (data.curStyles) {
     assignAttributes(shape, {
       fill: curShape.fill,
       stroke: curShape.stroke,
-      'stroke-width': curShape.stroke_width,
+      'stroke-width': curShape.strokeWidth,
       'stroke-dasharray': curShape.stroke_dasharray,
       'stroke-linejoin': curShape.stroke_linejoin,
       'stroke-linecap': curShape.stroke_linecap,
@@ -94,17 +94,17 @@ export const addSVGElementsFromJson = function (data) {
       'fill-opacity': curShape.fill_opacity,
       opacity: curShape.opacity / 2,
       style: 'pointer-events:inherit'
-    }, 100);
+    }, 100)
   }
-  assignAttributes(shape, data.attr, 100);
-  cleanupElement(shape);
+  assignAttributes(shape, data.attr, 100)
+  cleanupElement(shape)
 
   // Children
   if (data.children) {
     data.children.forEach((child) => {
-      shape.append(addSVGElementsFromJson(child));
-    });
+      shape.append(addSVGElementsFromJson(child))
+    })
   }
 
-  return shape;
-};
+  return shape
+}

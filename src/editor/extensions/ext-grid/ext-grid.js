@@ -7,43 +7,39 @@
  *
  */
 
-const name = "grid";
+const name = 'grid'
 
 const loadExtensionTranslation = async function (svgEditor) {
-  let translationModule;
-  const lang = svgEditor.configObj.pref('lang');
+  let translationModule
+  const lang = svgEditor.configObj.pref('lang')
   try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${lang}.js`);
+    translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/en.js`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
+    translationModule = await import('./locale/en.js')
   }
-  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
-};
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
+}
 
 export default {
   name,
-  async init ({ NS, getTypeMap }) {
-    const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
-    await loadExtensionTranslation(svgEditor);
-    const { svgCanvas } = svgEditor;
-    const { $id } = svgCanvas;
-    const svgdoc = $id('svgcanvas').ownerDocument;
-    const { assignAttributes } = svgCanvas;
-    const hcanvas = document.createElement('canvas');
-    const canvBG = $id('canvasBackground');
-    const units = getTypeMap(); // Assumes prior `init()` call on `units.js` module
-    const intervals = [ 0.01, 0.1, 1, 10, 100, 1000 ];
-    let showGrid = svgEditor.configObj.curConfig.showGrid || false;
+  async init () {
+    const svgEditor = this
+    await loadExtensionTranslation(svgEditor)
+    const { svgCanvas } = svgEditor
+    const { $id, NS } = svgCanvas
+    const svgdoc = $id('svgcanvas').ownerDocument
+    const { assignAttributes } = svgCanvas
+    const hcanvas = document.createElement('canvas')
+    const canvBG = $id('canvasBackground')
+    const units = svgCanvas.getTypeMap() // Assumes prior `init()` call on `units.js` module
+    const intervals = [0.01, 0.1, 1, 10, 100, 1000]
+    let showGrid = svgEditor.configObj.curConfig.showGrid || false
 
-    hcanvas.style.display = 'none';
-    svgEditor.$svgEditor.appendChild(hcanvas);
+    hcanvas.style.display = 'none'
+    svgEditor.$svgEditor.appendChild(hcanvas)
 
-    const canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg');
+    const canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg')
     assignAttributes(canvasGrid, {
       id: 'canvasGrid',
       width: '100%',
@@ -52,11 +48,11 @@ export default {
       y: 0,
       overflow: 'visible',
       display: 'none'
-    });
-    canvBG.appendChild(canvasGrid);
-    const gridDefs = svgdoc.createElementNS(NS.SVG, 'defs');
+    })
+    canvBG.appendChild(canvasGrid)
+    const gridDefs = svgdoc.createElementNS(NS.SVG, 'defs')
     // grid-pattern
-    const gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
+    const gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern')
     assignAttributes(gridPattern, {
       id: 'gridpattern',
       patternUnits: 'userSpaceOnUse',
@@ -64,21 +60,21 @@ export default {
       y: 0, // -(value.strokeWidth / 2), // position for strokewidth
       width: 100,
       height: 100
-    });
+    })
 
-    const gridimg = svgdoc.createElementNS(NS.SVG, 'image');
+    const gridimg = svgdoc.createElementNS(NS.SVG, 'image')
     assignAttributes(gridimg, {
       x: 0,
       y: 0,
       width: 100,
       height: 100
-    });
-    gridPattern.append(gridimg);
-    gridDefs.append(gridPattern);
-    $id('canvasGrid').appendChild(gridDefs);
+    })
+    gridPattern.append(gridimg)
+    gridDefs.append(gridPattern)
+    $id('canvasGrid').appendChild(gridDefs)
 
     // grid-box
-    const gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
+    const gridBox = svgdoc.createElementNS(NS.SVG, 'rect')
     assignAttributes(gridBox, {
       width: '100%',
       height: '100%',
@@ -88,8 +84,8 @@ export default {
       stroke: 'none',
       fill: 'url(#gridpattern)',
       style: 'pointer-events: none; display:visible;'
-    });
-    $id('canvasGrid').appendChild(gridBox);
+    })
+    $id('canvasGrid').appendChild(gridBox)
 
     /**
      *
@@ -98,52 +94,52 @@ export default {
      */
     const updateGrid = (zoom) => {
       // TODO: Try this with <line> elements, then compare performance difference
-      const unit = units[svgEditor.configObj.curConfig.baseUnit]; // 1 = 1px
-      const uMulti = unit * zoom;
+      const unit = units[svgEditor.configObj.curConfig.baseUnit] // 1 = 1px
+      const uMulti = unit * zoom
       // Calculate the main number interval
-      const rawM = 100 / uMulti;
-      let multi = 1;
+      const rawM = 100 / uMulti
+      let multi = 1
       intervals.some((num) => {
-        multi = num;
-        return rawM <= num;
-      });
-      const bigInt = multi * uMulti;
+        multi = num
+        return rawM <= num
+      })
+      const bigInt = multi * uMulti
 
       // Set the canvas size to the width of the container
-      hcanvas.width = bigInt;
-      hcanvas.height = bigInt;
-      const ctx = hcanvas.getContext('2d');
-      const curD = 0.5;
-      const part = bigInt / 10;
+      hcanvas.width = bigInt
+      hcanvas.height = bigInt
+      const ctx = hcanvas.getContext('2d')
+      const curD = 0.5
+      const part = bigInt / 10
 
-      ctx.globalAlpha = 0.2;
-      ctx.strokeStyle = svgEditor.configObj.curConfig.gridColor;
+      ctx.globalAlpha = 0.2
+      ctx.strokeStyle = svgEditor.configObj.curConfig.gridColor
       for (let i = 1; i < 10; i++) {
-        const subD = Math.round(part * i) + 0.5;
+        const subD = Math.round(part * i) + 0.5
         // const lineNum = (i % 2)?12:10;
-        const lineNum = 0;
-        ctx.moveTo(subD, bigInt);
-        ctx.lineTo(subD, lineNum);
-        ctx.moveTo(bigInt, subD);
-        ctx.lineTo(lineNum, subD);
+        const lineNum = 0
+        ctx.moveTo(subD, bigInt)
+        ctx.lineTo(subD, lineNum)
+        ctx.moveTo(bigInt, subD)
+        ctx.lineTo(lineNum, subD)
       }
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.globalAlpha = 0.5;
-      ctx.moveTo(curD, bigInt);
-      ctx.lineTo(curD, 0);
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.globalAlpha = 0.5
+      ctx.moveTo(curD, bigInt)
+      ctx.lineTo(curD, 0)
 
-      ctx.moveTo(bigInt, curD);
-      ctx.lineTo(0, curD);
-      ctx.stroke();
+      ctx.moveTo(bigInt, curD)
+      ctx.lineTo(0, curD)
+      ctx.stroke()
 
-      const datauri = hcanvas.toDataURL('image/png');
-      gridimg.setAttribute('width', bigInt);
-      gridimg.setAttribute('height', bigInt);
-      gridimg.parentNode.setAttribute('width', bigInt);
-      gridimg.parentNode.setAttribute('height', bigInt);
-      svgCanvas.setHref(gridimg, datauri);
-    };
+      const datauri = hcanvas.toDataURL('image/png')
+      gridimg.setAttribute('width', bigInt)
+      gridimg.setAttribute('height', bigInt)
+      gridimg.parentNode.setAttribute('width', bigInt)
+      gridimg.parentNode.setAttribute('height', bigInt)
+      svgCanvas.setHref(gridimg, datauri)
+    }
 
     /**
      *
@@ -151,34 +147,32 @@ export default {
      */
     const gridUpdate = () => {
       if (showGrid) {
-        updateGrid(svgCanvas.getZoom());
+        updateGrid(svgCanvas.getZoom())
       }
-      $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none';
-      $id('view_grid').pressed = showGrid;
-    };
+      $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none'
+      $id('view_grid').pressed = showGrid
+    }
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       zoomChanged (zoom) {
-        if (showGrid) { updateGrid(zoom); }
+        if (showGrid) { updateGrid(zoom) }
       },
       callback () {
         // Add the button and its handler(s)
-        const buttonTemplate = document.createElement("template");
-        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
-
-        // eslint-disable-next-line no-unsanitized/property
+        const buttonTemplate = document.createElement('template')
+        const title = `${name}:buttons.0.title`
         buttonTemplate.innerHTML = `
-          <se-button id="view_grid" title="${title}" src="${imgPath}/grid.svg"></se-button>
-        `;
-        $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
-        $id('view_grid').addEventListener("click", () => {
-          svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
-          gridUpdate();
-        });
+          <se-button id="view_grid" title="${title}" src="grid.svg"></se-button>
+        `
+        $id('editor_panel').append(buttonTemplate.content.cloneNode(true))
+        $id('view_grid').addEventListener('click', () => {
+          svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid
+          gridUpdate()
+        })
         if (showGrid) {
-          gridUpdate();
+          gridUpdate()
         }
       }
-    };
+    }
   }
-};
+}

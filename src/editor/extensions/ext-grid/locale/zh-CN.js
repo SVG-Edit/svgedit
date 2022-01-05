@@ -5,4 +5,4 @@ export default {
       title: '显示/隐藏网格'
     }
   ]
-};
+}

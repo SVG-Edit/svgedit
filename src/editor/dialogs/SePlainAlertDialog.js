@@ -1,6 +1,6 @@
-import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js';
-import { template } from 'elix/src/base/internal.js';
-import { fragmentFrom } from 'elix/src/core/htmlLiterals.js';
+import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js'
+import { template } from 'elix/src/base/internal.js'
+import { fragmentFrom } from 'elix/src/core/htmlLiterals.js'
 
 /**
  * @class SePlainAlertDialog
@@ -11,9 +11,9 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
     * @returns {PlainObject}
   */
   get [template] () {
-    const result = super[template];
+    const result = super[template]
     // Replace the default slot with a new default slot and a button container.
-    const defaultSlot = result.content.querySelector('#frameContent');
+    const defaultSlot = result.content.querySelector('#frameContent')
     if (defaultSlot) {
       defaultSlot.replaceWith(fragmentFrom.html`
         <div id="alertDialogContent">
@@ -22,7 +22,7 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
           </div>
           <div id="choiceButtonContainer" part="choice-button-container"></div>
         </div>
-      `);
+      `)
     }
     result.content.append(
       fragmentFrom.html`
@@ -60,9 +60,9 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
           }
         </style>
       `
-    );
-    return result;
+    )
+    return result
   }
 }
 
-customElements.define('se-elix-alert-dialog', SePlainAlertDialog);
+customElements.define('se-elix-alert-dialog', SePlainAlertDialog)

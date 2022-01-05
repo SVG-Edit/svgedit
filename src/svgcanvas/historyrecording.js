@@ -8,7 +8,7 @@
 import {
   BatchCommand, MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand
-} from './history.js';
+} from './history.js'
 
 /**
  * History recording service.
@@ -49,9 +49,9 @@ class HistoryRecordingService {
   *     See singleton: {@link module:history.HistoryRecordingService.HistoryRecordingService.NO_HISTORY}
   */
   constructor (undoManager) {
-    this.undoManager_ = undoManager;
-    this.currentBatchCommand_ = null;
-    this.batchCommandStack_ = [];
+    this.undoManager_ = undoManager
+    this.currentBatchCommand_ = null
+    this.batchCommandStack_ = []
   }
 
   /**
@@ -62,10 +62,10 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   startBatchCommand (text) {
-    if (!this.undoManager_) { return this; }
-    this.currentBatchCommand_ = new BatchCommand(text);
-    this.batchCommandStack_.push(this.currentBatchCommand_);
-    return this;
+    if (!this.undoManager_) { return this }
+    this.currentBatchCommand_ = new BatchCommand(text)
+    this.batchCommandStack_.push(this.currentBatchCommand_)
+    return this
   }
 
   /**
@@ -73,15 +73,15 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   endBatchCommand () {
-    if (!this.undoManager_) { return this; }
+    if (!this.undoManager_) { return this }
     if (this.currentBatchCommand_) {
-      const batchCommand = this.currentBatchCommand_;
-      this.batchCommandStack_.pop();
-      const { length: len } = this.batchCommandStack_;
-      this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null;
-      this.addCommand_(batchCommand);
+      const batchCommand = this.currentBatchCommand_
+      this.batchCommandStack_.pop()
+      const { length: len } = this.batchCommandStack_
+      this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null
+      this.addCommand_(batchCommand)
     }
-    return this;
+    return this
   }
 
   /**
@@ -93,9 +93,9 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   moveElement (elem, oldNextSibling, oldParent, text) {
-    if (!this.undoManager_) { return this; }
-    this.addCommand_(new MoveElementCommand(elem, oldNextSibling, oldParent, text));
-    return this;
+    if (!this.undoManager_) { return this }
+    this.addCommand_(new MoveElementCommand(elem, oldNextSibling, oldParent, text))
+    return this
   }
 
   /**
@@ -105,9 +105,9 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   insertElement (elem, text) {
-    if (!this.undoManager_) { return this; }
-    this.addCommand_(new InsertElementCommand(elem, text));
-    return this;
+    if (!this.undoManager_) { return this }
+    this.addCommand_(new InsertElementCommand(elem, text))
+    return this
   }
 
   /**
@@ -119,9 +119,9 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   removeElement (elem, oldNextSibling, oldParent, text) {
-    if (!this.undoManager_) { return this; }
-    this.addCommand_(new RemoveElementCommand(elem, oldNextSibling, oldParent, text));
-    return this;
+    if (!this.undoManager_) { return this }
+    this.addCommand_(new RemoveElementCommand(elem, oldNextSibling, oldParent, text))
+    return this
   }
 
   /**
@@ -132,9 +132,9 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService}
    */
   changeElement (elem, attrs, text) {
-    if (!this.undoManager_) { return this; }
-    this.addCommand_(new ChangeElementCommand(elem, attrs, text));
-    return this;
+    if (!this.undoManager_) { return this }
+    this.addCommand_(new ChangeElementCommand(elem, attrs, text))
+    return this
   }
 
   /**
@@ -144,18 +144,18 @@ class HistoryRecordingService {
    * @returns {module:history.HistoryRecordingService|void}
    */
   addCommand_ (cmd) {
-    if (!this.undoManager_) { return this; }
+    if (!this.undoManager_) { return this }
     if (this.currentBatchCommand_) {
-      this.currentBatchCommand_.addSubCommand(cmd);
+      this.currentBatchCommand_.addSubCommand(cmd)
     } else {
-      this.undoManager_.addCommandToHistory(cmd);
+      this.undoManager_.addCommandToHistory(cmd)
     }
-    return undefined;
+    return undefined
   }
 }
 /**
  * @memberof module:history.HistoryRecordingService
  * @property {module:history.HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
  */
-HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
-export default HistoryRecordingService;
+HistoryRecordingService.NO_HISTORY = new HistoryRecordingService()
+export default HistoryRecordingService

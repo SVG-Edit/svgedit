@@ -6,9 +6,8 @@
  * @copyright 2011 Jeff Schiller, 2016 Flint O'Brien
  */
 
-import { NS } from '../common/namespaces.js';
-import { toXml, walkTree, isNullish } from './utilities.js';
-
+import { NS } from './namespaces.js'
+import { toXml, walkTree } from './utilities.js'
 
 /**
  * This class encapsulates the concept of a layer in the drawing. It can be constructed with
@@ -31,29 +30,29 @@ class Layer {
   *     a new layer to the document.
   */
   constructor (name, group, svgElem) {
-    this.name_ = name;
-    this.group_ = svgElem ? null : group;
+    this.name_ = name
+    this.group_ = svgElem ? null : group
 
     if (svgElem) {
       // Create a group element with title and add it to the DOM.
-      const svgdoc = svgElem.ownerDocument;
-      this.group_ = svgdoc.createElementNS(NS.SVG, 'g');
-      const layerTitle = svgdoc.createElementNS(NS.SVG, 'title');
-      layerTitle.textContent = name;
-      this.group_.append(layerTitle);
+      const svgdoc = svgElem.ownerDocument
+      this.group_ = svgdoc.createElementNS(NS.SVG, 'g')
+      const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
+      layerTitle.textContent = name
+      this.group_.append(layerTitle)
       if (group) {
-        group.insertAdjacentElement('afterend', this.group_);
+        group.insertAdjacentElement('afterend', this.group_)
       } else {
-        svgElem.append(this.group_);
+        svgElem.append(this.group_)
       }
     }
 
-    addLayerClass(this.group_);
+    addLayerClass(this.group_)
     walkTree(this.group_, function (e) {
-      e.setAttribute('style', 'pointer-events:inherit');
-    });
+      e.setAttribute('style', 'pointer-events:inherit')
+    })
 
-    this.group_.setAttribute('style', svgElem ? 'pointer-events:all' : 'pointer-events:none');
+    this.group_.setAttribute('style', svgElem ? 'pointer-events:all' : 'pointer-events:none')
   }
 
   /**
@@ -61,7 +60,7 @@ class Layer {
    * @returns {string} The layer name
    */
   getName () {
-    return this.name_;
+    return this.name_
   }
 
   /**
@@ -69,7 +68,7 @@ class Layer {
    * @returns {SVGGElement} The layer SVG group
    */
   getGroup () {
-    return this.group_;
+    return this.group_
   }
 
   /**
@@ -77,7 +76,7 @@ class Layer {
    * @returns {void}
    */
   activate () {
-    this.group_.setAttribute('style', 'pointer-events:all');
+    this.group_.setAttribute('style', 'pointer-events:all')
   }
 
   /**
@@ -85,7 +84,7 @@ class Layer {
    * @returns {void}
    */
   deactivate () {
-    this.group_.setAttribute('style', 'pointer-events:none');
+    this.group_.setAttribute('style', 'pointer-events:none')
   }
 
   /**
@@ -94,10 +93,10 @@ class Layer {
    * @returns {void}
    */
   setVisible (visible) {
-    const expected = visible === undefined || visible ? 'inline' : 'none';
-    const oldDisplay = this.group_.getAttribute('display');
+    const expected = visible === undefined || visible ? 'inline' : 'none'
+    const oldDisplay = this.group_.getAttribute('display')
     if (oldDisplay !== expected) {
-      this.group_.setAttribute('display', expected);
+      this.group_.setAttribute('display', expected)
     }
   }
 
@@ -106,7 +105,7 @@ class Layer {
    * @returns {boolean} True if visible.
    */
   isVisible () {
-    return this.group_.getAttribute('display') !== 'none';
+    return this.group_.getAttribute('display') !== 'none'
   }
 
   /**
@@ -114,11 +113,11 @@ class Layer {
    * @returns {Float} Opacity value.
    */
   getOpacity () {
-    const opacity = this.group_.getAttribute('opacity');
-    if (isNullish(opacity)) {
-      return 1;
+    const opacity = this.group_.getAttribute('opacity')
+    if (!opacity) {
+      return 1
     }
-    return Number.parseFloat(opacity);
+    return Number.parseFloat(opacity)
   }
 
   /**
@@ -129,7 +128,7 @@ class Layer {
    */
   setOpacity (opacity) {
     if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
-      this.group_.setAttribute('opacity', opacity);
+      this.group_.setAttribute('opacity', opacity)
     }
   }
 
@@ -140,7 +139,7 @@ class Layer {
    */
   appendChildren (children) {
     for (const child of children) {
-      this.group_.append(child);
+      this.group_.append(child)
     }
   }
 
@@ -148,14 +147,14 @@ class Layer {
   * @returns {SVGTitleElement|null}
   */
   getTitleElement () {
-    const len = this.group_.childNodes.length;
+    const len = this.group_.childNodes.length
     for (let i = 0; i < len; ++i) {
-      const child = this.group_.childNodes.item(i);
-      if (child && child.tagName === 'title') {
-        return child;
+      const child = this.group_.childNodes.item(i)
+      if (child?.tagName === 'title') {
+        return child
       }
     }
-    return null;
+    return null
   }
 
   /**
@@ -165,21 +164,20 @@ class Layer {
    * @returns {string|null} The new name if changed; otherwise, null.
    */
   setName (name, hrService) {
-    const previousName = this.name_;
-    name = toXml(name);
+    const previousName = this.name_
+    name = toXml(name)
     // now change the underlying title element contents
-    const title = this.getTitleElement();
+    const title = this.getTitleElement()
     if (title) {
-      while(title.firstChild)
-        title.removeChild(title.firstChild);
-      title.textContent = name;
-      this.name_ = name;
+      while (title.firstChild) { title.removeChild(title.firstChild) }
+      title.textContent = name
+      this.name_ = name
       if (hrService) {
-        hrService.changeElement(title, { '#text': previousName });
+        hrService.changeElement(title, { '#text': previousName })
       }
-      return this.name_;
+      return this.name_
     }
-    return null;
+    return null
   }
 
   /**
@@ -187,29 +185,30 @@ class Layer {
    * @returns {SVGGElement} The layer SVG group that was just removed.
    */
   removeGroup () {
-    const group = this.group_;
-    this.group_.remove();
-    this.group_ = undefined;
-    return group;
+    const group = this.group_
+    this.group_.remove()
+    this.group_ = undefined
+    return group
   }
+
   /**
    * Test whether an element is a layer or not.
    * @param {SVGGElement} elem - The SVGGElement to test.
    * @returns {boolean} True if the element is a layer
    */
   static isLayer (elem) {
-    return elem && elem.tagName === 'g' && Layer.CLASS_REGEX.test(elem.getAttribute('class'));
+    return elem && elem.tagName === 'g' && Layer.CLASS_REGEX.test(elem.getAttribute('class'))
   }
 }
 /**
  * @property {string} CLASS_NAME - class attribute assigned to all layer groups.
  */
-Layer.CLASS_NAME = 'layer';
+Layer.CLASS_NAME = 'layer'
 
 /**
  * @property {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
  */
-Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
+Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
 
 /**
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
@@ -218,12 +217,12 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
  * @returns {void}
  */
 function addLayerClass (elem) {
-  const classes = elem.getAttribute('class');
-  if (isNullish(classes) || !classes.length) {
-    elem.setAttribute('class', Layer.CLASS_NAME);
+  const classes = elem.getAttribute('class')
+  if (!classes || !classes.length) {
+    elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
-    elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
+    elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)
   }
 }
 
-export default Layer;
+export default Layer

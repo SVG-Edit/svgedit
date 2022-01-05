@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-import assertionWrapper from './assertion-wrapper.js';
+import assertionWrapper from './assertion-wrapper.js'
 
 /**
 * @typedef {PlainObject} InfoObject
@@ -22,10 +21,10 @@ import assertionWrapper from './assertion-wrapper.js';
  * @returns {InfoObject}
  */
 function close (actual, expected, maxDifference, message) {
-  const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected);
-  const result = actualDiff <= maxDifference;
-  message = message || (actual + ' should be within ' + maxDifference + ' (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
-  return { result, message, actual, expected };
+  const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected)
+  const result = actualDiff <= maxDifference
+  message = message || (actual + ' should be within ' + maxDifference + ' (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff))
+  return { result, message, actual, expected }
 }
 
 /**
@@ -41,21 +40,21 @@ function close (actual, expected, maxDifference, message) {
  * @returns {InfoObject}
  */
 function closePercent (actual, expected, maxPercentDifference, message) {
-  let actualDiff; let result;
+  let actualDiff; let result
   if (actual === expected) {
-    actualDiff = 0;
-    result = actualDiff <= maxPercentDifference;
+    actualDiff = 0
+    result = actualDiff <= maxPercentDifference
   } else if (actual !== 0 && expected !== 0 && expected !== Infinity && expected !== -Infinity) {
-    actualDiff = Math.abs(100 * (actual - expected) / expected);
-    result = actualDiff <= maxPercentDifference;
+    actualDiff = Math.abs(100 * (actual - expected) / expected)
+    result = actualDiff <= maxPercentDifference
   } else {
     // Dividing by zero (0)!  Should return `false` unless the max percentage was `Infinity`
-    actualDiff = Infinity;
-    result = maxPercentDifference === Infinity;
+    actualDiff = Infinity
+    result = maxPercentDifference === Infinity
   }
-  message = message || (actual + ' should be within ' + maxPercentDifference + '% (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'));
+  message = message || (actual + ' should be within ' + maxPercentDifference + '% (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'))
 
-  return { result, message, actual, expected };
+  return { result, message, actual, expected }
 }
 
 /**
@@ -71,10 +70,10 @@ function closePercent (actual, expected, maxPercentDifference, message) {
  * @returns {InfoObject}
  */
 function notClose (actual, expected, minDifference, message) {
-  const actualDiff = Math.abs(actual - expected);
-  const result = actualDiff > minDifference;
-  message = message || (actual + ' should not be within ' + minDifference + ' (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
-  return { result, message, actual, expected };
+  const actualDiff = Math.abs(actual - expected)
+  const result = actualDiff > minDifference
+  message = message || (actual + ' should not be within ' + minDifference + ' (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff))
+  return { result, message, actual, expected }
 }
 
 /**
@@ -90,21 +89,21 @@ function notClose (actual, expected, minDifference, message) {
  * @returns {InfoObject}
  */
 function notClosePercent (actual, expected, minPercentDifference, message) {
-  let actualDiff; let result;
+  let actualDiff; let result
   if (actual === expected) {
-    actualDiff = 0;
-    result = actualDiff > minPercentDifference;
+    actualDiff = 0
+    result = actualDiff > minPercentDifference
   } else if (actual !== 0 && expected !== 0 && expected !== Infinity && expected !== -Infinity) {
-    actualDiff = Math.abs(100 * (actual - expected) / expected);
-    result = actualDiff > minPercentDifference;
+    actualDiff = Math.abs(100 * (actual - expected) / expected)
+    result = actualDiff > minPercentDifference
   } else {
     // Dividing by zero (0)!  Should only return `true` if the min percentage was `Infinity`
-    actualDiff = Infinity;
-    result = minPercentDifference !== Infinity;
+    actualDiff = Infinity
+    result = minPercentDifference !== Infinity
   }
-  message = message || (actual + ' should not be within ' + minPercentDifference + '% (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'));
+  message = message || (actual + ' should not be within ' + minPercentDifference + '% (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'))
 
-  return { result, message, actual, expected };
+  return { result, message, actual, expected }
 }
 
 /**
@@ -113,12 +112,12 @@ function notClosePercent (actual, expected, minPercentDifference, message) {
  * @returns {void}
  */
 function setAssertionMethods (_chai, utils) {
-  const wrap = assertionWrapper(_chai, utils);
+  const wrap = assertionWrapper(_chai, utils)
 
-  assert.close = wrap(close);
-  assert.closePercent = wrap(closePercent);
-  assert.notClose = wrap(notClose);
-  assert.notClosePercent = wrap(notClosePercent);
+  assert.close = wrap(close)
+  assert.closePercent = wrap(closePercent)
+  assert.notClose = wrap(notClose)
+  assert.notClosePercent = wrap(notClosePercent)
 }
 
-export default setAssertionMethods;
+export default setAssertionMethods

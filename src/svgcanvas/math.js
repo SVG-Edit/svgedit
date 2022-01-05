@@ -19,13 +19,13 @@
 * @property {Float} y
 */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js'
 
 // Constants
-const NEAR_ZERO = 1e-14;
+const NEAR_ZERO = 1e-14
 
 // Throw away SVGSVGElement used for creating matrices/transforms.
-const svg = document.createElementNS(NS.SVG, 'svg');
+const svg = document.createElementNS(NS.SVG, 'svg')
 
 /**
  * A (hopefully) quicker function to transform a point by a matrix
@@ -37,8 +37,8 @@ const svg = document.createElementNS(NS.SVG, 'svg');
  * @returns {module:math.XYObject} An x, y object representing the transformed point
 */
 export const transformPoint = function (x, y, m) {
-  return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f };
-};
+  return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f }
+}
 
 /**
  * Helper function to check if the matrix performs no actual transform
@@ -48,8 +48,8 @@ export const transformPoint = function (x, y, m) {
  * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
 */
 export const isIdentity = function (m) {
-  return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
-};
+  return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0)
+}
 
 /**
  * This function tries to return a `SVGMatrix` that is the multiplication `m1 * m2`.
@@ -60,18 +60,18 @@ export const isIdentity = function (m) {
 */
 export const matrixMultiply = function (...args) {
   const m = args.reduceRight((prev, m1) => {
-    return m1.multiply(prev);
-  });
+    return m1.multiply(prev)
+  })
 
-  if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0; }
-  if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0; }
-  if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0; }
-  if (Math.abs(m.d) < NEAR_ZERO) { m.d = 0; }
-  if (Math.abs(m.e) < NEAR_ZERO) { m.e = 0; }
-  if (Math.abs(m.f) < NEAR_ZERO) { m.f = 0; }
+  if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0 }
+  if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0 }
+  if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0 }
+  if (Math.abs(m.d) < NEAR_ZERO) { m.d = 0 }
+  if (Math.abs(m.e) < NEAR_ZERO) { m.e = 0 }
+  if (Math.abs(m.f) < NEAR_ZERO) { m.f = 0 }
 
-  return m;
-};
+  return m
+}
 
 /**
  * See if the given transformlist includes a non-indentity matrix transform.
@@ -80,14 +80,14 @@ export const matrixMultiply = function (...args) {
  * @returns {boolean} Whether or not a matrix transform was found
 */
 export const hasMatrixTransform = function (tlist) {
-  if (!tlist) { return false; }
-  let num = tlist.numberOfItems;
+  if (!tlist) { return false }
+  let num = tlist.numberOfItems
   while (num--) {
-    const xform = tlist.getItem(num);
-    if (xform.type === 1 && !isIdentity(xform.matrix)) { return true; }
+    const xform = tlist.getItem(num)
+    if (xform.type === 1 && !isIdentity(xform.matrix)) { return true }
   }
-  return false;
-};
+  return false
+}
 
 /**
 * @typedef {PlainObject} module:math.TransformedBox An object with the following values
@@ -113,15 +113,15 @@ export const hasMatrixTransform = function (tlist) {
  * @returns {module:math.TransformedBox}
 */
 export const transformBox = function (l, t, w, h, m) {
-  const tl = transformPoint(l, t, m);
-  const tr = transformPoint((l + w), t, m);
-  const bl = transformPoint(l, (t + h), m);
-  const br = transformPoint((l + w), (t + h), m);
+  const tl = transformPoint(l, t, m)
+  const tr = transformPoint((l + w), t, m)
+  const bl = transformPoint(l, (t + h), m)
+  const br = transformPoint((l + w), (t + h), m)
 
-  const minx = Math.min(tl.x, tr.x, bl.x, br.x);
-  const maxx = Math.max(tl.x, tr.x, bl.x, br.x);
-  const miny = Math.min(tl.y, tr.y, bl.y, br.y);
-  const maxy = Math.max(tl.y, tr.y, bl.y, br.y);
+  const minx = Math.min(tl.x, tr.x, bl.x, br.x)
+  const maxx = Math.max(tl.x, tr.x, bl.x, br.x)
+  const miny = Math.min(tl.y, tr.y, bl.y, br.y)
+  const maxy = Math.max(tl.y, tr.y, bl.y, br.y)
 
   return {
     tl,
@@ -134,8 +134,8 @@ export const transformBox = function (l, t, w, h, m) {
       width: (maxx - minx),
       height: (maxy - miny)
     }
-  };
-};
+  }
+}
 
 /**
  * This returns a single matrix Transform for a given Transform List
@@ -152,23 +152,23 @@ export const transformBox = function (l, t, w, h, m) {
 export const transformListToTransform = function (tlist, min, max) {
   if (!tlist) {
     // Or should tlist = null have been prevented before this?
-    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
+    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix())
   }
-  min = min || 0;
-  max = max || (tlist.numberOfItems - 1);
-  min = Number.parseInt(min);
-  max = Number.parseInt(max);
-  if (min > max) { const temp = max; max = min; min = temp; }
-  let m = svg.createSVGMatrix();
+  min = min || 0
+  max = max || (tlist.numberOfItems - 1)
+  min = Number.parseInt(min)
+  max = Number.parseInt(max)
+  if (min > max) { const temp = max; max = min; min = temp }
+  let m = svg.createSVGMatrix()
   for (let i = min; i <= max; ++i) {
     // if our indices are out of range, just use a harmless identity matrix
     const mtom = (i >= 0 && i < tlist.numberOfItems
       ? tlist.getItem(i).matrix
-      : svg.createSVGMatrix());
-    m = matrixMultiply(m, mtom);
+      : svg.createSVGMatrix())
+    m = matrixMultiply(m, mtom)
   }
-  return svg.createSVGTransformFromMatrix(m);
-};
+  return svg.createSVGTransformFromMatrix(m)
+}
 
 /**
  * Get the matrix object for a given element.
@@ -176,10 +176,10 @@ export const transformListToTransform = function (tlist, min, max) {
  * @param {Element} elem - The DOM element to check
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
 */
-export const getMatrix = function (elem) {
-  const tlist = elem.transform.baseVal;
-  return transformListToTransform(tlist).matrix;
-};
+export const getMatrix = (elem) => {
+  const tlist = elem.transform.baseVal
+  return transformListToTransform(tlist).matrix
+}
 
 /**
  * Returns a 45 degree angle coordinate associated with the two given
@@ -191,20 +191,20 @@ export const getMatrix = function (elem) {
  * @param {Integer} y2 - Second coordinate's y value
  * @returns {module:math.AngleCoord45}
 */
-export const snapToAngle = function (x1, y1, x2, y2) {
-  const snap = Math.PI / 4; // 45 degrees
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const angle = Math.atan2(dy, dx);
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const snapangle = Math.round(angle / snap) * snap;
+export const snapToAngle = (x1, y1, x2, y2) => {
+  const snap = Math.PI / 4 // 45 degrees
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const angle = Math.atan2(dy, dx)
+  const dist = Math.sqrt(dx * dx + dy * dy)
+  const snapangle = Math.round(angle / snap) * snap
 
   return {
     x: x1 + dist * Math.cos(snapangle),
     y: y1 + dist * Math.sin(snapangle),
     a: snapangle
-  };
-};
+  }
+}
 
 /**
  * Check if two rectangles (BBoxes objects) intersect each other.
@@ -213,9 +213,9 @@ export const snapToAngle = function (x1, y1, x2, y2) {
  * @param {SVGRect} r2 - The second BBox-like object
  * @returns {boolean} True if rectangles intersect
  */
-export const rectsIntersect = function (r1, r2) {
+export const rectsIntersect = (r1, r2) => {
   return r2.x < (r1.x + r1.width) &&
     (r2.x + r2.width) > r1.x &&
     r2.y < (r1.y + r1.height) &&
-    (r2.y + r2.height) > r1.y;
-};
+    (r2.y + r2.height) > r1.y
+}

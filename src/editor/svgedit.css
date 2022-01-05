@@ -18,12 +18,12 @@
 .svg_editor {
   display: grid;
   grid-template-rows: auto 15px 1fr 40px;
-  grid-template-columns: 34px 15px 1fr 15px;
+  grid-template-columns: 40px 15px 50px 1fr 15px;
   grid-template-areas: 
-    "top   top    top    top"
-    "left  corner rulerX side"
-    "left  rulerY workarea side"
-    "left  bottom bottom bottom";
+    "main main   main top top"
+    "left corner rulerX rulerX side"
+    "left rulerY workarea workarea side"
+    "left bottom bottom bottom bottom";
   font-size: 8pt;
   background: var(--main-bg-color);
   font-family: Verdana, Helvetica, Arial;
@@ -33,16 +33,16 @@
   height: 100%;
 }
 
-.svg_editor.open {
-  grid-template-columns: 34px 15px 1fr 150px;
-}
-
 /* on smaller screen, allow 2 lines for the toolbar */
-
 @media screen and (max-width:1250px) {
   .svg_editor {
     grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
   }
+}
+
+/* class to open the right panel */
+.svg_editor.open {
+  grid-template-columns: 34px 15px 50px 1fr 150px;
 }
 
 #svgroot {
@@ -167,7 +167,6 @@ hr {
 
 #layerlist td.layername:hover {
   color: blue;
-  font-style: italic;
 }
 
 #layerlist tr.layersel td.layername {
@@ -186,6 +185,7 @@ hr {
 —————————————————————————————*/
 
 #main_button {
+  grid-area: main;
   color: #fff;
   border-radius: 3px;
   padding-block: 2px;
@@ -299,8 +299,7 @@ hr {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* leave space for the main menu */
-  position: relative;
+  align-items: flex-start;
   background-color: var(--main-bg-color);
 }
 
@@ -318,31 +317,35 @@ hr {
   overflow: auto;
   display: flex;
   align-items: center;
-  scrollbar-width: thin;
+  scrollbar-width: thin; /* Firefox */
 }
 
-#tools_bottom ::-webkit-scrollbar {
+#tools_bottom ::-webkit-scrollbar { /* Chrome, Edge, and Safari */
   width: 3px;
 }
 
-#tools_bottom se-list {
+#tools_bottom se-list, #tools_bottom se-select {
   margin-bottom: 8px;
 }
 
+#zoom {
+  color: var(--text-color);
+  background-color: var(--main-bg-color);
+  border: none;
+}
 
 /*—————————————————————————————*/
 
 #tools_left {
   grid-area: left;
   border-right: none;
+  margin-left: auto;
+  margin-right: auto;
   overflow-y: scroll;
-  /* Works on Firefox */
-  scrollbar-width: 3px;
-  scrollbar-color: rgb(70, 70, 70) auto;
+  scrollbar-width: none; /* Firefox */
 }
 
-/* Scrollbar styling on Chrome, Edge, and Safari */
-#tools_left::-webkit-scrollbar {
+#tools_left::-webkit-scrollbar { /* Chrome, Edge, and Safari */
   width: 3px;
 }
 
@@ -379,17 +382,13 @@ hr {
 }
 
 #cur_context_panel {
-  position: absolute;
-  top: 57px;
-  left: 56px;
+  grid-area: rulerX;
   line-height: 22px;
   overflow: auto;
   padding-left: 5px;
   font-size: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #ccc;
-  padding: 0 10px;
-  border-radius: 0 0 3px 0;
 }
 
 #cur_context_panel a {

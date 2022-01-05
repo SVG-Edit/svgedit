@@ -5,4 +5,4 @@ export default {
       title: '移动'
     }
   ]
-};
+}

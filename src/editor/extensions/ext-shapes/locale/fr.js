@@ -21,4 +21,4 @@ export default {
       title: "Bibliothèque d'images"
     }
   ]
-};
+}

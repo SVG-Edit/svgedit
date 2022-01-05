@@ -1,5 +1,5 @@
-/* eslint-disable no-unsanitized/property */
-const template = document.createElement('template');
+/* globals svgEditor */
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   :host {
@@ -97,7 +97,7 @@ template.innerHTML = `
    </div>
   </div>
 
-`;
+`
 /**
  * @class ExplorerButton
  */
@@ -106,27 +106,30 @@ export class ExplorerButton extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
-    this.$button = this._shadowRoot.querySelector('.menu-button');
-    this.$overall = this._shadowRoot.querySelector('.overall');
-    this.$img = this._shadowRoot.querySelector('.menu-button img');
-    this.$menu = this._shadowRoot.querySelector('.menu');
-    this.$handle = this._shadowRoot.querySelector('.handle');
-    this.$lib = this._shadowRoot.querySelector('.image-lib');
-    this.files = [];
-    this.request = new XMLHttpRequest();
+    this.$button = this._shadowRoot.querySelector('.menu-button')
+    this.$overall = this._shadowRoot.querySelector('.overall')
+    this.$img = this._shadowRoot.querySelector('.menu-button img')
+    this.$menu = this._shadowRoot.querySelector('.menu')
+    this.$handle = this._shadowRoot.querySelector('.handle')
+    this.$lib = this._shadowRoot.querySelector('.image-lib')
+    this.files = []
+    this.request = new XMLHttpRequest()
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'title', 'pressed', 'disabled', 'lib', 'src' ];
+    return ['title', 'pressed', 'disabled', 'lib', 'src']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -135,57 +138,56 @@ export class ExplorerButton extends HTMLElement {
    * @returns {void}
    */
   async attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'title':
-      {
-        const shortcut = this.getAttribute('shortcut');
-        this.$button.setAttribute('title', `${newValue} [${shortcut}]`);
-      }
-      break;
-    case 'pressed':
-      if (newValue) {
-        this.$overall.classList.add('pressed');
-      } else {
-        this.$overall.classList.remove('pressed');
-      }
-      break;
-    case 'disabled':
-      if (newValue) {
-        this.$overall.classList.add('disabled');
-      } else {
-        this.$overall.classList.remove('disabled');
-      }
-      break;
-    case 'lib':
-      try {
-        const response = await fetch(`${newValue}index.json`);
-        const json = await response.json();
-        const { lib } = json;
-        this.$menu.innerHTML = lib.map((menu, i) => (
+      case 'title':
+        {
+          const shortcut = this.getAttribute('shortcut')
+          this.$button.setAttribute('title', `${newValue} [${shortcut}]`)
+        }
+        break
+      case 'pressed':
+        if (newValue) {
+          this.$overall.classList.add('pressed')
+        } else {
+          this.$overall.classList.remove('pressed')
+        }
+        break
+      case 'disabled':
+        if (newValue) {
+          this.$overall.classList.add('disabled')
+        } else {
+          this.$overall.classList.remove('disabled')
+        }
+        break
+      case 'lib':
+        try {
+          const response = await fetch(`${newValue}index.json`)
+          const json = await response.json()
+          const { lib } = json
+          this.$menu.innerHTML = lib.map((menu, i) => (
           `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
-        )).join('');
-        await this.updateLib(lib[0]);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(error);
-      }
-      break;
-    case 'src':
-      this.$img.setAttribute('src', newValue);
-      break;
-    default:
-      // eslint-disable-next-line no-console
-      console.error(`unknown attribute: ${name}`);
-      break;
+          )).join('')
+          await this.updateLib(lib[0])
+        } catch (error) {
+          console.error(error)
+        }
+        break
+      case 'src':
+        this.$img.setAttribute('src', this.imgPath + '/' + newValue)
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get title () {
-    return this.getAttribute('title');
+    return this.getAttribute('title')
   }
 
   /**
@@ -193,14 +195,15 @@ export class ExplorerButton extends HTMLElement {
    * @returns {void}
    */
   set title (value) {
-    this.setAttribute('title', value);
+    this.setAttribute('title', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get pressed () {
-    return this.hasAttribute('pressed');
+    return this.hasAttribute('pressed')
   }
 
   /**
@@ -210,17 +213,18 @@ export class ExplorerButton extends HTMLElement {
   set pressed (value) {
     // boolean value => existence = true
     if (value) {
-      this.setAttribute('pressed', 'true');
+      this.setAttribute('pressed', 'true')
     } else {
-      this.removeAttribute('pressed', '');
+      this.removeAttribute('pressed', '')
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get disabled () {
-    return this.hasAttribute('disabled');
+    return this.hasAttribute('disabled')
   }
 
   /**
@@ -230,11 +234,12 @@ export class ExplorerButton extends HTMLElement {
   set disabled (value) {
     // boolean value => existence = true
     if (value) {
-      this.setAttribute('disabled', 'true');
+      this.setAttribute('disabled', 'true')
     } else {
-      this.removeAttribute('disabled', '');
+      this.removeAttribute('disabled', '')
     }
   }
+
   /**
    * @function connectedCallback
    * @returns {void}
@@ -242,75 +247,74 @@ export class ExplorerButton extends HTMLElement {
   connectedCallback () {
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
-      ev.stopPropagation();
+      ev.stopPropagation()
       switch (ev.target.nodeName) {
-      case 'SE-EXPLORERBUTTON':
-        this.$menu.classList.add('open');
-        this.$lib.classList.add('open-lib');
-        break;
-      case 'SE-BUTTON':
+        case 'SE-EXPLORERBUTTON':
+          this.$menu.classList.add('open')
+          this.$lib.classList.add('open-lib')
+          break
+        case 'SE-BUTTON':
         // change to the current action
-        this.currentAction = ev.target;
-        this.$img.setAttribute('src', this.currentAction.getAttribute('src'));
-        this.dataset.draw = this.data[this.currentAction.dataset.shape];
-        this._shadowRoot.querySelectorAll('.image-lib [pressed]').forEach((b) => { b.pressed = false; });
-        this.currentAction.setAttribute('pressed', 'pressed');
-        // and close the menu
-        this.$menu.classList.remove('open');
-        this.$lib.classList.remove('open-lib');
-        break;
-      case 'DIV':
-        if (ev.target.classList[0] === 'handle') {
+          this.currentAction = ev.target
+          this.$img.setAttribute('src', this.currentAction.getAttribute('src'))
+          this.dataset.draw = this.data[this.currentAction.dataset.shape]
+          this._shadowRoot.querySelectorAll('.image-lib [pressed]').forEach((b) => { b.pressed = false })
+          this.currentAction.setAttribute('pressed', 'pressed')
+          // and close the menu
+          this.$menu.classList.remove('open')
+          this.$lib.classList.remove('open-lib')
+          break
+        case 'DIV':
+          if (ev.target.classList[0] === 'handle') {
           // this is a click on the handle so let's open/close the menu.
-          this.$menu.classList.toggle('open');
-          this.$lib.classList.toggle('open-lib');
-        } else {
-          this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed'); });
-          ev.target.classList.add('pressed');
-          this.updateLib(ev.target.dataset.menu);
-        }
-        break;
-      default:
-        // eslint-disable-next-line no-console
-        console.error('unknown nodeName for:', ev.target, ev.target.className);
+            this.$menu.classList.toggle('open')
+            this.$lib.classList.toggle('open-lib')
+          } else {
+            this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed') })
+            ev.target.classList.add('pressed')
+            this.updateLib(ev.target.dataset.menu)
+          }
+          break
+        default:
+          console.error('unknown nodeName for:', ev.target, ev.target.className)
       }
-    };
+    }
     // capture event from slots
-    this.addEventListener('click', onClickHandler);
-    this.$menu.addEventListener('click', onClickHandler);
-    this.$lib.addEventListener('click', onClickHandler);
-    this.$handle.addEventListener('click', onClickHandler);
+    this.addEventListener('click', onClickHandler)
+    this.$menu.addEventListener('click', onClickHandler)
+    this.$lib.addEventListener('click', onClickHandler)
+    this.$handle.addEventListener('click', onClickHandler)
   }
+
   /**
    * @function updateLib
    * @param {string} lib
    * @returns {void}
    */
   async updateLib (lib) {
-    const libDir = this.getAttribute('lib');
+    const libDir = this.getAttribute('lib')
     try {
       // initialize buttons for all shapes defined for this library
-      const response = await fetch(`${libDir}${lib}.json`);
-      const json = await response.json();
-      this.data = json.data;
-      const size = json.size ?? 300;
-      const fill = json.fill ? '#333' : 'none';
-      const off = size * 0.05;
-      const vb = [ -off, -off, size + off * 2, size + off * 2 ].join(' ');
-      const stroke = json.fill ? 0 : (size / 30);
-      this.$lib.innerHTML = Object.entries(this.data).map(([ key, path ]) => {
+      const response = await fetch(`${libDir}${lib}.json`)
+      const json = await response.json()
+      this.data = json.data
+      const size = json.size ?? 300
+      const fill = json.fill ? '#333' : 'none'
+      const off = size * 0.05
+      const vb = [-off, -off, size + off * 2, size + off * 2].join(' ')
+      const stroke = json.fill ? 0 : (size / 30)
+      this.$lib.innerHTML = Object.entries(this.data).map(([key, path]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
           <svg viewBox="${vb}"><path fill="${fill}" stroke="#f8bb00" stroke-width="${stroke}" d="${path}"></path></svg>
-        </svg>`);
-        return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
-      }).join('');
+        </svg>`)
+        return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`
+      }).join('')
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(`could not read file:${libDir}${lib}.json`, error);
+      console.error(`could not read file:${libDir}${lib}.json`, error)
     }
   }
 }
 
 // Register
-customElements.define('se-explorerbutton', ExplorerButton);
+customElements.define('se-explorerbutton', ExplorerButton)

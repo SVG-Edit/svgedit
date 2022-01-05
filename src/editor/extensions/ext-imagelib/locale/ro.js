@@ -13,4 +13,4 @@ export default {
   imgLibs_0_description: 'Demonstration library for SVG-edit on this server',
   imgLibs_1_name: 'IAN Symbol Libraries',
   imgLibs_1_description: 'Free library of illustrations'
-};
+}

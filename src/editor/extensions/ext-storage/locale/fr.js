@@ -11,4 +11,4 @@ export default {
   storageNoPrefs: 'Do not store my preferences locally',
   rememberLabel: 'Remember this choice?',
   rememberTooltip: "Si vous choisissez de désactiver le stockage en mémorisant le choix, l'URL va changer afin que la question ne vous soit plus reposée."
-};
+}

@@ -6,7 +6,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import { getHref, setHref, getRotationAngle, isNullish } from './utilities.js';
+import { getHref, setHref, getRotationAngle, getBBox } from './utilities.js'
 
 /**
 * Group: Undo/Redo history management.
@@ -16,7 +16,7 @@ export const HistoryEventTypes = {
   AFTER_APPLY: 'after_apply',
   BEFORE_UNAPPLY: 'before_unapply',
   AFTER_UNAPPLY: 'after_unapply'
-};
+}
 
 /**
 * Base class for commands.
@@ -26,17 +26,18 @@ export class Command {
   * @returns {string}
   */
   getText () {
-    return this.text;
+    return this.text
   }
+
   /**
    * @param {module:history.HistoryEventHandler} handler
    * @param {callback} applyFunction
    * @returns {void}
   */
   apply (handler, applyFunction) {
-    handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-    applyFunction(handler);
-    handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
+    handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this)
+    applyFunction(handler)
+    handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this)
   }
 
   /**
@@ -45,9 +46,9 @@ export class Command {
    * @returns {void}
   */
   unapply (handler, unapplyFunction) {
-    handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-    unapplyFunction();
-    handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
+    handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this)
+    unapplyFunction()
+    handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this)
   }
 
   /**
@@ -55,14 +56,14 @@ export class Command {
    * This function needs to be surcharged if multiple elements are returned.
   */
   elements () {
-    return [ this.elem ];
+    return [this.elem]
   }
 
   /**
     * @returns {string} String with element associated with this command
   */
   type () {
-    return this.constructor.name;
+    return this.constructor.name
   }
 }
 
@@ -137,13 +138,13 @@ export class MoveElementCommand extends Command {
   * @param {string} [text] - An optional string visible to user related to this change
   */
   constructor (elem, oldNextSibling, oldParent, text) {
-    super();
-    this.elem = elem;
-    this.text = text ? ('Move ' + elem.tagName + ' to ' + text) : ('Move ' + elem.tagName);
-    this.oldNextSibling = oldNextSibling;
-    this.oldParent = oldParent;
-    this.newNextSibling = elem.nextSibling;
-    this.newParent = elem.parentNode;
+    super()
+    this.elem = elem
+    this.text = text ? ('Move ' + elem.tagName + ' to ' + text) : ('Move ' + elem.tagName)
+    this.oldNextSibling = oldNextSibling
+    this.oldParent = oldParent
+    this.newNextSibling = elem.nextSibling
+    this.newParent = elem.parentNode
   }
 
   /**
@@ -154,8 +155,8 @@ export class MoveElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
-    });
+      this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling)
+    })
   }
 
   /**
@@ -166,8 +167,8 @@ export class MoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
-    });
+      this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling)
+    })
   }
 }
 
@@ -181,11 +182,11 @@ export class InsertElementCommand extends Command {
    * @param {string} text - An optional string visible to user related to this change
   */
   constructor (elem, text) {
-    super();
-    this.elem = elem;
-    this.text = text || ('Create ' + elem.tagName);
-    this.parent = elem.parentNode;
-    this.nextSibling = this.elem.nextSibling;
+    super()
+    this.elem = elem
+    this.text = text || ('Create ' + elem.tagName)
+    this.parent = elem.parentNode
+    this.nextSibling = this.elem.nextSibling
   }
 
   /**
@@ -196,8 +197,8 @@ export class InsertElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.elem = this.parent.insertBefore(this.elem, this.nextSibling);
-    });
+      this.elem = this.parent.insertBefore(this.elem, this.nextSibling)
+    })
   }
 
   /**
@@ -208,12 +209,11 @@ export class InsertElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      this.parent = this.elem.parentNode;
-      this.elem.remove();
-    });
+      this.parent = this.elem.parentNode
+      this.elem.remove()
+    })
   }
 }
-
 
 /**
 * History command for an element removed from the DOM.
@@ -227,11 +227,11 @@ export class RemoveElementCommand extends Command {
   * @param {string} [text] - An optional string visible to user related to this change
   */
   constructor (elem, oldNextSibling, oldParent, text) {
-    super();
-    this.elem = elem;
-    this.text = text || ('Delete ' + elem.tagName);
-    this.nextSibling = oldNextSibling;
-    this.parent = oldParent;
+    super()
+    this.elem = elem
+    this.text = text || ('Delete ' + elem.tagName)
+    this.nextSibling = oldNextSibling
+    this.parent = oldParent
   }
 
   /**
@@ -242,9 +242,9 @@ export class RemoveElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.parent = this.elem.parentNode;
-      this.elem.remove();
-    });
+      this.parent = this.elem.parentNode
+      this.elem.remove()
+    })
   }
 
   /**
@@ -255,11 +255,11 @@ export class RemoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      if (isNullish(this.nextSibling) && window.console) {
-        console.error('Reference element was lost');
+      if (!this.nextSibling) {
+        console.error('Reference element was lost')
       }
-      this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
-    });
+      this.parent.insertBefore(this.elem, this.nextSibling) // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
+    })
   }
 }
 
@@ -282,18 +282,18 @@ export class ChangeElementCommand extends Command {
   * @param {string} text - An optional string visible to user related to this change
    */
   constructor (elem, attrs, text) {
-    super();
-    this.elem = elem;
-    this.text = text ? ('Change ' + elem.tagName + ' ' + text) : ('Change ' + elem.tagName);
-    this.newValues = {};
-    this.oldValues = attrs;
+    super()
+    this.elem = elem
+    this.text = text ? ('Change ' + elem.tagName + ' ' + text) : ('Change ' + elem.tagName)
+    this.newValues = {}
+    this.oldValues = attrs
     for (const attr in attrs) {
       if (attr === '#text') {
-        this.newValues[attr] = (elem) ? elem.textContent : '';
+        this.newValues[attr] = (elem) ? elem.textContent : ''
       } else if (attr === '#href') {
-        this.newValues[attr] = getHref(elem);
+        this.newValues[attr] = getHref(elem)
       } else {
-        this.newValues[attr] = elem.getAttribute(attr);
+        this.newValues[attr] = elem.getAttribute(attr)
       }
     }
   }
@@ -306,40 +306,40 @@ export class ChangeElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      let bChangedTransform = false;
-      Object.entries(this.newValues).forEach(([ attr, value ]) => {
+      let bChangedTransform = false
+      Object.entries(this.newValues).forEach(([attr, value]) => {
         if (value) {
           if (attr === '#text') {
-            this.elem.textContent = value;
+            this.elem.textContent = value
           } else if (attr === '#href') {
-            setHref(this.elem, value);
+            setHref(this.elem, value)
           } else {
-            this.elem.setAttribute(attr, value);
+            this.elem.setAttribute(attr, value)
           }
         } else if (attr === '#text') {
-          this.elem.textContent = '';
+          this.elem.textContent = ''
         } else {
-          this.elem.setAttribute(attr, '');
-          this.elem.removeAttribute(attr);
+          this.elem.setAttribute(attr, '')
+          this.elem.removeAttribute(attr)
         }
 
-        if (attr === 'transform') { bChangedTransform = true; }
-      });
+        if (attr === 'transform') { bChangedTransform = true }
+      })
 
       // relocate rotational transform, if necessary
       if (!bChangedTransform) {
-        const angle = getRotationAngle(this.elem);
+        const angle = getRotationAngle(this.elem)
         if (angle) {
-          const bbox = this.elem.getBBox();
-          const cx = bbox.x + bbox.width / 2;
-          const cy = bbox.y + bbox.height / 2;
-          const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
+          const bbox = getBBox(this.elem)
+          const cx = bbox.x + bbox.width / 2
+          const cy = bbox.y + bbox.height / 2
+          const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('')
           if (rotate !== this.elem.getAttribute('transform')) {
-            this.elem.setAttribute('transform', rotate);
+            this.elem.setAttribute('transform', rotate)
           }
         }
       }
-    });
+    })
   }
 
   /**
@@ -350,37 +350,37 @@ export class ChangeElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      let bChangedTransform = false;
-      Object.entries(this.oldValues).forEach(([ attr, value ]) => {
+      let bChangedTransform = false
+      Object.entries(this.oldValues).forEach(([attr, value]) => {
         if (value) {
           if (attr === '#text') {
-            this.elem.textContent = value;
+            this.elem.textContent = value
           } else if (attr === '#href') {
-            setHref(this.elem, value);
+            setHref(this.elem, value)
           } else {
-            this.elem.setAttribute(attr, value);
+            this.elem.setAttribute(attr, value)
           }
         } else if (attr === '#text') {
-          this.elem.textContent = '';
+          this.elem.textContent = ''
         } else {
-          this.elem.removeAttribute(attr);
+          this.elem.removeAttribute(attr)
         }
-        if (attr === 'transform') { bChangedTransform = true; }
-      });
+        if (attr === 'transform') { bChangedTransform = true }
+      })
       // relocate rotational transform, if necessary
       if (!bChangedTransform) {
-        const angle = getRotationAngle(this.elem);
+        const angle = getRotationAngle(this.elem)
         if (angle) {
-          const bbox = this.elem.getBBox();
-          const cx = bbox.x + bbox.width / 2;
-          const cy = bbox.y + bbox.height / 2;
-          const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
+          const bbox = getBBox(this.elem)
+          const cx = bbox.x + bbox.width / 2
+          const cy = bbox.y + bbox.height / 2
+          const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('')
           if (rotate !== this.elem.getAttribute('transform')) {
-            this.elem.setAttribute('transform', rotate);
+            this.elem.setAttribute('transform', rotate)
           }
         }
       }
-    });
+    })
   }
 }
 
@@ -397,9 +397,9 @@ export class BatchCommand extends Command {
   * @param {string} [text] - An optional string visible to user related to this change
   */
   constructor (text) {
-    super();
-    this.text = text || 'Batch Command';
-    this.stack = [];
+    super()
+    this.text = text || 'Batch Command'
+    this.stack = []
   }
 
   /**
@@ -411,10 +411,10 @@ export class BatchCommand extends Command {
   apply (handler) {
     super.apply(handler, () => {
       this.stack.forEach((stackItem) => {
-        console.assert(stackItem, 'stack item should not be null');
-        stackItem && stackItem.apply(handler);
-      });
-    });
+        console.assert(stackItem, 'stack item should not be null')
+        stackItem && stackItem.apply(handler)
+      })
+    })
   }
 
   /**
@@ -426,10 +426,10 @@ export class BatchCommand extends Command {
   unapply (handler) {
     super.unapply(handler, () => {
       this.stack.reverse().forEach((stackItem) => {
-        console.assert(stackItem, 'stack item should not be null');
-        stackItem && stackItem.unapply(handler);
-      });
-    });
+        console.assert(stackItem, 'stack item should not be null')
+        stackItem && stackItem.unapply(handler)
+      })
+    })
   }
 
   /**
@@ -437,17 +437,17 @@ export class BatchCommand extends Command {
   * @returns {Element[]} All the elements we are changing
   */
   elements () {
-    const elems = [];
-    let cmd = this.stack.length;
+    const elems = []
+    let cmd = this.stack.length
     while (cmd--) {
-      if (!this.stack[cmd]) continue;
-      const thisElems = this.stack[cmd].elements();
-      let elem = thisElems.length;
+      if (!this.stack[cmd]) continue
+      const thisElems = this.stack[cmd].elements()
+      let elem = thisElems.length
       while (elem--) {
-        if (!elems.includes(thisElems[elem])) { elems.push(thisElems[elem]); }
+        if (!elems.includes(thisElems[elem])) { elems.push(thisElems[elem]) }
       }
     }
-    return elems;
+    return elems
   }
 
   /**
@@ -456,15 +456,15 @@ export class BatchCommand extends Command {
   * @returns {void}
   */
   addSubCommand (cmd) {
-    console.assert(cmd !== null, 'cmd should not be null');
-    this.stack.push(cmd);
+    console.assert(cmd !== null, 'cmd should not be null')
+    this.stack.push(cmd)
   }
 
   /**
   * @returns {boolean} Indicates whether or not the batch command is empty
   */
   isEmpty () {
-    return !this.stack.length;
+    return !this.stack.length
   }
 }
 
@@ -476,14 +476,14 @@ export class UndoManager {
   * @param {module:history.HistoryEventHandler} historyEventHandler
   */
   constructor (historyEventHandler) {
-    this.handler_ = historyEventHandler || null;
-    this.undoStackPointer = 0;
-    this.undoStack = [];
+    this.handler_ = historyEventHandler || null
+    this.undoStackPointer = 0
+    this.undoStack = []
 
     // this is the stack that stores the original values, the elements and
     // the attribute name for begin/finish
-    this.undoChangeStackPointer = -1;
-    this.undoableChangeStack = [];
+    this.undoChangeStackPointer = -1
+    this.undoableChangeStack = []
   }
 
   /**
@@ -491,36 +491,36 @@ export class UndoManager {
   * @returns {void}
   */
   resetUndoStack () {
-    this.undoStack = [];
-    this.undoStackPointer = 0;
+    this.undoStack = []
+    this.undoStackPointer = 0
   }
 
   /**
   * @returns {Integer} Current size of the undo history stack
   */
   getUndoStackSize () {
-    return this.undoStackPointer;
+    return this.undoStackPointer
   }
 
   /**
   * @returns {Integer} Current size of the redo history stack
   */
   getRedoStackSize () {
-    return this.undoStack.length - this.undoStackPointer;
+    return this.undoStack.length - this.undoStackPointer
   }
 
   /**
   * @returns {string} String associated with the next undo command
   */
   getNextUndoCommandText () {
-    return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer - 1].getText() : '';
+    return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer - 1].getText() : ''
   }
 
   /**
   * @returns {string} String associated with the next redo command
   */
   getNextRedoCommandText () {
-    return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : '';
+    return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : ''
   }
 
   /**
@@ -529,8 +529,8 @@ export class UndoManager {
   */
   undo () {
     if (this.undoStackPointer > 0) {
-      const cmd = this.undoStack[--this.undoStackPointer];
-      cmd.unapply(this.handler_);
+      const cmd = this.undoStack[--this.undoStackPointer]
+      cmd.unapply(this.handler_)
     }
   }
 
@@ -540,8 +540,8 @@ export class UndoManager {
   */
   redo () {
     if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
-      const cmd = this.undoStack[this.undoStackPointer++];
-      cmd.apply(this.handler_);
+      const cmd = this.undoStack[this.undoStackPointer++]
+      cmd.apply(this.handler_)
     }
   }
 
@@ -559,10 +559,10 @@ export class UndoManager {
     // if our stack pointer is not at the end, then we have to remove
     // all commands after the pointer and insert the new command
     if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
-      this.undoStack = this.undoStack.splice(0, this.undoStackPointer);
+      this.undoStack = this.undoStack.splice(0, this.undoStackPointer)
     }
-    this.undoStack.push(cmd);
-    this.undoStackPointer = this.undoStack.length;
+    this.undoStack.push(cmd)
+    this.undoStackPointer = this.undoStack.length
   }
 
   /**
@@ -576,20 +576,20 @@ export class UndoManager {
   * @returns {void}
   */
   beginUndoableChange (attrName, elems) {
-    const p = ++this.undoChangeStackPointer;
-    let i = elems.length;
-    const oldValues = new Array(i); const elements = new Array(i);
+    const p = ++this.undoChangeStackPointer
+    let i = elems.length
+    const oldValues = new Array(i); const elements = new Array(i)
     while (i--) {
-      const elem = elems[i];
-      if (isNullish(elem)) { continue; }
-      elements[i] = elem;
-      oldValues[i] = elem.getAttribute(attrName);
+      const elem = elems[i]
+      if (!elem) { continue }
+      elements[i] = elem
+      oldValues[i] = elem.getAttribute(attrName)
     }
     this.undoableChangeStack[p] = {
       attrName,
       oldValues,
       elements
-    };
+    }
   }
 
   /**
@@ -599,21 +599,21 @@ export class UndoManager {
   * @returns {BatchCommand} Batch command object with resulting changes
   */
   finishUndoableChange () {
-    const p = this.undoChangeStackPointer--;
-    const changeset = this.undoableChangeStack[p];
-    const { attrName } = changeset;
-    const batchCmd = new BatchCommand('Change ' + attrName);
-    let i = changeset.elements.length;
+    const p = this.undoChangeStackPointer--
+    const changeset = this.undoableChangeStack[p]
+    const { attrName } = changeset
+    const batchCmd = new BatchCommand('Change ' + attrName)
+    let i = changeset.elements.length
     while (i--) {
-      const elem = changeset.elements[i];
-      if (isNullish(elem)) { continue; }
-      const changes = {};
-      changes[attrName] = changeset.oldValues[i];
+      const elem = changeset.elements[i]
+      if (!elem) { continue }
+      const changes = {}
+      changes[attrName] = changeset.oldValues[i]
       if (changes[attrName] !== elem.getAttribute(attrName)) {
-        batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
+        batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName))
       }
     }
-    this.undoableChangeStack[p] = null;
-    return batchCmd;
+    this.undoableChangeStack[p] = null
+    return batchCmd
   }
 }

@@ -69,9 +69,13 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Tukar isi teks',
+    font_family_label: 'Font:',
     font_family: 'Tukar Font Keluarga',
     font_size: 'Ubah Saiz Font',
     bold: 'Bold Teks',
+    text_decoration_underline: 'Underline',
+    text_decoration_linethrough: 'Line-Through',
+    text_decoration_overline: 'Overline',
     italic: 'Italic Teks',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
@@ -287,4 +291,4 @@ export default {
     editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
     source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
-};
+}
