@@ -62,7 +62,7 @@ export const remapElement = (selected, changes, m) => {
 
   ['fill', 'stroke'].forEach((type) => {
     const attrVal = selected.getAttribute(type)
-    if (attrVal && attrVal.startsWith('url(') && (m.a < 0 || m.d < 0)) {
+    if (attrVal?.startsWith('url(') && (m.a < 0 || m.d < 0)) {
       const grad = getRefElem(attrVal)
       const newgrad = grad.cloneNode(true)
       if (m.a < 0) {
