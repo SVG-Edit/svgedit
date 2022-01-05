@@ -28,8 +28,7 @@ exports[`use all parts of svg-edit > check tool_shape #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
-        transform="rotate(43.2545 208.997 209.008)"
+        transform="rotate(48.8014 208.997 209.008)"
       ></path>
     </g>
   </svg>
@@ -52,8 +51,7 @@ exports[`use all parts of svg-edit > check tool_image #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
-        transform="rotate(43.2545 208.997 209.008)"
+        transform="rotate(48.8014 208.997 209.008)"
       ></path>
       <image
         height="20"

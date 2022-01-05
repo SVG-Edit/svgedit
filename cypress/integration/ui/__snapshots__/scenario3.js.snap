@@ -29,7 +29,6 @@ exports[`use all parts of svg-edit > check tool_path #0`] = `
         id="svg_1"
         opacity="0.5"
         stroke="#000000"
-        stroke-width="5"
       >
         <animate
           attributeName="opacity"
@@ -59,7 +58,6 @@ exports[`use all parts of svg-edit > check tool_path_change_node_xy #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
       ></path>
     </g>
   </svg>
@@ -81,7 +79,6 @@ exports[`use all parts of svg-edit > check tool_path_change_seg_type #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
       ></path>
     </g>
   </svg>
@@ -103,7 +100,6 @@ exports[`use all parts of svg-edit > check tool_path_change_clone_node #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
       ></path>
     </g>
   </svg>
@@ -125,7 +121,6 @@ exports[`use all parts of svg-edit > check tool_path_openclose #0`] = `
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
-        stroke-width="5"
       ></path>
     </g>
   </svg>
