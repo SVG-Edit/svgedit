@@ -443,13 +443,6 @@ export default {
           header.textContent = allLibs
           back.style.display = 'none'
         })
-        back.addEventListener('touchend', function () {
-          frame.setAttribute('src', 'about:blank')
-          frame.style.display = 'none'
-          libOpts.style.display = 'block'
-          header.textContent = allLibs
-          back.style.display = 'none'
-        })
         back.setAttribute('style', 'margin-right: 5px;')
         back.style.display = 'none'
 

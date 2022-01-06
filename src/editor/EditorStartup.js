@@ -1,5 +1,4 @@
 /* globals seConfirm seAlert */
-import './touch.js'
 import { convertUnit } from '../common/units.js'
 import {
   putLocale

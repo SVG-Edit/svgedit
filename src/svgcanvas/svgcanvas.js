@@ -7,7 +7,6 @@
  * @copyright 2010 Alexis Deveria, 2010 Pavol Rusnak, 2010 Jeff Schiller, 2021 OptimistikSAS
  *
  */
-
 import { Canvg as canvg } from 'canvg'
 import 'pathseg' // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
@@ -17,6 +16,7 @@ import * as draw from './draw.js'
 import {
   init as pasteInit, pasteElementsMethod
 } from './paste-elem.js'
+import { init as touchInit } from './touch.js'
 import { svgRootElement } from './svgroot.js'
 import {
   init as undoInit, changeSelectedAttributeNoUndoMethod,
@@ -162,6 +162,7 @@ class SvgCanvas {
     container.append(this.svgroot)
     // The actual element that represents the final output SVG element.
     this.svgContent = this.svgdoc.createElementNS(NS.SVG, 'svg')
+    touchInit(this)
     clearInit(this)
     this.clearSvgContentElement()
     // Current `draw.Drawing` object.

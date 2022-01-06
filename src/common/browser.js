@@ -15,7 +15,6 @@ const isWebkit_ = userAgent.includes('AppleWebKit')
 const isGecko_ = userAgent.includes('Gecko/')
 const isChrome_ = userAgent.includes('Chrome/')
 const isMac_ = userAgent.includes('Macintosh')
-const isTouch_ = 'ontouchstart' in window
 
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
@@ -60,11 +59,6 @@ export const isChrome = () => isChrome_
  * @returns {boolean}
 */
 export const isMac = () => isMac_
-/**
- * @function module:browser.isTouch
- * @returns {boolean}
-*/
-export const isTouch = () => isTouch_
 
 /**
  * @function module:browser.supportsGoodTextCharPos

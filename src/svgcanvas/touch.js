@@ -4,7 +4,7 @@
  * @param {Event} ev
  * @returns {void}
  */
-function touchHandler (ev) {
+const touchHandler = (ev) => {
   const { changedTouches } = ev
   const first = changedTouches[0]
 
@@ -43,7 +43,9 @@ function touchHandler (ev) {
   }
 }
 
-document.addEventListener('touchstart', touchHandler, true)
-document.addEventListener('touchmove', touchHandler, true)
-document.addEventListener('touchend', touchHandler, true)
-document.addEventListener('touchcancel', touchHandler, true)
+export const init = (_svgCanvas) => {
+  document.addEventListener('touchstart', touchHandler, true)
+  document.addEventListener('touchmove', touchHandler, true)
+  document.addEventListener('touchend', touchHandler, true)
+  document.addEventListener('touchcancel', touchHandler, true)
+}

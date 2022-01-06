@@ -16,7 +16,6 @@
 import './components/index.js'
 import './dialogs/index.js'
 
-import './touch.js'
 import { isMac } from '../common/browser.js'
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js'
