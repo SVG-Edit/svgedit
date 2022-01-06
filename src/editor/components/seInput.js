@@ -1,6 +1,7 @@
-import 'elix/define/Input.js';
+import 'elix/define/Input.js'
+import { t } from '../locale.js'
 
-const template = document.createElement('template');
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   div {
@@ -23,6 +24,7 @@ template.innerHTML = `
   elix-input {
     background-color: var(--input-color);
     border-radius: 3px;
+    height: 24px;
   }
   </style>
   <div>
@@ -30,7 +32,7 @@ template.innerHTML = `
   <span id="label">label</span>
   <elix-input></elix-input>
   </div>
-`;
+`
 
 /**
  * @class SEInput
@@ -40,23 +42,26 @@ export class SEInput extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
-    this.$img = this._shadowRoot.querySelector('img');
-    this.$label = this.shadowRoot.getElementById('label');
-    this.$event = new CustomEvent('change');
-    this.$input = this._shadowRoot.querySelector('elix-input');
+    this.$div = this._shadowRoot.querySelector('div')
+    this.$img = this._shadowRoot.querySelector('img')
+    this.$label = this.shadowRoot.getElementById('label')
+    this.$event = new CustomEvent('change')
+    this.$input = this._shadowRoot.querySelector('elix-input')
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'value', 'label', 'src', 'size' ];
+    return ['value', 'label', 'src', 'size', 'title']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -65,34 +70,53 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'src':
-      this.$img.setAttribute('src', newValue);
-      this.$label.remove();
-      break;
-    case 'size':
-      this.$input.setAttribute('size', newValue);
-      break;
-    case 'label':
-      this.$label.textContent = newValue;
-      this.$img.remove();
-      break;
-    case 'value':
-      this.$input.value = newValue;
-      break;
-    default:
-      // eslint-disable-next-line no-console
-      console.error(`unknown attribute: ${name}`);
-      break;
+      case 'title':
+        this.$div.setAttribute('title', `${t(newValue)}`)
+        break
+      case 'src':
+        this.$img.setAttribute('src', newValue)
+        this.$label.remove()
+        break
+      case 'size':
+        this.$input.setAttribute('size', newValue)
+        break
+      case 'label':
+        this.$label.textContent = t(newValue)
+        this.$img.remove()
+        break
+      case 'value':
+        this.$input.value = newValue
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title')
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value)
+  }
+
   /**
    * @function get
    * @returns {any}
    */
   get label () {
-    return this.getAttribute('label');
+    return this.getAttribute('label')
   }
 
   /**
@@ -100,14 +124,15 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   set label (value) {
-    this.setAttribute('label', value);
+    this.setAttribute('label', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get value () {
-    return this.$input.value;
+    return this.$input.value
   }
 
   /**
@@ -115,14 +140,15 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   set value (value) {
-    this.$input.value = value;
+    this.$input.value = value
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get src () {
-    return this.getAttribute('src');
+    return this.getAttribute('src')
   }
 
   /**
@@ -130,7 +156,7 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   set src (value) {
-    this.setAttribute('src', value);
+    this.setAttribute('src', value)
   }
 
   /**
@@ -138,7 +164,7 @@ export class SEInput extends HTMLElement {
    * @returns {any}
    */
   get size () {
-    return this.getAttribute('size');
+    return this.getAttribute('size')
   }
 
   /**
@@ -146,7 +172,7 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   set size (value) {
-    this.setAttribute('size', value);
+    this.setAttribute('size', value)
   }
 
   /**
@@ -154,12 +180,17 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.addEventListener('change', (e) => {
-      e.preventDefault();
-      this.value = e.target.value;
-    });
-    this.dispatchEvent(this.$event);
+    this.$input.addEventListener('change', (e) => {
+      e.preventDefault()
+      this.value = e.target.value
+      this.dispatchEvent(this.$event)
+    })
+    this.$input.addEventListener('keyup', (e) => {
+      e.preventDefault()
+      this.value = e.target.value
+      this.dispatchEvent(this.$event)
+    })
   }
 }
 // Register
-customElements.define('se-input', SEInput);
+customElements.define('se-input', SEInput)

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
@@ -11,6 +11,6 @@
 // ***********************************************************
 
 require('@babel/register')({
-  plugins: [ '@babel/plugin-transform-modules-commonjs' ]
-});
-module.exports = require('./main.js').default;
+  plugins: ['@babel/plugin-transform-modules-commonjs']
+})
+module.exports = require('./main.js').default

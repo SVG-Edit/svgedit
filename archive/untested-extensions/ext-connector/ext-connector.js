@@ -31,7 +31,6 @@ export default {
     const { svgCanvas } = svgEditor;
     const { getElem, $id, mergeDeep } = svgCanvas;
     const { svgroot } = S;
-    const { imgPath } = svgEditor.configObj.curConfig;
     const addElem = svgCanvas.addSVGElementFromJson;
     const selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);
@@ -136,11 +135,7 @@ export default {
       } catch (err) {
         // Should only occur in FF which formats points attr as "n,n n,n", so just split
         const ptArr = elem.getAttribute('points').split(' ');
-        for (let i = 0; i < ptArr.length; i++) {
-          if (i === pos) {
-            ptArr[i] = x + ',' + y;
-          }
-        }
+        ptArr[pos] = x + ',' + y;
         elem.setAttribute('points', ptArr.join(' '));
       }
 
@@ -208,7 +203,7 @@ export default {
         let addThis;
         // Grab the ends
         const parts = [];
-        [ 'start', 'end' ].forEach(function (pos, i) {
+        [ 'start', 'end' ].forEach( (pos, i) => {
           const key = 'c_' + pos;
           let part = dataStorage.get(ethis, key);
           if (part === null || part === undefined) { // Does this ever return nullish values?
@@ -358,14 +353,16 @@ export default {
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
-        const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
+        const btitle = `${name}:langListTitle`;
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
-        <se-button id="mode_connect" title="${btitle}" src="${imgPath}/conn.svg"></se-button>
+        <se-button id="mode_connect" title="${btitle}" src="conn.svg"></se-button>
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 13);
         $id('mode_connect').addEventListener("click", () => {
-          svgCanvas.setMode('connector');
+          if (this.leftPanel.updateLeftPanel("ext-panning")) {
+            svgCanvas.setMode('connector');
+          }
         });
       },
       /* async */ addLangData({ _lang }) { // , importLocale: importLoc
@@ -458,7 +455,7 @@ export default {
             if (elem && dataStorage.has(elem, 'c_start')) {
               // Remove the "translate" transform given to move
               svgCanvas.removeFromSelection([ elem ]);
-              svgCanvas.getTransformList(elem).clear();
+              elem.transform.baseVal.clear();
             }
           }
           if (connections.length) {

@@ -1,0 +1,76 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_shape #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m208.99747,203.82033c4.11769,-11.81303 20.25091,0 0,15.18818c-20.25091,-15.18818 -4.11769,-27.00122 0,-15.18818z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+        transform="rotate(48.8014 208.997 209.008)"
+      ></path>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_image #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m208.99747,203.82033c4.11769,-11.81303 20.25091,0 0,15.18818c-20.25091,-15.18818 -4.11769,-27.00122 0,-15.18818z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+        transform="rotate(48.8014 208.997 209.008)"
+      ></path>
+      <image
+        height="20"
+        id="svg_2"
+        opacity="0.5"
+        width="20"
+        x="295"
+        xlink:href="./images/logo.svg"
+        y="295"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </image>
+    </g>
+  </svg>
+</body>
+`;

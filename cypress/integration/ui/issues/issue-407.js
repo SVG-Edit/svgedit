@@ -1,15 +1,15 @@
 import {
   visitAndApproveStorage
-} from '../../../support/ui-test-helper.js';
+} from '../../../support/ui-test-helper.js'
 
 // See https://github.com/SVG-Edit/svgedit/issues/407
 describe('Fix issue 407', function () {
   beforeEach(() => {
-    visitAndApproveStorage();
-  });
+    visitAndApproveStorage()
+  })
 
   it('can enter edit on text child', function () {
-    cy.get('#tool_source').click();
+    cy.get('#tool_source').click()
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
@@ -20,16 +20,16 @@ describe('Fix issue 407', function () {
         <text fill="#000000" id="a_text" text-anchor="middle" x="260.5" xml:space="preserve" y="192.5">hello</text>
        </g>
       </g>
-     </svg>`, { force: true, parseSpecialCharSequences: false });
-    cy.get('#tool_source_save').click();
-    cy.get('#svg_1').click().dblclick();
-    cy.get('#a_text').should('exist');
+     </svg>`, { force: true, parseSpecialCharSequences: false })
+    cy.get('#tool_source_save').click()
+    cy.get('#svg_1').click().dblclick()
+    cy.get('#a_text').should('exist')
     cy.get('#a_text')
       .trigger('mousedown', { which: 1, force: true })
       .trigger('mouseup', { force: true })
-      .dblclick({ force: true });
+      .dblclick({ force: true })
     // svgedit use the #text text field to capture the text
-    cy.get('#text').type('1234', { force: true });
-    cy.get('#a_text').should('have.text', 'he1234llo');
-  });
-});
+    cy.get('#text').type('1234', { force: true })
+    cy.get('#a_text').should('have.text', 'he1234llo')
+  })
+})

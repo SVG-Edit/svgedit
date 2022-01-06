@@ -1,11 +1,20 @@
 # SVG-Edit CHANGES
-
-## 7.0.0 (preview - work in progress)
+## 7.1.1
+- Fix an issue when moving a text with an existing transformation (issue #689)
+## 7.1.0
+- Large refactoring of svgcanvas (a lot of remaining work with the goal to separate in its own package).This explains the move to a minor version 
+- move to a new linter (standard).
+- Several issues fixed
+## 7.0.2
+- create an IIFE build.
+## 7.0.1
+- remove ext-overview in default extensions for performance reasons
+## 7.0.0
 - New UI
 - Rearchitecture the code (more modular)
-- simplify and refresh the build process
+- Simplify and refresh the build process
 - Introduce Web Component to replace jQuery UI
-- update dependencies
+- Update dependencies
 ## 6.0.0 (unreleased)
 
 - Project: Add `FUNDING.yml` to accept contributions

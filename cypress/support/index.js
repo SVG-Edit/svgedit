@@ -14,7 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands.js';
+import './commands.js'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -29,23 +29,17 @@ import './commands.js';
  * @see https://github.com/cypress-io/cypress-fiddle
  * @example import {testExamples} from '@cypress/fiddle';
  */
-import '@cypress/fiddle';
+import '@cypress/fiddle'
 
 /**
  * COVERAGE.
  * @see https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
  */
-import '@cypress/code-coverage/support.js';
-
-/**
- * ACCESSIBILITY.
- * @see https://www.npmjs.com/package/cypress-axe
- */
-import 'cypress-axe';
+import '@cypress/code-coverage/support.js'
 
 /*****
  * SNAPSHOTS
  * @see https://www.npmjs.com/package/cypress-plugin-snapshots
  */
 
-import 'cypress-plugin-snapshots/commands.js';
+import 'cypress-plugin-snapshots/commands.js'

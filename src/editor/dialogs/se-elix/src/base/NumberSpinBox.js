@@ -1,13 +1,12 @@
-/* eslint-disable class-methods-use-this */
 import {
   defaultState,
   setState,
   state,
   stateEffects
-} from 'elix/src/base/internal.js';
+} from 'elix/src/base/internal.js'
 import {
   SpinBox
-} from 'elix/src/base/SpinBox.js';
+} from 'elix/src/base/SpinBox.js'
 
 /**
  * @class NumberSpinBox
@@ -22,15 +21,16 @@ class NumberSpinBox extends SpinBox {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (name === 'max') {
-      this.max = parseFloat(newValue);
+      this.max = parseFloat(newValue)
     } else if (name === 'min') {
-      this.min = parseFloat(newValue);
+      this.min = parseFloat(newValue)
     } else if (name === 'step') {
-      this.step = parseFloat(newValue);
+      this.step = parseFloat(newValue)
     } else {
-      super.attributeChangedCallback(name, oldValue, newValue);
+      super.attributeChangedCallback(name, oldValue, newValue)
     }
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
@@ -40,7 +40,7 @@ class NumberSpinBox extends SpinBox {
       max: null,
       min: null,
       step: 1
-    });
+    })
   }
 
   /**
@@ -55,7 +55,7 @@ class NumberSpinBox extends SpinBox {
    * @returns {number}
    */
   formatValue (value, precision) {
-    return Number(value).toFixed(precision);
+    return Number(value).toFixed(precision)
   }
 
   /**
@@ -65,8 +65,9 @@ class NumberSpinBox extends SpinBox {
    * @default 1
    */
   get max () {
-    return this[state].max;
+    return this[state].max
   }
+
   /**
    * The maximum allowable value of the `value` property.
    *
@@ -76,7 +77,7 @@ class NumberSpinBox extends SpinBox {
   set max (max) {
     this[setState]({
       max
-    });
+    })
   }
 
   /**
@@ -86,8 +87,9 @@ class NumberSpinBox extends SpinBox {
    * @default 1
    */
   get min () {
-    return this[state].min;
+    return this[state].min
   }
+
   /**
    * @function set
    * @returns {void}
@@ -95,7 +97,7 @@ class NumberSpinBox extends SpinBox {
   set min (min) {
     this[setState]({
       min
-    });
+    })
   }
 
   /**
@@ -105,9 +107,10 @@ class NumberSpinBox extends SpinBox {
    * @returns {int}
    */
   parseValue (value, precision) {
-    const parsed = precision === 0 ? parseInt(value) : parseFloat(value);
-    return isNaN(parsed) ? 0 : parsed;
+    const parsed = precision === 0 ? parseInt(value) : parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
   }
+
   /**
    * @function stateEffects
    * @param {any} state
@@ -115,19 +118,19 @@ class NumberSpinBox extends SpinBox {
    * @returns {any}
    */
   [stateEffects] (state, changed) {
-    const effects = super[stateEffects];
+    const effects = super[stateEffects]
     // If step changed, calculate its precision (number of digits after
     // the decimal).
     if (changed.step) {
       const {
         step
-      } = state;
-      const decimalRegex = /\.(\d)+$/;
-      const match = decimalRegex.exec(String(step));
-      const precision = match && match[1] ? match[1].length : 0;
+      } = state
+      const decimalRegex = /\.(\d)+$/
+      const match = decimalRegex.exec(String(step))
+      const precision = match && match[1] ? match[1].length : 0
       Object.assign(effects, {
         precision
-      });
+      })
     }
 
     if (changed.max || changed.min || changed.value) {
@@ -141,41 +144,41 @@ class NumberSpinBox extends SpinBox {
         min,
         precision,
         value
-      } = state;
-      const parsed = parseInt(value, precision);
+      } = state
+      const parsed = parseInt(value, precision)
       if (value !== '' && isNaN(parsed)) {
         Object.assign(effects, {
           valid: false,
           validationMessage: 'Value must be a number'
-        });
+        })
       } else if (!(max === null || parsed <= max)) {
         Object.assign(effects, {
           valid: false,
           validationMessage: `Value must be less than or equal to ${max}.`
-        });
+        })
       } else if (!(min === null || parsed >= min)) {
         Object.assign(effects, {
           valid: false,
           validationMessage: `Value must be greater than or equal to ${min}.`
-        });
+        })
       } else {
         Object.assign(effects, {
           valid: true,
           validationMessage: ''
-        });
+        })
       }
       // We can only go up if we're below max.
       Object.assign(effects, {
         canGoUp: isNaN(parsed) || state.max === null || parsed <= state.max
-      });
+      })
 
       // We can only go down if we're above min.
       Object.assign(effects, {
         canGoDown: isNaN(parsed) || state.min === null || parsed >= state.min
-      });
+      })
     }
 
-    return effects;
+    return effects
   }
 
   /**
@@ -183,8 +186,9 @@ class NumberSpinBox extends SpinBox {
    * @returns {any}
    */
   get step () {
-    return this[state].step;
+    return this[state].step
   }
+
   /**
    * @function set
    * @returns {void}
@@ -193,7 +197,7 @@ class NumberSpinBox extends SpinBox {
     if (!isNaN(step)) {
       this[setState]({
         step
-      });
+      })
     }
   }
 
@@ -202,21 +206,21 @@ class NumberSpinBox extends SpinBox {
    * @returns {void}
    */
   stepDown () {
-    super.stepDown();
+    super.stepDown()
     const {
       max,
       precision,
       value
-    } = this[state];
-    let result = this.parseValue(value, precision) - this.step;
+    } = this[state]
+    let result = this.parseValue(value, precision) - this.step
     if (max !== null) {
-      result = Math.min(result, max);
+      result = Math.min(result, max)
     }
     const {
       min
-    } = this[state];
+    } = this[state]
     if (min === null || result >= min) {
-      this.value = this.formatValue(result, precision);
+      this.value = this.formatValue(result, precision)
     }
   }
 
@@ -225,23 +229,23 @@ class NumberSpinBox extends SpinBox {
    * @returns {void}
    */
   stepUp () {
-    super.stepUp();
+    super.stepUp()
     const {
       min,
       precision,
       value
-    } = this[state];
-    let result = this.parseValue(value, precision) + this.step;
+    } = this[state]
+    let result = this.parseValue(value, precision) + this.step
     if (min !== null) {
-      result = Math.max(result, min);
+      result = Math.max(result, min)
     }
     const {
       max
-    } = this[state];
+    } = this[state]
     if (max === null || result <= max) {
-      this.value = this.formatValue(result, precision);
+      this.value = this.formatValue(result, precision)
     }
   }
 }
 
-export default NumberSpinBox;
+export default NumberSpinBox

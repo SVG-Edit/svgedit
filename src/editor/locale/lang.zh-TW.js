@@ -69,9 +69,13 @@ export default {
     straight_segments: '直線',
     curve_segments: '曲線',
     text_contents: '更改文字內容',
+    font_family_label: 'Font:',
     font_family: '更改字體',
     font_size: '更改字體大小',
     bold: '粗體',
+    text_decoration_underline: 'Underline',
+    text_decoration_linethrough: 'Line-Through',
+    text_decoration_overline: 'Overline',
     italic: '斜體',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
@@ -111,7 +115,7 @@ export default {
     open_doc: '打開圖像',
     export_img: 'Export',
     save_doc: '保存圖像',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: '底部對齊',
     align_center: '居中對齊',
@@ -290,4 +294,4 @@ export default {
     editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
     source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
-};
+}

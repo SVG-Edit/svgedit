@@ -69,9 +69,13 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Keisti teksto turinys',
+    font_family_label: 'Font:',
     font_family: 'Pakeistišriftą Šeima',
     font_size: 'Change font size',
     bold: 'Pusjuodis',
+    text_decoration_underline: 'Underline',
+    text_decoration_linethrough: 'Line-Through',
+    text_decoration_overline: 'Overline',
     italic: 'Kursyvas',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
@@ -107,11 +111,8 @@ export default {
     largest_object: 'didžiausias objektas',
     selected_objects: 'išrinktas objektai',
     smallest_object: 'mažiausias objektą',
-    new_doc: 'New Image',
-    open_doc: 'Atidaryti atvaizdą',
     export_img: 'Export',
-    save_doc: 'Išsaugoti nuotrauką',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Lygiuoti apačioje',
     align_center: 'Lygiuoti',
@@ -290,4 +291,4 @@ export default {
     editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
     source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
-};
+}
