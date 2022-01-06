@@ -5,6 +5,7 @@
  * @returns {void}
  */
 const touchHandler = (ev) => {
+  ev.preventDefault()
   const { changedTouches } = ev
   const first = changedTouches[0]
 
@@ -39,13 +40,12 @@ const touchHandler = (ev) => {
   })
   if (changedTouches.length < 2) {
     first.target.dispatchEvent(simulatedEvent)
-    ev.preventDefault()
   }
 }
 
-export const init = (_svgCanvas) => {
-  document.addEventListener('touchstart', touchHandler, true)
-  document.addEventListener('touchmove', touchHandler, true)
-  document.addEventListener('touchend', touchHandler, true)
-  document.addEventListener('touchcancel', touchHandler, true)
+export const init = (svgCanvas) => {
+  svgCanvas.svgroot.addEventListener('touchstart', touchHandler)
+  svgCanvas.svgroot.addEventListener('touchmove', touchHandler)
+  svgCanvas.svgroot.addEventListener('touchend', touchHandler)
+  svgCanvas.svgroot.addEventListener('touchcancel', touchHandler)
 }
