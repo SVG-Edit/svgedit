@@ -12,7 +12,7 @@ export default {
   name: 'overview_window',
   init ({ _$ }) {
     const svgEditor = this
-    const { $id } = svgEditor.svgCanvas
+    const { $id, $click } = svgEditor.svgCanvas
     const overviewWindowGlobals = {}
 
     // Define and insert the base html element.
@@ -118,7 +118,7 @@ export default {
     const parentElem = document.querySelector('#overviewMiniView')
     dragmove(dragElem, dragElem, parentElem, onStart, onEnd, onDrag)
 
-    $id('overviewMiniView').addEventListener('click', (evt) => {
+    $click($id('overviewMiniView'), (evt) => {
       // Firefox doesn't support evt.offsetX and evt.offsetY.
       const mouseX = (evt.offsetX || evt.originalEvent.layerX)
       const mouseY = (evt.offsetY || evt.originalEvent.layerY)

@@ -16,7 +16,6 @@
 import './components/index.js'
 import './dialogs/index.js'
 
-import './touch.js'
 import { isMac } from '../common/browser.js'
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js'
@@ -29,7 +28,7 @@ import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
 import { getParentsUntil } from './components/jgraduate/Util.js'
 
-const { $id, $qa, decode64, blankPageObjectURL } = SvgCanvas
+const { $id, $qa, $click, decode64, blankPageObjectURL } = SvgCanvas
 
 /**
  *
@@ -55,6 +54,7 @@ class Editor extends EditorStartup {
     this.storagePromptState = 'ignore'
 
     this.svgCanvas = null
+    this.$click = $click
     this.isReady = false
     this.customExportImage = false
     this.customExportPDF = false

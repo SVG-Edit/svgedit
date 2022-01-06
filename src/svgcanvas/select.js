@@ -6,13 +6,14 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import { isTouch, isWebkit } from '../common/browser.js' // , isOpera
+import { isWebkit } from '../common/browser.js' // , isOpera
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
 import { transformListToTransform, transformBox, transformPoint } from './math.js'
 
 let svgCanvas
 let selectorManager_ // A Singleton
-const gripRadius = isTouch() ? 10 : 4
+// change radius if touch screen
+const gripRadius = window.ontouchstart ? 10 : 4
 
 /**
 * Private class for DOM element selection boxes.

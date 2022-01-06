@@ -25,7 +25,7 @@ export default {
   async init () {
     const svgEditor = this
     const canv = svgEditor.svgCanvas
-    const { $id } = canv
+    const { $id, $click } = canv
     const svgroot = canv.getSvgRoot()
     let lastBBox = {}
     await loadExtensionTranslation(svgEditor)
@@ -45,7 +45,7 @@ export default {
           src="shapelib.svg"></se-explorerbutton>
           `
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 9)
-          $id('tool_shapelib').addEventListener('click', () => {
+          $click($id('tool_shapelib'), () => {
             if (this.leftPanel.updateLeftPanel('tool_shapelib')) {
               canv.setMode(modeId)
             }

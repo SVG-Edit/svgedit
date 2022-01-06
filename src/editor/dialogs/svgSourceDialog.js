@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import svgSourceDialogHTML from './svgSourceDialog.html'
 
 const template = document.createElement('template')
@@ -194,9 +195,9 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       })
       this.dispatchEvent(closeEvent)
     }
-    this.$copyBtn.addEventListener('click', onCopyHandler)
-    this.$saveBtn.addEventListener('click', onSaveHandler)
-    this.$cancelBtn.addEventListener('click', onCancelHandler)
+    svgEditor.$click(this.$copyBtn, onCopyHandler)
+    svgEditor.$click(this.$saveBtn, onSaveHandler)
+    svgEditor.$click(this.$cancelBtn, onCancelHandler)
     this.$dialog.addEventListener('close', onCancelHandler)
   }
 }

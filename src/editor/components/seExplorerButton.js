@@ -280,10 +280,10 @@ export class ExplorerButton extends HTMLElement {
       }
     }
     // capture event from slots
-    this.addEventListener('click', onClickHandler)
-    this.$menu.addEventListener('click', onClickHandler)
-    this.$lib.addEventListener('click', onClickHandler)
-    this.$handle.addEventListener('click', onClickHandler)
+    svgEditor.$click(this, onClickHandler)
+    svgEditor.$click(this.$menu, onClickHandler)
+    svgEditor.$click(this.$lib, onClickHandler)
+    svgEditor.$click(this.$handle, onClickHandler)
   }
 
   /**

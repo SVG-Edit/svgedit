@@ -1,3 +1,5 @@
+/* globals svgEditor */
+
 /**
  * @file jGraduate 0.4
  *
@@ -787,7 +789,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
 
   transImg.setAttributeNS(ns.xlink, 'xlink:href', bgImage)
 
-  stopMakerSVG.addEventListener('click', function (evt) {
+  svgEditor.$click(stopMakerSVG, function (evt) {
     stopOffset = findPos(stopMakerDiv)
     const { target } = evt
     if (target.tagName === 'path') return
@@ -917,13 +919,13 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
   }
 
   // bind GUI elements
-  $this.querySelector('#' + id + '_jGraduate_Ok').addEventListener('click', function () {
+  svgEditor.$click($this.querySelector('#' + id + '_jGraduate_Ok'), function () {
     $this.paint.type = curType
     $this.paint[curType] = curGradient.cloneNode(true)
     $this.paint.solidColor = null
     okClicked()
   })
-  $this.querySelector('#' + id + '_jGraduate_Cancel').addEventListener('click', cancelClicked)
+  svgEditor.$click($this.querySelector('#' + id + '_jGraduate_Cancel'), cancelClicked)
 
   if (curType === 'radialGradient') {
     if (showFocus) {
@@ -1250,7 +1252,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     }
   }
   for (const tab of tabs) {
-    tab.addEventListener('click', onTabsClickHandler)
+    svgEditor.$click(tab, onTabsClickHandler)
   }
   const innerDivs = $this.querySelectorAll(idref + ' > div');
   [].forEach.call(innerDivs, function (innerDiv) {

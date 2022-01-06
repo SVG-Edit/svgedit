@@ -42,7 +42,7 @@ export default {
       strokeLinecap: 'butt',
       strokeLinejoin: 'miter'
     }
-    const { $id } = svgCanvas
+    const { $id, $click } = svgCanvas
 
     /**
      *
@@ -88,7 +88,7 @@ export default {
         <se-button id="tool_eyedropper" title="${title}" src="eye_dropper.svg" shortcut=${key}></se-button>
         `
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12)
-        $id('tool_eyedropper').addEventListener('click', () => {
+        $click($id('tool_eyedropper'), () => {
           if (this.leftPanel.updateLeftPanel('tool_eyedropper')) {
             svgCanvas.setMode('eyedropper')
           }

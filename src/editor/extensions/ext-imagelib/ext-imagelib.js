@@ -26,7 +26,7 @@ export default {
   name,
   async init ({ decode64, dropXMLInternalSubset }) {
     const svgEditor = this
-    const { $id } = svgEditor.svgCanvas
+    const { $id, $click } = svgEditor.svgCanvas
     const { $svgEditor } = svgEditor
     const { imgPath } = svgEditor.configObj.curConfig
 
@@ -382,8 +382,7 @@ export default {
         submit.textContent = 'Import selected'
         submit.setAttribute('style', 'position: absolute;bottom: 10px;right: -10px;')
         $id('imgbrowse').appendChild(submit)
-        submit.addEventListener('click', toggleMultiLoop)
-        submit.addEventListener('touchend', toggleMultiLoop)
+        $click(submit, toggleMultiLoop)
       }
       submit.style.display = (show) ? 'block' : 'none'
       preview.style.display = (show) ? 'block' : 'none'
@@ -424,10 +423,7 @@ export default {
         const button = document.createElement('button')
         button.innerHTML = svgEditor.i18next.t('common.cancel')
         browser.appendChild(button)
-        button.addEventListener('click', function () {
-          $id('imgbrowse_holder').style.display = 'none'
-        })
-        button.addEventListener('touchend', function () {
+        $click(button, function () {
           $id('imgbrowse_holder').style.display = 'none'
         })
         button.setAttribute('style', 'position: absolute;top: 5px;right: 10px;')
@@ -440,14 +436,7 @@ export default {
         back.style.visibility = 'hidden'
         back.innerHTML = `<img class="svg_icon" src="${imgPath}/library.svg" alt="icon" width="16" height="16" />` + svgEditor.i18next.t(`${name}:show_list`)
         leftBlock.appendChild(back)
-        back.addEventListener('click', function () {
-          frame.setAttribute('src', 'about:blank')
-          frame.style.display = 'none'
-          libOpts.style.display = 'block'
-          header.textContent = allLibs
-          back.style.display = 'none'
-        })
-        back.addEventListener('touchend', function () {
+        $click(back, function () {
           frame.setAttribute('src', 'about:blank')
           frame.style.display = 'none'
           libOpts.style.display = 'block'
@@ -483,14 +472,7 @@ export default {
           const li = document.createElement('li')
           libOpts.appendChild(li)
           li.textContent = name
-          li.addEventListener('click', function () {
-            frame.setAttribute('src', url)
-            frame.style.display = 'block'
-            header.textContent = name
-            libOpts.style.display = 'none'
-            back.style.display = 'block'
-          })
-          li.addEventListener('touchend', function () {
+          $click(li, function () {
             frame.setAttribute('src', url)
             frame.style.display = 'block'
             header.textContent = name
@@ -516,7 +498,7 @@ export default {
         <se-menu-item id="tool_imagelib" label="${key}" src="library.svg"></se-menu-item>
         `
         insertAfter($id('tool_export'), buttonTemplate.content.cloneNode(true))
-        $id('tool_imagelib').addEventListener('click', () => {
+        $click($id('tool_imagelib'), () => {
           showBrowser()
         })
 

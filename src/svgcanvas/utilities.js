@@ -1136,7 +1136,7 @@ export const snapToGrid = (value) => {
  * @returns {void}
  */
 export const preventClickDefault = (img) => {
-  img.addEventListener('click', (e) => {
+  $click(img, (e) => {
     e.preventDefault()
   })
 }
@@ -1191,3 +1191,7 @@ export const insertChildAtIndex = (parent, child, index = 0) => {
 export const $id = (id) => document.getElementById(id)
 export const $qq = (sel) => document.querySelector(sel)
 export const $qa = (sel) => [...document.querySelectorAll(sel)]
+export const $click = (element, handler) => {
+  element.addEventListener('click', handler)
+  element.addEventListener('touchend', handler)
+}

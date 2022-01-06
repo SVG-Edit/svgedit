@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import storageDialogHTML from './storageDialog.html'
 
 const template = document.createElement('template')
@@ -101,7 +102,7 @@ export class SeStorageDialog extends HTMLElement {
         node.setAttribute('title', newValue)
         break
       default:
-      // super.attributeChangedCallback(name, oldValue, newValue);
+        // super.attributeChangedCallback(name, oldValue, newValue);
         break
     }
   }
@@ -128,17 +129,18 @@ export class SeStorageDialog extends HTMLElement {
    */
   connectedCallback () {
     const onSubmitHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {
-        detail: {
-          trigger: action,
-          select: this.$storageInput.value,
-          checkbox: this.$rememberInput.checked
-        }
-      })
+      const triggerEvent = new CustomEvent('change',
+        {
+          detail: {
+            trigger: action,
+            select: this.$storageInput.value,
+            checkbox: this.$rememberInput.checked
+          }
+        })
       this.dispatchEvent(triggerEvent)
     }
-    this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'))
-    this.$cancelBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'cancel'))
+    svgEditor.$click(this.$okBtn, (evt) => onSubmitHandler(evt, 'ok'))
+    svgEditor.$click(this.$cancelBtn, (evt) => onSubmitHandler(evt, 'cancel'))
   }
 
   /**

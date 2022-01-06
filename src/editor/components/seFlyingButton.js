@@ -280,8 +280,8 @@ export class FlyingButton extends HTMLElement {
       }
     }
     // capture event from slots
-    this.addEventListener('click', onClickHandler)
-    this.$handle.addEventListener('click', onClickHandler)
+    svgEditor.$click(this, onClickHandler)
+    svgEditor.$click(this.$handle, onClickHandler)
   }
 }
 

@@ -288,7 +288,7 @@ export const textActionsMethod = (function () {
     setSelection(first, last)
 
     // Set tripleclick
-    evt.target.addEventListener('click', selectAll)
+    svgCanvas.$click(evt.target, selectAll)
 
     setTimeout(function () {
       evt.target.removeEventListener('click', selectAll)

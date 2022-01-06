@@ -1,3 +1,4 @@
+/* globals svgEditor */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *
@@ -1462,12 +1463,12 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     activePreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent'
     currentPreview = preview.querySelector('#Current')
     currentPreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent'
-    currentPreview.addEventListener('click', currentClicked)
+    svgEditor.$click(currentPreview, currentClicked)
     setAlpha.call(that, currentPreview, toFixedNumeric((color.current.val('a') * 100) / 255, 4))
     okButton = button.querySelector('#Ok')
-    okButton.addEventListener('click', okClicked)
+    svgEditor.$click(okButton, okClicked)
     cancelButton = button.querySelector('#Cancel')
-    cancelButton.addEventListener('click', cancelClicked)
+    svgEditor.$click(cancelButton, cancelClicked)
     grid = button.querySelector('#Grid')
     setTimeout(function () {
       setImg.call(that, colorMapL1, images.clientPath + 'Maps.png')
@@ -1483,7 +1484,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     }, 0)
     const radioInputs = tbody.querySelectorAll('td.Radio input')
     for (const radioInput of radioInputs) {
-      radioInput.addEventListener('click', radioClicked)
+      svgEditor.$click(radioInput, radioClicked)
     }
     // initialize quick list
     if (color.quickList && color.quickList.length > 0) {
@@ -1509,7 +1510,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       // grid.html(html);
       const QuickColorSels = grid.querySelectorAll('.QuickColor')
       for (const QuickColorSel of QuickColorSels) {
-        QuickColorSel.addEventListener('click', quickPickClicked)
+        svgEditor.$click(QuickColorSel, quickPickClicked)
       }
     }
     setColorMode.call(that, settings.color.mode)
@@ -1526,7 +1527,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (all ? all.a : 0)) * 100) / 255, 4))
       iconImage = that.icon.querySelector('.Image')
       iconImage.style.backgroundImage = 'url(\'' + images.clientPath + images.picker.file + '\')'
-      iconImage.addEventListener('click', iconImageClicked)
+      svgEditor.$click(iconImage, iconImageClicked)
       if (win.bindToInput && win.updateInputColor) {
         win.input.style.backgroundColor = (hex && '#' + hex) || 'transparent'
         win.input.style.color = isNullish(all) || all.v > 75 ? '#000000' : '#ffffff'

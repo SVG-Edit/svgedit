@@ -7,7 +7,6 @@
  * @copyright 2010 Alexis Deveria, 2010 Pavol Rusnak, 2010 Jeff Schiller, 2021 OptimistikSAS
  *
  */
-
 import { Canvg as canvg } from 'canvg'
 import 'pathseg' // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
@@ -17,6 +16,7 @@ import * as draw from './draw.js'
 import {
   init as pasteInit, pasteElementsMethod
 } from './paste-elem.js'
+import { init as touchInit } from './touch.js'
 import { svgRootElement } from './svgroot.js'
 import {
   init as undoInit, changeSelectedAttributeNoUndoMethod,
@@ -45,7 +45,7 @@ import {
   getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, init as utilsInit,
   getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, blankPageObjectURL,
-  $id, $qa, $qq, getFeGaussianBlur, stringToHTML, insertChildAtIndex
+  $id, $qa, $qq, $click, getFeGaussianBlur, stringToHTML, insertChildAtIndex
 } from './utilities.js'
 import {
   matrixMultiply, hasMatrixTransform, transformListToTransform
@@ -162,6 +162,7 @@ class SvgCanvas {
     container.append(this.svgroot)
     // The actual element that represents the final output SVG element.
     this.svgContent = this.svgdoc.createElementNS(NS.SVG, 'svg')
+    touchInit(this)
     clearInit(this)
     this.clearSvgContentElement()
     // Current `draw.Drawing` object.
@@ -243,7 +244,7 @@ class SvgCanvas {
     }
     container.addEventListener('mousedown', this.mouseDownEvent)
     container.addEventListener('mousemove', this.mouseMoveEvent)
-    container.addEventListener('click', handleLinkInCanvas)
+    $click(container, handleLinkInCanvas)
     container.addEventListener('dblclick', this.dblClickEvent)
     container.addEventListener('mouseup', this.mouseUpEvent)
     container.addEventListener('mouseleave', this.mouseOutEvent)
@@ -947,6 +948,7 @@ class SvgCanvas {
     this.$id = $id
     this.$qq = $qq
     this.$qa = $qa
+    this.$click = $click
   }
 } // End class
 
@@ -955,6 +957,7 @@ class SvgCanvas {
 SvgCanvas.$id = $id
 SvgCanvas.$qq = $qq
 SvgCanvas.$qa = $qa
+SvgCanvas.$click = $click
 SvgCanvas.encode64 = encode64
 SvgCanvas.decode64 = decode64
 SvgCanvas.mergeDeep = mergeDeep

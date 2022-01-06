@@ -27,7 +27,7 @@ export default {
     const svgEditor = this
     await loadExtensionTranslation(svgEditor)
     const { svgCanvas } = svgEditor
-    const { $id, NS } = svgCanvas
+    const { $id, $click, NS } = svgCanvas
     const svgdoc = $id('svgcanvas').ownerDocument
     const { assignAttributes } = svgCanvas
     const hcanvas = document.createElement('canvas')
@@ -165,7 +165,7 @@ export default {
           <se-button id="view_grid" title="${title}" src="grid.svg"></se-button>
         `
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true))
-        $id('view_grid').addEventListener('click', () => {
+        $click($id('view_grid'), () => {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid
           gridUpdate()
         })

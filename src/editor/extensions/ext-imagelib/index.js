@@ -1,6 +1,8 @@
+/* globals svgEditor */
+
 const atags = document.querySelectorAll('a')
 Array.prototype.forEach.call(atags, function (aEle) {
-  aEle.addEventListener('click', function (event) {
+  svgEditor.$click(aEle, function (event) {
     event.preventDefault()
     const { href } = event.currentTarget
     const target = window.parent

@@ -3,7 +3,7 @@ import SvgCanvas from '../svgcanvas/svgcanvas.js'
 import { convertUnit, isValidUnit } from '../common/units.js'
 import { isChrome } from '../common/browser.js'
 
-const { $id } = SvgCanvas
+const { $id, $click } = SvgCanvas
 const homePage = 'https://github.com/SVG-Edit/svgedit'
 
 /**
@@ -283,7 +283,7 @@ class MainMenu {
     /**
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
-    $id('tool_export').addEventListener('click', function () {
+    $click($id('tool_export'), function () {
       document
         .getElementById('se-export-dialog')
         .setAttribute('dialog', 'open')
