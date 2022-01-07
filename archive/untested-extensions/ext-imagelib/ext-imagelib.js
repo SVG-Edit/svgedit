@@ -39,11 +39,6 @@ export default {
         name: svgEditor.i18next.t(`${name}:imgLibs_0_name`),
         url: 'extensions/ext-imagelib/index.html',
         description: svgEditor.i18next.t(`${name}:imgLibs_0_description`)
-      },
-      {
-        name: svgEditor.i18next.t(`${name}:imgLibs_1_name`),
-        url: 'https://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php?svgedit=3',
-        description: svgEditor.i18next.t(`${name}:imgLibs_1_description`)
       }
     ]
 

@@ -11,11 +11,6 @@
 import i18next from 'i18next'
 
 /**
- * Used, for example, in the ImageLibs extension, to present libraries
- * (with name/URL/description) in order.
- * @typedef {GenericArray<module:locale.LocaleStrings>} module:locale.LocaleArray
-*/
-/**
  * The string keys of the object are two-letter language codes.
  * @tutorial LocaleDocs
  * @typedef {PlainObject<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
