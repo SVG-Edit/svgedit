@@ -229,7 +229,7 @@ export const runExtensionsMethod = (
         }
       })
       document.dispatchEvent(event)
-    } else if (ext.action) {
+    } else if (ext[action]) {
       if (returnArray) {
         result.push(ext[action](vars))
       } else {
