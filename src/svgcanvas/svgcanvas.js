@@ -479,10 +479,6 @@ class SvgCanvas {
     this.call('cleared')
   }
 
-  runExtension (name, action, vars) {
-    return this.runExtensions(action, vars, false, (n) => n === name)
-  }
-
   async addExtension (name, extInitFunc, { importLocale }) {
     if (typeof extInitFunc !== 'function') {
       throw new TypeError('Function argument expected for `svgcanvas.addExtension`')
