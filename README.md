@@ -3,19 +3,10 @@
 # SVGEdit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
-[![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
-[![devDependencies](https://img.shields.io/david/dev/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit?type=dev)
-
-<!-- [![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Node%20CI/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
-[![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Coverage/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
--->
-[![Tests badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/tests-badge.svg?sanitize=true)](badges/tests-badge.svg)
-[![Coverage badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/coverage-badge.svg?sanitize=true)](badges/coverage-badge.svg)
-
+[![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Node%20CI/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/SVG-Edit/svgedit/badge.svg)](https://snyk.io/test/github/SVG-Edit/svgedit)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
 [![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
-
 [![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
@@ -65,6 +56,20 @@ For earlier versions of SVGEdit, please look in their respective branches.
 ## Supported browsers
     Developments and Continuous Integration are done with a **Chrome** environment. Chrome, FireFox and Safari recent versions are supported (in the meaning that we will try to fix bugs for these browsers).
     Support for old browsers may require to use an older version of the package. However, please open an issue if you need support for a specific version of your browser so the project team can decide if we should support with the latest version.
+
+## Sample extension based on React
+A sample React component was used to build a svgedit extension. 
+To activate:
+- "npm run build" from the extension folder "src/editor/react-extensions/react-test" in order to create the bundle for the extension. 
+- modify "index.html" to activate the extension as a userExtensions
+```
+svgEditor.setConfig({
+          allowInitialUserOverride: true,
+          extensions: [],
+          noDefaultExtensions: false,
+          userExtensions: ['./react-extensions/react-test/dist/react-test.js']
+        })
+```
 ## Further reading and more information
  * Participate in [discussions](https://github.com/SVG-Edit/svgedit/discussions) 
  * See [AUTHORS](AUTHORS) file for authors.
