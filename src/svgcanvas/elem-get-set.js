@@ -691,6 +691,70 @@ export const setTextAnchorMethod = (value) => {
 }
 
 /**
+ * @function module:svgcanvas.SvgCanvas#setLetterSpacingMethod Set the new letter spacing
+ * @param {string} value - The letter spacing value
+ * @returns {void}
+ */
+export const setLetterSpacingMethod = (value) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (selected?.tagName === 'text' && !selectedElements[1]) {
+    svgCanvas.changeSelectedAttribute('letter-spacing', value)
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
+ * @function module:svgcanvas.SvgCanvas#setWordSpacingMethod Set the new word spacing
+ * @param {string} value - The word spacing value
+ * @returns {void}
+ */
+export const setWordSpacingMethod = (value) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (selected?.tagName === 'text' && !selectedElements[1]) {
+    svgCanvas.changeSelectedAttribute('word-spacing', value)
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
+ * @function module:svgcanvas.SvgCanvas#setTextLengthMethod Set the new text length
+ * @param {string} value - The text length value
+ * @returns {void}
+ */
+export const setTextLengthMethod = (value) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (selected?.tagName === 'text' && !selectedElements[1]) {
+    svgCanvas.changeSelectedAttribute('textLength', value)
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
+ * @function module:svgcanvas.SvgCanvas#setLengthAdjustMethod Set the new length adjust
+ * @param {string} value - The length adjust value
+ * @returns {void}
+ */
+export const setLengthAdjustMethod = (value) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (selected?.tagName === 'text' && !selectedElements[1]) {
+    svgCanvas.changeSelectedAttribute('lengthAdjust', value)
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */

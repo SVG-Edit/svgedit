@@ -181,4 +181,33 @@ describe('use various parts of svg-edit', function () {
       .click({ force: true })
     testSnapshot()
   })
+  it('check tool_letter_spacing', function () {
+    cy.get('#svg_1').click({ force: true })
+    for (let n = 0; n < 10; n++) {
+      cy.get('#tool_letter_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+        .click({ force: true })
+    }
+    testSnapshot()
+  })
+  it('check tool_word_spacing', function () {
+    cy.get('#svg_1').click({ force: true })
+    for (let n = 0; n < 15; n++) {
+      cy.get('#tool_word_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+        .click({ force: true })
+    }
+    testSnapshot()
+  })
+  it('check tool_text_length', function () {
+    cy.get('#svg_1').click({ force: true })
+    for (let n = 0; n < 20; n++) {
+      cy.get('#tool_text_length').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+        .click({ force: true })
+    }
+    testSnapshot()
+  })
+  it('check tool_length_adjust', function () {
+    cy.get('#svg_1').click({ force: true })
+    cy.get('#tool_length_adjust').shadow().find('select').select(1)
+    testSnapshot()
+  })
 })

@@ -730,3 +730,137 @@ exports[`use various parts of svg-edit > check tool_text_decoration_overline #0`
   </svg>
 </body>
 `;
+
+exports[`use various parts of svg-edit > check tool_letter_spacing #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        letter-spacing="10"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through overline"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use various parts of svg-edit > check tool_word_spacing #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        letter-spacing="10"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through overline"
+        word-spacing="15"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use various parts of svg-edit > check tool_text_length #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        letter-spacing="10"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through overline"
+        textLength="20"
+        word-spacing="15"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use various parts of svg-edit > check tool_length_adjust #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        lengthAdjust="spacingAndGlyphs"
+        letter-spacing="10"
+        stroke="#0000bf"
+        text-anchor="middle"
+        text-decoration="underline line-through overline"
+        textLength="20"
+        word-spacing="15"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
+`;
