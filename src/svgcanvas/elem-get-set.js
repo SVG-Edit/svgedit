@@ -723,6 +723,22 @@ export const setWordSpacingMethod = (value) => {
 }
 
 /**
+ * @function module:svgcanvas.SvgCanvas#setTextLengthMethod Set the new text length
+ * @param {string} value - The text length value
+ * @returns {void}
+ */
+export const setTextLengthMethod = (value) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const selected = selectedElements[0]
+  if (selected?.tagName === 'text' && !selectedElements[1]) {
+    svgCanvas.changeSelectedAttribute('textLength', value)
+  }
+  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+    svgCanvas.textActions.setCursor()
+  }
+}
+
+/**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */

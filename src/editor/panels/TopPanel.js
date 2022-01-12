@@ -360,6 +360,7 @@ class TopPanel {
           $id('font_size').value = elem.getAttribute('font-size')
           $id('tool_letter_spacing').value = elem.getAttribute('letter-spacing') ?? 0
           $id('tool_word_spacing').value = elem.getAttribute('word-spacing') ?? 0
+          $id('tool_text_length').value = elem.getAttribute('textLength') ?? 0
           $id('text').value = elem.textContent
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
@@ -790,6 +791,13 @@ class TopPanel {
   }
 
   /**
+   * @type {module}
+   */
+  changeTextLength (e) {
+    this.editor.svgCanvas.setTextLength(e.target.value)
+  }
+
+  /**
   * Set a selected image's URL.
   * @function module:SVGthis.setImageURL
   * @param {string} url
@@ -910,6 +918,7 @@ class TopPanel {
     $id('tool_text_anchor').addEventListener('change', (evt) => this.clickTextAnchor.bind(this)(evt))
     $id('tool_letter_spacing').addEventListener('change', this.changeLetterSpacing.bind(this))
     $id('tool_word_spacing').addEventListener('change', this.changeWordSpacing.bind(this))
+    $id('tool_text_length').addEventListener('change', this.changeTextLength.bind(this))
     $click($id('tool_unlink_use'), this.clickGroup.bind(this))
     $id('image_url').addEventListener('change', (evt) => { this.setImageURL(evt.currentTarget.value) });
 
