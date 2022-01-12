@@ -81,6 +81,7 @@ export default {
     text_anchor_middle: 'Den Text zentriert ausrichten',
     text_anchor_end: 'Den Text rechtsbündig ausrichten',
     text_letter_spacing: 'Den Abstand zwischen den Buchstaben anpassen',
+    text_word_spacing: 'Den Abstand zwischen den Wörtern anpassen',
     class: 'Element class',
     serif: 'Serif',
     sans_serif: 'Sans-serif',

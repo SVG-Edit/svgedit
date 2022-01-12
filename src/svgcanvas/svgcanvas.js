@@ -905,6 +905,7 @@ class SvgCanvas {
     this.removeTextDecoration = elemGetSet.removeTextDecorationMethod // Removes the given value from the text decoration
     this.setTextAnchor = elemGetSet.setTextAnchorMethod // Set the new text anchor.
     this.setLetterSpacing = elemGetSet.setLetterSpacingMethod // Set the new letter spacing.
+    this.setWordSpacing = elemGetSet.setWordSpacingMethod // Set the new word spacing.
     this.getFontFamily = elemGetSet.getFontFamilyMethod // The current font family
     this.setFontFamily = elemGetSet.setFontFamilyMethod // Set the new font family.
     this.setFontColor = elemGetSet.setFontColorMethod // Set the new font color.

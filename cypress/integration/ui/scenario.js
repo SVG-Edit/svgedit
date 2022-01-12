@@ -189,4 +189,12 @@ describe('use various parts of svg-edit', function () {
     }
     testSnapshot()
   })
+  it('check tool_word_spacing', function () {
+    cy.get('#svg_1').click({ force: true })
+    for (let n = 0; n < 15; n++) {
+      cy.get('#tool_word_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+      .click({ force: true })
+    }
+    testSnapshot()
+  })
 })
