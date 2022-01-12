@@ -185,7 +185,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#svg_1').click({ force: true })
     for (let n = 0; n < 10; n++) {
       cy.get('#tool_letter_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-      .click({ force: true })
+        .click({ force: true })
     }
     testSnapshot()
   })
@@ -193,7 +193,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#svg_1').click({ force: true })
     for (let n = 0; n < 15; n++) {
       cy.get('#tool_word_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-      .click({ force: true })
+        .click({ force: true })
     }
     testSnapshot()
   })
@@ -201,7 +201,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#svg_1').click({ force: true })
     for (let n = 0; n < 20; n++) {
       cy.get('#tool_text_length').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-      .click({ force: true })
+        .click({ force: true })
     }
     testSnapshot()
   })
