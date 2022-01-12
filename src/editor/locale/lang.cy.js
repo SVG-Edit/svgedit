@@ -80,6 +80,7 @@ export default {
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
     text_anchor_end: 'Align the text in end',
+    text_letter_spacing: 'Change the letter spacing',
     class: 'Element class',
     serif: 'Serif',
     sans_serif: 'Sans-serif',
