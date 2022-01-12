@@ -205,4 +205,9 @@ describe('use various parts of svg-edit', function () {
     }
     testSnapshot()
   })
+  it('check tool_length_adjust', function () {
+    cy.get('#svg_1').click({ force: true })
+    cy.get('#tool_length_adjust').shadow().find('select').select(1)
+    testSnapshot()
+  })
 })

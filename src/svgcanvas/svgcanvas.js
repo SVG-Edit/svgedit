@@ -907,6 +907,7 @@ class SvgCanvas {
     this.setLetterSpacing = elemGetSet.setLetterSpacingMethod // Set the new letter spacing.
     this.setWordSpacing = elemGetSet.setWordSpacingMethod // Set the new word spacing.
     this.setTextLength = elemGetSet.setTextLengthMethod // Set the new text length.
+    this.setLengthAdjust = elemGetSet.setLengthAdjustMethod // Set the new length adjust.
     this.getFontFamily = elemGetSet.getFontFamilyMethod // The current font family
     this.setFontFamily = elemGetSet.setFontFamilyMethod // Set the new font family.
     this.setFontColor = elemGetSet.setFontColorMethod // Set the new font color.

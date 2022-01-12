@@ -162,6 +162,10 @@
     <se-spin-input size="2" id="tool_text_length" min=0 max=1000 step=1 title="properties.text_length"
                    src="text_length.svg"></se-spin-input>
 
+    <!-- Length Adjust -->
+    <se-select id="tool_length_adjust" label="properties.text_length_adjust"
+               options="properties.text_length_adjust_spacing,properties.text_length_adjust_spacing_and_glyphs"
+               values="spacing::spacingAndGlyphs"></se-select>
   </div>
   <!-- Not visible, but still used -->
   <input id="text" type="text" size="35"/>
