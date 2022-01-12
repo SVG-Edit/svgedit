@@ -760,11 +760,11 @@ export const convertToPath = (elem, attrs, svgCanvas) => {
     }
 
     const { nextSibling } = elem
-    batchCmd.addSubCommand(new svgCanvas.history.RemoveElementCommand(elem, nextSibling, parent))
-    batchCmd.addSubCommand(new svgCanvas.history.InsertElementCommand(path))
-
+    batchCmd.addSubCommand(new svgCanvas.history.RemoveElementCommand(elem, nextSibling, elem.parentNode))
     svgCanvas.clearSelection()
     elem.remove()
+
+    batchCmd.addSubCommand(new svgCanvas.history.InsertElementCommand(path))
     path.setAttribute('id', id)
     path.removeAttribute('visibility')
     svgCanvas.addToSelection([path], true)
