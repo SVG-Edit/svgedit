@@ -53,11 +53,7 @@ import {
 import {
   convertToNum, init as unitsInit, getTypeMap
 } from '../common/units.js'
-import {
-  svgCanvasToString, svgToString, setSvgString, exportPDF, setUseDataMethod,
-  init as svgInit, importSvgString, embedImage, rasterExport,
-  uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
-} from './svg-exec.js'
+import { init as svgInit } from './svg-exec.js'
 import {
   remapElement,
   init as coordsInit
@@ -841,11 +837,6 @@ class SvgCanvas {
     this.getIntersectionList = getIntersectionListMethod
     this.getStrokedBBox = getStrokedBBoxDefaultVisible
     this.getVisibleElements = getVisibleElements
-    this.uniquifyElems = uniquifyElemsMethod
-    this.setUseData = setUseDataMethod
-    this.convertGradients = convertGradientsMethod
-    this.setSvgString = setSvgString
-    this.importSvgString = importSvgString
     this.runExtensions = runExtensionsMethod
     this.clearSelection = clearSelectionMethod
     this.addToSelection = addToSelectionMethod
@@ -877,12 +868,6 @@ class SvgCanvas {
     this.recalculateAllSelectedDimensions = recalculateAllSelectedDimensions // Runs `recalculateDimensions` on selected elements,adding changes to a single batch command.
     this.pasteElements = pasteElementsMethod // Remembers the current selected elements on the clipboard.
     this.getMouseTarget = getMouseTargetMethod
-    this.removeUnusedDefElems = removeUnusedDefElemsMethod // remove DOM elements inside the `<defs>` if they are notreferred to,
-    this.svgCanvasToString = svgCanvasToString // Main function to set up the SVG content for output.
-    this.svgToString = svgToString // Sub function ran on each SVG element to convert it to a string as desired.
-    this.embedImage = embedImage // Converts a given image file to a data URL when possibl
-    this.rasterExport = rasterExport // Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image
-    this.exportPDF = exportPDF // Generates a PDF based on the current image, then calls "exportedPDF"
     this.identifyLayers = draw.identifyLayers
     this.createLayer = draw.createLayer
     this.cloneLayer = draw.cloneLayer
