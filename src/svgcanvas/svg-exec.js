@@ -148,7 +148,6 @@ const svgToString = (elem, indent) => {
       // Process root element separately
       const res = svgCanvas.getResolution()
 
-      const vb = ''
       // TODO: Allow this by dividing all values by current baseVal
       // Note that this also means we should properly deal with this on import
       // if (curConfig.baseUnit !== 'px') {
@@ -165,7 +164,7 @@ const svgToString = (elem, indent) => {
         res.w = convertUnit(res.w, unit) + unit
         res.h = convertUnit(res.h, unit) + unit
       }
-
+      const vb = 'viewbox= "0 0 ' + [res.w, res.h].join(' ') + '"'
       out.push(
         ' width="' +
           res.w +
