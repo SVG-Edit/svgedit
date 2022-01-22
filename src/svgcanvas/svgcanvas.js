@@ -1326,6 +1326,9 @@ class SvgCanvas {
     this.$qq = $qq
     this.$qa = $qa
     this.$click = $click
+    this.encode64 = encode64
+    this.decode64 = decode64
+    this.mergeDeep = mergeDeep
   }
 } // End class
 
