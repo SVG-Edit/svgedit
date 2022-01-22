@@ -145,7 +145,7 @@ export const svgToString = function (elem, indent) {
         res.w = convertUnit(res.w, unit) + unit
         res.h = convertUnit(res.h, unit) + unit
       }
-      const vb = 'viewbox= "0 0 ' + [res.w, res.h].join(' ') + '"'
+      const vb = 'viewbox= "0 0 ' + [res.w, res.h].join(' ') + '"' 
       out.push(' width="' + res.w + '" height="' + res.h + '" ' + vb + ' xmlns="' + NS.SVG + '"')
 
       const nsuris = {}
