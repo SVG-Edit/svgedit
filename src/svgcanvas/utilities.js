@@ -762,7 +762,7 @@ export const convertToPath = (elem, attrs, svgCanvas) => {
     const { nextSibling } = elem
     batchCmd.addSubCommand(new svgCanvas.history.RemoveElementCommand(elem, nextSibling, elem.parentNode))
     svgCanvas.clearSelection()
-    elem.remove()
+    elem.remove() // We need to remove this element otherwise the nextSibling of 'path' won't be null and an exception will be thrown after subsequent undo and redos.
 
     batchCmd.addSubCommand(new svgCanvas.history.InsertElementCommand(path))
     path.setAttribute('id', id)
