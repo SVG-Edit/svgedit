@@ -164,14 +164,13 @@ const svgToString = (elem, indent) => {
         res.w = convertUnit(res.w, unit) + unit
         res.h = convertUnit(res.h, unit) + unit
       }
-      const vb = 'viewbox= "0 0 ' + [res.w, res.h].join(' ') + '"'
+
       out.push(
         ' width="' +
           res.w +
           '" height="' +
           res.h +
           '"' +
-          vb +
           ' xmlns="' +
           NS.SVG +
           '"'
@@ -215,7 +214,7 @@ const svgToString = (elem, indent) => {
         'xmlns',
         'x',
         'y',
-        'viewBox',
+        'viewbox',
         'id',
         'overflow'
       ]
@@ -523,8 +522,8 @@ const setSvgString = (xmlString, preventUndo) => {
     let percs = false
 
     // determine proper size
-    if (content.getAttribute('viewBox')) {
-      const viBox = content.getAttribute('viewBox')
+    if (content.getAttribute('viewbox')) {
+      const viBox = content.getAttribute('viewbox')
       const vb = viBox.split(' ')
       attrs.width = vb[2]
       attrs.height = vb[3]
@@ -657,9 +656,9 @@ const importSvgString = (xmlString) => {
 
       const innerw = convertToNum('width', svg.getAttribute('width'))
       const innerh = convertToNum('height', svg.getAttribute('height'))
-      const innervb = svg.getAttribute('viewBox')
+      const innervb = svg.getAttribute('viewbox')
       // if no explicit viewbox, create one out of the width and height
-      const vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh]
+      const vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh]       
       for (j = 0; j < 4; ++j) {
         vb[j] = Number(vb[j])
       }
