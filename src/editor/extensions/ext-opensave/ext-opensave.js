@@ -159,13 +159,19 @@ export default {
         const svgContent = await blob.text()
         await svgEditor.loadSvgString(svgContent)
         svgEditor.updateCanvas()
+        handle = blob.handle
+        svgEditor.svgCanvas.runExtensions('onOpenedDocument', {
+          name: blob.name,
+          lastModified: blob.lastModified,
+          size: blob.size,
+          type: blob.type
+        })
       } catch (err) {
         if (err.name !== 'AbortError') {
           return console.error(err)
         }
       }
     }
-
     const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
       const byteCharacters = atob(b64Data)
       const byteArrays = []
@@ -225,6 +231,10 @@ export default {
               extensions: ['.svg']
             })
           }
+          svgCanvas.runExtensions('onSavedDocument', {
+            name: handle.name,
+            kind: handle.kind
+          })
         } catch (err) {
           if (err.name !== 'AbortError') {
             return console.error(err)
