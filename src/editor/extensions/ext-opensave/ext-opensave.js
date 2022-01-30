@@ -160,6 +160,7 @@ export default {
         await svgEditor.loadSvgString(svgContent)
         svgEditor.updateCanvas()
         handle = blob.handle
+        document.title = blob.name
         svgEditor.svgCanvas.runExtensions('onOpenedDocument', {
           name: blob.name,
           lastModified: blob.lastModified,
@@ -192,7 +193,7 @@ export default {
      *
      * @returns {void}
      */
-    const clickSave = async function (type, _) {
+    const clickSave = async function (type) {
       const $editorDialog = $id('se-svg-editor-dialog')
       const editingsource = $editorDialog.getAttribute('dialog') === 'open'
       if (editingsource) {
@@ -222,15 +223,16 @@ export default {
           if (type === 'save' && handle !== null) {
             const throwIfExistingHandleNotGood = false
             handle = await fileSave(blob, {
-              fileName: 'icon.svg',
+              fileName: 'untitled.svg',
               extensions: ['.svg']
             }, handle, throwIfExistingHandleNotGood)
           } else {
             handle = await fileSave(blob, {
-              fileName: 'icon.svg',
+              fileName: document.title,
               extensions: ['.svg']
             })
           }
+          document.title = handle.name
           svgCanvas.runExtensions('onSavedDocument', {
             name: handle.name,
             kind: handle.kind

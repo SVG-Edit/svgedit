@@ -17,7 +17,7 @@
  * and `imagePath`, but other currently used config in the extensions)
  * @todo We might provide control of storage settings through the UI besides the
  *   initial (or URL-forced) dialog. *
-*/
+ */
 import './storageDialog.js'
 
 /**
@@ -32,8 +32,9 @@ const removeStoragePrefCookie = () => {
  * @param {string} cookie
  * @returns {void}
  */
-const expireCookie = (cookie) => {
-  document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+const expireCookie = cookie => {
+  document.cookie =
+    encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
 }
 
 /**
@@ -42,12 +43,16 @@ const expireCookie = (cookie) => {
  * @returns {void}
  * @todo Replace the string manipulation with `searchParams.set`
  */
-const replaceStoragePrompt = (val) => {
+const replaceStoragePrompt = val => {
   val = val ? 'storagePrompt=' + val : ''
   const loc = top.location // Allow this to work with the embedded editor as well
   if (loc.href.includes('storagePrompt=')) {
-    loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
-      return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''))
+    loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (
+      n0,
+      n1,
+      amp
+    ) {
+      return (val ? n1 : '') + val + (!val && amp ? n1 : amp || '')
     })
   } else {
     loc.href += (loc.href.includes('?') ? '&' : '?') + val
@@ -87,21 +92,29 @@ export default {
 
     // manage the change in the storageDialog
 
-    storageBox.addEventListener('change', (e) => {
+    storageBox.addEventListener('change', e => {
       storageBox.setAttribute('dialog', 'close')
       if (e?.detail?.trigger === 'ok') {
         if (e?.detail?.select !== 'noPrefsOrContent') {
-          const storagePrompt = new URL(top.location).searchParams.get('storagePrompt')
-          document.cookie = 'svgeditstore=' + encodeURIComponent(e.detail.select) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
+          const storagePrompt = new URL(top.location).searchParams.get(
+            'storagePrompt'
+          )
+          document.cookie =
+            'svgeditstore=' +
+            encodeURIComponent(e.detail.select) +
+            '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
           if (storagePrompt === 'true' && e?.detail?.checkbox) {
             replaceStoragePrompt()
             return
           }
         } else {
           removeStoragePrefCookie()
-          if (svgEditor.configObj.curConfig.emptyStorageOnDecline && e?.detail?.checkbox) {
-            this.setSvgContentStorage('')
-            Object.keys(svgEditor.curPrefs).forEach((name) => {
+          if (
+            svgEditor.configObj.curConfig.emptyStorageOnDecline &&
+            e?.detail?.checkbox
+          ) {
+            setSvgContentStorage('')
+            Object.keys(svgEditor.curPrefs).forEach(name => {
               name = 'svg-edit-' + name
               if (svgEditor.storage) {
                 svgEditor.storage.removeItem(name)
@@ -125,46 +138,49 @@ export default {
     /**
      * Sets SVG content as a string with "svgedit-" and the current
      *   canvas name as namespace.
-     * @param {string} val
+     * @param {string} svgString
      * @returns {void}
      */
-    function setSvgContentStorage (val) {
-      if (storage) {
-        const name = 'svgedit-' + svgEditor.configObj.curConfig.canvasName
-        if (!val) {
-          storage.removeItem(name)
-        } else {
-          storage.setItem(name, val)
-        }
+    const setSvgContentStorage = (svgString) => {
+      const name = `svgedit-${svgEditor.configObj.curConfig.canvasName}`
+      if (!svgString) {
+        storage.removeItem(name)
+        storage.removeItem(`${name}-title`)
+      } else {
+        storage.setItem(name, svgString)
+        storage.setItem(`title-${name}`, document.title)
       }
     }
 
     /**
-    * Listen for unloading: If and only if opted in by the user, set the content
-    *   document and preferences into storage:
-    * 1. Prevent save warnings (since we're automatically saving unsaved
-    *       content into storage)
-    * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
-    * 3. Use localStorage (where available) or cookies to set preferences.
-    * @returns {void}
-    */
+     * Listen for unloading: If and only if opted in by the user, set the content
+     *   document and preferences into storage:
+     * 1. Prevent save warnings (since we're automatically saving unsaved
+     *       content into storage)
+     * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
+     * 3. Use localStorage (where available) or cookies to set preferences.
+     * @returns {void}
+     */
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function () {
         // Don't save anything unless the user opted in to storage
-        if (!(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)) {
+        if (
+          !/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/.test(
+            document.cookie
+          )
+        ) {
           return
         }
-        if ((/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie)) {
+        if (/(?:^|;\s*)svgeditstore=prefsAndContent/.test(document.cookie)) {
           setSvgContentStorage(svgCanvas.getSvgString())
         }
 
         svgEditor.setConfig({ no_save_warning: true }) // No need for explicit saving at all once storage is on
-        // svgEditor.showSaveWarning = false;
 
         const { curPrefs } = svgEditor.configObj
 
         Object.entries(curPrefs).forEach(([key, val]) => {
-          const store = (val !== undefined)
+          const store = val !== undefined
           key = 'svg-edit-' + key
           if (!store) {
             return
@@ -175,7 +191,11 @@ export default {
             window.widget.setPreferenceForKey(val, key)
           } else {
             val = encodeURIComponent(val)
-            document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
+            document.cookie =
+              encodeURIComponent(key) +
+              '=' +
+              val +
+              '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
           }
         })
       })
@@ -185,7 +205,9 @@ export default {
     return {
       name: 'storage',
       callback () {
-        const storagePrompt = new URL(top.location).searchParams.get('storagePrompt')
+        const storagePrompt = new URL(top.location).searchParams.get(
+          'storagePrompt'
+        )
         // No need to run this one-time dialog again just because the user
         //   changes the language
         if (loaded) {
@@ -197,22 +219,23 @@ export default {
         //   set to false; to avoid any chance of storage, avoid this
         //   extension! (and to avoid using any prior storage, set the
         //   config option "noStorageOnLoad" to true).
-        if (!forceStorage && (
+        if (
+          !forceStorage &&
           // If the URL has been explicitly set to always prompt the
           //  user (e.g., so one can be pointed to a URL where one
           // can alter one's settings, say to prevent future storage)...
-          storagePrompt === 'true' ||
-          (
+          (storagePrompt === 'true' ||
             // ...or...if the URL at least doesn't explicitly prevent a
             //  storage prompt (as we use for users who
             // don't want to set cookies at all but who don't want
             // continual prompts about it)...
-            storagePrompt !== 'false' &&
-            // ...and this user hasn't previously indicated a desire for storage
-            !(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)
-          )
+            (storagePrompt !== 'false' &&
+              // ...and this user hasn't previously indicated a desire for storage
+              !/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/.test(
+                document.cookie
+              )))
           // ...then show the storage prompt.
-        )) {
+        ) {
           const options = Boolean(storage)
           // Open select-with-checkbox dialog
           // From svg-editor.js
