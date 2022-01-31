@@ -33,6 +33,13 @@
   height: 100%;
 }
 
+#title_panel > p {
+  color: white;
+  padding-left: 5px;
+  padding-right: 3px;
+  font-weight: bold;
+}
+
 /* on smaller screen, allow 2 lines for the toolbar */
 @media screen and (max-width:1250px) {
   .svg_editor {
@@ -42,7 +49,7 @@
 
 /* class to open the right panel */
 .svg_editor.open {
-  grid-template-columns: 34px 15px 50px 1fr 150px;
+  grid-template-columns: 34px 15px 50px 1fr 220px;
 }
 
 #svgroot {
@@ -179,6 +186,8 @@ hr {
 
 #selLayerNames {
   display: block;
+  top: -8px;
+  position: relative;
 }
 
 /* Main button

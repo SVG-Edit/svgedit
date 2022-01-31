@@ -1,4 +1,7 @@
 # SVG-Edit CHANGES
+## 7.1.2
+- add the current document title in the toolbar
+- allow user extensions to define optional parameters
 ## 7.1.1
 - Fix an issue when moving a text with an existing transformation (issue #689)
 ## 7.1.0

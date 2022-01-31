@@ -138,6 +138,7 @@ export default {
       svgEditor.zoomImage()
       svgEditor.layersPanel.populateLayers()
       svgEditor.topPanel.updateContextPanel()
+      svgEditor.topPanel.updateTitle('untitled.svg')
       svgEditor.svgCanvas.runExtensions('onNewDocument')
     }
 
@@ -160,6 +161,7 @@ export default {
         await svgEditor.loadSvgString(svgContent)
         svgEditor.updateCanvas()
         handle = blob.handle
+        svgEditor.topPanel.updateTitle(blob.name)
         svgEditor.svgCanvas.runExtensions('onOpenedDocument', {
           name: blob.name,
           lastModified: blob.lastModified,
@@ -192,7 +194,7 @@ export default {
      *
      * @returns {void}
      */
-    const clickSave = async function (type, _) {
+    const clickSave = async function (type) {
       const $editorDialog = $id('se-svg-editor-dialog')
       const editingsource = $editorDialog.getAttribute('dialog') === 'open'
       if (editingsource) {
@@ -222,15 +224,16 @@ export default {
           if (type === 'save' && handle !== null) {
             const throwIfExistingHandleNotGood = false
             handle = await fileSave(blob, {
-              fileName: 'icon.svg',
+              fileName: 'untitled.svg',
               extensions: ['.svg']
             }, handle, throwIfExistingHandleNotGood)
           } else {
             handle = await fileSave(blob, {
-              fileName: 'icon.svg',
+              fileName: svgEditor.title,
               extensions: ['.svg']
             })
           }
+          svgEditor.topPanel.updateTitle(handle.name)
           svgCanvas.runExtensions('onSavedDocument', {
             name: handle.name,
             kind: handle.kind

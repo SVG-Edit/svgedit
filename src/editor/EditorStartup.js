@@ -630,7 +630,7 @@ class EditorStartup {
       )
       // load user extensions (given as pathNames)
       await Promise.all(
-        this.configObj.curConfig.userExtensions.map(async (extPathName) => {
+        this.configObj.curConfig.userExtensions.map(async ({ pathName, config }) => {
           /**
            * @tutorial ExtensionDocs
            * @typedef {PlainObject} module:SVGthis.ExtensionObject
@@ -641,12 +641,12 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
-            const imported = await import(encodeURI(extPathName))
+            const imported = await import(encodeURI(pathName))
             const { name, init: initfn } = imported.default
-            return this.addExtension(name, (initfn && initfn.bind(this)), {})
+            return this.addExtension(name, (initfn && initfn.bind(this, config)), {})
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.error('Extension failed to load: ' + extPathName + '; ', err)
+            console.error('Extension failed to load: ' + pathName + '; ', err)
             return undefined
           }
         })
