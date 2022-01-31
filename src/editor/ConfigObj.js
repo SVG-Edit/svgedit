@@ -351,7 +351,7 @@ export default class ConfigObj {
       const cached = this.editor.storage.getItem(name)
       if (cached) {
         this.editor.loadFromString(cached)
-        document.title = this.editor.storage.getItem(`title-${name}`) ?? 'SVG-Edit'
+        this.editor.topPanel.updateTitle(this.editor.storage.getItem(`title-${name}`) ?? 'untitled.svg')
       }
     }
 

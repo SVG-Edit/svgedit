@@ -148,7 +148,7 @@ export default {
         storage.removeItem(`${name}-title`)
       } else {
         storage.setItem(name, svgString)
-        storage.setItem(`title-${name}`, document.title)
+        storage.setItem(`title-${name}`, svgEditor.title)
       }
     }
 

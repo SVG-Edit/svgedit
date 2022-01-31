@@ -138,6 +138,7 @@ export default {
       svgEditor.zoomImage()
       svgEditor.layersPanel.populateLayers()
       svgEditor.topPanel.updateContextPanel()
+      svgEditor.topPanel.updateTitle('untitled.svg')
       svgEditor.svgCanvas.runExtensions('onNewDocument')
     }
 
@@ -160,7 +161,7 @@ export default {
         await svgEditor.loadSvgString(svgContent)
         svgEditor.updateCanvas()
         handle = blob.handle
-        document.title = blob.name
+        svgEditor.topPanel.updateTitle(blob.name)
         svgEditor.svgCanvas.runExtensions('onOpenedDocument', {
           name: blob.name,
           lastModified: blob.lastModified,
@@ -228,11 +229,11 @@ export default {
             }, handle, throwIfExistingHandleNotGood)
           } else {
             handle = await fileSave(blob, {
-              fileName: document.title,
+              fileName: svgEditor.title,
               extensions: ['.svg']
             })
           }
-          document.title = handle.name
+          svgEditor.topPanel.updateTitle(handle.name)
           svgCanvas.runExtensions('onSavedDocument', {
             name: handle.name,
             kind: handle.kind

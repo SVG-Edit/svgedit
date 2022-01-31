@@ -26,14 +26,16 @@ class TopPanel {
    */
   displayTool (className) {
     // default display is 'none' so removing the property will make the panel visible
-    $qa(`.${className}`).map((el) => el.style.removeProperty('display'))
+    $qa(`.${className}`).map(el => el.style.removeProperty('display'))
   }
 
   /**
    * @type {module}
    */
   hideTool (className) {
-    $qa(`.${className}`).forEach((el) => { el.style.display = 'none' })
+    $qa(`.${className}`).forEach(el => {
+      el.style.display = 'none'
+    })
   }
 
   /**
@@ -72,9 +74,12 @@ class TopPanel {
       this.svgCanvas.setStrokeAttr('stroke-' + pre, val)
     }
     opt.classList.add('current')
-    const elements = Array.prototype.filter.call(opt.parentNode.children, function (child) {
-      return child !== opt
-    })
+    const elements = Array.prototype.filter.call(
+      opt.parentNode.children,
+      function (child) {
+        return child !== opt
+      }
+    )
     Array.from(elements).forEach(function (element) {
       element.classList.remove('current')
     })
@@ -87,7 +92,10 @@ class TopPanel {
    * @returns {void}
    */
   update () {
-    let i; let len
+    let i
+    let len
+    // set title
+    $qa('#title_panel > p')[0].textContent = this.editor.title
     if (this.selectedElement) {
       switch (this.selectedElement.tagName) {
         case 'use':
@@ -109,15 +117,17 @@ class TopPanel {
             }
           }
 
-          $id('stroke_width').value = (gWidth === null ? '' : gWidth)
+          $id('stroke_width').value = gWidth === null ? '' : gWidth
           this.editor.bottomPanel.updateColorpickers(true)
           break
         }
         default: {
           this.editor.bottomPanel.updateColorpickers(true)
 
-          $id('stroke_width').value = this.selectedElement.getAttribute('stroke-width') || 1
-          $id('stroke_style').value = this.selectedElement.getAttribute('stroke-dasharray') || 'none'
+          $id('stroke_width').value =
+            this.selectedElement.getAttribute('stroke-width') || 1
+          $id('stroke_style').value =
+            this.selectedElement.getAttribute('stroke-dasharray') || 'none'
           $id('stroke_style').setAttribute('value', $id('stroke_style').value)
 
           let attr =
@@ -226,13 +236,14 @@ class TopPanel {
         if (['line', 'circle', 'ellipse'].includes(elname)) {
           this.hideTool('xy_panel')
         } else {
-          let x; let y
+          let x
+          let y
 
           // Get BBox vals for g, polyline and path
           if (['g', 'polyline', 'path'].includes(elname)) {
             const bb = this.editor.svgCanvas.getStrokedBBox([elem])
             if (bb) {
-              ({ x, y } = bb)
+              ;({ x, y } = bb)
             }
           } else {
             x = elem.getAttribute('x')
@@ -244,19 +255,13 @@ class TopPanel {
             y = convertUnit(y)
           }
 
-          $id('selected_x').value = (x || 0)
-          $id('selected_y').value = (y || 0)
+          $id('selected_x').value = x || 0
+          $id('selected_y').value = y || 0
           this.displayTool('xy_panel')
         }
 
         // Elements in this array cannot be converted to a path
-        if ([
-          'image',
-          'text',
-          'path',
-          'g',
-          'use'
-        ].includes(elname)) {
+        if (['image', 'text', 'path', 'g', 'use'].includes(elname)) {
           this.hideTool('tool_topath')
         } else {
           this.displayTool('tool_topath')
@@ -266,11 +271,13 @@ class TopPanel {
         } else {
           this.hideTool('tool_reorient')
         }
-        $id('tool_reorient').disabled = (angle === 0)
+        $id('tool_reorient').disabled = angle === 0
       } else {
         const point = this.path.getNodePoint()
-        $id('tool_add_subpath').pressed = false;
-        (!this.path.canDeleteNodes) ? $id('tool_node_delete').classList.add('disabled') : $id('tool_node_delete').classList.remove('disabled')
+        $id('tool_add_subpath').pressed = false
+        !this.path.canDeleteNodes
+          ? $id('tool_node_delete').classList.add('disabled')
+          : $id('tool_node_delete').classList.remove('disabled')
 
         // Show open/close button based on selected point
         // setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
@@ -281,10 +288,10 @@ class TopPanel {
             point.x = convertUnit(point.x)
             point.y = convertUnit(point.y)
           }
-          $id('path_node_x').value = (point.x)
-          $id('path_node_y').value = (point.y)
+          $id('path_node_x').value = point.x
+          $id('path_node_y').value = point.y
           if (point.type) {
-            segType.value = (point.type)
+            segType.value = point.type
             segType.removeAttribute('disabled')
           } else {
             segType.value = 4
@@ -316,9 +323,12 @@ class TopPanel {
       }
       // siblings
       if (elem.parentNode) {
-        const selements = Array.prototype.filter.call(elem.parentNode.children, function (child) {
-          return child !== elem
-        })
+        const selements = Array.prototype.filter.call(
+          elem.parentNode.children,
+          function (child) {
+            return child !== elem
+          }
+        )
         if (elem.parentNode.tagName === 'a' && !selements.length) {
           this.displayTool('a_panel')
           linkHref = this.editor.svgCanvas.getHref(elem.parentNode)
@@ -339,7 +349,7 @@ class TopPanel {
         const curPanel = panels[tagName]
         this.displayTool(tagName + '_panel')
 
-        curPanel.forEach((item) => {
+        curPanel.forEach(item => {
           let attrVal = elem.getAttribute(item)
           if (this.editor.configObj.curConfig.baseUnit !== 'px' && elem[item]) {
             const bv = elem[item].baseVal.value
@@ -352,16 +362,31 @@ class TopPanel {
           this.displayTool('text_panel')
           $id('tool_italic').pressed = this.editor.svgCanvas.getItalic()
           $id('tool_bold').pressed = this.editor.svgCanvas.getBold()
-          $id('tool_text_decoration_underline').pressed = this.editor.svgCanvas.hasTextDecoration('underline')
-          $id('tool_text_decoration_linethrough').pressed = this.editor.svgCanvas.hasTextDecoration('line-through')
-          $id('tool_text_decoration_overline').pressed = this.editor.svgCanvas.hasTextDecoration('overline')
-          $id('tool_font_family').setAttribute('value', elem.getAttribute('font-family'))
-          $id('tool_text_anchor').setAttribute('value', elem.getAttribute('text-anchor'))
+          $id(
+            'tool_text_decoration_underline'
+          ).pressed = this.editor.svgCanvas.hasTextDecoration('underline')
+          $id(
+            'tool_text_decoration_linethrough'
+          ).pressed = this.editor.svgCanvas.hasTextDecoration('line-through')
+          $id(
+            'tool_text_decoration_overline'
+          ).pressed = this.editor.svgCanvas.hasTextDecoration('overline')
+          $id('tool_font_family').setAttribute(
+            'value',
+            elem.getAttribute('font-family')
+          )
+          $id('tool_text_anchor').setAttribute(
+            'value',
+            elem.getAttribute('text-anchor')
+          )
           $id('font_size').value = elem.getAttribute('font-size')
-          $id('tool_letter_spacing').value = elem.getAttribute('letter-spacing') ?? 0
-          $id('tool_word_spacing').value = elem.getAttribute('word-spacing') ?? 0
+          $id('tool_letter_spacing').value =
+            elem.getAttribute('letter-spacing') ?? 0
+          $id('tool_word_spacing').value =
+            elem.getAttribute('word-spacing') ?? 0
           $id('tool_text_length').value = elem.getAttribute('textLength') ?? 0
-          $id('tool_length_adjust').value = elem.getAttribute('lengthAdjust') ?? 0
+          $id('tool_length_adjust').value =
+            elem.getAttribute('lengthAdjust') ?? 0
           $id('text').value = elem.textContent
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
@@ -375,16 +400,14 @@ class TopPanel {
           tagName === 'image' &&
           this.editor.svgCanvas.getMode() === 'image'
         ) {
-          this.editor.svgCanvas.setImageURL(
-            this.editor.svgCanvas.getHref(elem)
-          )
+          this.editor.svgCanvas.setImageURL(this.editor.svgCanvas.getHref(elem))
           // image
         } else if (tagName === 'g' || tagName === 'use') {
           this.displayTool('container_panel')
           const title = this.editor.svgCanvas.getTitle()
           const label = $id('g_title')
           label.value = title
-          $id('g_title').disabled = (tagName === 'use')
+          $id('g_title').disabled = tagName === 'use'
         }
       }
       menuItems.setAttribute(
@@ -393,7 +416,7 @@ class TopPanel {
       )
       menuItems.setAttribute(
         (tagName === 'g' || !this.multiselected ? 'dis' : 'en') +
-        'ablemenuitems',
+          'ablemenuitems',
         '#group'
       )
 
@@ -463,7 +486,9 @@ class TopPanel {
       fcRules.setAttribute('id', 'wireframe_rules')
       document.getElementsByTagName('head')[0].appendChild(fcRules)
     } else {
-      while (wfRules.firstChild) { wfRules.removeChild(wfRules.firstChild) }
+      while (wfRules.firstChild) {
+        wfRules.removeChild(wfRules.firstChild)
+      }
     }
     this.editor.updateWireFrame()
   }
@@ -513,8 +538,10 @@ class TopPanel {
    * @type {module}
    */
   changeRotationAngle (e) {
-    this.editor.svgCanvas.setRotationAngle(e.target.value);
-    (Number.parseInt(e.target.value) === 0) ? $id('tool_reorient').classList.add('disabled') : $id('tool_reorient').classList.remove('disabled')
+    this.editor.svgCanvas.setRotationAngle(e.target.value)
+    ;(Number.parseInt(e.target.value) === 0)
+      ? $id('tool_reorient').classList.add('disabled')
+      : $id('tool_reorient').classList.remove('disabled')
   }
 
   /**
@@ -655,8 +682,8 @@ class TopPanel {
    * @returns {void}
    */
   linkControlPoints () {
-    $id('tool_node_link').pressed = !($id('tool_node_link').pressed)
-    const linked = !!($id('tool_node_link').pressed)
+    $id('tool_node_link').pressed = !$id('tool_node_link').pressed
+    const linked = !!$id('tool_node_link').pressed
     this.path.linkControlPoints(linked)
   }
 
@@ -806,11 +833,11 @@ class TopPanel {
   }
 
   /**
-  * Set a selected image's URL.
-  * @function module:SVGthis.setImageURL
-  * @param {string} url
-  * @returns {void}
-  */
+   * Set a selected image's URL.
+   * @function module:SVGthis.setImageURL
+   * @param {string} url
+   * @returns {void}
+   */
   setImageURL (url) {
     const { editor } = this
     if (!url) {
@@ -828,24 +855,39 @@ class TopPanel {
       // eslint-disable-next-line promise/catch-or-return
       promised
         // eslint-disable-next-line promise/always-return
-        .then(() => {
-          // switch into "select" mode if we've clicked on an element
-          editor.svgCanvas.setMode('select')
-          editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElements(), true)
-        }, (error) => {
-          console.error('error =', error)
-          seAlert(editor.i18next.t('tools.no_embed'))
-          editor.svgCanvas.deleteSelectedElements()
-        })
+        .then(
+          () => {
+            // switch into "select" mode if we've clicked on an element
+            editor.svgCanvas.setMode('select')
+            editor.svgCanvas.selectOnly(
+              editor.svgCanvas.getSelectedElements(),
+              true
+            )
+          },
+          error => {
+            console.error('error =', error)
+            seAlert(editor.i18next.t('tools.no_embed'))
+            editor.svgCanvas.deleteSelectedElements()
+          }
+        )
       this.displayTool('image_url')
     }
   }
 
   /**
-  * @param {boolean} editmode
-  * @param {module:svgcanvas.SvgCanvas#event:selected} elems
-  * @returns {void}
-  */
+   *
+   */
+  updateTitle (title) {
+    if (title) this.editor.title = title
+    const titleElement = $qa('#title_panel > p')[0]
+    if (titleElement) titleElement.textContent = this.editor.title
+  }
+
+  /**
+   * @param {boolean} editmode
+   * @param {module:svgcanvas.SvgCanvas#event:selected} elems
+   * @returns {void}
+   */
   togglePathEditMode (editMode, elems) {
     if (editMode) {
       this.displayTool('path_node_panel')
@@ -883,6 +925,7 @@ class TopPanel {
     )
     newSeEditorDialog.setAttribute('id', 'se-svg-editor-dialog')
     this.editor.$container.append(newSeEditorDialog)
+    this.updateTitle()
     newSeEditorDialog.init(i18next)
     $id('tool_link_url').setAttribute('title', i18next.t('tools.set_link_url'))
     // register action to top panel buttons
@@ -954,7 +997,7 @@ class TopPanel {
       'image_height',
       'path_node_x',
       'path_node_y'
-    ].forEach((attrId) =>
+    ].forEach(attrId =>
       $id(attrId).addEventListener('change', this.attrChanger.bind(this))
     )
   }

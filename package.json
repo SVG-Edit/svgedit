@@ -113,7 +113,7 @@
     "copyfiles": "2.4.1",
     "core-js-bundle": "3.20.3",
     "cp-cli": "2.0.0",
-    "cypress": "9.3.1",
+    "cypress": "9.4.1",
     "cypress-multi-reporters": "1.5.0",
     "cypress-plugin-snapshots": "1.4.4",
     "jamilih": "0.54.0",
