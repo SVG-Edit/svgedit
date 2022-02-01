@@ -340,21 +340,6 @@ export default class ConfigObj {
       return
     }
 
-    // LOAD CONTENT
-    if (this.editor.storage && // Cookies do not have enough available memory to hold large documents
-      (this.curConfig.forceStorage ||
-        (!this.curConfig.noStorageOnLoad &&
-          (/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie))
-      )
-    ) {
-      const name = 'svgedit-' + this.curConfig.canvasName
-      const cached = this.editor.storage.getItem(name)
-      if (cached) {
-        this.editor.loadFromString(cached)
-        this.editor.topPanel.updateTitle(this.editor.storage.getItem(`title-${name}`) ?? 'untitled.svg')
-      }
-    }
-
     // LOAD PREFS
     Object.keys(this.defaultPrefs).forEach((key) => {
       const storeKey = 'svg-edit-' + key

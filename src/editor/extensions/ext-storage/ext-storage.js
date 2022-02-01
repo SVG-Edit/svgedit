@@ -81,8 +81,25 @@ export default {
       // or adding of new storage takes place regardless of settings, set
       // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
       noStorageOnLoad,
-      forceStorage
+      forceStorage,
+      canvasName
     } = svgEditor.configObj.curConfig
+
+    // LOAD STORAGE CONTENT IF ANY
+    if (
+      storage && // Cookies do not have enough available memory to hold large documents
+      (forceStorage ||
+        (!noStorageOnLoad &&
+          /(?:^|;\s*)svgeditstore=prefsAndContent/.test(document.cookie)))
+    ) {
+      const key = 'svgedit-' + canvasName
+      const cached = storage.getItem(key)
+      if (cached) {
+        svgEditor.loadFromString(cached)
+        const name = storage.getItem(`title-${key}`) ?? 'untitled.svg'
+        svgEditor.topPanel.updateTitle(name)
+      }
+    }
 
     // storageDialog added to DOM
     const storageBox = document.createElement('se-storage-dialog')
@@ -141,7 +158,7 @@ export default {
      * @param {string} svgString
      * @returns {void}
      */
-    const setSvgContentStorage = (svgString) => {
+    const setSvgContentStorage = svgString => {
       const name = `svgedit-${svgEditor.configObj.curConfig.canvasName}`
       if (!svgString) {
         storage.removeItem(name)
@@ -161,7 +178,7 @@ export default {
      * 3. Use localStorage (where available) or cookies to set preferences.
      * @returns {void}
      */
-    function setupBeforeUnloadListener () {
+    const setupBeforeUnloadListener = () => {
       window.addEventListener('beforeunload', function () {
         // Don't save anything unless the user opted in to storage
         if (
