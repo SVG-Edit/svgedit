@@ -22,16 +22,17 @@ Please let us know with an issue or a discussions if you wish to contribute.
 
 Thanks to **Netlify**, you can test the following builds: 
 
-### [Try SVGEdit 7.1.x here](https://svgedit.netlify.app/editor/index.html)
+### [Try SVGEdit V7 (latest build)](https://svgedit.netlify.app/editor/index.html)
 
-[Try SVGEdit 5.1.0 here](https://6098683962bf91702907ee33--svgedit.netlify.app/editor/svg-editor.html)
+[Try SVGEdit V7 (latest published version)](https://unpkg.com/svgedit@latest/dist/editor/index.html)
+
+## Prior V7:
 
 [Try SVGEdit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
 
-Additional tip: you may try a version released on NPM using unpkg for example with version 7.1.0:
-[https://unpkg.com/svgedit@7.1.0/dist/editor/index.html](https://unpkg.com/svgedit@7.1.0/dist/editor/index.html)
+[Try SVGEdit 5.1.0 here](https://unpkg.com/svgedit@5.1.0/editor/svg-editor.html)
 
-Prior V7 for example with version 3.2.0:
+Additional tip: you may try a version released on NPM using unpkg for example with version 3.2.0:
 [https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
 
 ## Installation
