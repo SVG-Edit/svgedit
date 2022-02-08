@@ -192,6 +192,8 @@ class EditorStartup {
     )
     this.svgCanvas.bind('contextset', this.contextChanged.bind(this))
     this.svgCanvas.bind('extension_added', this.extAdded.bind(this))
+    this.svgCanvas.bind('elementRenamed', this.elementRenamed.bind(this))
+
     this.svgCanvas.textActions.setInputElem($id('text'))
 
     this.setBackground(this.configObj.pref('bkgd_color'), this.configObj.pref('bkgd_url'))

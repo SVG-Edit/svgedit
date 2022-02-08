@@ -628,16 +628,7 @@ class TopPanel {
       }
     }
 
-    // if the user is changing the id, then de-select the element first
-    // change the ID, then re-select it with the new ID
-    if (attr === 'id') {
-      const elem = this.editor.selectedElement
-      this.editor.svgCanvas.clearSelection()
-      elem.id = val
-      this.editor.svgCanvas.addToSelection([elem], true)
-    } else {
-      this.editor.svgCanvas.changeSelectedAttribute(attr, val)
-    }
+    this.editor.svgCanvas.changeSelectedAttribute(attr, val)
     return true
   }
 

@@ -918,6 +918,7 @@ class SvgCanvas {
     if (this.events[ev]) {
       return this.events[ev](window, arg)
     }
+    console.warn(`no call associated to event:${ev}`)
     return undefined
   }
 

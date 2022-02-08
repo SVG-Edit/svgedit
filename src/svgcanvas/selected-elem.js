@@ -457,36 +457,28 @@ const alignSelectedElements = (type, relativeTo) => {
 const deleteSelectedElements = () => {
   const selectedElements = svgCanvas.getSelectedElements()
   const batchCmd = new BatchCommand('Delete Elements')
-  const len = selectedElements.length
   const selectedCopy = [] // selectedElements is being deleted
 
-  for (let i = 0; i < len; ++i) {
-    const selected = selectedElements[i]
-    if (!selected) {
-      break
+  selectedElements.forEach(selected => {
+    if (selected) {
+      let parent = selected.parentNode
+      let t = selected
+      // this will unselect the element and remove the selectedOutline
+      svgCanvas.gettingSelectorManager().releaseSelector(t)
+      // Remove the path if present.
+      pathModule.removePath_(t.id)
+      // Get the parent if it's a single-child anchor
+      if (parent.tagName === 'a' && parent.childNodes.length === 1) {
+        t = parent
+        parent = parent.parentNode
+      }
+      const { nextSibling } = t
+      t.remove()
+      const elem = t
+      selectedCopy.push(selected) // for the copy
+      batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent))
     }
-
-    let parent = selected.parentNode
-    let t = selected
-
-    // this will unselect the element and remove the selectedOutline
-    svgCanvas.gettingSelectorManager().releaseSelector(t)
-
-    // Remove the path if present.
-    pathModule.removePath_(t.id)
-
-    // Get the parent if it's a single-child anchor
-    if (parent.tagName === 'a' && parent.childNodes.length === 1) {
-      t = parent
-      parent = parent.parentNode
-    }
-
-    const { nextSibling } = t
-    t.remove()
-    const elem = t
-    selectedCopy.push(selected) // for the copy
-    batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent))
-  }
+  })
   svgCanvas.setEmptySelectedElements()
 
   if (!batchCmd.isEmpty()) {
