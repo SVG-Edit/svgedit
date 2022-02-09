@@ -20,11 +20,11 @@
 <body style="margin:0">
   <!-- svgedit container can be positionned anywhere in the DOM
        but it must have a width and a height -->
-  <!-- 
+  <!--
   <h1>SVGEdit</h1>
   <div id="container" style="width:100%;height:550px"></div>
   <h1>End</h1>
-  -->      
+  -->
   <div id="container" style="width:100%;height:100vh"></div>
 </body>
  <!-- If you do not wish to add extensions by URL, you can add calls
@@ -38,7 +38,7 @@ svgEditor.setConfig({
           allowInitialUserOverride: true,
           extensions: [],
           noDefaultExtensions: false,
-          userExtensions: [/* './react-extensions/react-test/dist/react-test.js' */]
+          userExtensions: [/* { pathName: './react-extensions/react-test/dist/react-test.js' } */]
         })
 // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
 /* globals XDOMAIN */
