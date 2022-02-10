@@ -594,7 +594,6 @@ class EditorStartup {
     })
     // run callbacks stored by this.ready
     await this.runCallbacks()
-    window.addEventListener('message', this.messageListener.bind(this))
   }
 
   /**
@@ -685,24 +684,6 @@ class EditorStartup {
     } catch (err) {
       // Todo: Report errors through the UI
       console.error(err)
-    }
-  }
-
-  /**
- * @param {PlainObject} info
- * @param {any} info.data
- * @param {string} info.origin
- * @fires module:svgcanvas.SvgCanvas#event:message
- * @returns {void}
- */
-  messageListener ({ data, origin }) {
-    const messageObj = { data, origin }
-    if (!this.extensionsAdded) {
-      this.messageQueue.push(messageObj)
-    } else {
-    // Extensions can handle messages at this stage with their own
-    //  canvas `message` listeners
-      this.svgCanvas.call('message', messageObj)
     }
   }
 }
