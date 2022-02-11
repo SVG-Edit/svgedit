@@ -156,7 +156,7 @@ const moveUpDownSelected = dir => {
       }
       return true
     }
-    if(closest === undefined){
+    if (closest === undefined) {
       closest = el
     }
     return false
