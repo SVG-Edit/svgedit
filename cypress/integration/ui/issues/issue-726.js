@@ -27,10 +27,10 @@ describe('Fix issue 726', function () {
       .trigger('mousedown', 10, 10, { force: true })
       .trigger('mousemove', 100, 100, { force: true })
       .trigger('mouseup', { force: true })
-    cy.get('#tool_select').click({ force: true })
-    cy.get('#svg_1')
-      .click({ force: true })
-    cy.get('body').type('{cmd}]')
+    cy.wait(300)
+    cy.get('#svg_3')
+      .rightclick(0, 0, { force: true })
+    cy.get('a:contains("Send Backward")').click()
     cy.get('#svg_2').should(($div) => {
       const id = $div[0].previousElementSibling.id
       assert.equal(id, 'svg_3')
