@@ -18,7 +18,7 @@
   </head>
 
   <body style="margin:0">
-    <!-- svgedit container can be positionned anywhere in the DOM
+    <!-- svgedit container can be positioned anywhere in the DOM
        but it must have a width and a height -->
     <!-- 
   <h1>SVGEdit</h1>
@@ -32,7 +32,7 @@
   <script type="module">
     import Editor from './Editor.js'
 
-    // for this use case, we use localstorage for animations associated to a given SVG name
+    // for this use case, we use local storage for animations associated to a given SVG name
     // real use case could load from a database
     const loadAnimations = (name) => {
       console.log('loadAnimations', name, localStorage.getItem(`oimotion-${name}`))
