@@ -193,7 +193,7 @@ class EditorStartup {
     this.svgCanvas.bind('contextset', this.contextChanged.bind(this))
     this.svgCanvas.bind('extension_added', this.extAdded.bind(this))
     this.svgCanvas.bind('elementRenamed', this.elementRenamed.bind(this))
-    
+
     this.svgCanvas.bind('beforeClear', this.beforeClear.bind(this))
     this.svgCanvas.bind('afterClear', this.afterClear.bind(this))
 

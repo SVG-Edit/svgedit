@@ -602,10 +602,10 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   beforeClear (win) {
-  this.svgCanvas.runExtensions(
-    'beforeClear'
-  )
-}
+    this.svgCanvas.runExtensions(
+      'beforeClear'
+    )
+  }
 
   /**
    * @returns {void}
