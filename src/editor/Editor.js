@@ -592,6 +592,24 @@ class Editor extends EditorStartup {
   /**
    * @returns {void}
    */
+  afterClear (win) {
+    this.svgCanvas.runExtensions(
+      'afterClear'
+    )
+  }
+
+  /**
+   * @returns {void}
+   */
+  beforeClear (win) {
+  this.svgCanvas.runExtensions(
+    'beforeClear'
+  )
+}
+
+  /**
+   * @returns {void}
+   */
   zoomDone () {
     this.updateWireFrame()
   }

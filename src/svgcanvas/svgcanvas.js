@@ -836,10 +836,11 @@ class SvgCanvas {
   /**
    * Clears the current document. This is not an undoable action.
    * @function module:svgcanvas.SvgCanvas#clear
-   * @fires module:svgcanvas.SvgCanvas#event:cleared
+   * @fires module:svgcanvas.SvgCanvas#event:beforeClear|afterClear
    * @returns {void}
    */
   clear () {
+    this.call('beforeClear')
     this.pathActions.clear()
     this.clearSelection()
     // clear the svgcontent node
@@ -854,7 +855,7 @@ class SvgCanvas {
     this.selectorManager.initGroup()
     // reset the rubber band box
     this.rubberBox = this.selectorManager.getRubberBandBox()
-    this.call('cleared')
+    this.call('afterClear')
   }
 
   async addExtension (name, extInitFunc, { importLocale }) {

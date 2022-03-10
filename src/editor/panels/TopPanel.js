@@ -118,11 +118,11 @@ class TopPanel {
           }
 
           $id('stroke_width').value = gWidth === null ? '' : gWidth
-          this.editor.bottomPanel.updateColorpickers(true)
+          this.editor.bottomPanel.updateColorpickers(false)
           break
         }
         default: {
-          this.editor.bottomPanel.updateColorpickers(true)
+          this.editor.bottomPanel.updateColorpickers(false)
 
           $id('stroke_width').value =
             this.selectedElement.getAttribute('stroke-width') || 1
