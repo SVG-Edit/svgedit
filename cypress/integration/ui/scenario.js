@@ -108,6 +108,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
+    cy.wait(300)
     testSnapshot()
   })
   it('check tool_text_change_blur', function () {
