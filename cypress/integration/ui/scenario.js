@@ -102,15 +102,6 @@ describe('use various parts of svg-edit', function () {
       .find('#Ok').eq(0).click({ force: true })
     testSnapshot()
   })
-  it('check tool_text_change_rotation', function () {
-    cy.get('#svg_2').click({ force: true })
-    for (let n = 0; n < 5; n++) {
-      cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-        .click({ force: true })
-    }
-    cy.wait(300)
-    testSnapshot()
-  })
   it('check tool_text_change_blur', function () {
     cy.get('#svg_2').click({ force: true })
     for (let n = 0; n < 10; n++) {
@@ -209,6 +200,14 @@ describe('use various parts of svg-edit', function () {
   it('check tool_length_adjust', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_length_adjust').shadow().find('select').select(1)
+    testSnapshot()
+  })
+  it('check tool_text_change_rotation', function () {
+    cy.get('#svg_1').click({ force: true })
+    for (let n = 0; n < 5; n++) {
+      cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+        .click({ force: true })
+    }
     testSnapshot()
   })
 })
