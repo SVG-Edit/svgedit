@@ -431,7 +431,7 @@ const setRotationAngle = (val, preventUndo) => {
       const x = round(newTransformArray[1])
       newTransform = `${newTransformArray[0]} ${x} ${newTransformArray[2]}`
     }
-    
+
     if (oldTransform) {
       elem.setAttribute('transform', oldTransform)
     } else {
