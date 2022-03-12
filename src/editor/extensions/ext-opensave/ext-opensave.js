@@ -199,7 +199,7 @@ export default {
         // In the future, more options can be provided here
         const saveOpts = {
           images: svgEditor.configObj.pref('img_save'),
-          round_digits: 6
+          round_digits: 2
         }
         // remove the selected outline before serializing
         svgCanvas.clearSelection()

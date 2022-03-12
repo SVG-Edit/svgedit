@@ -23,7 +23,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#tool_text')
       .click({ force: true })
     cy.get('#svgcontent')
-      .trigger('mousedown', 60, 60, { force: true })
+      .trigger('mousedown', { screenX: 320, screenY: 320, force: true })
       .trigger('mouseup', { force: true })
     // svgedit use the #text text field to capture the text
     cy.get('#text').type('AB', { force: true })

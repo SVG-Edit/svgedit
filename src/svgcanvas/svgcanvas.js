@@ -121,7 +121,7 @@ class SvgCanvas {
     const { pathActions } = pathModule
 
     // initialize class variables
-    this.saveOptions = { round_digits: 5 } // Object with save options
+    this.saveOptions = { round_digits: 2 } // Object with save options
     this.importIds = {} // Object with IDs for imported files, to see if one was already added
     this.extensions = {} // Object to contain all included extensions
     this.removedElements = {} // Map of deleted reference elements
@@ -735,10 +735,6 @@ class SvgCanvas {
 
   getrefAttrs () {
     return refAttrs
-  }
-
-  getcanvg () {
-    return canvg
   }
 
   setCanvas (key, value) {

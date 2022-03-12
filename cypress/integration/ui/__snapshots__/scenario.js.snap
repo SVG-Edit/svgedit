@@ -31,9 +31,9 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -60,9 +60,9 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -74,9 +74,9 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="80"
+        x="20"
         xml:space="preserve"
-        y="80.5"
+        y="20"
       >
         AB
       </text>
@@ -103,9 +103,9 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -118,9 +118,9 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="80"
+        x="20"
         xml:space="preserve"
-        y="80.5"
+        y="20"
       >
         AB
       </text>
@@ -148,9 +148,9 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -163,9 +163,9 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="80"
+        x="20"
         xml:space="preserve"
-        y="80.5"
+        y="20"
       >
         AB
       </text>
@@ -194,9 +194,9 @@ exports[`use various parts of svg-edit > check tool_text_change_x_y_coordinate #
         stroke-width="0"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -209,9 +209,9 @@ exports[`use various parts of svg-edit > check tool_text_change_x_y_coordinate #
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -239,9 +239,9 @@ exports[`use various parts of svg-edit > check tool_text_change_font_size #0`] =
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -255,9 +255,9 @@ exports[`use various parts of svg-edit > check tool_text_change_font_size #0`] =
         stroke-width="0"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -284,9 +284,9 @@ exports[`use various parts of svg-edit > check tool_text_change_stroke_width #0`
         id="svg_1"
         stroke="#000000"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -300,9 +300,9 @@ exports[`use various parts of svg-edit > check tool_text_change_stroke_width #0`
         stroke-width="0"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -329,9 +329,9 @@ exports[`use various parts of svg-edit > check tool_text_change_stoke_fill_color
         id="svg_1"
         stroke="#0000bf"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -345,9 +345,9 @@ exports[`use various parts of svg-edit > check tool_text_change_stoke_fill_color
         stroke-width="0"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -375,9 +375,9 @@ exports[`use various parts of svg-edit > check tool_text_change_blur #0`] = `
         stroke="#0000bf"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -391,9 +391,9 @@ exports[`use various parts of svg-edit > check tool_text_change_blur #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -426,9 +426,9 @@ exports[`use various parts of svg-edit > check tool_text_change_opacity #0`] = `
         stroke="#0000bf"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -443,9 +443,9 @@ exports[`use various parts of svg-edit > check tool_text_change_opacity #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -478,9 +478,9 @@ exports[`use various parts of svg-edit > check tool_text_align_to_page #0`] = `
         stroke="#0000bf"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -495,9 +495,9 @@ exports[`use various parts of svg-edit > check tool_text_align_to_page #0`] = `
         stroke="#000000"
         stroke-width="0"
         text-anchor="middle"
-        x="105"
+        x="45"
         xml:space="preserve"
-        y="105"
+        y="45"
       >
         AB
       </text>
@@ -530,9 +530,9 @@ exports[`use various parts of svg-edit > check tool_text_delete #0`] = `
         stroke="#0000bf"
         text-anchor="middle"
         transform="matrix(1 0 0 1 0 0)"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -559,9 +559,9 @@ exports[`use various parts of svg-edit > check tool_text_change_font_family #0`]
         id="svg_1"
         stroke="#0000bf"
         text-anchor="middle"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -589,9 +589,9 @@ exports[`use various parts of svg-edit > check tool_text_decoration_underline #0
         stroke="#0000bf"
         text-anchor="middle"
         text-decoration="underline"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -619,9 +619,9 @@ exports[`use various parts of svg-edit > check tool_text_decoration_linethrough 
         stroke="#0000bf"
         text-anchor="middle"
         text-decoration="underline line-through"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -649,9 +649,9 @@ exports[`use various parts of svg-edit > check tool_text_decoration_overline #0`
         stroke="#0000bf"
         text-anchor="middle"
         text-decoration="underline line-through overline"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -680,9 +680,9 @@ exports[`use various parts of svg-edit > check tool_letter_spacing #0`] = `
         stroke="#0000bf"
         text-anchor="middle"
         text-decoration="underline line-through overline"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -712,9 +712,9 @@ exports[`use various parts of svg-edit > check tool_word_spacing #0`] = `
         text-anchor="middle"
         text-decoration="underline line-through overline"
         word-spacing="15"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -745,9 +745,9 @@ exports[`use various parts of svg-edit > check tool_text_length #0`] = `
         text-decoration="underline line-through overline"
         textLength="20"
         word-spacing="15"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -779,9 +779,9 @@ exports[`use various parts of svg-edit > check tool_length_adjust #0`] = `
         text-decoration="underline line-through overline"
         textLength="20"
         word-spacing="15"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
@@ -812,11 +812,11 @@ exports[`use various parts of svg-edit > check tool_text_change_rotation #0`] = 
         text-anchor="middle"
         text-decoration="underline line-through overline"
         textLength="20"
-        transform="rotate(25 60 49.5)"
+        transform="rotate(25 -1.26957e-8 -11.5)"
         word-spacing="15"
-        x="60"
+        x="0"
         xml:space="preserve"
-        y="60.5"
+        y="0"
       >
         AB
       </text>
