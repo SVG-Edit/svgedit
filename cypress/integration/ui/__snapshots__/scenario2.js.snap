@@ -29,7 +29,7 @@ exports[`use all parts of svg-edit > check tool_circle #0`] = `
         fill="#FF0000"
         id="svg_1"
         opacity="0.5"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       >
         <animate
@@ -60,7 +60,7 @@ exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -101,7 +101,7 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -151,7 +151,7 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -193,7 +193,7 @@ exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -236,7 +236,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -280,7 +280,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_blur #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -330,7 +330,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_cx_cy_coordinate 
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -380,7 +380,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_change_rx_ry_radius #0`]
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -440,7 +440,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_back #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -479,7 +479,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_bring_to_front #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
@@ -528,7 +528,7 @@ exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
         cy="150"
         fill="#FF0000"
         id="svg_1"
-        r="111.8034"
+        r="111.8"
         stroke="#000000"
       ></circle>
       <ellipse
