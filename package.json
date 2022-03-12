@@ -81,7 +81,6 @@
   "dependencies": {
     "@babel/polyfill": "7.12.1",
     "browser-fs-access": "0.25.0",
-    "canvg": "4.0.0",
     "core-js": "3.21.1",
     "elix": "15.0.1",
     "html2canvas": "1.4.1",
