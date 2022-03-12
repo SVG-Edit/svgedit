@@ -32,7 +32,7 @@ describe('Fix issue 726', function () {
     cy.wait(300)
     cy.get('#svg_3')
       .rightclick(0, 0, { force: true })
-    cy.get('a:contains("Send Backward")').click()
+    cy.get('a:contains("Send Backward")').click({ force: true })
     cy.get('#svg_2').should(($div) => {
       const id = $div[0].previousElementSibling.id
       assert.equal(id, 'svg_3')
