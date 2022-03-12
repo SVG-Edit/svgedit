@@ -126,7 +126,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        transform="rotate(25 350.145 270)"
+        transform="rotate(25 350 270)"
       ></polygon>
     </g>
   </svg>

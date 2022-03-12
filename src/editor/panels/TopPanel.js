@@ -539,9 +539,11 @@ class TopPanel {
    */
   changeRotationAngle (e) {
     this.editor.svgCanvas.setRotationAngle(e.target.value)
-    ;(Number.parseInt(e.target.value) === 0)
-      ? $id('tool_reorient').classList.add('disabled')
-      : $id('tool_reorient').classList.remove('disabled')
+    if (Number.parseInt(e.target.value) === 0) {
+      $id('tool_reorient').classList.add('disabled')
+    } else {
+      $id('tool_reorient').classList.remove('disabled')
+    }
   }
 
   /**
