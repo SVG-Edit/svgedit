@@ -121,10 +121,7 @@ export default {
     imgImport.addEventListener('change', importImage)
     // dropping a svg file will import it in the svg as well
     this.workarea.addEventListener('drop', importImage)
-    /**
-     * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
-     * @returns {void}
-     */
+
     const clickClear = async function () {
       const [x, y] = svgEditor.configObj.curConfig.dimensions
       const ok = await seConfirm(svgEditor.i18next.t('notification.QwantToClear'))
@@ -139,7 +136,6 @@ export default {
       svgEditor.layersPanel.populateLayers()
       svgEditor.topPanel.updateContextPanel()
       svgEditor.topPanel.updateTitle('untitled.svg')
-      svgEditor.svgCanvas.runExtensions('onNewDocument')
     }
 
     /**
@@ -203,7 +199,7 @@ export default {
         // In the future, more options can be provided here
         const saveOpts = {
           images: svgEditor.configObj.pref('img_save'),
-          round_digits: 6
+          round_digits: 2
         }
         // remove the selected outline before serializing
         svgCanvas.clearSelection()

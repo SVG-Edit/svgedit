@@ -580,6 +580,36 @@ class Editor extends EditorStartup {
   /**
    * @returns {void}
    */
+  elementRenamed (win, renameObj) {
+    this.svgCanvas.runExtensions(
+      'elementRenamed',
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_elementRenamed} */ {
+        renameObj
+      }
+    )
+  }
+
+  /**
+   * @returns {void}
+   */
+  afterClear (win) {
+    this.svgCanvas.runExtensions(
+      'afterClear'
+    )
+  }
+
+  /**
+   * @returns {void}
+   */
+  beforeClear (win) {
+    this.svgCanvas.runExtensions(
+      'beforeClear'
+    )
+  }
+
+  /**
+   * @returns {void}
+   */
   zoomDone () {
     this.updateWireFrame()
   }

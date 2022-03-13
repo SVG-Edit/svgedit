@@ -1,4 +1,4 @@
-/* globals seConfirm, seAlert */
+/* globals seAlert */
 import SvgCanvas from '../svgcanvas/svgcanvas.js'
 import { convertUnit, isValidUnit } from '../common/units.js'
 import { isChrome } from '../common/browser.js'
@@ -19,26 +19,6 @@ class MainMenu {
      * @type {Integer}
      */
     this.exportWindowCt = 0
-  }
-
-  /**
-   * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
-   * @returns {void}
-   */
-  async clickClear () {
-    const [x, y] = this.editor.configObj.curConfig.dimensions
-    const ok = await seConfirm(this.editor.i18next.t('notification.QwantToClear'))
-    if (ok === 'Cancel') {
-      return
-    }
-    this.editor.leftPanel.clickSelect()
-    this.editor.svgCanvas.clear()
-    this.editor.svgCanvas.setResolution(x, y)
-    this.editor.updateCanvas(true)
-    this.editor.zoomImage()
-    this.editor.layersPanel.populateLayers()
-    this.editor.topPanel.updateContextPanel()
-    this.editor.svgCanvas.runExtensions('onNewDocument')
   }
 
   /**

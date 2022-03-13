@@ -596,7 +596,7 @@ const setSvgString = (xmlString, preventUndo) => {
     svgCanvas.getSvgRoot().append(svgCanvas.selectorManager.selectorParentGroup)
 
     if (!preventUndo) svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [svgCanvas.getSvgContent()])
+    svgCanvas.call('sourcechanged', [svgCanvas.getSvgContent()])
   } catch (e) {
     console.error(e)
     return false
