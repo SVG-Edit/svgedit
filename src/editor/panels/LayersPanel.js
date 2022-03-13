@@ -153,11 +153,7 @@ class LayersPanel {
 
   index (el) {
     if (!el) return -1
-    let i = 0
-    do {
-      i++
-    } while (el === el.previousElementSibling)
-    return i
+    return Array.from(document.querySelector('#layerlist tbody').children).indexOf(el)
   }
 
   /**
@@ -181,12 +177,9 @@ class LayersPanel {
    * @returns {void}
    */
   moveLayer (pos) {
-    const total = this.editor.svgCanvas.getCurrentDrawing().getNumLayers()
-
-    let curIndex = (this.index(document.querySelector('#layerlist tr.layersel')) - 1)
-    if (curIndex > 0 || curIndex < total - 1) {
-      curIndex += pos
-      this.editor.svgCanvas.setCurrentLayerPosition(total - curIndex - 1)
+    const curPos = this.editor.svgCanvas.indexCurrentLayer()
+    if (curPos !== -1) {
+      this.editor.svgCanvas.setCurrentLayerPosition(curPos - pos)
       this.populateLayers()
     }
   }

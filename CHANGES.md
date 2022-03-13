@@ -1,4 +1,6 @@
 # SVG-Edit CHANGES
+## 7.1.3
+- fix issue #736. could not move layers
 ## 7.1.2
 - add the current document title in the toolbar
 - allow user extensions to define optional parameters
