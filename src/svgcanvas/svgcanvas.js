@@ -1303,6 +1303,7 @@ class SvgCanvas {
     this.setCurrentLayer = draw.setCurrentLayer
     this.renameCurrentLayer = draw.renameCurrentLayer
     this.setCurrentLayerPosition = draw.setCurrentLayerPosition
+    this.indexCurrentLayer = draw.indexCurrentLayer
     this.setLayerVisibility = draw.setLayerVisibility
     this.moveSelectedToLayer = draw.moveSelectedToLayer
     this.mergeLayer = draw.mergeLayer
