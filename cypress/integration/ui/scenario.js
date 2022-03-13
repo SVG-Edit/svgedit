@@ -29,7 +29,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#text').type('AB', { force: true })
     cy.get('#svg_1').should('exist')
   })
-  // For an unknown reason, the position of the text is different on local test vs CI test 
+  // For an unknown reason, the position of the text is different on local test vs CI test
   // As a workaround, weforce SVG source
   it('force svg', function () {
     cy.get('#tool_source').click({ force: true })
@@ -41,8 +41,8 @@ describe('use various parts of svg-edit', function () {
        <text fill="#000000" font-family="Serif" font-size="24" id="svg_1" stroke="#000000" stroke-width="0" text-anchor="middle" x="100" xml:space="preserve" y="100">AB</text>
       </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
-     cy.get('#tool_source_save').click({ force: true })
-     testSnapshot()
+    cy.get('#tool_source_save').click({ force: true })
+    testSnapshot()
   })
 
   it('check tool_clone', function () {
@@ -214,7 +214,7 @@ describe('use various parts of svg-edit', function () {
         .click({ force: true })
     }
     cy.get('#svg_1').should('have.attr', 'transform')
-    .and('match', /rotate\(25/)
+      .and('match', /rotate\(25/)
     // issue with testSnapshot()
   })
 })
