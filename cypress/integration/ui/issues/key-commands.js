@@ -1,6 +1,6 @@
 import {
   visitAndApproveStorage
-} from '../../support/ui-test-helper.js'
+} from '../../../support/ui-test-helper.js'
 
 // See https://github.com/SVG-Edit/svgedit/issues/364
 describe('Key commands', function () {
