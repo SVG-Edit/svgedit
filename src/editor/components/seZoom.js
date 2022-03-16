@@ -116,6 +116,8 @@ class Zoom extends ListComboBox {
       this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize
     }
     if (changed.inputPartType) {
+      this.$input.setAttribute('step', '10')
+      this.$input.setAttribute('min', '0')
       // Wire up handler on new input.
       this.addEventListener('close', (e) => {
         e.preventDefault()
