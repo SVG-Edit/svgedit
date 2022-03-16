@@ -56,7 +56,7 @@ class BottomPanel {
         break
       default:
       {
-        const zoomlevel = Number(value) > 0.1 ? Number(value) > 0.1 : 0.1
+        const zoomlevel = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
         const zoom = this.editor.svgCanvas.getZoom()
         const { workarea } = this.editor
         this.editor.zoomChanged(window, {

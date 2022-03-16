@@ -116,6 +116,18 @@ class Zoom extends ListComboBox {
       this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize
     }
     if (changed.inputPartType) {
+      const self = this
+      this.$input.setAttribute('step', '10')
+      this.$input.setAttribute('min', '0')
+      // Handle NumberSpinBox input.
+      this.$input.addEventListener('change', function (e) {
+        e.preventDefault()
+        const value = e.detail?.value
+        if (value) {
+          const changeEvent = new CustomEvent('change', { detail: { value } })
+          self.dispatchEvent(changeEvent)
+        }
+      })
       // Wire up handler on new input.
       this.addEventListener('close', (e) => {
         e.preventDefault()
