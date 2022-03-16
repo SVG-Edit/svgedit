@@ -189,7 +189,6 @@ class BottomPanel {
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this))
     $id('fill_color').init(i18next)
     $id('stroke_color').init(i18next)
-    $id('zoom').shadowRoot.querySelector('elix-number-spin-box').addEventListener('change', (e) => this.changeZoom.bind(this)(e.detail.value))
   }
 
   /**
