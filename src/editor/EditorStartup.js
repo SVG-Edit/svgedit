@@ -453,6 +453,8 @@ class EditorStartup {
     $id('se-svg-editor-dialog').addEventListener('change', function (e) {
       if (e?.detail?.copy === 'click') {
         this.cancelOverlays(e)
+      } else if (e?.detail?.dialog === 'dynamic') {
+        this.toggleDynamicOutput(e)
       } else if (e?.detail?.dialog === 'closed') {
         this.hideSourceEditor()
       } else {
@@ -547,6 +549,10 @@ class EditorStartup {
 
       if (this.configObj.curConfig.gridColor) {
         $editDialog.setAttribute('gridcolor', this.configObj.curConfig.gridColor)
+      }
+
+      if (this.configObj.curConfig.dynamicOutput) {
+        $editDialog.setAttribute('dynamicoutput', true)
       }
     }.bind(this))
 

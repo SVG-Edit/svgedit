@@ -54,6 +54,20 @@
         margin-left: 30%;
         margin-top: 5px;
     }
+    
+    #tool_source_dynamic {
+        cursor: pointer;
+    }
+    
+    .tool_label {
+        cursor: pointer;
+        margin: 5px 0;
+        display: inline-block;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 
     #tool_source_cancel {
         width: 20%;
@@ -73,5 +87,8 @@
         <form>
             <textarea id="svg_source_textarea" spellcheck="false" rows="5" cols="80"></textarea>
         </form>
+        <label class="tool_label" for="tool_source_dynamic">
+          <input type="checkbox" id="tool_source_dynamic" checked>Toggle dynamic size
+        </label>
     </div>
 </elix-dialog>
