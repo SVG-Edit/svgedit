@@ -22,6 +22,8 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
     this.$sourceTxt = this._shadowRoot.querySelector('#svg_source_textarea')
     this.$copySec = this._shadowRoot.querySelector('#save_output_btns')
     this.$applySec = this._shadowRoot.querySelector('#tool_source_back')
+    this.$toggleDynamic = this._shadowRoot.querySelector('#tool_source_dynamic')
+    this.$toggleDynamic.checked = svgEditor.configObj.curConfig.dynamicOutput
   }
 
   /**
@@ -195,9 +197,19 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       })
       this.dispatchEvent(closeEvent)
     }
+    const onToggleDynamicHandler = () => {
+      const closeEvent = new CustomEvent('change', {
+        detail: {
+          dynamic: this.$toggleDynamic.checked,
+          dialog: 'dynamic'
+        }
+      })
+      this.dispatchEvent(closeEvent)
+    }
     svgEditor.$click(this.$copyBtn, onCopyHandler)
     svgEditor.$click(this.$saveBtn, onSaveHandler)
     svgEditor.$click(this.$cancelBtn, onCancelHandler)
+    svgEditor.$click(this.$toggleDynamic, onToggleDynamicHandler)
     this.$dialog.addEventListener('close', onCancelHandler)
   }
 }
