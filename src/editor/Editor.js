@@ -611,6 +611,9 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   zoomDone () {
+    for (const el of this.svgCanvas.selectedElements) {
+      this.svgCanvas.selectorManager.requestSelector(el).resize()
+    }
     this.updateWireFrame()
   }
 
