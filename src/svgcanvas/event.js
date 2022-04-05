@@ -625,6 +625,7 @@ const mouseUpEvent = (evt) => {
           const len = selectedElements.length
           for (let i = 0; i < len; ++i) {
             if (!selectedElements[i]) { break }
+            svgCanvas.selectorManager.requestSelector(selectedElements[i]).resize()
           }
           // no change in position/size, so maybe we should move to pathedit
         } else {
