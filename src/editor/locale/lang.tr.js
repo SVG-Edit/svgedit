@@ -162,7 +162,7 @@ export default {
     tool_source: 'Kaynağı Düzenle',
     wireframe_mode: 'Çizgi Mod',
     clone: 'Öge(ler)i Çoğalt',
-    del: 'Öge(ler)i Sil'
+    del: 'Öge(ler)i Sil',
     group_elements: 'Ögeleri Grupla',
     make_link: '(hiper) Link Oluştur',
     set_link_url: 'Bağlantı URL si ata(boş bırak ya da kaldır)',
