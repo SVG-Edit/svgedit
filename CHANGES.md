@@ -1,7 +1,12 @@
 # SVG-Edit CHANGES
+## 7.1.3
+- fix issue #736. could not move layers
 ## 7.1.2
 - add the current document title in the toolbar
 - allow user extensions to define optional parameters
+- more events for renamedElement, beforeClear, afterClear, sourceChanged
+- remove "message" event used for iframe integration not used anymore. can be readded through a new extension if necessary
+- default precision down to 2 digits (and applied in rotation)
 ## 7.1.1
 - Fix an issue when moving a text with an existing transformation (issue #689)
 ## 7.1.0

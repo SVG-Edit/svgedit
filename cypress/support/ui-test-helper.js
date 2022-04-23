@@ -3,6 +3,7 @@ export const approveStorage = () => {
 }
 
 export const visitAndApproveStorage = () => {
+  cy.viewport(512, 512)
   cy.visit('/instrumented/editor/index.html')
   approveStorage()
 }

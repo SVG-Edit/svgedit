@@ -7,7 +7,6 @@
  * @copyright 2010 Alexis Deveria, 2010 Pavol Rusnak, 2010 Jeff Schiller, 2021 OptimistikSAS
  *
  */
-import { Canvg as canvg } from 'canvg'
 import 'pathseg' // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
 import * as pathModule from './path.js'
@@ -121,7 +120,7 @@ class SvgCanvas {
     const { pathActions } = pathModule
 
     // initialize class variables
-    this.saveOptions = { round_digits: 5 } // Object with save options
+    this.saveOptions = { round_digits: 2 } // Object with save options
     this.importIds = {} // Object with IDs for imported files, to see if one was already added
     this.extensions = {} // Object to contain all included extensions
     this.removedElements = {} // Map of deleted reference elements
@@ -737,10 +736,6 @@ class SvgCanvas {
     return refAttrs
   }
 
-  getcanvg () {
-    return canvg
-  }
-
   setCanvas (key, value) {
     this[key] = value
   }
@@ -836,10 +831,11 @@ class SvgCanvas {
   /**
    * Clears the current document. This is not an undoable action.
    * @function module:svgcanvas.SvgCanvas#clear
-   * @fires module:svgcanvas.SvgCanvas#event:cleared
+   * @fires module:svgcanvas.SvgCanvas#event:beforeClear|afterClear
    * @returns {void}
    */
   clear () {
+    this.call('beforeClear')
     this.pathActions.clear()
     this.clearSelection()
     // clear the svgcontent node
@@ -854,7 +850,7 @@ class SvgCanvas {
     this.selectorManager.initGroup()
     // reset the rubber band box
     this.rubberBox = this.selectorManager.getRubberBandBox()
-    this.call('cleared')
+    this.call('afterClear')
   }
 
   async addExtension (name, extInitFunc, { importLocale }) {
@@ -1307,6 +1303,7 @@ class SvgCanvas {
     this.setCurrentLayer = draw.setCurrentLayer
     this.renameCurrentLayer = draw.renameCurrentLayer
     this.setCurrentLayerPosition = draw.setCurrentLayerPosition
+    this.indexCurrentLayer = draw.indexCurrentLayer
     this.setLayerVisibility = draw.setLayerVisibility
     this.moveSelectedToLayer = draw.moveSelectedToLayer
     this.mergeLayer = draw.mergeLayer

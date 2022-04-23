@@ -148,7 +148,7 @@ const svgToString = (elem, indent) => {
       // Process root element separately
       const res = svgCanvas.getResolution()
 
-      const vb = ''
+      let vb = ''
       // TODO: Allow this by dividing all values by current baseVal
       // Note that this also means we should properly deal with this on import
       // if (curConfig.baseUnit !== 'px') {
@@ -160,23 +160,30 @@ const svgToString = (elem, indent) => {
       //   res.w += unit;
       //   res.h += unit;
       // }
-
-      if (unit !== 'px') {
-        res.w = convertUnit(res.w, unit) + unit
-        res.h = convertUnit(res.h, unit) + unit
+      if (curConfig.dynamicOutput) {
+        vb = elem.getAttribute('viewBox')
+        out.push(
+          ' viewBox="' +
+            vb +
+            '" xmlns="' +
+            NS.SVG +
+            '"'
+        )
+      } else {
+        if (unit !== 'px') {
+          res.w = convertUnit(res.w, unit) + unit
+          res.h = convertUnit(res.h, unit) + unit
+        }
+        out.push(
+          ' width="' +
+            res.w +
+            '" height="' +
+            res.h +
+            '" xmlns="' +
+            NS.SVG +
+            '"'
+        )
       }
-
-      out.push(
-        ' width="' +
-          res.w +
-          '" height="' +
-          res.h +
-          '"' +
-          vb +
-          ' xmlns="' +
-          NS.SVG +
-          '"'
-      )
 
       const nsuris = {}
 
@@ -596,7 +603,7 @@ const setSvgString = (xmlString, preventUndo) => {
     svgCanvas.getSvgRoot().append(svgCanvas.selectorManager.selectorParentGroup)
 
     if (!preventUndo) svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [svgCanvas.getSvgContent()])
+    svgCanvas.call('sourcechanged', [svgCanvas.getSvgContent()])
   } catch (e) {
     console.error(e)
     return false

@@ -53,9 +53,9 @@ describe('UI - Clipboard', function () {
     cy.get('#svg_2').should('exist')
 
     // Delete.
-    cy.get('#svg_2').click().rightclick()
+    cy.get('#svg_2').click({ force: true }).rightclick()
     cy.get('#cmenu_canvas a[href="#delete"]').click({ force: true })
-    cy.get('#svg_1').click().rightclick()
+    cy.get('#svg_1').click().rightclick({ force: true })
     cy.get('#cmenu_canvas a[href="#delete"]').click({ force: true })
     cy.get('#svg_1').should('not.exist')
     cy.get('#svg_2').should('not.exist')

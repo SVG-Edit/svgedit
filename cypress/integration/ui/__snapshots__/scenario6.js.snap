@@ -26,7 +26,7 @@ exports[`use all parts of svg-edit > check tool_polygon #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -62,7 +62,7 @@ exports[`use all parts of svg-edit > check tool_polygon_clone #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -75,7 +75,7 @@ exports[`use all parts of svg-edit > check tool_polygon_clone #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_2"
         orient="x"
@@ -103,7 +103,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -117,7 +117,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
         class="svg_2_class"
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_2_id"
         orient="x"
@@ -126,7 +126,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
         sides="5"
         stroke="#000000"
         stroke-width="5"
-        transform="rotate(25 350.145 270)"
+        transform="rotate(25 350 270)"
       ></polygon>
     </g>
   </svg>
@@ -146,7 +146,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_blur #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -160,7 +160,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_blur #0`] = `
         class="svg_2_class"
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         filter="url(#svg_2_id_blur)"
         id="svg_2_id"
@@ -195,7 +195,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_opacity #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -209,7 +209,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_opacity #0`] = `
         class="svg_2_class"
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         filter="url(#svg_2_id_blur)"
         id="svg_2_id"
@@ -246,7 +246,7 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_back #0`] = `
         class="svg_2_class"
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         filter="url(#svg_2_id_blur)"
         id="svg_2_id"
@@ -262,7 +262,7 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_back #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -295,7 +295,7 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_front #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -309,7 +309,7 @@ exports[`use all parts of svg-edit > check tool_polygon_bring_to_front #0`] = `
         class="svg_2_class"
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         filter="url(#svg_2_id_blur)"
         id="svg_2_id"
@@ -345,7 +345,7 @@ exports[`use all parts of svg-edit > check tool_polygon_delete #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -373,7 +373,7 @@ exports[`use all parts of svg-edit > check tool_polygon_align_to_page #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -401,7 +401,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_stroke_width #0`]
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#FF0000"
         id="svg_1"
         orient="x"
@@ -429,7 +429,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_stoke_fill_color 
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#bf0000"
         id="svg_1"
         orient="x"
@@ -457,7 +457,7 @@ exports[`use all parts of svg-edit > check tool_polygon_change_sides #0`] = `
       <polygon
         cx="325"
         cy="250"
-        edge="63.33333"
+        edge="63.33"
         fill="#bf0000"
         id="svg_1"
         orient="x"

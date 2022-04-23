@@ -135,17 +135,30 @@ export const ffClone = function (elem) {
 * @param {Element[]} elems - The DOM elements to apply the change to
 * @returns {void}
 */
-export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, elems) {
+export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
+  if (attr === 'id') {
+    // if the user is changing the id, then de-select the element first
+    // change the ID, then re-select it with the new ID
+    // as this change can impact other extensions, a 'renamedElement' event is thrown
+    const elem = elems[0]
+    const oldId = elem.id
+    if (oldId !== newValue) {
+      svgCanvas.clearSelection()
+      elem.id = newValue
+      svgCanvas.addToSelection([elem], true)
+      svgCanvas.call('elementRenamed', { elem, oldId, newId: newValue })
+    }
+    return
+  }
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
   if (svgCanvas.getCurrentMode() === 'pathedit') {
     // Editing node
     svgCanvas.pathActions.moveNode(attr, newValue)
   }
-  elems = elems || selectedElements
+  elems = elems ?? selectedElements
   let i = elems.length
   const noXYElems = ['g', 'polyline', 'path']
-  // const goodGAttrs = ['transform', 'opacity', 'filter'];
 
   while (i--) {
     let elem = elems[i]
@@ -160,9 +173,6 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       continue
     }
 
-    // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-    // TODO: Missing statement body
-    // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
     let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr)
     if (!oldval) { oldval = '' }
     if (oldval !== String(newValue)) {
@@ -176,18 +186,6 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
         }
         // Hoped to solve the issue of moving text with text-anchor="start",
         // but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
-        // const box = getBBox(elem), left = box.x, top = box.y, {width, height} = box,
-        //   dx = width - oldW, dy = 0;
-        // const angle = getRotationAngle(elem, true);
-        // if (angle) {
-        //   const r = Math.sqrt(dx * dx + dy * dy);
-        //   const theta = Math.atan2(dy, dx) - angle;
-        //   dx = r * Math.cos(theta);
-        //   dy = r * Math.sin(theta);
-        //
-        //   elem.setAttribute('x', elem.getAttribute('x') - dx);
-        //   elem.setAttribute('y', elem.getAttribute('y') - dy);
-        // }
       } else if (attr === '#href') {
         setHref(elem, newValue)
       } else if (newValue) {
@@ -205,10 +203,6 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       if (svgCanvas.getCurrentMode() === 'textedit' && attr !== '#text' && elem.textContent.length) {
         svgCanvas.textActions.toSelectMode(elem)
       }
-
-      // if (i === 0) {
-      //   selectedBBoxes[0] = utilsGetBBox(elem);
-      // }
 
       // Use the Firefox ffClone hack for text elements with gradients or
       // where other text attributes are changed.
@@ -274,7 +268,6 @@ export const changeSelectedAttributeMethod = function (attr, val, elems) {
   const selectedElements = svgCanvas.getSelectedElements()
   elems = elems || selectedElements
   svgCanvas.undoMgr.beginUndoableChange(attr, elems)
-  // const i = elems.length;
 
   changeSelectedAttributeNoUndoMethod(attr, val, elems)
 

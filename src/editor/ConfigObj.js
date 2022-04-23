@@ -142,6 +142,8 @@ export default class ConfigObj {
       baseUnit: 'px',
       snappingStep: 10,
       showRulers: true,
+      // SOURCE OUTPUT BEHAVIOR
+      dynamicOutput: false,
       // URL BEHAVIOR CONFIGURATION
       preventAllURLConfig: false,
       preventURLContentLoading: false,

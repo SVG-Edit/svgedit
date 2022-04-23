@@ -342,38 +342,31 @@ export class Drawing {
       return null
     }
 
-    let oldpos
-    for (oldpos = 0; oldpos < layerCount; ++oldpos) {
-      if (this.all_layers[oldpos] === this.current_layer) { break }
-    }
-    // some unknown error condition (current_layer not in all_layers)
-    if (oldpos === layerCount) { return null }
+    const oldpos = this.indexCurrentLayer()
+    if ((oldpos === -1) || (oldpos === newpos)) { return null }
 
-    if (oldpos !== newpos) {
-      // if our new position is below us, we need to insert before the node after newpos
-      const currentGroup = this.current_layer.getGroup()
-      const oldNextSibling = currentGroup.nextSibling
+    // if our new position is below us, we need to insert before the node after newpos
+    const currentGroup = this.current_layer.getGroup()
+    const oldNextSibling = currentGroup.nextSibling
 
-      let refGroup = null
-      if (newpos > oldpos) {
-        if (newpos < layerCount - 1) {
-          refGroup = this.all_layers[newpos + 1].getGroup()
-        }
+    let refGroup = null
+    if (newpos > oldpos) {
+      if (newpos < layerCount - 1) {
+        refGroup = this.all_layers[newpos + 1].getGroup()
+      }
       // if our new position is above us, we need to insert before the node at newpos
-      } else {
-        refGroup = this.all_layers[newpos].getGroup()
-      }
-      this.svgElem_.insertBefore(currentGroup, refGroup) // Ok to replace with `refGroup.before(currentGroup);`?
-
-      this.identifyLayers()
-      this.setCurrentLayer(this.getLayerName(newpos))
-
-      return {
-        currentGroup,
-        oldNextSibling
-      }
+    } else {
+      refGroup = this.all_layers[newpos].getGroup()
     }
-    return null
+    this.svgElem_.insertBefore(currentGroup, refGroup) // Ok to replace with `refGroup.before(currentGroup);`?
+
+    this.identifyLayers()
+    this.setCurrentLayer(this.getLayerName(newpos))
+
+    return {
+      currentGroup,
+      oldNextSibling
+    }
   }
 
   /**
@@ -405,7 +398,7 @@ export class Drawing {
     // Remove current layer's group
     this.current_layer.removeGroup()
     // Remove the current layer and set the previous layer as the new current layer
-    const index = this.all_layers.indexOf(this.current_layer)
+    const index = this.indexCurrentLayer()
     if (index > 0) {
       const name = this.current_layer.getName()
       this.current_layer = this.all_layers[index - 1]
@@ -449,6 +442,17 @@ export class Drawing {
       return true
     }
     return false
+  }
+
+  /**
+   * Sets the current layer. If the name is not a valid layer name, then this
+   * function returns `false`. Otherwise it returns `true`. This is not an
+   * undo-able action.
+   * @param {string} name - The name of the layer you want to switch to.
+   * @returns {boolean} `true` if the current layer was switched, otherwise `false`
+   */
+  indexCurrentLayer () {
+    return this.all_layers.indexOf(this.current_layer)
   }
 
   /**
@@ -580,7 +584,7 @@ export class Drawing {
     }
 
     // Update layer containers and current_layer.
-    const index = this.all_layers.indexOf(this.current_layer)
+    const index = this.indexCurrentLayer()
     if (index >= 0) {
       this.all_layers.splice(index + 1, 0, layer)
     } else {
@@ -763,9 +767,18 @@ export const init = (canvas) => {
 * @function module:draw.identifyLayers
 * @returns {void}
 */
-export const identifyLayers = function () {
+export const identifyLayers = () => {
   leaveContext()
   svgCanvas.getCurrentDrawing().identifyLayers()
+}
+
+/**
+* get current index
+* @function module:draw.identifyLayers
+* @returns {void}
+*/
+export const indexCurrentLayer = () => {
+  return svgCanvas.getCurrentDrawing().indexCurrentLayer()
 }
 
 /**
@@ -778,7 +791,7 @@ export const identifyLayers = function () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-export const createLayer = function (name, hrService) {
+export const createLayer = (name, hrService) => {
   const newLayer = svgCanvas.getCurrentDrawing().createLayer(
     name,
     historyRecordingService(hrService)
@@ -797,7 +810,7 @@ export const createLayer = function (name, hrService) {
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {void}
  */
-export const cloneLayer = function (name, hrService) {
+export const cloneLayer = (name, hrService) => {
   // Clone the current layer and make the cloned layer the new current layer
   const newLayer = svgCanvas.getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService))
 
@@ -813,7 +826,7 @@ export const cloneLayer = function (name, hrService) {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {boolean} `true` if an old layer group was found to delete
 */
-export const deleteCurrentLayer = function () {
+export const deleteCurrentLayer = () => {
   const { BatchCommand, RemoveElementCommand } = svgCanvas.history
   let currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer()
   const { nextSibling } = currentLayer
@@ -838,7 +851,7 @@ export const deleteCurrentLayer = function () {
 * @param {string} name - The name of the layer you want to switch to.
 * @returns {boolean} true if the current layer was switched, otherwise false
 */
-export const setCurrentLayer = function (name) {
+export const setCurrentLayer = (name) => {
   const result = svgCanvas.getCurrentDrawing().setCurrentLayer(toXml(name))
   if (result) {
     svgCanvas.clearSelection()
@@ -855,7 +868,7 @@ export const setCurrentLayer = function (name) {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {boolean} Whether the rename succeeded
 */
-export const renameCurrentLayer = function (newName) {
+export const renameCurrentLayer = (newName) => {
   const drawing = svgCanvas.getCurrentDrawing()
   const layer = drawing.getCurrentLayer()
   if (layer) {
@@ -877,7 +890,7 @@ export const renameCurrentLayer = function (newName) {
 * 0 and (number of layers - 1)
 * @returns {boolean} `true` if the current layer position was changed, `false` otherwise.
 */
-export const setCurrentLayerPosition = function (newPos) {
+export const setCurrentLayerPosition = (newPos) => {
   const { MoveElementCommand } = svgCanvas.history
   const drawing = svgCanvas.getCurrentDrawing()
   const result = drawing.setCurrentLayerPosition(newPos)
@@ -896,7 +909,7 @@ export const setCurrentLayerPosition = function (newPos) {
 * @param {boolean} bVisible - Whether the layer should be visible
 * @returns {boolean} true if the layer's visibility was set, false otherwise
 */
-export const setLayerVisibility = function (layerName, bVisible) {
+export const setLayerVisibility = (layerName, bVisible) => {
   const { ChangeElementCommand } = svgCanvas.history
   const drawing = svgCanvas.getCurrentDrawing()
   const prevVisibility = drawing.getLayerVisibility(layerName)
@@ -923,7 +936,7 @@ export const setLayerVisibility = function (layerName, bVisible) {
 * @param {string} layerName - The name of the layer you want to which you want to move the selected elements
 * @returns {boolean} Whether the selected elements were moved to the layer.
 */
-export const moveSelectedToLayer = function (layerName) {
+export const moveSelectedToLayer = (layerName) => {
   const { BatchCommand, MoveElementCommand } = svgCanvas.history
   // find the layer
   const drawing = svgCanvas.getCurrentDrawing()
@@ -955,7 +968,7 @@ export const moveSelectedToLayer = function (layerName) {
 * @param {module:history.HistoryRecordingService} hrService
 * @returns {void}
 */
-export const mergeLayer = function (hrService) {
+export const mergeLayer = (hrService) => {
   svgCanvas.getCurrentDrawing().mergeLayer(historyRecordingService(hrService))
   svgCanvas.clearSelection()
   leaveContext()
@@ -967,7 +980,7 @@ export const mergeLayer = function (hrService) {
 * @param {module:history.HistoryRecordingService} hrService
 * @returns {void}
 */
-export const mergeAllLayers = function (hrService) {
+export const mergeAllLayers = (hrService) => {
   svgCanvas.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService))
   svgCanvas.clearSelection()
   leaveContext()
@@ -981,7 +994,7 @@ export const mergeAllLayers = function (hrService) {
 * @fires module:svgcanvas.SvgCanvas#event:contextset
 * @returns {void}
 */
-export const leaveContext = function () {
+export const leaveContext = () => {
   const len = disabledElems.length
   const dataStorage = svgCanvas.getDataStorage()
   if (len) {
@@ -1009,7 +1022,7 @@ export const leaveContext = function () {
 * @fires module:svgcanvas.SvgCanvas#event:contextset
 * @returns {void}
 */
-export const setContext = function (elem) {
+export const setContext = (elem) => {
   const dataStorage = svgCanvas.getDataStorage()
   leaveContext()
   if (typeof elem === 'string') {

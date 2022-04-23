@@ -75,7 +75,7 @@ exports[`use all parts of svg-edit > check tool_path_change_seg_type #0`] = `
     <g class="layer">
       <title>Layer 1</title>
       <path
-        d="m75,75l75,25l-25,100c110.33333,130.33333 -33.33333,-83.33333 -50,-125z"
+        d="m75,75l75,25l-25,100c110.33,130.33 -33.33,-83.33 -50,-125z"
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
@@ -96,7 +96,7 @@ exports[`use all parts of svg-edit > check tool_path_change_clone_node #0`] = `
     <g class="layer">
       <title>Layer 1</title>
       <path
-        d="m201,246l-51,-146l-25,100c55.16667,65.16667 172.83333,215.33333 148.625,173c-24.20833,-42.33333 -64.29167,-106.16667 -72.625,-127z"
+        d="m201,246l-51,-146l-25,100c55.17,65.17 172.83,215.33 148.63,173c-24.21,-42.33 -64.29,-106.17 -72.63,-127z"
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
@@ -117,7 +117,7 @@ exports[`use all parts of svg-edit > check tool_path_openclose #0`] = `
     <g class="layer">
       <title>Layer 1</title>
       <path
-        d="m201,246l-51,-146l-25,100c55.16667,65.16667 172.83333,215.33333 148.625,173c-24.20833,-42.33333 -64.29167,-106.16667 -72.625,-127z"
+        d="m201,246l-51,-146l-25,100c55.17,65.17 172.83,215.33 148.63,173c-24.21,-42.33 -64.29,-106.17 -72.63,-127z"
         fill="#FF0000"
         id="svg_1"
         stroke="#000000"
