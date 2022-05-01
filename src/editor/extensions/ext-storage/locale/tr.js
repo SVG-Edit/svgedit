@@ -1,5 +1,5 @@
 export default {
-  message: 'Varsayılan olarak ve desklendiğinde, SVG-Edit ayarlarlarınızı ve' +
+  message: 'Varsayılan olarak ve desklendiğinde, SVG-Edit ayarlarlarınızı ve ' +
   'SVG\'lerinizi yerel makinenizde kaydedebilir dolayısıyla tekrar ' +
   'SVG-Edit\'i her açtığınızda tekrar yüklemeniz gerekmez.Eğer, gizlilik gereği ' +
   'bu bilgileri bilgisayarınızda saklamak istemiyorsanız, ' +
