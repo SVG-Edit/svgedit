@@ -590,7 +590,7 @@ const setSvgString = (xmlString, preventUndo) => {
     // update root to the correct size
     const width = content.getAttribute('width')
     const height = content.getAttribute('height')
-    const changes = { width: width, height: height }
+    const changes = { width, height }
     batchCmd.addSubCommand(
       new ChangeElementCommand(svgCanvas.getSvgRoot(), changes)
     )
@@ -977,8 +977,8 @@ const exportPDF = async (
         canvas => {
           const imgData = canvas.toDataURL('image/png')
           const doc = new JsPDF({
-            orientation: orientation,
-            unit: unit,
+            orientation,
+            unit,
             format: [res.w, res.h]
           })
           const docTitle = svgCanvas.getDocumentTitle()

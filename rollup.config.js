@@ -10,7 +10,6 @@ import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import url from '@rollup/plugin-url' // for XML/SVG files
-// eslint-disable-next-line node/no-extraneous-import
 import html from 'rollup-plugin-html'
 
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars'

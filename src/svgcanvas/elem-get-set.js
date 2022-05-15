@@ -299,7 +299,7 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
     if (bb.width === 0 || bb.height === 0) {
       const newzoom = bb.zoom ? bb.zoom : zoom * bb.factor
       svgCanvas.setZoom(newzoom)
-      return { zoom: zoom, bbox: bb }
+      return { zoom, bbox: bb }
     }
     return calcZoom(bb)
   }

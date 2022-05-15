@@ -1597,10 +1597,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   const color = {
     active: (typeof settings.color.active).toString().toLowerCase() === 'string'
       ? new Color({
-          ahex: !settings.window.alphaSupport && settings.color.active
-            ? settings.color.active.substring(0, 6) + 'ff'
-            : settings.color.active
-        })
+        ahex: !settings.window.alphaSupport && settings.color.active
+          ? settings.color.active.substring(0, 6) + 'ff'
+          : settings.color.active
+      })
       : new Color({
         ahex: !settings.window.alphaSupport &&
           settings.color.active.val('ahex')
@@ -1609,10 +1609,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       }),
     current: (typeof settings.color.active).toString().toLowerCase() === 'string'
       ? new Color({
-          ahex: !settings.window.alphaSupport && settings.color.active
-            ? settings.color.active.substring(0, 6) + 'ff'
-            : settings.color.active
-        })
+        ahex: !settings.window.alphaSupport && settings.color.active
+          ? settings.color.active.substring(0, 6) + 'ff'
+          : settings.color.active
+      })
       : new Color({
         ahex: !settings.window.alphaSupport &&
           settings.color.active.val('ahex')
