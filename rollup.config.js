@@ -9,7 +9,6 @@ import babel from '@rollup/plugin-babel'
 import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import nodePolyfills from 'rollup-plugin-node-polyfills'
 import url from '@rollup/plugin-url' // for XML/SVG files
 // eslint-disable-next-line node/no-extraneous-import
 import html from 'rollup-plugin-html'
@@ -107,7 +106,6 @@ const config = [{
     commonjs(),
     dynamicImportVars({ include: 'src/editor/locale.js' }),
     babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }), // exclude core-js to avoid circular dependencies.
-    nodePolyfills(),
     terser({ keep_fnames: true }), // keep_fnames is needed to avoid an error when calling extensions.
     filesize()
   ]
@@ -145,7 +143,6 @@ extensionDirs.forEach((extensionDir) => {
         commonjs({ exclude: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
         dynamicImportVars({ include: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
         babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }),
-        nodePolyfills(),
         terser({ keep_fnames: true })
       ]
     }
