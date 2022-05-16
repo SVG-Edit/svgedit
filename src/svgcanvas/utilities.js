@@ -617,13 +617,13 @@ export const getPathDFromElement = function (elem) {
       d = (!rx && !ry)
       // Regular rect
         ? getPathDFromSegments([
-            ['M', [x, y]],
-            ['L', [x + w, y]],
-            ['L', [x + w, y + h]],
-            ['L', [x, y + h]],
-            ['L', [x, y]],
-            ['Z', []]
-          ])
+          ['M', [x, y]],
+          ['L', [x + w, y]],
+          ['L', [x + w, y + h]],
+          ['L', [x, y + h]],
+          ['L', [x, y]],
+          ['Z', []]
+        ])
         : getPathDFromSegments([
           ['M', [x, y + ry]],
           ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
