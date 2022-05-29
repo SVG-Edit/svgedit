@@ -135,8 +135,8 @@ class Editor extends EditorStartup {
   loadSvgString (str, { noAlert } = {}) {
     const success = this.svgCanvas.setSvgString(str) !== false
     if (success) {
-        this.updateCanvas()
-        return
+      this.updateCanvas()
+      return
     }
     if (!noAlert) seAlert(this.i18next.t('notification.errorLoadingSVG'))
     throw new Error('Error loading SVG')
