@@ -1,1 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 50.52"><defs><style>.cls-1,.cls-3,.cls-5{fill:none;}.cls-2{fill:#f9ba00;}.cls-3,.cls-5{stroke:#fff;stroke-width:2px;}.cls-3{stroke-linecap:round;stroke-linejoin:round;}.cls-4{fill:#fff;}.cls-5{stroke-miterlimit:10;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><rect class="cls-1" y="1" width="51.04" height="49.47"/><circle class="cls-2" cx="4.93" cy="36.72" r="2.53"/><circle class="cls-2" cx="8.24" cy="28.61" r="2.53"/><circle class="cls-2" cx="16.24" cy="25.3" r="2.53"/><circle class="cls-2" cx="27.58" cy="36.64" r="2.53"/><circle class="cls-2" cx="24.3" cy="44.67" r="2.53"/><circle class="cls-2" cx="16.24" cy="47.99" r="2.53"/><circle class="cls-2" cx="8.24" cy="44.67" r="2.53"/><rect class="cls-2" x="6.34" y="38.33" width="13" height="3.49" transform="translate(-24.58 20.82) rotate(-45.01)"/><rect class="cls-2" x="14.5" y="25.3" width="3.49" height="22.68"/><rect class="cls-2" x="14.52" y="25.29" width="3.49" height="22.71" transform="translate(-21.14 22.23) rotate(-44.99)"/><rect class="cls-2" x="4.93" y="34.95" width="22.45" height="3.49" transform="translate(-0.08 0.03) rotate(-0.12)"/><line class="cls-3" x1="38.49" y1="10.3" x2="22.88" y2="29.54"/><polyline class="cls-3" points="37.65 1 18.31 25 16.01 38.25 28.21 33.38 47.74 9.13"/><path class="cls-4" d="M17,32.82a3.88,3.88,0,0,1,2.93.57,3.54,3.54,0,0,1,1.58,2.68L16,38.25Z"/><path class="cls-5" d="M19.11,24.67a15.65,15.65,0,0,0,3.77,4.87,18.57,18.57,0,0,0,5.7,2.94"/><path class="cls-5" d="M34.22,4.32a16.7,16.7,0,0,0,4,5.15,19.8,19.8,0,0,0,6.11,3.09"/><path class="cls-3" d="M48,8.8a18.54,18.54,0,0,1-5.7-2.93A33.51,33.51,0,0,1,37.64,1S42,2.18,43.87,3.68A24.51,24.51,0,0,1,48,8.8Z"/></g></g></svg>
+<?xml version="1.0"?>
+<svg width="51.03999999999999" height="50.519999999999996" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <circle class="cls-2" cx="16.24" cy="25.3" fill="#f8ba00" id="svg_4" r="2.53"/>
+  <rect class="cls-2" fill="#f8ba00" height="3.49" id="svg_9" transform="rotate(-45.01 -24.58 20.82)" width="13" x="-18.24" y="59.15"/>
+  <rect class="cls-2" fill="#f8ba00" height="22.71" id="svg_11" transform="matrix(1 0 0 1 0 0) matrix(0.70723 -0.706983 0.706983 0.70723 0 0)" width="3.49" x="-16.15" y="26.07"/>
+  <rect class="cls-2" fill="#f8ba00" height="22.68" id="svg_10" transform="matrix(1 0 0 1 0 0)" width="3.49" x="14.5" y="25.3"/>
+  <rect class="cls-2" fill="#f8ba00" height="3.49" id="svg_12" transform="matrix(1 0 0 1 0 0) matrix(0.999998 -0.00209439 0.00209439 0.999998 -0.0000630073 -0.000167486)" width="22.45" x="4.85" y="34.98"/>
+  <rect fill="#f8ba00" height="11.53" id="svg_18" stroke="#ff7f00" transform="matrix(1 0 0 1 0 0) matrix(0.64861 -0.779867 0.808105 0.625945 -0.822136 32.906)" width="28.49" x="20.36" y="10.49"/>
+  <path d="m38.4,1.03l-18.96,22.09l-2.34,12.96l12.01,-4.58l19.23,-22.82" fill="#ffffff" id="svg_14" stroke="#000000" stroke-width="2"/>
+  <circle class="cls-2" cx="4.93" cy="36.72" fill="#f8ba00" id="svg_2" r="2.53"/>
+  <circle class="cls-2" cx="8.24" cy="28.61" fill="#f8ba00" id="svg_3" r="2.53"/>
+  <circle class="cls-2" cx="27.58" cy="36.64" fill="#f8ba00" id="svg_5" r="2.53"/>
+  <circle class="cls-2" cx="24.3" cy="44.67" fill="#f8ba00" id="svg_6" r="2.53"/>
+  <circle class="cls-2" cx="16.24" cy="47.99" fill="#f8ba00" id="svg_7" r="2.53"/>
+  <circle class="cls-2" cx="8.24" cy="44.67" fill="#f8ba00" id="svg_8" r="2.53"/>
+  <path d="m40.72,2.11l-18.54,22.9" fill="#000000" id="svg_13" stroke="#000000"/>
+  <path d="m19.6,22.51a17,16.79 0 0 0 4.26,4.98a20.17,19.93 0 0 0 6.84,3.48" id="svg_16" stroke="#000000"/>
+  <path d="m20.04,23.16a16.7,16.7 0 0 0 4,5.15a19.8,19.8 0 0 0 6.11,3.09" fill="#000000" id="svg_17"/>
+  <path d="m43.25,4.15l-18.54,22.9" fill="#000000" id="svg_1" stroke="#000000"/>
+  <path d="m45.93,6.51l-18.54,22.9" fill="#000000" id="svg_15" stroke="#000000"/>
+  <ellipse cx="27.82" cy="8.33" fill="#ffffff" id="svg_24" rx="5.17" ry="1.1" stroke="#000000" transform="matrix(1.05242 0.725092 -0.607613 1.2559 19.2958 -26.1351)"/>
+ </g>
+</svg>
