@@ -74,7 +74,7 @@ export default {
       } else {
         // bitmap handling
         reader = new FileReader()
-        reader.onloadend = function ({ target: { result } }) {
+        reader.onloadend = ({ target: { result } }) => {
           /**
               * Insert the new image until we know its dimensions.
               * @param {Float} imageWidth
