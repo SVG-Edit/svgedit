@@ -1,0 +1,489 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_1"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="5"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_rotation #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        class="svg_1_class"
+        fill="none"
+        id="svg_1_id"
+        stroke="#000000"
+        stroke-width="5"
+        transform="rotate(25 325 325)"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_blur #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        class="svg_1_class"
+        fill="none"
+        filter="url(#svg_1_id_blur)"
+        id="svg_1_id"
+        stroke="#000000"
+        stroke-width="5"
+        transform="rotate(25 325 325)"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      ></line>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_1_id_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_opacity #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        class="svg_1_class"
+        fill="none"
+        filter="url(#svg_1_id_blur)"
+        id="svg_1_id"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="5"
+        transform="rotate(25 325 325)"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      ></line>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_1_id_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_delete #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_clone #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_bring_to_back #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="5"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      ></line>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_bring_to_front #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="5"
+        x1="200"
+        x2="450"
+        y1="200"
+        y2="450"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_x_y_coordinate #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="5"
+        x1="225"
+        x2="475"
+        y1="175"
+        y2="425"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_stroke_width #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#000000"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="15"
+        x1="225"
+        x2="475"
+        y1="175"
+        y2="425"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_stoke_color #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#bf5f00"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="15"
+        transform="matrix(1 0 0 1 0 0)"
+        x1="225"
+        x2="475"
+        y1="175"
+        y2="425"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_align_to_page #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <line
+        fill="none"
+        id="svg_3"
+        opacity="0.25"
+        stroke="#bf5f00"
+        stroke-width="5"
+        x1="220"
+        x2="470"
+        y1="220"
+        y2="470"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          id="svg_4"
+          to="0.5"
+        ></animate>
+      </line>
+      <line
+        fill="none"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="15"
+        transform="matrix(1 0 0 1 0 0)"
+        x1="225"
+        x2="475"
+        y1="175"
+        y2="425"
+      ></line>
+    </g>
+  </svg>
+</body>
+`;

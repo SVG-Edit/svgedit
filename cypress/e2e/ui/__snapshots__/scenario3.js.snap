@@ -1,0 +1,128 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_path #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m50,50l100,50l-25,100l-75,-150z"
+        fill="#FF0000"
+        id="svg_1"
+        opacity="0.5"
+        stroke="#000000"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </path>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_node_xy #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m75,75l75,25l-25,100l-50,-125z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+      ></path>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_seg_type #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m75,75l75,25l-25,100c110.33,130.33 -33.33,-83.33 -50,-125z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+      ></path>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_clone_node #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m201,246l-51,-146l-25,100c55.17,65.17 172.83,215.33 148.63,173c-24.21,-42.33 -64.29,-106.17 -72.63,-127z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+      ></path>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_openclose #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <path
+        d="m201,246l-51,-146l-25,100c55.17,65.17 172.83,215.33 148.63,173c-24.21,-42.33 -64.29,-106.17 -72.63,-127z"
+        fill="#FF0000"
+        id="svg_1"
+        stroke="#000000"
+      ></path>
+    </g>
+  </svg>
+</body>
+`;
