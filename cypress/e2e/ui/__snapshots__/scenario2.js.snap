@@ -1,0 +1,573 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        opacity="0.5"
+        r="111.8"
+        stroke="#000000"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </circle>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#FF0000"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </ellipse>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#FF0000"
+        id="svg_2"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+      <ellipse
+        cx="114"
+        cy="189"
+        fill="#FF0000"
+        id="svg_3"
+        opacity="0.5"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+      >
+        <animate
+          attributeName="opacity"
+          begin="indefinite"
+          dur="0.2"
+          fill="freeze"
+          to="1"
+        ></animate>
+      </ellipse>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+      <ellipse
+        cx="114"
+        cy="189"
+        fill="#FF0000"
+        id="svg_3"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+      <ellipse
+        cx="114"
+        cy="189"
+        fill="#FF0000"
+        id="svg_3"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+      <ellipse
+        cx="114"
+        cy="189"
+        fill="#FF0000"
+        id="svg_3"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+        transform="rotate(25 114 189)"
+      ></ellipse>
+    </g>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_change_blur #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+      <ellipse
+        cx="114"
+        cy="189"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+        transform="rotate(25 114 189)"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_change_cx_cy_coordinate #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+      <ellipse
+        cx="139"
+        cy="214"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="55"
+        ry="25"
+        stroke="#000000"
+        transform="rotate(25 139 214)"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_change_rx_ry_radius #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0)"
+      ></ellipse>
+      <ellipse
+        cx="139"
+        cy="214"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="80"
+        ry="50"
+        stroke="#000000"
+        transform="rotate(25 139 214)"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_bring_to_back #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="139"
+        cy="214"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="80"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_bring_to_front #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="139"
+        cy="214"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="80"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
+      ></ellipse>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_clone #0`] = `
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <circle
+        cx="150"
+        cy="150"
+        fill="#FF0000"
+        id="svg_1"
+        r="111.8"
+        stroke="#000000"
+      ></circle>
+      <ellipse
+        cx="139"
+        cy="214"
+        fill="#FF0000"
+        filter="url(#svg_3_blur)"
+        id="svg_3"
+        rx="80"
+        ry="50"
+        stroke="#000000"
+        transform="matrix(1 0 0 1 0 0) rotate(25 139 214)"
+      ></ellipse>
+      <ellipse
+        cx="299"
+        cy="169"
+        fill="#ffff00"
+        id="svg_2"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+      <ellipse
+        cx="319"
+        cy="189"
+        fill="#ffff00"
+        id="svg_4"
+        opacity="0.5"
+        rx="60"
+        ry="50"
+        stroke="#000000"
+      ></ellipse>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_3_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
+`;
