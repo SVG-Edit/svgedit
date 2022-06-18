@@ -10,15 +10,15 @@ module.exports = defineConfig({
     autoCleanUp: true,
     prettier: true,
     updateSnapshots: false,
-    diffLines: 5,
+    diffLines: 5
   },
   e2e: {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
-    setupNodeEvents(on, config) {
+    setupNodeEvents (on, config) {
       return require('./cypress/plugins/index.js')(on, config)
     },
     baseUrl: 'http://localhost:8000',
-    excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*'],
-  },
+    excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*']
+  }
 })
