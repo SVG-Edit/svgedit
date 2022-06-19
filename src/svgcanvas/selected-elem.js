@@ -323,94 +323,228 @@ const alignSelectedElements = (type, relativeTo) => {
   let maxx = Number.MIN_VALUE
   let miny = Number.MAX_VALUE
   let maxy = Number.MIN_VALUE
-  let curwidth = Number.MIN_VALUE
-  let curheight = Number.MIN_VALUE
+
+  const isHorizontalAlign = (type) => ['l', 'c', 'r', 'left', 'center', 'right'].includes(type)
+  const isVerticalAlign = (type) => ['t', 'm', 'b', 'top', 'middle', 'bottom'].includes(type)
+
   for (let i = 0; i < len; ++i) {
     if (!selectedElements[i]) {
       break
     }
     const elem = selectedElements[i]
     bboxes[i] = getStrokedBBoxDefaultVisible([elem])
-
-    // now bbox is axis-aligned and handles rotation
-    switch (relativeTo) {
-      case 'smallest':
-        if (
-          ((type === 'l' ||
-            type === 'c' ||
-            type === 'r' ||
-            type === 'left' ||
-            type === 'center' ||
-            type === 'right') &&
-            (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
-          ((type === 't' ||
-            type === 'm' ||
-            type === 'b' ||
-            type === 'top' ||
-            type === 'middle' ||
-            type === 'bottom') &&
-            (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
-        ) {
-          minx = bboxes[i].x
-          miny = bboxes[i].y
-          maxx = bboxes[i].x + bboxes[i].width
-          maxy = bboxes[i].y + bboxes[i].height
-          curwidth = bboxes[i].width
-          curheight = bboxes[i].height
-        }
-        break
-      case 'largest':
-        if (
-          ((type === 'l' ||
-            type === 'c' ||
-            type === 'r' ||
-            type === 'left' ||
-            type === 'center' ||
-            type === 'right') &&
-            (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
-          ((type === 't' ||
-            type === 'm' ||
-            type === 'b' ||
-            type === 'top' ||
-            type === 'middle' ||
-            type === 'bottom') &&
-            (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
-        ) {
-          minx = bboxes[i].x
-          miny = bboxes[i].y
-          maxx = bboxes[i].x + bboxes[i].width
-          maxy = bboxes[i].y + bboxes[i].height
-          curwidth = bboxes[i].width
-          curheight = bboxes[i].height
-        }
-        break
-      default:
-        // 'selected'
-        if (bboxes[i].x < minx) {
-          minx = bboxes[i].x
-        }
-        if (bboxes[i].y < miny) {
-          miny = bboxes[i].y
-        }
-        if (bboxes[i].x + bboxes[i].width > maxx) {
-          maxx = bboxes[i].x + bboxes[i].width
-        }
-        if (bboxes[i].y + bboxes[i].height > maxy) {
-          maxy = bboxes[i].y + bboxes[i].height
-        }
-        break
-    }
-  } // loop for each element to find the bbox and adjust min/max
-
-  if (relativeTo === 'page') {
-    minx = 0
-    miny = 0
-    maxx = svgCanvas.getContentW()
-    maxy = svgCanvas.getContentH()
   }
 
-  const dx = new Array(len)
-  const dy = new Array(len)
+  // distribute horizontal and vertical align is not support smallest and largest
+  if (['smallest', 'largest'].includes(relativeTo) && ['dh', 'distrib_horiz', 'dv', 'distrib_verti'].includes(type)) {
+    relativeTo = 'selected'
+  }
+
+  switch (relativeTo) {
+    case 'smallest':
+      if (isHorizontalAlign(type) || isVerticalAlign(type)) {
+        const sortedBboxes = bboxes.slice().sort((a,b) => a.width - b.width)
+        const minBbox = sortedBboxes[0];
+        minx = minBbox.x;
+        miny = minBbox.y;
+        maxx = minBbox.x + minBbox.width;
+        maxy = minBbox.y + minBbox.height;
+      }
+      break
+    case 'largest':
+      if (isHorizontalAlign(type) || isVerticalAlign(type)) {
+        const sortedBboxes = bboxes.slice().sort((a,b) => a.width - b.width)
+        const maxBbox = sortedBboxes[bboxes.length - 1];
+        minx = maxBbox.x;
+        miny = maxBbox.y;
+        maxx = maxBbox.x + maxBbox.width;
+        maxy = maxBbox.y + maxBbox.height;
+      }
+      break
+    case 'page':
+      minx = 0
+      miny = 0
+      maxx = svgCanvas.getContentW()
+      maxy = svgCanvas.getContentH()
+      break
+    default:
+      // 'selected'
+      minx = Math.min(...bboxes.map(box => box.x))
+      miny = Math.min(...bboxes.map(box => box.y))
+      maxx = Math.max(...bboxes.map(box => box.x + box.width))
+      maxy = Math.max(...bboxes.map(box => box.y + box.height))
+      break
+  } // adjust min/max
+
+
+  let dx = []
+  let dy = []
+
+  if (['dh', 'distrib_horiz'].includes(type)) { // distribute horizontal align
+    [dx, dy] = _getDistributeHorizontalDistances(relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy)
+  } else if (['dv', 'distrib_verti'].includes(type)) { // distribute vertical align
+    [dx, dy] = _getDistributeVerticalDistances(relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy)
+  } else { // normal align (top, left, right, ...)
+    [dx, dy] = _getNormalDistances(type, selectedElements, bboxes, minx, maxx, miny, maxy)
+  }
+
+  moveSelectedElements(dx, dy)
+}
+
+
+/**
+ * Aligns selected elements.
+ * @function module:selected-elem.SvgCanvas#alignSelectedElements
+ * @param {string} type - String with single character indicating the alignment type
+ * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
+ * @returns {void}
+ */
+
+/**
+ * get distribution horizontal distances.
+ * (internal call only)
+ *
+ * @param {string} relativeTo
+ * @param {Element[]} selectedElements - the array with selected DOM elements
+ * @param {module:utilities.BBoxObject} bboxes - bounding box objects
+ * @param {Float} minx - selected area min-x
+ * @param {Float} maxx - selected area max-x
+ * @param {Float} miny - selected area min-y
+ * @param {Float} maxy - selected area max-y
+ * @returns {[Float[],Float[]]} x and y distances array
+ * @private
+ */
+const _getDistributeHorizontalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
+  const dx = [];
+  const dy = [];
+
+  for (let i = 0; i < selectedElements.length; i++) {
+    dy[i] = 0;
+  }
+
+  const bboxesSortedClone = bboxes
+    .slice()
+    .sort((firstBox, secondBox) => {
+      const firstMaxX = firstBox.x + firstBox.width;
+      const secondMaxX = secondBox.x + secondBox.width;
+
+      if (firstMaxX == secondMaxX) { return 0 }
+      else if (firstMaxX > secondMaxX) { return 1 }
+      else { return -1 }
+    })
+
+  if (relativeTo == 'page') {
+    bboxesSortedClone.unshift({ x:0, y:0, width:0, height:maxy }); // virtual left box
+    bboxesSortedClone.push({ x:maxx, y:0, width:0, height:maxy }); // virtual right box
+  }
+
+  const totalWidth = maxx - minx
+  const totalBoxWidth = bboxesSortedClone.map(b => b.width).reduce((w1, w2) => w1 + w2, 0)
+  const space = (totalWidth - totalBoxWidth) / (bboxesSortedClone.length - 1);
+  const _dx = [];
+
+  for (let i = 0; i < bboxesSortedClone.length; ++i) {
+    _dx[i] = 0;
+
+    if (i == 0) { continue }
+
+    const orgX = bboxesSortedClone[i].x;
+    bboxesSortedClone[i].x = bboxesSortedClone[i-1].x + bboxesSortedClone[i-1].width + space
+    _dx[i] = bboxesSortedClone[i].x - orgX;
+  }
+
+  bboxesSortedClone.forEach((boxClone, idx) => {
+    const orgIdx = bboxes.findIndex(box => box == boxClone)
+    if (orgIdx != -1) {
+      dx[orgIdx] = _dx[idx];
+    }
+  })
+
+  return [dx, dy]
+}
+
+/**
+ * get distribution vertical distances.
+ * (internal call only)
+ *
+ * @param {string} relativeTo
+ * @param {Element[]} selectedElements - the array with selected DOM elements
+ * @param {module:utilities.BBoxObject} bboxes - bounding box objects
+ * @param {Float} minx - selected area min-x
+ * @param {Float} maxx - selected area max-x
+ * @param {Float} miny - selected area min-y
+ * @param {Float} maxy - selected area max-y
+ * @returns {[Float[],Float[]]} x and y distances array
+ * @private
+ */
+const _getDistributeVerticalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
+  const dx = [];
+  const dy = [];
+
+  for (let i = 0; i < selectedElements.length; i++) {
+    dx[i] = 0;
+  }
+
+  const bboxesSortedClone = bboxes
+    .slice()
+    .sort((firstBox, secondBox) => {
+      const firstMaxY = firstBox.y + firstBox.height;
+      const secondMaxY = secondBox.y + secondBox.height;
+
+      if (firstMaxY == secondMaxY) { return 0 }
+      else if (firstMaxY > secondMaxY) { return 1 }
+      else { return -1 }
+    })
+
+  if (relativeTo == 'page') {
+    bboxesSortedClone.unshift({ x:0, y:0, width:maxx, height:0 }); // virtual top box
+    bboxesSortedClone.push({ x:0, y:maxy, width:maxx, height:0 }); // virtual bottom box
+  }
+
+  const totalHeight = maxy - miny
+  const totalBoxHeight = bboxesSortedClone.map(b => b.height).reduce((h1, h2) => h1 + h2, 0)
+  const space = (totalHeight - totalBoxHeight) / (bboxesSortedClone.length - 1);
+  const _dy = [];
+
+  for (let i = 0; i < bboxesSortedClone.length; ++i) {
+    _dy[i] = 0;
+
+    if (i == 0) { continue }
+
+    const orgY = bboxesSortedClone[i].y;
+    bboxesSortedClone[i].y = bboxesSortedClone[i-1].y + bboxesSortedClone[i-1].height + space
+    _dy[i] = bboxesSortedClone[i].y - orgY;
+  }
+
+  bboxesSortedClone.forEach((boxClone, idx) => {
+    const orgIdx = bboxes.findIndex(box => box == boxClone)
+    if (orgIdx != -1) {
+      dy[orgIdx] = _dy[idx]
+    }
+  })
+
+  return [dx, dy]
+}
+
+/**
+ * get normal align distances.
+ * (internal call only)
+ *
+ * @param {string} type
+ * @param {Element[]} selectedElements - the array with selected DOM elements
+ * @param {module:utilities.BBoxObject} bboxes - bounding box objects
+ * @param {Float} minx - selected area min-x
+ * @param {Float} maxx - selected area max-x
+ * @param {Float} miny - selected area min-y
+ * @param {Float} maxy - selected area max-y
+ * @returns {[Float[],Float[]]} x and y distances array
+ * @private
+ */
+const _getNormalDistances = (type, selectedElements, bboxes, minx, maxx, miny, maxy) => {
+  const len = selectedElements.length
+  const dx = new Array(len);
+  const dy = new Array(len);
+
   for (let i = 0; i < len; ++i) {
     if (!selectedElements[i]) {
       break
@@ -419,6 +553,7 @@ const alignSelectedElements = (type, relativeTo) => {
     const bbox = bboxes[i]
     dx[i] = 0
     dy[i] = 0
+
     switch (type) {
       case 'l': // left (horizontal)
       case 'left': // left (horizontal)
@@ -446,8 +581,11 @@ const alignSelectedElements = (type, relativeTo) => {
         break
     }
   }
-  moveSelectedElements(dx, dy)
+
+  return [ dx, dy ]
 }
+
+
 
 /**
  * Removes all selected elements from the DOM and adds the change to the
