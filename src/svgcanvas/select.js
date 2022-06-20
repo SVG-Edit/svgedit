@@ -215,6 +215,15 @@ export class Selector {
       e: [nbax + nbaw, nbay + (nbah) / 2],
       s: [nbax + (nbaw) / 2, nbay + nbah]
     }
+
+    // If text editing and resizing, reinitialize and reposition cursor
+    if(tagName === 'text' && svgCanvas.getCurrentMode() === 'resize') {
+      if (selected.textContent) {
+        svgCanvas.textActions.init(selected);
+        svgCanvas.textActions.setCursor();
+      }
+    }
+
     selectedBox.setAttribute('d', dstr)
     this.selectorGroup.setAttribute('transform', xform)
     Object.entries(this.gripCoords).forEach(([dir, coords]) => {
