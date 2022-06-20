@@ -343,22 +343,22 @@ const alignSelectedElements = (type, relativeTo) => {
   switch (relativeTo) {
     case 'smallest':
       if (isHorizontalAlign(type) || isVerticalAlign(type)) {
-        const sortedBboxes = bboxes.slice().sort((a,b) => a.width - b.width)
-        const minBbox = sortedBboxes[0];
-        minx = minBbox.x;
-        miny = minBbox.y;
-        maxx = minBbox.x + minBbox.width;
-        maxy = minBbox.y + minBbox.height;
+        const sortedBboxes = bboxes.slice().sort((a, b) => a.width - b.width)
+        const minBbox = sortedBboxes[0]
+        minx = minBbox.x
+        miny = minBbox.y
+        maxx = minBbox.x + minBbox.width
+        maxy = minBbox.y + minBbox.height
       }
       break
     case 'largest':
       if (isHorizontalAlign(type) || isVerticalAlign(type)) {
-        const sortedBboxes = bboxes.slice().sort((a,b) => a.width - b.width)
-        const maxBbox = sortedBboxes[bboxes.length - 1];
-        minx = maxBbox.x;
-        miny = maxBbox.y;
-        maxx = maxBbox.x + maxBbox.width;
-        maxy = maxBbox.y + maxBbox.height;
+        const sortedBboxes = bboxes.slice().sort((a, b) => a.width - b.width)
+        const maxBbox = sortedBboxes[bboxes.length - 1]
+        minx = maxBbox.x
+        miny = maxBbox.y
+        maxx = maxBbox.x + maxBbox.width
+        maxy = maxBbox.y + maxBbox.height
       }
       break
     case 'page':
@@ -376,7 +376,6 @@ const alignSelectedElements = (type, relativeTo) => {
       break
   } // adjust min/max
 
-
   let dx = []
   let dy = []
 
@@ -390,7 +389,6 @@ const alignSelectedElements = (type, relativeTo) => {
 
   moveSelectedElements(dx, dy)
 }
-
 
 /**
  * Aligns selected elements.
@@ -415,48 +413,46 @@ const alignSelectedElements = (type, relativeTo) => {
  * @private
  */
 const _getDistributeHorizontalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
-  const dx = [];
-  const dy = [];
+  const dx = []
+  const dy = []
 
   for (let i = 0; i < selectedElements.length; i++) {
-    dy[i] = 0;
+    dy[i] = 0
   }
 
   const bboxesSortedClone = bboxes
     .slice()
     .sort((firstBox, secondBox) => {
-      const firstMaxX = firstBox.x + firstBox.width;
-      const secondMaxX = secondBox.x + secondBox.width;
+      const firstMaxX = firstBox.x + firstBox.width
+      const secondMaxX = secondBox.x + secondBox.width
 
-      if (firstMaxX == secondMaxX) { return 0 }
-      else if (firstMaxX > secondMaxX) { return 1 }
-      else { return -1 }
+      if (firstMaxX === secondMaxX) { return 0 } else if (firstMaxX > secondMaxX) { return 1 } else { return -1 }
     })
 
-  if (relativeTo == 'page') {
-    bboxesSortedClone.unshift({ x:0, y:0, width:0, height:maxy }); // virtual left box
-    bboxesSortedClone.push({ x:maxx, y:0, width:0, height:maxy }); // virtual right box
+  if (relativeTo === 'page') {
+    bboxesSortedClone.unshift({ x: 0, y: 0, width: 0, height: maxy }) // virtual left box
+    bboxesSortedClone.push({ x: maxx, y: 0, width: 0, height: maxy }) // virtual right box
   }
 
   const totalWidth = maxx - minx
   const totalBoxWidth = bboxesSortedClone.map(b => b.width).reduce((w1, w2) => w1 + w2, 0)
-  const space = (totalWidth - totalBoxWidth) / (bboxesSortedClone.length - 1);
-  const _dx = [];
+  const space = (totalWidth - totalBoxWidth) / (bboxesSortedClone.length - 1)
+  const _dx = []
 
   for (let i = 0; i < bboxesSortedClone.length; ++i) {
-    _dx[i] = 0;
+    _dx[i] = 0
 
-    if (i == 0) { continue }
+    if (i === 0) { continue }
 
-    const orgX = bboxesSortedClone[i].x;
-    bboxesSortedClone[i].x = bboxesSortedClone[i-1].x + bboxesSortedClone[i-1].width + space
-    _dx[i] = bboxesSortedClone[i].x - orgX;
+    const orgX = bboxesSortedClone[i].x
+    bboxesSortedClone[i].x = bboxesSortedClone[i - 1].x + bboxesSortedClone[i - 1].width + space
+    _dx[i] = bboxesSortedClone[i].x - orgX
   }
 
   bboxesSortedClone.forEach((boxClone, idx) => {
-    const orgIdx = bboxes.findIndex(box => box == boxClone)
-    if (orgIdx != -1) {
-      dx[orgIdx] = _dx[idx];
+    const orgIdx = bboxes.findIndex(box => box === boxClone)
+    if (orgIdx !== -1) {
+      dx[orgIdx] = _dx[idx]
     }
   })
 
@@ -478,47 +474,45 @@ const _getDistributeHorizontalDistances = (relativeTo, selectedElements, bboxes,
  * @private
  */
 const _getDistributeVerticalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
-  const dx = [];
-  const dy = [];
+  const dx = []
+  const dy = []
 
   for (let i = 0; i < selectedElements.length; i++) {
-    dx[i] = 0;
+    dx[i] = 0
   }
 
   const bboxesSortedClone = bboxes
     .slice()
     .sort((firstBox, secondBox) => {
-      const firstMaxY = firstBox.y + firstBox.height;
-      const secondMaxY = secondBox.y + secondBox.height;
+      const firstMaxY = firstBox.y + firstBox.height
+      const secondMaxY = secondBox.y + secondBox.height
 
-      if (firstMaxY == secondMaxY) { return 0 }
-      else if (firstMaxY > secondMaxY) { return 1 }
-      else { return -1 }
+      if (firstMaxY === secondMaxY) { return 0 } else if (firstMaxY > secondMaxY) { return 1 } else { return -1 }
     })
 
-  if (relativeTo == 'page') {
-    bboxesSortedClone.unshift({ x:0, y:0, width:maxx, height:0 }); // virtual top box
-    bboxesSortedClone.push({ x:0, y:maxy, width:maxx, height:0 }); // virtual bottom box
+  if (relativeTo === 'page') {
+    bboxesSortedClone.unshift({ x: 0, y: 0, width: maxx, height: 0 }) // virtual top box
+    bboxesSortedClone.push({ x: 0, y: maxy, width: maxx, height: 0 }) // virtual bottom box
   }
 
   const totalHeight = maxy - miny
   const totalBoxHeight = bboxesSortedClone.map(b => b.height).reduce((h1, h2) => h1 + h2, 0)
-  const space = (totalHeight - totalBoxHeight) / (bboxesSortedClone.length - 1);
-  const _dy = [];
+  const space = (totalHeight - totalBoxHeight) / (bboxesSortedClone.length - 1)
+  const _dy = []
 
   for (let i = 0; i < bboxesSortedClone.length; ++i) {
-    _dy[i] = 0;
+    _dy[i] = 0
 
-    if (i == 0) { continue }
+    if (i === 0) { continue }
 
-    const orgY = bboxesSortedClone[i].y;
-    bboxesSortedClone[i].y = bboxesSortedClone[i-1].y + bboxesSortedClone[i-1].height + space
-    _dy[i] = bboxesSortedClone[i].y - orgY;
+    const orgY = bboxesSortedClone[i].y
+    bboxesSortedClone[i].y = bboxesSortedClone[i - 1].y + bboxesSortedClone[i - 1].height + space
+    _dy[i] = bboxesSortedClone[i].y - orgY
   }
 
   bboxesSortedClone.forEach((boxClone, idx) => {
-    const orgIdx = bboxes.findIndex(box => box == boxClone)
-    if (orgIdx != -1) {
+    const orgIdx = bboxes.findIndex(box => box === boxClone)
+    if (orgIdx !== -1) {
       dy[orgIdx] = _dy[idx]
     }
   })
@@ -542,8 +536,8 @@ const _getDistributeVerticalDistances = (relativeTo, selectedElements, bboxes, m
  */
 const _getNormalDistances = (type, selectedElements, bboxes, minx, maxx, miny, maxy) => {
   const len = selectedElements.length
-  const dx = new Array(len);
-  const dy = new Array(len);
+  const dx = new Array(len)
+  const dy = new Array(len)
 
   for (let i = 0; i < len; ++i) {
     if (!selectedElements[i]) {
@@ -582,10 +576,8 @@ const _getNormalDistances = (type, selectedElements, bboxes, minx, maxx, miny, m
     }
   }
 
-  return [ dx, dy ]
+  return [dx, dy]
 }
-
-
 
 /**
  * Removes all selected elements from the DOM and adds the change to the

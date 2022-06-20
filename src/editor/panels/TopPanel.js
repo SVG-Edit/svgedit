@@ -944,8 +944,8 @@ class TopPanel {
     $click($id('tool_align_top'), () => this.clickAlign.bind(this)('top'))
     $click($id('tool_align_bottom'), () => this.clickAlign.bind(this)('bottom'))
     $click($id('tool_align_middle'), () => this.clickAlign.bind(this)('middle'))
-    $click($id('tool_align_distrib_horiz'), () => this.clickAlign.bind(this)('distrib_horiz'));
-    $click($id('tool_align_distrib_verti'), () => this.clickAlign.bind(this)('distrib_verti'));
+    $click($id('tool_align_distrib_horiz'), () => this.clickAlign.bind(this)('distrib_horiz'))
+    $click($id('tool_align_distrib_verti'), () => this.clickAlign.bind(this)('distrib_verti'))
     $click($id('tool_node_clone'), this.clonePathNode.bind(this))
     $click($id('tool_node_delete'), this.deletePathNode.bind(this))
     $click($id('tool_openclose_path'), this.opencloseSubPath.bind(this))
