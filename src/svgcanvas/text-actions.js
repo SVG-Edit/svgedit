@@ -129,25 +129,27 @@ export const textActionsMethod = (function () {
       getElement('selectorParentGroup').append(selblock)
     }
 
-    const startbb = chardata[start]
-    const endbb = chardata[end]
-
-    cursor.setAttribute('visibility', 'hidden')
-
-    const tl = ptToScreen(startbb.x, textbb.y)
-    const tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y)
-    const bl = ptToScreen(startbb.x, textbb.y + textbb.height)
-    const br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height)
-
-    const dstr = 'M' + tl.x + ',' + tl.y +
-' L' + tr.x + ',' + tr.y +
-' ' + br.x + ',' + br.y +
-' ' + bl.x + ',' + bl.y + 'z'
-
-    assignAttributes(selblock, {
-      d: dstr,
-      display: 'inline'
-    })
+    if(chardata.length) {
+      const startbb = chardata[start]
+      const endbb = chardata[end]
+  
+      cursor.setAttribute('visibility', 'hidden')
+  
+      const tl = ptToScreen(startbb.x, textbb.y)
+      const tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y)
+      const bl = ptToScreen(startbb.x, textbb.y + textbb.height)
+      const br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height)
+  
+      const dstr = 'M' + tl.x + ',' + tl.y +
+  ' L' + tr.x + ',' + tr.y +
+  ' ' + br.x + ',' + br.y +
+  ' ' + bl.x + ',' + bl.y + 'z'
+  
+      assignAttributes(selblock, {
+        d: dstr,
+        display: 'inline'
+      })
+    }
   }
 
   /**
@@ -417,16 +419,21 @@ export const textActionsMethod = (function () {
       blinker = null
       if (selblock) { selblock.setAttribute('display', 'none') }
       if (cursor) { cursor.setAttribute('visibility', 'hidden') }
-      curtext.style.cursor = 'move'
+
+      if(curtext) {
+        curtext.style.cursor = 'move'
+      }
 
       if (selectElem) {
         svgCanvas.clearSelection()
-        curtext.style.cursor = 'move'
+        if(curtext) {
+          curtext.style.cursor = 'move'
+        }
 
         svgCanvas.call('selected', [curtext])
         svgCanvas.addToSelection([curtext], true)
       }
-      if (!curtext?.textContent.length) {
+      if (!curtext?.textContent?.length) {
         // No content, so delete
         svgCanvas.deleteSelectedElements()
       }

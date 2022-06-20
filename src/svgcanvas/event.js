@@ -569,6 +569,7 @@ const mouseUpEvent = (evt) => {
   const mouseY = pt.y * zoom
   const x = mouseX / zoom
   const y = mouseY / zoom
+  const curMode = svgCanvas.getCurrentMode();
 
   let element = getElement(svgCanvas.getId())
   let keep = false
@@ -579,8 +580,14 @@ const mouseUpEvent = (evt) => {
   // TODO: Make true when in multi-unit mode
   const useUnit = false // (svgCanvas.getCurConfig().baseUnit !== 'px');
   svgCanvas.setStarted(false)
+
+  // If nothing selected & deselect, remove cursor
+  if(selectedElements.length < 1 && curMode !== "text") {
+    svgEditor.svgCanvas.textActions.toSelectMode();
+  }
+
   let t
-  switch (svgCanvas.getCurrentMode()) {
+  switch (curMode) {
     // intentionally fall-through to select here
     case 'resize':
     case 'multiselect':
