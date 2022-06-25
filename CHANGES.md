@@ -1,4 +1,8 @@
 # SVG-Edit CHANGES
+## 7.1.4
+- Implement horizontal or vertical distribution alignment (mulder3062)
+- fix several bugs and update to latest dependencies
+- new tr translation (zktosu)
 ## 7.1.3
 - fix issue #736. could not move layers
 ## 7.1.2

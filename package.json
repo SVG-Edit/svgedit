@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "7.1.3",
+  "version": "7.1.4",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/Editor.js",
   "module": "dist/Editor.js",
@@ -97,7 +97,7 @@
     "@cypress/code-coverage": "3.10.0",
     "@cypress/fiddle": "1.19.3",
     "@rollup/plugin-babel": "5.3.1",
-    "@rollup/plugin-commonjs": "^18",
+    "@rollup/plugin-commonjs": "^21",
     "@rollup/plugin-dynamic-import-vars": "1.4.3",
     "@rollup/plugin-node-resolve": "13.3.0",
     "@rollup/plugin-replace": "4.0.0",
