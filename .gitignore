@@ -1,5 +1,6 @@
 ignore
 node_modules
+src/editor/react-extensions/react-test/node_modules
 docs/jsdoc
 cypress/results
 cypress/screenshots

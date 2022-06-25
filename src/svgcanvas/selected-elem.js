@@ -409,7 +409,7 @@ const alignSelectedElements = (type, relativeTo) => {
  * @param {Float} maxx - selected area max-x
  * @param {Float} miny - selected area min-y
  * @param {Float} maxy - selected area max-y
- * @returns {[Float[],Float[]]} x and y distances array
+ * @returns {Array.Float[]} x and y distances array
  * @private
  */
 const _getDistributeHorizontalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
@@ -470,7 +470,7 @@ const _getDistributeHorizontalDistances = (relativeTo, selectedElements, bboxes,
  * @param {Float} maxx - selected area max-x
  * @param {Float} miny - selected area min-y
  * @param {Float} maxy - selected area max-y
- * @returns {[Float[],Float[]]} x and y distances array
+ * @returns {Array.Float[]}} x and y distances array
  * @private
  */
 const _getDistributeVerticalDistances = (relativeTo, selectedElements, bboxes, minx, maxx, miny, maxy) => {
@@ -531,7 +531,7 @@ const _getDistributeVerticalDistances = (relativeTo, selectedElements, bboxes, m
  * @param {Float} maxx - selected area max-x
  * @param {Float} miny - selected area min-y
  * @param {Float} maxy - selected area max-y
- * @returns {[Float[],Float[]]} x and y distances array
+ * @returns {Array.Float[]} x and y distances array
  * @private
  */
 const _getNormalDistances = (type, selectedElements, bboxes, minx, maxx, miny, maxy) => {
