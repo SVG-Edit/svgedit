@@ -107,6 +107,8 @@ const mouseMoveEvent = (evt) => {
   if (!svgCanvas.getStarted()) { return }
   if (evt.button === 1 || svgCanvas.spaceKey) { return }
 
+  svgCanvas.textActions.init()
+
   evt.preventDefault()
 
   const selectedElements = svgCanvas.getSelectedElements()
@@ -557,6 +559,8 @@ const mouseOutEvent = () => {
 const mouseUpEvent = (evt) => {
   if (evt.button === 2) { return }
   if (!svgCanvas.getStarted()) { return }
+
+  svgCanvas.textActions.init()
 
   const selectedElements = svgCanvas.getSelectedElements()
   const zoom = svgCanvas.getZoom()
