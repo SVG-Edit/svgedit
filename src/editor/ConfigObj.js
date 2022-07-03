@@ -393,7 +393,7 @@ export default class ConfigObj {
      * @returns {void}
      */
     const extendOrAdd = (cfgObj, key, val) => {
-      if (cfgObj[key] && typeof cfgObj[key] === 'object') {
+      if (cfgObj[key] && typeof cfgObj[key] === 'object' && !Array.isArray(cfgObj[key])) {
         cfgObj[key] = mergeDeep(cfgObj[key], val)
       } else {
         cfgObj[key] = val
