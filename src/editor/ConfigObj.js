@@ -132,6 +132,7 @@ export default class ConfigObj {
       // PATH CONFIGURATION
       // The following path configuration items are disallowed in the URL (as should any future path configurations)
       imgPath: './images',
+      extPath: './extensions',
       // DOCUMENT PROPERTIES
       // Change the following to a preference (already in the Document Properties dialog)?
       dimensions: [640, 480],
