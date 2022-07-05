@@ -1,85 +1,6 @@
 /* globals svgEditor */
 import { t } from '../locale.js'
-const template = document.createElement('template')
-template.innerHTML = `
-  <style>
-  :host {
-    position:relative;
-  }
-  .overall:hover *
-  {
-    background-color: var(--icon-bg-color-hover);
-  }
-  img {
-    border: none;
-    width: 24px;
-    height: 24px;
-  }
-  .overall.pressed .button-icon,
-  .overall.pressed .handle {
-    background-color: var(--icon-bg-color-hover) !important;
-  }
-  .overall.pressed .menu-button {
-    background-color: var(--icon-bg-color-hover) !important;
-  }
-  .disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-  .menu-button {
-    height: 24px;
-    width: 24px;
-    margin: 2px 1px 4px;
-    padding: 3px;
-    background-color: var(--icon-bg-color);
-    cursor: pointer;
-    position: relative;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .handle {
-    height: 8px;
-    width: 8px;
-    background-image: url(./images/handle.svg);
-    position:absolute;
-    bottom: 0px;
-    right: 0px;
-  }
-  .button-icon {
-  }
-  .menu {
-    position: fixed;
-    background: none !important;
-    display:none;
-    margin-left: 34px;
-  }
-  .open {
-    display: flex;
-  }
-  .menu-item {
-    align-content: flex-start;
-    height: 24px;
-    width: 24px;
-    top:0px;
-    left:0px;
-  }
-  .overall {
-    background: none !important;
-  }
-  </style>
 
-  <div class="overall">
-  <div class="menu">
-  <slot></slot>
-</div>
-    <div class="menu-button">
-      <img class="button-icon" src="logo.svg" alt="icon">
-      <div class="handle"></div>
-    </div>
-   
-  </div>
-
-`
 /**
  * @class FlyingButton
  */
@@ -90,8 +11,10 @@ export class FlyingButton extends HTMLElement {
   constructor () {
     super()
     // create the shadowDom and insert the template
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
+    this.template = this.createTemplate(this.imgPath)
     this._shadowRoot = this.attachShadow({ mode: 'open' })
-    this._shadowRoot.append(template.content.cloneNode(true))
+    this._shadowRoot.append(this.template.content.cloneNode(true))
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button')
     this.$handle = this._shadowRoot.querySelector('.handle')
@@ -101,7 +24,93 @@ export class FlyingButton extends HTMLElement {
     // the last element of the div is the slot
     // we retrieve all elements added in the slot (i.e. se-buttons)
     this.$elements = this.$menu.lastElementChild.assignedElements()
-    this.imgPath = svgEditor.configObj.curConfig.imgPath
+  }
+
+  /**
+   * @function createTemplate
+   * @param {string} imgPath
+   * @returns {any} template
+   */
+
+  createTemplate (imgPath) {
+    const template = document.createElement('template')
+    template.innerHTML = `
+      <style>
+        :host {
+          position:relative;
+        }
+        .overall:hover *
+        {
+          background-color: var(--icon-bg-color-hover);
+        }
+        img {
+          border: none;
+          width: 24px;
+          height: 24px;
+        }
+        .overall.pressed .button-icon,
+        .overall.pressed .handle {
+          background-color: var(--icon-bg-color-hover) !important;
+        }
+        .overall.pressed .menu-button {
+          background-color: var(--icon-bg-color-hover) !important;
+        }
+        .disabled {
+          opacity: 0.3;
+          cursor: default;
+        }
+        .menu-button {
+          height: 24px;
+          width: 24px;
+          margin: 2px 1px 4px;
+          padding: 3px;
+          background-color: var(--icon-bg-color);
+          cursor: pointer;
+          position: relative;
+          border-radius: 3px;
+          overflow: hidden;
+        }
+        .handle {
+          height: 8px;
+          width: 8px;
+          background-image: url(${imgPath}/handle.svg);
+          position:absolute;
+          bottom: 0px;
+          right: 0px;
+        }
+        .button-icon {
+        }
+        .menu {
+          position: fixed;
+          background: none !important;
+          display:none;
+          margin-left: 34px;
+        }
+        .open {
+          display: flex;
+        }
+        .menu-item {
+          align-content: flex-start;
+          height: 24px;
+          width: 24px;
+          top:0px;
+          left:0px;
+        }
+        .overall {
+          background: none !important;
+        }
+      </style>
+
+      <div class="overall">
+        <div class="menu">
+          <slot></slot>
+        </div>
+        <div class="menu-button">
+          <img class="button-icon" src="logo.svg" alt="icon">
+          <div class="handle"></div>
+        </div>
+      </div>`
+    return template
   }
 
   /**

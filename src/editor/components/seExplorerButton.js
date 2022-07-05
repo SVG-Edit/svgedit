@@ -1,103 +1,5 @@
 /* globals svgEditor */
-const template = document.createElement('template')
-template.innerHTML = `
-  <style>
-  :host {
-    position:relative;
-  }
-  .menu-button:hover, se-button:hover, .menu-item:hover
-  {
-    background-color: var(--icon-bg-color-hover);
-  }
-  img {
-    border: none;
-    width: 24px;
-    height: 24px;
-  }
-  .overall.pressed .button-icon,
-  .overall.pressed,
-  .menu-item.pressed {
-    background-color: var(--icon-bg-color-hover) !important;
-  }
-  .overall.pressed .menu-button {
-    background-color: var(--icon-bg-color-hover) !important;
-  }
-  .disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-  .menu-button {
-    height: 24px;
-    width: 24px;
-    margin: 2px 1px 4px;
-    padding: 3px;
-    background-color: var(--icon-bg-color);
-    cursor: pointer;
-    position: relative;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .handle {
-    height: 8px;
-    width: 8px;
-    background-image: url(./images/handle.svg);
-    position:absolute;
-    bottom: 0px;
-    right: 0px;
-  }
-  .button-icon {
-  }
-  .menu {
-    position: fixed;
-    margin-left: 34px;
-    background: none !important;
-    display:none;
-    top: 30%;
-    left: 171px;
-  }
-  .image-lib {
-    position: fixed;
-    left: 34px;
-    top: 30%;
-    background: #E8E8E8;
-    display: none;
-    flex-wrap: wrap;
-    flex-direction: row;
-    width: 170px;
-  }
-  .menu-item {
-    line-height: 1em;
-    padding: 0.5em;
-    border: 1px solid #5a6162;
-    background: #E8E8E8;
-    margin-bottom: -1px;
-    white-space: nowrap;
-  }
-  .open-lib {
-    display: inline-flex;
-  }
-  .open {
-    display: block;
-  }
-  .overall {
-    background: none !important;
-  }
-  </style>
 
-  <div class="overall">
-    <div class="menu-button">
-      <img class="button-icon" src="explorer.svg" alt="icon">
-      <div class="handle"></div>
-    </div>
-    <div class="image-lib"">
-      <se-button></se-button>
-   </div>
-    <div class="menu">
-      <div class="menu-item">menu</div>
-   </div>
-  </div>
-
-`
 /**
  * @class ExplorerButton
  */
@@ -108,8 +10,11 @@ export class ExplorerButton extends HTMLElement {
   constructor () {
     super()
     // create the shadowDom and insert the template
+    // create the shadowDom and insert the template
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
+    this.template = this.createTemplate(this.imgPath)
     this._shadowRoot = this.attachShadow({ mode: 'open' })
-    this._shadowRoot.append(template.content.cloneNode(true))
+    this._shadowRoot.append(this.template.content.cloneNode(true))
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button')
     this.$overall = this._shadowRoot.querySelector('.overall')
@@ -120,6 +25,113 @@ export class ExplorerButton extends HTMLElement {
     this.files = []
     this.request = new XMLHttpRequest()
     this.imgPath = svgEditor.configObj.curConfig.imgPath
+  }
+
+  /**
+   * @function createTemplate
+   * @param {string} imgPath
+   * @returns {any} template
+   */
+
+  createTemplate (imgPath) {
+    const template = document.createElement('template')
+    template.innerHTML = `
+    <style>
+    :host {
+      position:relative;
+    }
+    .menu-button:hover, se-button:hover, .menu-item:hover
+    {
+      background-color: var(--icon-bg-color-hover);
+    }
+    img {
+      border: none;
+      width: 24px;
+      height: 24px;
+    }
+    .overall.pressed .button-icon,
+    .overall.pressed,
+    .menu-item.pressed {
+      background-color: var(--icon-bg-color-hover) !important;
+    }
+    .overall.pressed .menu-button {
+      background-color: var(--icon-bg-color-hover) !important;
+    }
+    .disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .menu-button {
+      height: 24px;
+      width: 24px;
+      margin: 2px 1px 4px;
+      padding: 3px;
+      background-color: var(--icon-bg-color);
+      cursor: pointer;
+      position: relative;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .handle {
+      height: 8px;
+      width: 8px;
+      background-image: url(${imgPath}/handle.svg);
+      position:absolute;
+      bottom: 0px;
+      right: 0px;
+    }
+    .button-icon {
+    }
+    .menu {
+      position: fixed;
+      margin-left: 34px;
+      background: none !important;
+      display:none;
+      top: 30%;
+      left: 171px;
+    }
+    .image-lib {
+      position: fixed;
+      left: 34px;
+      top: 30%;
+      background: #E8E8E8;
+      display: none;
+      flex-wrap: wrap;
+      flex-direction: row;
+      width: 170px;
+    }
+    .menu-item {
+      line-height: 1em;
+      padding: 0.5em;
+      border: 1px solid #5a6162;
+      background: #E8E8E8;
+      margin-bottom: -1px;
+      white-space: nowrap;
+    }
+    .open-lib {
+      display: inline-flex;
+    }
+    .open {
+      display: block;
+    }
+    .overall {
+      background: none !important;
+    }
+    </style>
+  
+    <div class="overall">
+      <div class="menu-button">
+        <img class="button-icon" src="explorer.svg" alt="icon">
+        <div class="handle"></div>
+      </div>
+      <div class="image-lib"">
+        <se-button></se-button>
+     </div>
+      <div class="menu">
+        <div class="menu-item">menu</div>
+     </div>
+    </div>`
+    return template
   }
 
   /**
