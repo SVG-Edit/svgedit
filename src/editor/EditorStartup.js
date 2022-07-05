@@ -628,7 +628,7 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
-            const extPath = this.$svgEditor.configObj.curConfig.extPath
+            const extPath = this.configObj.curConfig.extPath
             const imported = await import(`${extPath}/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`)
             const { name = extname, init: initfn } = imported.default
             return this.addExtension(name, (initfn && initfn.bind(this)), { langParam: 'en' }) /** @todo  change to current lng */
