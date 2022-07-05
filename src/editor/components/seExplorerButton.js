@@ -12,7 +12,7 @@ export class ExplorerButton extends HTMLElement {
     // create the shadowDom and insert the template
     // create the shadowDom and insert the template
     this.imgPath = svgEditor.configObj.curConfig.imgPath
-    this.template = this.createTemplate(this.imgPath) 
+    this.template = this.createTemplate(this.imgPath)
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(this.template.content.cloneNode(true))
     // locate the component
@@ -33,7 +33,7 @@ export class ExplorerButton extends HTMLElement {
    * @returns {any} template
    */
 
-   createTemplate(imgPath){
+  createTemplate (imgPath) {
     const template = document.createElement('template')
     template.innerHTML = `
     <style>
@@ -131,7 +131,7 @@ export class ExplorerButton extends HTMLElement {
         <div class="menu-item">menu</div>
      </div>
     </div>`
-    return template;
+    return template
   }
 
   /**

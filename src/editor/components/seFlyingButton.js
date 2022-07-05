@@ -12,7 +12,7 @@ export class FlyingButton extends HTMLElement {
     super()
     // create the shadowDom and insert the template
     this.imgPath = svgEditor.configObj.curConfig.imgPath
-    this.template = this.createTemplate(this.imgPath)     
+    this.template = this.createTemplate(this.imgPath)
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(this.template.content.cloneNode(true))
     // locate the component
@@ -32,7 +32,7 @@ export class FlyingButton extends HTMLElement {
    * @returns {any} template
    */
 
-  createTemplate(imgPath){
+  createTemplate (imgPath) {
     const template = document.createElement('template')
     template.innerHTML = `
       <style>
@@ -110,7 +110,7 @@ export class FlyingButton extends HTMLElement {
           <div class="handle"></div>
         </div>
       </div>`
-    return template;
+    return template
   }
 
   /**
