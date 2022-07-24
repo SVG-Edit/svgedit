@@ -417,8 +417,13 @@ export default {
       selectedChanged (opts) {
         // Use this to update the current selected elements
         selElems = opts.elems
-
         let i = selElems.length
+        // Hide panels if nothing is selected
+        if (!i) {
+          showPanel(false, 'star')
+          showPanel(false, 'polygon')
+          return
+        }
         while (i--) {
           const elem = selElems[i]
           if (elem?.getAttribute('shape') === 'star') {
