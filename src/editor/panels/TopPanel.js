@@ -437,7 +437,7 @@ class TopPanel {
           this.displayTool('text_panel')
         }
       }
-      
+
       this.displayTool('multiselected_panel')
       menuItems.setAttribute('enablemenuitems', '#group')
       menuItems.setAttribute('disablemenuitems', '#ungroup')
