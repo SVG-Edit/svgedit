@@ -17,11 +17,11 @@ import {
   preventClickDefault,
   toXml,
   getStrokedBBoxDefaultVisible,
-  encode64,
   createObjectURL,
   dataURLToObjectURL,
   walkTree,
-  getBBox as utilsGetBBox
+  getBBox as utilsGetBBox,
+  hashCode
 } from './utilities.js'
 import { transformPoint, transformListToTransform } from './math.js'
 import { convertUnit, shortFloat, convertToNum } from '../common/units.js'
@@ -633,7 +633,7 @@ const importSvgString = (xmlString) => {
   let useEl
   try {
     // Get unique ID
-    const uid = encode64(xmlString.length + xmlString).substr(0, 32)
+    const uid = hashCode(xmlString)
 
     let useExisting = false
     // Look for symbol and make sure symbol exists in image

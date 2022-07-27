@@ -145,6 +145,23 @@ export function decode64 (input) {
 }
 
 /**
+ * Compute a hashcode from a given string
+ * @param word : the string, we want to compute the hashcode
+ * @returns {number}: Hascode of the given string
+ */
+export function hashCode (word) {
+  let hash = 0
+  let chr
+  if (word.length === 0) return hash
+  for (let i = 0; i < word.length; i++) {
+    chr = word.charCodeAt(i)
+    hash = ((hash << 5) - hash) + chr
+    hash |= 0 // Convert to 32bit integer
+  }
+  return hash
+}
+
+/**
 * @function module:utilities.decodeUTF8
 * @param {string} argString
 * @returns {string}
