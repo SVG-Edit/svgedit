@@ -17,7 +17,6 @@ import {
   preventClickDefault,
   toXml,
   getStrokedBBoxDefaultVisible,
-  encode64,
   createObjectURL,
   dataURLToObjectURL,
   walkTree,

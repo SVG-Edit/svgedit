@@ -149,9 +149,9 @@ export function decode64 (input) {
  * @param word : the string, we want to compute the hashcode
  * @returns {number}: Hascode of the given string
  */
-export function hashCode(word) {
-  let hash = 0;
-  let chr;
+export function hashCode (word) {
+  let hash = 0
+  let chr
   if (word.length === 0) return hash
   for (let i = 0; i < word.length; i++) {
     chr = word.charCodeAt(i)
