@@ -422,20 +422,10 @@ class TopPanel {
 
       // if (elem)
     } else if (this.multiselected) {
-      // Check if all selected elements have the same tag
+      // Check if all selected elements are 'text' nodes, if yes enable text panel
       const selElems = this.editor.svgCanvas.getSelectedElements()
-      const tagNames = []
-      selElems.forEach(elem => {
-        const { tagName } = elem
-        tagNames.push(tagName)
-      })
-      const allElemsSameTag = tagNames.every((val, i, arr) => val === arr[0])
-
-      // Enable panels specific for selected elements
-      if (allElemsSameTag) {
-        if (tagNames[0] === 'text') {
-          this.displayTool('text_panel')
-        }
+      if (selElems.every((elem) => elem.tagName === 'text')) {
+        this.displayTool('text_panel')
       }
 
       this.displayTool('multiselected_panel')
