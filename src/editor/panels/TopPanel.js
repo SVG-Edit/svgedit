@@ -422,6 +422,12 @@ class TopPanel {
 
       // if (elem)
     } else if (this.multiselected) {
+      // Check if all selected elements are 'text' nodes, if yes enable text panel
+      const selElems = this.editor.svgCanvas.getSelectedElements()
+      if (selElems.every((elem) => elem.tagName === 'text')) {
+        this.displayTool('text_panel')
+      }
+
       this.displayTool('multiselected_panel')
       menuItems.setAttribute('enablemenuitems', '#group')
       menuItems.setAttribute('disablemenuitems', '#ungroup')
