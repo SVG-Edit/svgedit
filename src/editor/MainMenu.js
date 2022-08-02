@@ -1,5 +1,5 @@
 /* globals seAlert */
-import SvgCanvas from '../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import { convertUnit, isValidUnit } from '../common/units.js'
 import { isChrome } from '../common/browser.js'
 

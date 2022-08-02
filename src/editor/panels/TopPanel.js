@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* globals seAlert */
 
-import SvgCanvas from '../../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import { isValidUnit, getTypeMap, convertUnit } from '../../common/units.js'
 import topPanelHTML from './TopPanel.html'
 

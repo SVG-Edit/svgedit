@@ -1,6 +1,6 @@
 import { getTypeMap } from '../common/units.js'
 import rulersTemplate from './templates/rulersTemplate.html'
-import SvgCanvas from '../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 /**
  *
  */

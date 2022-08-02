@@ -1,4 +1,4 @@
-import SvgCanvas from '../../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import LayersPanelHtml from './LayersPanel.html'
 
 const { $id, $click } = SvgCanvas
