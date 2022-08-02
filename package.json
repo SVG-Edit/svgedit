@@ -12,6 +12,9 @@
   "engines": {
     "node": ">=10"
   },
+  "workspaces": [
+    "packages/svgcanvas"
+  ],
   "scripts": {
     "lint": "standard .",
     "test": "run-s cypress:instrument cypress:test",
