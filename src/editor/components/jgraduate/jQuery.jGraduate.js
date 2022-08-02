@@ -18,9 +18,9 @@
  * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
-import Paint from './paint.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import { jPickerDefaults, jPickerMethod } from './jQuery.jPicker.js'
-import { findPos } from './Util.js'
+import { findPos } from '../../../common/util.js'
 
 /**
  * @todo JFH: This jQuery plugin was adapted to work within a Web Component.
@@ -68,7 +68,7 @@ export const jGraduate = /** @lends external:jQuery.jGraduate */ {
   * @class external:jQuery.jGraduate.Paint
   * @see module:jGraduate~Paint
   */
-  Paint
+  Paint: SvgCanvas.Paint
 }
 
 // JSDoc doesn't show this as belonging to our `module:jGraduate.Options` type,
