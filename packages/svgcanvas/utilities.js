@@ -7,11 +7,11 @@
  */
 
 import { NS } from './namespaces.js'
-import { setUnitAttr, getTypeMap } from '../common/units.js'
+import { setUnitAttr, getTypeMap } from '../../src/common/units.js'
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js'
-import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js'
+import { getClosest, mergeDeep } from '../../src/common/util.js'
 
 // Much faster than running getBBox() every time
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use,clipPath'

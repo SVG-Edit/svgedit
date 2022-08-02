@@ -16,7 +16,7 @@ import {
   rectsIntersect
 } from './math.js'
 import * as hstry from './history.js'
-import { getClosest } from '../editor/components/jgraduate/Util.js'
+import { getClosest } from '../../src/common/util.js'
 
 const { BatchCommand } = hstry
 let svgCanvas = null

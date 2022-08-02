@@ -4,7 +4,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js'
+import Paint from './paint.js'
 import { NS } from './namespaces.js'
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
@@ -12,8 +12,8 @@ import {
 } from './utilities.js'
 import {
   convertToNum
-} from '../common/units.js'
-import { getParents } from '../editor/components/jgraduate/Util.js'
+} from '../../src/common/units.js'
+import { getParents } from '../../src/common/util.js'
 
 let svgCanvas = null
 
@@ -505,12 +505,12 @@ const findDuplicateGradient = (grad) => {
 * Set a color/gradient to a fill/stroke.
 * @function module:elem-get-set.SvgCanvas#setPaint
 * @param {"fill"|"stroke"} type - String with "fill" or "stroke"
-* @param {module:jGraduate.jGraduatePaintOptions} paint - The jGraduate paint object to apply
+* @param {} paint - The paint object to apply
 * @returns {void}
 */
 const setPaintMethod = (type, paint) => {
   // make a copy
-  const p = new jGraduate.Paint(paint)
+  const p = new Paint(paint)
   svgCanvas.setPaintOpacity(type, p.alpha / 100, true)
 
   // now set the current paint object

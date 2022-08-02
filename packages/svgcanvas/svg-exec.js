@@ -24,13 +24,13 @@ import {
   hashCode
 } from './utilities.js'
 import { transformPoint, transformListToTransform } from './math.js'
-import { convertUnit, shortFloat, convertToNum } from '../common/units.js'
-import { isGecko, isChrome, isWebkit } from '../common/browser.js'
+import { convertUnit, shortFloat, convertToNum } from '../../src/common/units.js'
+import { isGecko, isChrome, isWebkit } from '../../src/common/browser.js'
 import * as pathModule from './path.js'
 import { NS } from './namespaces.js'
 import * as draw from './draw.js'
 import { recalculateDimensions } from './recalculate.js'
-import { getParents, getClosest } from '../editor/components/jgraduate/Util.js'
+import { getParents, getClosest } from '../../src/common/util.js'
 
 const {
   InsertElementCommand,

@@ -5,7 +5,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { convertToNum } from '../common/units.js'
+import { convertToNum } from '../../src/common/units.js'
 import { getRotationAngle, getHref, getBBox, getRefElem } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
@@ -15,7 +15,7 @@ import {
 } from './math.js'
 import {
   mergeDeep
-} from '../editor/components/jgraduate/Util.js'
+} from '../../src/common/util.js'
 
 let svgCanvas
 

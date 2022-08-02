@@ -14,7 +14,7 @@ import {
 } from './utilities.js'
 import {
   supportsGoodTextCharPos
-} from '../common/browser.js'
+} from '../../src/common/browser.js'
 
 let svgCanvas = null
 

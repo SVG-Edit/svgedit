@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import { isWebkit } from '../common/browser.js' // , isOpera
+import { isWebkit } from '../../src/common/browser.js'
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
 import { transformListToTransform, transformBox, transformPoint } from './math.js'
 

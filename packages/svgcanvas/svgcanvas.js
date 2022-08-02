@@ -9,6 +9,7 @@
  */
 import 'pathseg' // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
+import Paint from './paint.js'
 import * as pathModule from './path.js'
 import * as history from './history.js'
 import * as draw from './draw.js'
@@ -70,7 +71,7 @@ import {
   hasMatrixTransform,
   transformListToTransform
 } from './math.js'
-import { convertToNum, init as unitsInit, getTypeMap } from '../common/units.js'
+import { convertToNum, init as unitsInit, getTypeMap } from '../../src/common/units.js'
 import { init as svgInit } from './svg-exec.js'
 import { remapElement, init as coordsInit } from './coords.js'
 import {
@@ -83,7 +84,7 @@ import {
   getClosest,
   getParents,
   mergeDeep
-} from '../editor/components/jgraduate/Util.js'
+} from '../../src/common/util.js'
 
 import dataStorage from './dataStorage.js'
 
@@ -1341,5 +1342,6 @@ SvgCanvas.mergeDeep = mergeDeep
 SvgCanvas.getClosest = getClosest
 SvgCanvas.getParents = getParents
 SvgCanvas.blankPageObjectURL = blankPageObjectURL
+SvgCanvas.Paint = Paint
 
 export default SvgCanvas
