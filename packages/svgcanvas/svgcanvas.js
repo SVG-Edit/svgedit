@@ -71,7 +71,7 @@ import {
   hasMatrixTransform,
   transformListToTransform
 } from './math.js'
-import { convertToNum, init as unitsInit, getTypeMap } from '../../src/common/units.js'
+import { convertToNum, init as unitsInit, getTypeMap, isValidUnit, convertUnit } from './units.js'
 import { init as svgInit } from './svg-exec.js'
 import { remapElement, init as coordsInit } from './coords.js'
 import {
@@ -118,6 +118,7 @@ class SvgCanvas {
   constructor (container, config) {
     // imported function made available as methods
     this.initializeSvgCanvasMethods()
+    unitsInit(this)
     const { pathActions } = pathModule
 
     // initialize class variables
@@ -228,7 +229,6 @@ class SvgCanvas {
     this.selectedElements = []
 
     jsonInit(this)
-    unitsInit(this)
     utilsInit(this)
     coordsInit(this)
     recalculateInit(this)
@@ -1343,5 +1343,9 @@ SvgCanvas.getClosest = getClosest
 SvgCanvas.getParents = getParents
 SvgCanvas.blankPageObjectURL = blankPageObjectURL
 SvgCanvas.Paint = Paint
+SvgCanvas.getTypeMap = getTypeMap
+SvgCanvas.convertToNum = convertToNum
+SvgCanvas.isValidUnit = isValidUnit
+SvgCanvas.convertUnit = convertUnit
 
 export default SvgCanvas

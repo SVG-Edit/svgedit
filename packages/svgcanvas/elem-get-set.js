@@ -12,7 +12,7 @@ import {
 } from './utilities.js'
 import {
   convertToNum
-} from '../../src/common/units.js'
+} from './units.js'
 import { getParents } from '../../src/common/util.js'
 
 let svgCanvas = null

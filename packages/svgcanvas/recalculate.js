@@ -5,7 +5,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { convertToNum } from '../../src/common/units.js'
+import { convertToNum } from './units.js'
 import { getRotationAngle, getHref, getBBox, getRefElem } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'

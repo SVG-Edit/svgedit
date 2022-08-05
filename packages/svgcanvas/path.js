@@ -6,7 +6,7 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import { shortFloat } from '../../src/common/units.js'
+import { shortFloat } from './units.js'
 import { transformPoint } from './math.js'
 import {
   getRotationAngle, getBBox,

@@ -7,7 +7,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { shortFloat } from '../../src/common/units.js'
+import { shortFloat } from './units.js'
 import { ChangeElementCommand, BatchCommand } from './history.js'
 import {
   transformPoint, snapToAngle, rectsIntersect,

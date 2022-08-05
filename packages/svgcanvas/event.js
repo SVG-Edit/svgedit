@@ -10,7 +10,7 @@ import {
 } from './utilities.js'
 import {
   convertAttrs
-} from '../../src/common/units.js'
+} from './units.js'
 import {
   transformPoint, hasMatrixTransform, getMatrix, snapToAngle
 } from './math.js'

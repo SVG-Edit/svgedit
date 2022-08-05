@@ -1,9 +1,8 @@
 /* globals seAlert */
 import SvgCanvas from '@svgedit/svgcanvas'
-import { convertUnit, isValidUnit } from '../common/units.js'
 import { isChrome } from '../common/browser.js'
 
-const { $id, $click } = SvgCanvas
+const { $id, $click, convertUnit, isValidUnit } = SvgCanvas
 const homePage = 'https://github.com/SVG-Edit/svgedit'
 
 /**

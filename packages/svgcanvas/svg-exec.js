@@ -24,7 +24,7 @@ import {
   hashCode
 } from './utilities.js'
 import { transformPoint, transformListToTransform } from './math.js'
-import { convertUnit, shortFloat, convertToNum } from '../../src/common/units.js'
+import { convertUnit, shortFloat, convertToNum } from './units.js'
 import { isGecko, isChrome, isWebkit } from '../../src/common/browser.js'
 import * as pathModule from './path.js'
 import { NS } from './namespaces.js'

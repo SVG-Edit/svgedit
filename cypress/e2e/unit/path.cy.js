@@ -4,7 +4,7 @@ import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
 import * as pathModule from '../../../instrumented/svgcanvas/path.js'
 import { Path, Segment } from '../../../instrumented/svgcanvas/path-method.js'
-import { init as unitsInit } from '../../../instrumented/common/units.js'
+import { init as unitsInit } from '../../../instrumented/svgcanvas/units.js'
 
 describe('path', function () {
   /**

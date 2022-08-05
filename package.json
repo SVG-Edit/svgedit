@@ -26,7 +26,7 @@
     "cypress:open": "run-p start cypress:open-no-start",
     "cypress:open-no-start": "cypress open",
     "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q && nyc report --reporter=text-summary",
-    "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
+    "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && cp-cli packages instrumented && nyc instrument --compact=false src instrumented",
     "cypress:test": "start-server-and-test start:test http://localhost:8000/instrumented/editor/index.html cypress:run",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",

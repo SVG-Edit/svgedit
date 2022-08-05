@@ -7,7 +7,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { setUnitAttr, getTypeMap } from '../../src/common/units.js'
+import { setUnitAttr, getTypeMap } from './units.js'
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js'

@@ -1,5 +1,4 @@
 /* globals seConfirm seAlert */
-import { convertUnit } from '../common/units.js'
 import {
   putLocale
 } from './locale.js'
@@ -40,7 +39,7 @@ const readySignal = () => {
   }
 }
 
-const { $id, $qq, $click } = SvgCanvas
+const { $id, $qq, $click, convertUnit } = SvgCanvas
 
 /**
  *

@@ -2,10 +2,9 @@
 /* globals seAlert */
 
 import SvgCanvas from '@svgedit/svgcanvas'
-import { isValidUnit, getTypeMap, convertUnit } from '../../common/units.js'
 import topPanelHTML from './TopPanel.html'
 
-const { $qa, $id, $click } = SvgCanvas
+const { $qa, $id, $click, isValidUnit, getTypeMap, convertUnit } = SvgCanvas
 
 /*
  * register actions for left panel
