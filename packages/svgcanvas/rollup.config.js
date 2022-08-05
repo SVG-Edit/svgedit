@@ -10,8 +10,6 @@ import { terser } from 'rollup-plugin-terser'
 // import progress from 'rollup-plugin-progress';
 import filesize from 'rollup-plugin-filesize'
 
-const dest = ['dist/svgcanvas']
-
 // remove existing distribution
 rimraf('./dist', () => console.info('recreating dist'))
 

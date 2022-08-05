@@ -1,9 +1,9 @@
 
 import SvgCanvas from '@svgedit/svgcanvas'
-const { isValidUnit } = SvgCanvas
-
 /* globals svgEditor */
 import imagePropertiesDialogHTML from './imagePropertiesDialog.html'
+
+const { isValidUnit } = SvgCanvas
 
 const template = document.createElement('template')
 template.innerHTML = imagePropertiesDialogHTML
