@@ -1,19 +1,19 @@
 {
     "name": "@svgedit/svgcanvas",
-    "version": "7.1.4",
+    "version": "7.1.5",
     "description": "SVG Canvas",
     "main": "dist/svgcanvas.js",
     "author": "Narendra Sisodiya",
     "publishConfig": {
         "access": "public"
-      },
+    },
     "bugs": {
         "url": "https://github.com/SVG-Edit/svgedit/issues"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/SVG-Edit/svgedit.git"
-      },
+    },
     "homepage": "https://github.com/SVG-Edit/svgedit#readme",
     "contributors": [
         "Pavol Rusnak",
