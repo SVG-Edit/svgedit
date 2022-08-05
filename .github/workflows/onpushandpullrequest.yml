@@ -15,6 +15,6 @@ jobs:
         node-version: 16.x
     - name: npm install, test and lint
       run: |
-        npm ci
+        npm ci --legacy-peer-deps
         npm run lint
         npm run test
