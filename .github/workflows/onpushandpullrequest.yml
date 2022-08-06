@@ -16,6 +16,7 @@ jobs:
     - name: npm install, test and lint
       run: |
         npm ci --legacy-peer-deps
+        npm i
         npm run lint
         npm run test
       env:
