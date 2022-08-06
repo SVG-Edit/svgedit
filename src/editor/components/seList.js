@@ -1,34 +1,45 @@
 /* globals svgEditor */
-import 'elix/define/DropdownList.js'
 import { t } from '../locale.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
-elix-dropdown-list {
+#select-container {
   margin-top: 10px;
 }
 
-elix-dropdown-list:hover {
+#select-container:hover {
   background-color: var(--icon-bg-color-hover);
 }
 
-elix-dropdown-list::part(value) {
+#select-container::part(value) {
   background-color: var(--main-bg-color);
 }
 
-elix-dropdown-list::part(popup-toggle) {
+#select-container::part(popup-toggle) {
   display: none;
 }
 ::slotted(*) {
   padding:0;
   width:100%;
 }
+
+.closed {
+  display: none;
+}
+
+#options-container {
+  position: fixed;
+}
+
 </style>
   <label>Label</label>
-  <elix-dropdown-list>
-    <slot></slot>
-  </elix-dropdown-list>
+  <div id="select-container">
+    <div id="selected-value"></div>
+    <div id="options-container">
+      <slot></slot>
+    </div>
+  </div>
 
 `
 /**
@@ -43,11 +54,63 @@ export class SeList extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(template.content.cloneNode(true))
-    this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list')
+    this.$dropdown = this._shadowRoot.querySelector('#select-container')
     this.$label = this._shadowRoot.querySelector('label')
-    this.$selection = this.$dropdown.shadowRoot.querySelector('#value')
+    this.$selection = this.$dropdown.querySelector('#selected-value')
     this.items = this.querySelectorAll('se-list-item')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
+    this.$optionsContainer = this._shadowRoot.querySelector('#options-container');
+    this.$optionsContainer.classList.add('closed')
+    this.$selection.addEventListener('click', this.toggleList)
+    this.updateSelectedValue(this.items[0].getAttribute('value'))
+  }
+
+  toggleList = (e) => {
+    if(e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    const windowHeight = window.innerHeight;
+    const selectedContainerPosition = this.$selection.getBoundingClientRect();
+
+    if(this.$optionsContainer.classList.contains('closed')) {
+      window['seListOpen'] = this;
+      this.$optionsContainer.classList.remove('closed');
+      const optionsContainerPosition = this.$optionsContainer.getBoundingClientRect();
+      //list is bottom of frame - needs to open from above
+      if(selectedContainerPosition.bottom + optionsContainerPosition.height > windowHeight) {
+        this.$optionsContainer.style.top = selectedContainerPosition.top - optionsContainerPosition.height + "px";
+        this.$optionsContainer.style.left = selectedContainerPosition.left + "px";
+      } else {
+        this.$optionsContainer.style.top = selectedContainerPosition.bottom + "px";
+        this.$optionsContainer.style.left = selectedContainerPosition.left + "px";
+      }
+    } else {
+      this.$optionsContainer.classList.add('closed');
+      window['seListOpen'] = null;
+    }
+
+  }
+
+  updateSelectedValue = (newValue) => {
+    Array.from(this.items).forEach((element) => {
+      if (element.getAttribute('value') === newValue) {
+        element.setAttribute('selected', true)
+        if (element.hasAttribute('src')) {
+        // empty current selection children
+          while (this.$selection.firstChild) { this.$selection.removeChild(this.$selection.firstChild) }
+          // replace selection child with image of new value
+          const img = document.createElement('img')
+          img.src = this.imgPath + '/' + element.getAttribute('src')
+          img.style.height = element.getAttribute('img-height')
+          img.setAttribute('title', t(element.getAttribute('title')))
+          this.$selection.append(img)
+        } else {
+          this.$selection.textContent = t(element.getAttribute('option'))
+        }
+      } else {
+        element.setAttribute('selected', false)
+      }
+    })
   }
 
   /**
@@ -82,22 +145,7 @@ export class SeList extends HTMLElement {
         this.$dropdown.style.width = newValue
         break
       case 'value':
-        Array.from(this.items).forEach(function (element) {
-          if (element.getAttribute('value') === newValue) {
-            if (element.hasAttribute('src')) {
-            // empty current selection children
-              while (currentObj.$selection.firstChild) { currentObj.$selection.removeChild(currentObj.$selection.firstChild) }
-              // replace selection child with image of new value
-              const img = document.createElement('img')
-              img.src = currentObj.imgPath + '/' + element.getAttribute('src')
-              img.style.height = element.getAttribute('img-height')
-              img.setAttribute('title', t(element.getAttribute('title')))
-              currentObj.$selection.append(img)
-            } else {
-              currentObj.$selection.textContent = t(element.getAttribute('option'))
-            }
-          }
-        })
+        this.updateSelectedValue(newValue)
         break
       default:
         console.error(`unknown attribute: ${name}`)
@@ -176,12 +224,13 @@ export class SeList extends HTMLElement {
   connectedCallback () {
     const currentObj = this
     this.$dropdown.addEventListener('selectedindexchange', (e) => {
-      if (e?.detail?.selectedIndex !== undefined) {
-        const value = this.$dropdown.selectedItem.getAttribute('value')
+      if (e?.detail?.selectedItem !== undefined) {
+        const value = e.detail.selectedItem
         const closeEvent = new CustomEvent('change', { detail: { value } })
         currentObj.dispatchEvent(closeEvent)
         currentObj.value = value
         currentObj.setAttribute('value', value)
+        this.toggleList(e)
       }
     })
     this.$dropdown.addEventListener('close', (_e) => {
