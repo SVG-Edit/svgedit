@@ -18,3 +18,5 @@ jobs:
         npm ci --legacy-peer-deps
         npm run lint
         npm run test
+      env:
+        CI: true
