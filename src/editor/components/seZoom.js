@@ -1,73 +1,180 @@
 /* globals svgEditor */
-import ListComboBox from 'elix/define/ListComboBox.js'
-import * as internal from 'elix/src/base/internal.js'
-import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js'
-import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js'
-
-/**
- * @class Dropdown
- */
-class Zoom extends ListComboBox {
-  /**
-    * @function get
-    * @returns {PlainObject}
-    */
-  get [internal.defaultState] () {
-    return Object.assign(super[internal.defaultState], {
-      inputPartType: NumberSpinBox,
-      src: 'logo.svg',
-      inputsize: '100%'
-    })
+const template = document.createElement('template')
+template.innerHTML = `
+  <style>
+  input{
+    border:unset;
+    background-color:var(--input-color);
+    min-width:unset;
+    width:40px;
+    height:23px;
+    padding:1px 2px;
+    border:2px;
+    font: inherit;
+    margin: 2px 1px 0px 2px;
+    box-sizing:border-box;
+    text-align: center;
+    border-radius: 3px 0px 0px 3px;
   }
+  #tool-wrapper{
+    height:20px;
+    display:flex;
+    align-items:center;
+  }
+  #icon{
+    margin-bottom:1px
+  }
+  #spinner{
+    display:flex;
+    flex-direction:column;
+  }
+  #spinner > div {
+    height: 11px;
+    width: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    border-left:solid 1px transparent;
+    border-right:solid 1px transparent;
+    background-color:var(--input-color);
+  }
+  #arrow-up{
+    height:9px;
+    margin-top: 2px;
+    margin-bottom: 1px;
+  }
+  #down{
+    width:18px;
+    height:23px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:var(--input-color);
+    border-radius: 0px 3px 3px 0px;
+    margin: 2px 5px 0px 1px;
+  }
+  #down > img {
+    margin-top: 2px;
+  }
+  #options-container {
+    position:fixed
+    display:flex;
+    flex-direction:column;
+    background-color:var(--icon-bg-color);
+    border:solid 1px white;
+    box-shadow:0 0px 10px rgb(0 0 0 / 50%);
+  }
+  ::slotted(*) {
+    margin:2px;
+    padding:3px;
+    color:white;
+  }
+  ::slotted(*:hover) {
+    background-color: rgb(43, 60, 69);
+  }
+  </style>
+  <div id="tool-wrapper">
+    <img id="icon" alt="icon" width="18" height="18"/>
+    <input/>
+    <div id="spinner">
+      <div id="arrow-up">▲</div>
+      <div id="arrow-down">▼</div>
+    </div>
+    <div id="down">
+      <img width="16" height="8" src="./images/arrow_down.svg"/>
+    </div>
+  </div>
+  <div id="options-container" style="display:none">
+    <slot></slot>
+  </div>
+`
 
-  /**
-    * @function get
-    * @returns {PlainObject}
-  */
-  get [internal.template] () {
-    const result = super[internal.template]
-    const source = result.content.getElementById('source')
-    // add a icon before our dropdown
-    source.prepend(fragmentFrom.html`
-      <img src="zoom" alt="icon" width="18" height="18">
-      </img>
-      `.cloneNode(true))
-    // change the style so it fits in our toolbar
-    result.content.append(
-      templateFrom.html`
-        <style>
-        [part~="source"] {
-          grid-template-columns: 20px 1fr auto;
-        }
-        ::slotted(*) {
-          padding: 4px;
-          width: 100%;
-        }
-        [part~="popup"] {
-          width: 150%;
-        }
-        elix-number-spin-box {
-          background-color: var(--input-color);
-          border-radius: 3px;
-          height: 20px !important;
-          margin-top: 1px;
-        }
-        elix-number-spin-box::part(spin-button) {
-            padding: 0px;
-        }
+class SeZoom extends HTMLElement {
+  constructor () {
+    super()
 
-        </style>
-      `.content
+    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.handleMouseUp = this.handleMouseUp.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.initPopup = this.initPopup.bind(this)
+    this.handleInput = this.handleInput.bind(this)
+
+    // create the shadowDom and insert the template
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    // locate the component
+    this._shadowRoot.append(template.content.cloneNode(true))
+
+    // prepare the slot element
+    this.slotElement = this._shadowRoot.querySelector('slot')
+    this.slotElement.addEventListener(
+      'slotchange',
+      this.handleOptionsChange.bind(this)
     )
-    return result
+
+    // hookup events for the input box
+    this.inputElement = this._shadowRoot.querySelector('input')
+    this.inputElement.addEventListener('click', this.handleClick.bind(this))
+    this.inputElement.addEventListener('change', this.handleInput)
+    this.inputElement.addEventListener('keydown', this.handleKeyDown)
+
+    this.clickArea = this._shadowRoot.querySelector('#down')
+    this.clickArea.addEventListener('click', this.handleClick.bind(this))
+
+    // set src for imageElement
+    this.imageElement = this._shadowRoot.querySelector('img')
+    this.imageElement.setAttribute(
+      'src',
+      (this.imgPath =
+        svgEditor.configObj.curConfig.imgPath + '/' + this.getAttribute('src'))
+    )
+
+    // hookup events for arrow buttons
+    this.arrowUp = this._shadowRoot.querySelector('#arrow-up')
+    this.arrowUp.addEventListener('click', this.increment.bind(this))
+    this.arrowUp.addEventListener('mousedown', e =>
+      this.handleMouseDown('up', true)
+    )
+    this.arrowUp.addEventListener('mouseleave', e => this.handleMouseUp('up'))
+    this.arrowUp.addEventListener('mouseup', e => this.handleMouseUp('up'))
+
+    this.arrowDown = this._shadowRoot.querySelector('#arrow-down')
+    this.arrowDown.addEventListener('click', this.decrement.bind(this))
+    this.arrowDown.addEventListener('mousedown', e =>
+      this.handleMouseDown('down', true)
+    )
+    this.arrowDown.addEventListener('mouseleave', e =>
+      this.handleMouseUp('down')
+    )
+    this.arrowDown.addEventListener('mouseup', e => this.handleMouseUp('down'))
+
+    this.optionsContainer = this._shadowRoot.querySelector(
+      '#options-container'
+    )
+
+    // add an event listener to close the popup
+    document.addEventListener('click', e => this.handleClose(e))
+    this.changedTimeout = null
+  }
+
+  static get observedAttributes () {
+    return ['value']
   }
 
   /**
-   * @function observedAttributes
-   * @returns {any} observed
+   * @function get
+   * @returns {any}
    */
-  static get observedAttributes () {
-    return ['title', 'src', 'inputsize', 'value']
+  get value () {
+    return this.getAttribute('value')
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set value (value) {
+    this.setAttribute('value', value)
   }
 
   /**
@@ -78,116 +185,196 @@ class Zoom extends ListComboBox {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue && name !== 'src') return
+    if (oldValue === newValue) {
+      switch (name) {
+        case 'value':
+          if (parseInt(this.inputElement.value) !== newValue) {
+            this.inputElement.value = newValue
+          }
+          break
+      }
+
+      return
+    }
+
     switch (name) {
-      case 'title':
-      // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
-        break
-      case 'src':
-        {
-          const { imgPath } = svgEditor.configObj.curConfig
-          this.src = imgPath + '/' + newValue
-        }
-        break
-      case 'inputsize':
-        this.inputsize = newValue
-        break
-      default:
-        super.attributeChangedCallback(name, oldValue, newValue)
+      case 'value':
+        this.inputElement.value = newValue
+        this.dispatchEvent(
+          new CustomEvent('change', { detail: { value: newValue } })
+        )
         break
     }
   }
 
   /**
-    * @function [internal.render]
-    * @param {PlainObject} changed
-    * @returns {void}
-    */
-  [internal.render] (changed) {
-    super[internal.render](changed)
-    if (this[internal.firstRender]) {
-      this.$img = this.shadowRoot.querySelector('img')
-      this.$input = this.shadowRoot.getElementById('input')
-    }
-    if (changed.src) {
-      this.$img.setAttribute('src', this[internal.state].src)
-    }
-    if (changed.inputsize) {
-      this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize
-    }
-    if (changed.inputPartType) {
-      const self = this
-      this.$input.setAttribute('step', '10')
-      this.$input.setAttribute('min', '0')
-      // Handle NumberSpinBox input.
-      this.$input.addEventListener('change', function (e) {
-        e.preventDefault()
-        const value = e.detail?.value
-        if (value) {
-          const changeEvent = new CustomEvent('change', { detail: { value } })
-          self.dispatchEvent(changeEvent)
-        }
-      })
-      // Wire up handler on new input.
-      this.addEventListener('close', (e) => {
-        e.preventDefault()
-        const value = e.detail?.closeResult?.getAttribute('value')
-        if (value) {
-          const closeEvent = new CustomEvent('change', { detail: { value } })
-          this.dispatchEvent(closeEvent)
-        }
+   * @function handleOptionsChange
+   * @returns {void}
+   */
+  handleOptionsChange () {
+    if (this.slotElement.assignedElements().length > 0) {
+      this.options = this.slotElement.assignedElements()
+      this.selectedValue = this.options[0].textContent
+
+      this.initPopup()
+
+      this.options.forEach(option => {
+        option.addEventListener('click', e => this.handleSelect(e))
       })
     }
   }
 
   /**
-   * @function src
-   * @returns {string} src
-   */
-  get src () {
-    return this[internal.state].src
-  }
-
-  /**
-   * @function src
+   * @function handleClick
    * @returns {void}
    */
-  set src (src) {
-    this[internal.setState]({ src })
+  handleClick () {
+    this.optionsContainer.style.display = 'flex'
+    this.inputElement.select()
+    this.initPopup()
   }
 
   /**
-   * @function inputsize
-   * @returns {string} src
-   */
-  get inputsize () {
-    return this[internal.state].inputsize
-  }
-
-  /**
-   * @function src
+   * @function handleSelect
+   * @param {Event} e
    * @returns {void}
    */
-  set inputsize (inputsize) {
-    this[internal.setState]({ inputsize })
+  handleSelect (e) {
+    this.value = e.target.getAttribute('value')
+    this.title = e.target.getAttribute('text')
   }
 
   /**
-   * @function value
-   * @returns {string} src
+   * @function handleShow
+   * @returns {void}
+   * initialises the popup menu position
    */
-  get value () {
-    return this[internal.state].value
+  initPopup () {
+    const zoomPos = this.getBoundingClientRect()
+    const popupPos = this.optionsContainer.getBoundingClientRect()
+    const top = zoomPos.top - popupPos.height
+    const left = zoomPos.left
+
+    this.optionsContainer.style.position = 'fixed'
+    this.optionsContainer.style.top = `${top}px`
+    this.optionsContainer.style.left = `${left}px`
   }
 
   /**
-   * @function value
+   * @function handleClose
+   * @param {Event} e
+   * @returns {void}
+   * Close the popup menu
+   */
+  handleClose (e) {
+    if (e.target !== this) {
+      this.optionsContainer.style.display = 'none'
+      this.inputElement.blur()
+    }
+  }
+
+  /**
+   * @function handleInput
    * @returns {void}
    */
-  set value (value) {
-    this[internal.setState]({ value })
+  handleInput () {
+    if (this.changedTimeout) {
+      clearTimeout(this.changedTimeout)
+    }
+
+    this.changedTimeout = setTimeout(this.triggerInputChanged.bind(this), 500)
+  }
+
+  /**
+   * @function triggerInputChanged
+   * @returns {void}
+   */
+  triggerInputChanged () {
+    const newValue = this.inputElement.value
+    this.value = newValue
+  }
+
+  /**
+   * @function increment
+   * @returns {void}
+   */
+  increment () {
+    this.value = parseInt(this.value) + 10
+  }
+
+  /**
+   * @function decrement
+   * @returns {void}
+   */
+  decrement () {
+    if (this.value - 10 <= 0) {
+      this.value = 10
+    } else {
+      this.value = parseInt(this.value) - 10
+    }
+  }
+
+  /**
+   * @function handleMouseDown
+   * @param {string} dir
+   * @param {boolean} isFirst
+   * @returns {void}
+   * Increment/Decrement on mouse held down, if its the first call add a delay before starting
+   */
+  handleMouseDown (dir, isFirst) {
+    if (dir === 'up') {
+      this.incrementHold = true
+      !isFirst && this.increment()
+
+      setTimeout(
+        () => {
+          if (this.incrementHold) {
+            this.handleMouseDown(dir, false)
+          }
+        },
+        isFirst ? 500 : 50
+      )
+    } else if (dir === 'down') {
+      this.decrementHold = true
+      !isFirst && this.decrement()
+
+      setTimeout(
+        () => {
+          if (this.decrementHold) {
+            this.handleMouseDown(dir, false)
+          }
+        },
+        isFirst ? 500 : 50
+      )
+    }
+  }
+
+  /**
+   * @function handleMouseUp
+   * @param {string} dir
+   * @returns {void}
+   */
+  handleMouseUp (dir) {
+    if (dir === 'up') {
+      this.incrementHold = false
+    } else {
+      this.decrementHold = false
+    }
+  }
+
+  /**
+   * @function handleKeyDown
+   * @param {Event} e
+   * @returns {void}
+   */
+  handleKeyDown (e) {
+    if (e.key === 'ArrowUp') {
+      this.increment()
+    } else if (e.key === 'ArrowDown') {
+      this.decrement()
+    }
   }
 }
 
 // Register
-customElements.define('se-zoom', Zoom)
+customElements.define('se-zoom', SeZoom)
