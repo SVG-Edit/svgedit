@@ -40,7 +40,7 @@ export class SeListItem extends HTMLElement {
     this.$img = this._shadowRoot.querySelector('img')
     this.$img.setAttribute('style', 'display: none;')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
-    this.$menuitem.addEventListener('click', e => {
+    this.$menuitem.addEventListener('mousedown', e => {
       this.$menuitem.dispatchEvent(new CustomEvent('selectedindexchange', {
         bubbles: true,
         composed: true,

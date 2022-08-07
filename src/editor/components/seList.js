@@ -35,7 +35,7 @@ template.innerHTML = `
 
 </style>
   <label>Label</label>
-  <div id="select-container">
+  <div id="select-container" tabindex="0">
     <div id="selected-value"></div>
     <div id="options-container">
       <slot></slot>
@@ -64,30 +64,15 @@ export class SeList extends HTMLElement {
     this.$optionsContainer.classList.add('closed')
     this.$selection.addEventListener('click', this.toggleList)
     this.updateSelectedValue(this.items[0].getAttribute('value'))
+    this.isDropdownOpen = false
   }
 
   toggleList = (e) => {
-    if (e && e.stopPropagation) {
-      e.stopPropagation()
-    }
-    const windowHeight = window.innerHeight
-    const selectedContainerPosition = this.$selection.getBoundingClientRect()
-
-    if (this.$optionsContainer.classList.contains('closed')) {
-      window.seListOpen = this
-      this.$optionsContainer.classList.remove('closed')
-      const optionsContainerPosition = this.$optionsContainer.getBoundingClientRect()
-      // list is bottom of frame - needs to open from above
-      if (selectedContainerPosition.bottom + optionsContainerPosition.height > windowHeight) {
-        this.$optionsContainer.style.top = selectedContainerPosition.top - optionsContainerPosition.height + 'px'
-        this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
-      } else {
-        this.$optionsContainer.style.top = selectedContainerPosition.bottom + 'px'
-        this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
-      }
+    if (!this.isDropdownOpen) {
+      this.openDropdown()
+      this.setDropdownListPosition()
     } else {
-      this.$optionsContainer.classList.add('closed')
-      window.seListOpen = null
+      this.closeDropdown()
     }
   }
 
@@ -216,6 +201,30 @@ export class SeList extends HTMLElement {
     this.setAttribute('height', value)
   }
 
+  openDropdown = () => {
+    this.isDropdownOpen = true
+    this.$optionsContainer.classList.remove('closed')
+  }
+
+  closeDropdown = () => {
+    this.isDropdownOpen = false
+    this.$optionsContainer.classList.add('closed')
+  }
+
+  setDropdownListPosition = () => {
+    const windowHeight = window.innerHeight
+    const selectedContainerPosition = this.$selection.getBoundingClientRect()
+    const optionsContainerPosition = this.$optionsContainer.getBoundingClientRect()
+    // list is bottom of frame - needs to open from above
+    if (selectedContainerPosition.bottom + optionsContainerPosition.height > windowHeight) {
+      this.$optionsContainer.style.top = selectedContainerPosition.top - optionsContainerPosition.height + 'px'
+      this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
+    } else {
+      this.$optionsContainer.style.top = selectedContainerPosition.bottom + 'px'
+      this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
+    }
+  }
+
   /**
    * @function connectedCallback
    * @returns {void}
@@ -229,15 +238,22 @@ export class SeList extends HTMLElement {
         currentObj.dispatchEvent(closeEvent)
         currentObj.value = value
         currentObj.setAttribute('value', value)
-        this.toggleList(e)
       }
     })
-    this.$dropdown.addEventListener('close', (_e) => {
-      /** with Chrome, selectedindexchange does not fire consistently
-      * unless you forec change in this close event
-      */
-      this.$dropdown.selectedIndex = this.$dropdown.currentIndex
+
+    this.$dropdown.addEventListener('focusout', (e) => {
+      this.closeDropdown()
     })
+
+    window.addEventListener('mousedown', e => {
+      // When we click on the canvas and if the dropdown is open, then just close the dropdown and stop the event
+      if (this.isDropdownOpen) {
+        if (!e.target.closest('se-list')) {
+          e.stopPropagation()
+          this.closeDropdown()
+        }
+      }
+    }, { capture: true })
   }
 }
 
