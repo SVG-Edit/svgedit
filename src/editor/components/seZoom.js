@@ -4,10 +4,10 @@ template.innerHTML = `
   <style>
   input{
     border:unset;
-    background-color:transparent;
+    background-color:var(--input-color);
     min-width:unset;
     width:40px;
-    height:14px
+    height:24px;
     padding:1px 2px;
     border:2px;
     font: inherit;
