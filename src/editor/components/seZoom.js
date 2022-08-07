@@ -7,13 +7,14 @@ template.innerHTML = `
     background-color:var(--input-color);
     min-width:unset;
     width:40px;
-    height:24px;
+    height:23px;
     padding:1px 2px;
     border:2px;
     font: inherit;
-    margin:2px;
+    margin: 2px 1px 0px 2px;
     box-sizing:border-box;
-    text-align:right;
+    text-align: center;
+    border-radius: 3px 0px 0px 3px;
   }
   #tool-wrapper{
     height:20px;
@@ -28,7 +29,7 @@ template.innerHTML = `
     flex-direction:column;
   }
   #spinner > div {
-    height: 10px;
+    height: 11px;
     width: 7px;
     display: flex;
     align-items: center;
@@ -36,14 +37,25 @@ template.innerHTML = `
     font-size: 7px;
     border-left:solid 1px transparent;
     border-right:solid 1px transparent;
+    background-color:var(--input-color);
+  }
+  #arrow-up{
+    height:9px;
+    margin-top: 2px;
+    margin-bottom: 1px;
   }
   #down{
     width:18px;
-    height:20px;
+    height:23px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top:2px;
+    background-color:var(--input-color);
+    border-radius: 0px 3px 3px 0px;
+    margin: 2px 5px 0px 1px;
+  }
+  #down > img {
+    margin-top: 2px;
   }
   #options-container {
     position:fixed
@@ -86,6 +98,7 @@ class SeZoom extends HTMLElement {
     this.handleMouseUp = this.handleMouseUp.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.initPopup = this.initPopup.bind(this)
+    this.handleInput = this.handleInput.bind(this)
 
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({ mode: 'open' })
@@ -102,7 +115,7 @@ class SeZoom extends HTMLElement {
     // hookup events for the input box
     this.inputElement = this._shadowRoot.querySelector('input')
     this.inputElement.addEventListener('click', this.handleClick.bind(this))
-    this.inputElement.addEventListener('input', this.handleInput.bind(this))
+    this.inputElement.addEventListener('change', this.handleInput)
     this.inputElement.addEventListener('keydown', this.handleKeyDown)
 
     this.clickArea = this._shadowRoot.querySelector('#down')
@@ -200,8 +213,6 @@ class SeZoom extends HTMLElement {
    */
   handleOptionsChange () {
     if (this.slotElement.assignedElements().length > 0) {
-      this.dispatchEvent(new CustomEvent('optionsChanged'))
-
       this.options = this.slotElement.assignedElements()
       this.selectedValue = this.options[0].textContent
 
@@ -258,6 +269,7 @@ class SeZoom extends HTMLElement {
   handleClose (e) {
     if (e.target !== this) {
       this.optionsContainer.style.display = 'none'
+      this.inputElement.blur()
     }
   }
 
@@ -270,7 +282,7 @@ class SeZoom extends HTMLElement {
       clearTimeout(this.changedTimeout)
     }
 
-    this.changedTimeout = setTimeout(this.triggerInputChanged.bind(this), 250)
+    this.changedTimeout = setTimeout(this.triggerInputChanged.bind(this), 500)
   }
 
   /**
@@ -356,7 +368,6 @@ class SeZoom extends HTMLElement {
    * @returns {void}
    */
   handleKeyDown (e) {
-    console.log(e)
     if (e.key === 'ArrowUp') {
       this.increment()
     } else if (e.key === 'ArrowDown') {
