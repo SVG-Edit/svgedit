@@ -314,15 +314,15 @@ class EditorStartup {
       return true
     })
 
-    //adding a mousedown listener to handle some dropdowns closing
+    // adding a mousedown listener to handle some dropdowns closing
     window.addEventListener('mousedown', e => {
-      //dropdowns for seList
-      if(window['seListOpen']) {
-        if(!e.target.closest('se-list')) {
-          window['seListOpen'].toggleList(e)
+      // dropdowns for seList
+      if (window.seListOpen) {
+        if (!e.target.closest('se-list')) {
+          window.seListOpen.toggleList(e)
         }
       }
-    }, {capture: true});
+    }, { capture: true })
 
     window.addEventListener('mouseup', () => {
       panning = false

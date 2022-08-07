@@ -13,7 +13,7 @@ template.innerHTML = `
   }
 
   .selected {
-    border: 2px solid;
+    background-color: var(--icon-bg-color-hover);
   }
 
   </style>
@@ -44,9 +44,9 @@ export class SeListItem extends HTMLElement {
       this.$menuitem.dispatchEvent(new CustomEvent('selectedindexchange', {
         bubbles: true,
         composed: true,
-        detail: {selectedItem: this.getAttribute('value')}
+        detail: { selectedItem: this.getAttribute('value') }
       }))
-    });
+    })
   }
 
   /**
@@ -82,7 +82,7 @@ export class SeListItem extends HTMLElement {
         this.$img.setAttribute('height', newValue)
         break
       case 'selected':
-        if(newValue === 'true') {
+        if (newValue === 'true') {
           this.$menuitem.classList.add('selected')
         } else {
           this.$menuitem.classList.remove('selected')

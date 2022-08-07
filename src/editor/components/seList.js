@@ -6,6 +6,7 @@ template.innerHTML = `
 <style>
 #select-container {
   margin-top: 10px;
+  display: inline-block;
 }
 
 #select-container:hover {
@@ -59,36 +60,35 @@ export class SeList extends HTMLElement {
     this.$selection = this.$dropdown.querySelector('#selected-value')
     this.items = this.querySelectorAll('se-list-item')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
-    this.$optionsContainer = this._shadowRoot.querySelector('#options-container');
+    this.$optionsContainer = this._shadowRoot.querySelector('#options-container')
     this.$optionsContainer.classList.add('closed')
     this.$selection.addEventListener('click', this.toggleList)
     this.updateSelectedValue(this.items[0].getAttribute('value'))
   }
 
   toggleList = (e) => {
-    if(e && e.stopPropagation) {
-      e.stopPropagation();
+    if (e && e.stopPropagation) {
+      e.stopPropagation()
     }
-    const windowHeight = window.innerHeight;
-    const selectedContainerPosition = this.$selection.getBoundingClientRect();
+    const windowHeight = window.innerHeight
+    const selectedContainerPosition = this.$selection.getBoundingClientRect()
 
-    if(this.$optionsContainer.classList.contains('closed')) {
-      window['seListOpen'] = this;
-      this.$optionsContainer.classList.remove('closed');
-      const optionsContainerPosition = this.$optionsContainer.getBoundingClientRect();
-      //list is bottom of frame - needs to open from above
-      if(selectedContainerPosition.bottom + optionsContainerPosition.height > windowHeight) {
-        this.$optionsContainer.style.top = selectedContainerPosition.top - optionsContainerPosition.height + "px";
-        this.$optionsContainer.style.left = selectedContainerPosition.left + "px";
+    if (this.$optionsContainer.classList.contains('closed')) {
+      window.seListOpen = this
+      this.$optionsContainer.classList.remove('closed')
+      const optionsContainerPosition = this.$optionsContainer.getBoundingClientRect()
+      // list is bottom of frame - needs to open from above
+      if (selectedContainerPosition.bottom + optionsContainerPosition.height > windowHeight) {
+        this.$optionsContainer.style.top = selectedContainerPosition.top - optionsContainerPosition.height + 'px'
+        this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
       } else {
-        this.$optionsContainer.style.top = selectedContainerPosition.bottom + "px";
-        this.$optionsContainer.style.left = selectedContainerPosition.left + "px";
+        this.$optionsContainer.style.top = selectedContainerPosition.bottom + 'px'
+        this.$optionsContainer.style.left = selectedContainerPosition.left + 'px'
       }
     } else {
-      this.$optionsContainer.classList.add('closed');
-      window['seListOpen'] = null;
+      this.$optionsContainer.classList.add('closed')
+      window.seListOpen = null
     }
-
   }
 
   updateSelectedValue = (newValue) => {
@@ -129,7 +129,6 @@ export class SeList extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    const currentObj = this
     if (oldValue === newValue) return
     switch (name) {
       case 'title':
