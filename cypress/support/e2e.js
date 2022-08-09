@@ -36,10 +36,3 @@ import '@cypress/fiddle'
  * @see https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
  */
 import '@cypress/code-coverage/support.js'
-
-/*****
- * SNAPSHOTS
- * @see https://www.npmjs.com/package/cypress-plugin-snapshots
- */
-
-import 'cypress-plugin-snapshots/commands.js'

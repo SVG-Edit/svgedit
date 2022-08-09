@@ -1,8 +1,8 @@
 import {
-  visitAndApproveStorage, testSnapshot
+  visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use all parts of svg-edit', function () {
+describe('use line tools of svg-edit', function () {
   before(() => {
     visitAndApproveStorage()
   })
@@ -17,7 +17,7 @@ describe('use all parts of svg-edit', function () {
        </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
     cy.get('#tool_source_save').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line', function () {
     cy.get('#tool_line')
@@ -27,7 +27,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown', 200, 200, { force: true })
       .trigger('mousemove', 250, 250, { force: true })
       .trigger('mouseup', { force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_class', function () {
     cy.get('#svg_1').click({ force: true })
@@ -55,7 +55,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_blur', function () {
     cy.get('#svg_1_id').click({ force: true })
@@ -63,7 +63,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#blur').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_opacity', function () {
     cy.get('#svg_1_id').click({ force: true })
@@ -71,12 +71,12 @@ describe('use all parts of svg-edit', function () {
       cy.get('#opacity').shadow().find('elix-number-spin-box').eq(0).shadow().find('#downButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_delete', function () {
     cy.get('#svg_1_id').click({ force: true })
     cy.get('#tool_delete').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_clone', function () {
     cy.get('#tool_line')
@@ -88,17 +88,17 @@ describe('use all parts of svg-edit', function () {
       .trigger('mouseup', { force: true })
     cy.get('#svg_2').click({ force: true })
     cy.get('#tool_clone').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_bring_to_back', function () {
     cy.get('#svg_2').click({ force: true })
     cy.get('#tool_move_bottom').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_bring_to_front', function () {
     cy.get('#svg_2').click({ force: true })
     cy.get('#tool_move_top').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_x_y_coordinate', function () {
     cy.get('#svg_2').click({ force: true })
@@ -118,7 +118,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#line_y2').shadow().find('elix-number-spin-box').eq(0).shadow().find('#downButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_stroke_width', function () {
     cy.get('#svg_2').click({ force: true })
@@ -126,7 +126,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_change_stoke_color', function () {
     cy.get('#svg_3').click({ force: true })
@@ -137,13 +137,13 @@ describe('use all parts of svg-edit', function () {
     cy.get('#stroke_color').shadow().find('#color_picker').eq(0)
       .find('#jGraduate_colPick').eq(0).find('#jPicker-table').eq(0)
       .find('#Ok').eq(0).click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_line_align_to_page', function () {
     cy.get('#svg_3').click({ force: true })
     cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened')
     cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
 })

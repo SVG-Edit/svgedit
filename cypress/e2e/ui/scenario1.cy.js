@@ -1,5 +1,5 @@
 import {
-  visitAndApproveStorage, testSnapshot
+  visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
 describe('use all parts of svg-edit', function () {
@@ -17,7 +17,7 @@ describe('use all parts of svg-edit', function () {
        </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
     cy.get('#tool_source_save').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_shape', function () {
     cy.get('#tool_shapelib').shadow().find('.overall').eq(0).click({ force: true })
@@ -31,7 +31,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown')
       .trigger('mousemove', 20, 20, { force: true })
       .trigger('mouseup', { force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_image', function () {
     cy.get('#tool_image').click({ force: true })
@@ -46,6 +46,6 @@ describe('use all parts of svg-edit', function () {
         cy.stub($win, 'prompt').returns('./images/logo.svg')
         cy.contains('OK')
       })
-    testSnapshot()
+    cy.svgSnapshot()
   })
 })

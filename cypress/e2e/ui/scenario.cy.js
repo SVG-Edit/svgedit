@@ -1,8 +1,8 @@
 import {
-  visitAndApproveStorage, testSnapshot
+  visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use various parts of svg-edit', function () {
+describe('use text tools of svg-edit', function () {
   before(() => {
     visitAndApproveStorage()
   })
@@ -17,7 +17,7 @@ describe('use various parts of svg-edit', function () {
        </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
     cy.get('#tool_source_save').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text', function () {
     cy.get('#tool_text')
@@ -42,26 +42,26 @@ describe('use various parts of svg-edit', function () {
       </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
     cy.get('#tool_source_save').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
 
   it('check tool_clone', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_clone')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_italic', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_italic')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_bold', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_bold')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_x_y_coordinate', function () {
     cy.get('#svg_2').click({ force: true })
@@ -73,7 +73,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_font_size', function () {
     cy.get('#svg_1').click({ force: true })
@@ -81,13 +81,13 @@ describe('use various parts of svg-edit', function () {
       cy.get('#font_size').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_stroke_width', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_stoke_fill_color', function () {
     cy.get('#svg_1').click({ force: true })
@@ -105,7 +105,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#fill_color').shadow().find('#color_picker').eq(0)
       .find('#jGraduate_colPick').eq(0).find('#jPicker-table').eq(0)
       .find('#Ok').eq(0).click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_blur', function () {
     cy.get('#svg_2').click({ force: true })
@@ -113,7 +113,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#blur').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_opacity', function () {
     cy.get('#svg_2').click({ force: true })
@@ -121,14 +121,14 @@ describe('use various parts of svg-edit', function () {
       cy.get('#opacity').shadow().find('elix-number-spin-box').eq(0).shadow().find('#downButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_align_to_page', function () {
     cy.get('#svg_2').click({ force: true })
     cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened')
     cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_class', function () {
     cy.get('#svg_2').click({ force: true })
@@ -153,30 +153,30 @@ describe('use various parts of svg-edit', function () {
   it('check tool_text_delete', function () {
     cy.get('#svg_2_id').click({ force: true })
     cy.get('#tool_delete').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_font_family', function () {
     cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_font_family').shadow().find('select').select('Serif')
-    testSnapshot()
+    cy.get('#tool_font_family').shadow().find('select').select('Serif', {force: true})
+    cy.svgSnapshot()
   })
   it('check tool_text_decoration_underline', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_underline')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_decoration_linethrough', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_linethrough')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_decoration_overline', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_text_decoration_overline')
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_letter_spacing', function () {
     cy.get('#svg_1').click({ force: true })
@@ -184,7 +184,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#tool_letter_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_word_spacing', function () {
     cy.get('#svg_1').click({ force: true })
@@ -192,7 +192,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#tool_word_spacing').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_length', function () {
     cy.get('#svg_1').click({ force: true })
@@ -200,12 +200,12 @@ describe('use various parts of svg-edit', function () {
       cy.get('#tool_text_length').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_length_adjust', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_length_adjust').shadow().find('select').select(1)
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_text_change_rotation', function () {
     cy.get('#svg_1').click({ force: true })
@@ -215,6 +215,6 @@ describe('use various parts of svg-edit', function () {
     }
     cy.get('#svg_1').should('have.attr', 'transform')
       .and('match', /rotate\(25/)
-    // issue with testSnapshot()
+    cy.svgSnapshot()
   })
 })
