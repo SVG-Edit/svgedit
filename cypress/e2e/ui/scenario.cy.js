@@ -125,8 +125,8 @@ describe('use text tools of svg-edit', function () {
   })
   it('check tool_text_align_to_page', function () {
     cy.get('#svg_2').click({ force: true })
-    cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened')
-    cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
+    cy.get('#tool_position').shadow().find('#select-container').eq(0).click({ force: true })
+    cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('[aria-label="option"]').eq(0)
       .click({ force: true })
     cy.svgSnapshot()
   })

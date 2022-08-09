@@ -1,22 +1,26 @@
 /* globals svgEditor */
-import 'elix/define/Option.js'
 import { t } from '../locale.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-  elix-option{
+  [aria-label="option"]{
     padding:0.25rem 0.125rem !important;
     background-color: var(--icon-bg-color);
   }
-  elix-option:hover{
+  [aria-label="option"]:hover{
     background-color: var(--icon-bg-color-hover);
   }
+
+  .selected {
+    background-color: var(--icon-bg-color-hover);
+  }
+
   </style>
-  <elix-option aria-label="option">
+  <div aria-label="option">
     <img alt="icon" />
     <slot></slot>
-  </elix-option>
+  </div>
 `
 /**
  * @class SeMenu
@@ -30,12 +34,19 @@ export class SeListItem extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(template.content.cloneNode(true))
-    this.$menuitem = this._shadowRoot.querySelector('elix-option')
-    this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark')
-    this.$svg.setAttribute('style', 'display: none;')
+    this.$menuitem = this._shadowRoot.querySelector('[aria-label=option]')
+    // this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark')
+    // this.$svg.setAttribute('style', 'display: none;')
     this.$img = this._shadowRoot.querySelector('img')
     this.$img.setAttribute('style', 'display: none;')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
+    this.$menuitem.addEventListener('mousedown', e => {
+      this.$menuitem.dispatchEvent(new CustomEvent('selectedindexchange', {
+        bubbles: true,
+        composed: true,
+        detail: { selectedItem: this.getAttribute('value') }
+      }))
+    })
   }
 
   /**
@@ -43,7 +54,7 @@ export class SeListItem extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['option', 'src', 'title', 'img-height']
+    return ['option', 'src', 'title', 'img-height', 'selected']
   }
 
   /**
@@ -69,6 +80,13 @@ export class SeListItem extends HTMLElement {
         break
       case 'img-height':
         this.$img.setAttribute('height', newValue)
+        break
+      case 'selected':
+        if (newValue === 'true') {
+          this.$menuitem.classList.add('selected')
+        } else {
+          this.$menuitem.classList.remove('selected')
+        }
         break
       default:
         console.error(`unknown attribute: ${name}`)
