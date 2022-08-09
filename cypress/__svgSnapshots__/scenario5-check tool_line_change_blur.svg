@@ -1,0 +1,11 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <line class="svg_1_class" fill="none" filter="url(#svg_1_id_blur)" id="svg_1_id" stroke="#000000" stroke-width="5" transform="rotate(25 325 325)" x1="200" x2="450" y1="200" y2="450"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_id_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
+</svg>
