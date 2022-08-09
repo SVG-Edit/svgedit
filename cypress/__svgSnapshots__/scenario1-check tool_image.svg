@@ -1,7 +1,7 @@
 <svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <g class="layer">
   <title>Layer 1</title>
-  <path d="m209,203.82c4.12,-11.81 20.25,0 0,15.19c-20.25,-15.19 -4.12,-27 0,-15.19z" fill="#FF0000" id="svg_1" stroke="#000000" transform="rotate(48.8014 208.997 209.008)"/>
-  <image height="20" id="svg_2" width="20" x="295" xlink:href="./images/logo.svg" y="295"/>
+  <path d="m10.73,-6.49c78.24,-224.45 384.77,0 0,288.58c-384.77,-288.58 -78.24,-513.02 0,-288.58z" fill="#FF0000" id="svg_1" stroke="#000000"/>
+  <image height="20" id="svg_2" width="20" x="-100" xlink:href="./images/logo.svg" y="-18"/>
  </g>
 </svg>
