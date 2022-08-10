@@ -9,7 +9,7 @@ describe('UI - Control Points', function () {
 
   it('Editor - No parameters: Drag control point of arc path', () => {
     const randomOffset = () => 2 + Math.round(10 + Math.random() * 40)
-    cy.get('#tool_source').click()
+    cy.get('#tool_source').click({force: true})
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">

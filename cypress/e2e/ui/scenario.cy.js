@@ -11,7 +11,7 @@ describe('use text tools of svg-edit', function () {
     cy.get('#tool_source').click({ force: true })
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
-      .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+      .type(`<svg width="640" height="480" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
       <g class="layer">
        <title>Layer 1</title>
        </g>
@@ -22,29 +22,14 @@ describe('use text tools of svg-edit', function () {
   it('check tool_text', function () {
     cy.get('#tool_text')
       .click({ force: true })
-    cy.get('#svgcontent')
-      .trigger('mousedown', 100, 100, { force: true })
+    cy.get('#svgroot')
+      .trigger('mousedown', { clientX: 400, clientY: 400, force: true })
       .trigger('mouseup', { force: true })
     // svgedit use the #text text field to capture the text
     cy.get('#text').type('AB', { force: true })
-    cy.get('#svg_1').should('exist')
-  })
-  // For an unknown reason, the position of the text is different on local test vs CI test
-  // As a workaround, weforce SVG source
-  it('force svg', function () {
-    cy.get('#tool_source').click({ force: true })
-    cy.get('#svg_source_textarea')
-      .type('{selectall}', { force: true })
-      .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-      <g class="layer">
-       <title>Layer 1</title>
-       <text fill="#000000" font-family="Serif" font-size="24" id="svg_1" stroke="#000000" stroke-width="0" text-anchor="middle" x="100" xml:space="preserve" y="100">AB</text>
-      </g>
-     </svg>`, { force: true, parseSpecialCharSequences: false })
-    cy.get('#tool_source_save').click({ force: true })
     cy.svgSnapshot()
+    // cy.get('#svg_1').should('exist')
   })
-
   it('check tool_clone', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_clone')
@@ -209,12 +194,12 @@ describe('use text tools of svg-edit', function () {
   })
   it('check tool_text_change_rotation', function () {
     cy.get('#svg_1').click({ force: true })
-    for (let n = 0; n < 5; n++) {
+    for (let n = 0; n < 6; n++) {
       cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
     cy.get('#svg_1').should('have.attr', 'transform')
-      .and('match', /rotate\(25/)
+      .and('match', /rotate\(30/)
     cy.svgSnapshot()
   })
 })

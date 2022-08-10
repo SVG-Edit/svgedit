@@ -10,7 +10,7 @@ describe('Fix issue 660', function () {
   })
   /** @todo: reenable this test when we understand why it is passing locally but not on ci */
   it.skip('can resize text', function () {
-    cy.get('#tool_source').click()
+    cy.get('#tool_source').click({force: true})
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">

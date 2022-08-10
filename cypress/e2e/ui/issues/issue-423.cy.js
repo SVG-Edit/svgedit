@@ -9,7 +9,7 @@ describe('Fix issue 423', function () {
   })
 
   it('should not throw when undoing the move', function () {
-    cy.get('#tool_source').click()
+    cy.get('#tool_source').click({force: true})
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">

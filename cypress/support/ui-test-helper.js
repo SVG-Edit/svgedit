@@ -1,11 +1,6 @@
-export const approveStorage = () => {
-  cy.get('#storage_ok').click()
-}
-
 export const visitAndApproveStorage = () => {
-  cy.viewport(512, 512)
   cy.visit('/instrumented/editor/index.html')
-  approveStorage()
+  cy.get('#storage_ok').click()
 }
 
 export const openMainMenu = () => {

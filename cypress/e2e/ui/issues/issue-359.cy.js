@@ -9,7 +9,7 @@ describe('Fix issue 359', function () {
   })
 
   it('can undo without throwing', function () {
-    cy.get('#tool_source').click()
+    cy.get('#tool_source').click({force: true})
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
@@ -18,9 +18,9 @@ describe('Fix issue 359', function () {
         <rect fill="#ffff00" height="70" width="165" x="179.5" y="146.5"/>
       </g>
      </svg>`, { parseSpecialCharSequences: false, force: true })
-    cy.get('#tool_source_save').click()
-    cy.get('#tool_undo').click()
-    cy.get('#tool_redo').click() // test also redo to make the test more comprehensive
+    cy.get('#tool_source_save').click({force: true})
+    cy.get('#tool_undo').click({force: true})
+    cy.get('#tool_redo').click({force: true}) // test also redo to make the test more comprehensive
     // if the undo throws an error to the console, the test will fail
   })
 })
