@@ -5,13 +5,6 @@ projects. This page acknowledges these projects and the many software
 developers across the globe without which our software would be sorely
 lacking.
 
-## jQuery
-
-Jonathan Resig's [jQuery library](https://jquery.com) was chosen as a
-basis for the project since the beginning. The power of jQuery really
-lets us focus on the functionality and not worry about all the intricacies
-of mixing with the HTML, CSS and SVG DOM.
-
 ## jPicker
 
 Christopher Tillman's awesome [jPicker](http://www.digitalmagicpro.com/jPicker/)

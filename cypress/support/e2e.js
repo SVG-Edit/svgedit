@@ -20,18 +20,6 @@ import './commands.js'
 // require('./commands')
 
 /**
- * FIDDLE
- * Adds "cy.runExample()" custom command
- * Accets test object property (or array thereof):
- *    Required: `test`
- *    Optional: `html`, `name`, `description`
- *    With `testExamples` only: `skip` and `only`
- * @see https://github.com/cypress-io/cypress-fiddle
- * @example import {testExamples} from '@cypress/fiddle';
- */
-import '@cypress/fiddle'
-
-/**
  * COVERAGE.
  * @see https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
  */
