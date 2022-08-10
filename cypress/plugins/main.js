@@ -12,16 +12,15 @@ export default (on, config) => {
 
   // https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
   codeCoverageTask(on, config)
-  const { defineConfig } = require('cypress')
 
   on('task', {
-    readFileMaybe(filename) {
+    readFileMaybe (filename) {
       if (fs.existsSync(filename)) {
         return fs.readFileSync(filename, 'utf8')
       }
 
       return null
-    },
+    }
   })
 
   on('before:browser:launch', (browser, launchOptions) => {

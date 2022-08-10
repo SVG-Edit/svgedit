@@ -71,7 +71,9 @@
     ],
     "globals": [
       "cy",
-      "assert"
+      "assert",
+      "expect",
+      "Cypress"
     ],
     "env": [
       "mocha",

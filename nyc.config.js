@@ -4,7 +4,7 @@ module.exports = {
   branches: 34,
   lines: 46,
   functions: 45,
-  //"excludeNodeModules": false,
+  // "excludeNodeModules": false,
   extension: ['.js', '.html', '.json', '.css', '.svg', '.png', '.gif'],
   exclude: [
     'editor/jquery.min.js',

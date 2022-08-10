@@ -9,7 +9,7 @@ describe('Fix issue 408', function () {
   })
 
   it('should not throw when showing/saving svg content', function () {
-    cy.get('#tool_source').click({force: true})
+    cy.get('#tool_source').click({ force: true })
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -21,9 +21,9 @@ describe('Fix issue 408', function () {
        </g>
       </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
-    cy.get('#tool_source_save').click({force: true})
-    cy.get('#svg_6').click({force: true}).dblclick({force: true}) // change context
-    cy.get('#tool_source').click({force: true}) // reopen tool_source
+    cy.get('#tool_source_save').click({ force: true })
+    cy.get('#svg_6').click({ force: true }).dblclick({ force: true }) // change context
+    cy.get('#tool_source').click({ force: true }) // reopen tool_source
     cy.get('#tool_source_save').should('exist') // The save button should be here if it does not throw
   })
 })

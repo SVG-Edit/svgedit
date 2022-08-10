@@ -142,7 +142,7 @@ describe('use text tools of svg-edit', function () {
   })
   it('check tool_text_change_font_family', function () {
     cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_font_family').shadow().find('select').select('Serif', {force: true})
+    cy.get('#tool_font_family').shadow().find('select').select('Serif', { force: true })
     cy.svgSnapshot()
   })
   it('check tool_text_decoration_underline', function () {

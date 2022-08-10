@@ -17,4 +17,3 @@ export const selectEnglish = () => {
   cy.get('#lang_select').select('en')
   cy.get('#tool_prefs_save').click()
 }
-

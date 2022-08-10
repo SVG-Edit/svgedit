@@ -36,7 +36,7 @@ describe('use all parts of svg-edit', function () {
   it('check tool_image', function () {
     cy.get('#tool_image').click({ force: true })
     cy.get('#svgroot')
-      .trigger('mousedown',{ clientX: 100, clientY: 100, force: true })
+      .trigger('mousedown', { clientX: 100, clientY: 100, force: true })
       .trigger('mousemove', { clientX: 120, clientY: 120, force: true })
       .trigger('mouseup', { force: true })
     // eslint-disable-next-line promise/catch-or-return
