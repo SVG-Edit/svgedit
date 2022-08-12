@@ -2,7 +2,7 @@ import {
   visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use all parts of svg-edit', function () {
+describe('check tool shape and image of svg-edit', function () {
   before(() => {
     visitAndApproveStorage()
   })
@@ -31,6 +31,9 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown', { force: true })
       .trigger('mousemove', { clientX: 20, clientY: 20, force: true })
       .trigger('mouseup', { force: true })
+    // force text position for snapshot tests being consistent on CI/Interactive
+    cy.get('#selected_x').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}200', { force: true })
+    cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}200', { force: true })
     cy.svgSnapshot()
   })
   it('check tool_image', function () {
@@ -46,6 +49,9 @@ describe('use all parts of svg-edit', function () {
         cy.stub($win, 'prompt').returns('./images/logo.svg')
         cy.contains('OK')
       })
+    // force text position for snapshot tests being consistent on CI/Interactive
+    cy.get('#selected_x').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}300', { force: true })
+    cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}300', { force: true })
     cy.svgSnapshot()
   })
 })
