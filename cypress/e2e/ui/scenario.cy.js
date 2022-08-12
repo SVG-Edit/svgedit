@@ -26,7 +26,7 @@ describe('use text tools of svg-edit', function () {
       .trigger('mousedown', { clientX: 400, clientY: 400, force: true })
       .trigger('mouseup', { force: true })
     // svgedit use the #text text field to capture the text
-    cy.get('#text').type('AB', { force: true }) 
+    cy.get('#text').type('AB', { force: true })
     // force text position for snapshot tests being consistent on CI/Interactive
     cy.get('#selected_x').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}200', { force: true })
     cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#inner').eq(0).type('{selectall}200', { force: true })
