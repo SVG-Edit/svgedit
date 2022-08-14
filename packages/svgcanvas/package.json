@@ -1,6 +1,6 @@
 {
     "name": "@svgedit/svgcanvas",
-    "version": "7.1.5",
+    "version": "7.1.6",
     "description": "SVG Canvas",
     "main": "dist/svgcanvas.js",
     "author": "Narendra Sisodiya",
@@ -38,7 +38,7 @@
         "not OperaMini all"
     ],
     "standard": {
-        "ignore": [],
+        "ignore": ["dist"],
         "globals": [
             "cy",
             "assert"
@@ -49,6 +49,8 @@
         ]
     },
     "scripts": {
-        "build": "rollup -c"
+        "build": "rollup -c",
+        "prebuild": "standard . && npm i",
+        "prepublishOnly": "npm run build"
     }
 }
