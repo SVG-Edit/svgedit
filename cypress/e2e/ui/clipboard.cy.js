@@ -8,7 +8,7 @@ describe('UI - Clipboard', function () {
   })
 
   it('Editor - Copy and paste', () => {
-    cy.get('#tool_source').click()
+    cy.get('#tool_source').click({ force: true })
 
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
@@ -18,13 +18,13 @@ describe('UI - Clipboard', function () {
     <circle cx="100" cy="100" r="50" fill="#FF0000" id="testCircle" stroke="#000000" stroke-width="5"/>
    </g>
   </svg>`, { force: true, parseSpecialCharSequences: false })
-    cy.get('#tool_source_save').click()
+    cy.get('#tool_source_save').click({ force: true })
     cy.get('#testCircle').should('exist')
     cy.get('#svg_1').should('not.exist')
     cy.get('#svg_2').should('not.exist')
 
     // Copy.
-    cy.get('#testCircle').click().rightclick()
+    cy.get('#testCircle').click({ force: true }).rightclick({ force: true })
     cy.get('#cmenu_canvas a[href="#copy"]').click({ force: true })
 
     // Paste.
@@ -37,7 +37,7 @@ describe('UI - Clipboard', function () {
     cy.get('#svg_2').should('not.exist')
 
     // Cut.
-    cy.get('#testCircle').click().rightclick()
+    cy.get('#testCircle').click({ force: true }).rightclick({ force: true })
     cy.get('#cmenu_canvas a[href="#cut"]').click({ force: true })
     cy.get('#testCircle').should('not.exist')
     cy.get('#svg_1').should('exist')
@@ -53,9 +53,9 @@ describe('UI - Clipboard', function () {
     cy.get('#svg_2').should('exist')
 
     // Delete.
-    cy.get('#svg_2').click({ force: true }).rightclick()
+    cy.get('#svg_2').click({ force: true }).rightclick({ force: true })
     cy.get('#cmenu_canvas a[href="#delete"]').click({ force: true })
-    cy.get('#svg_1').click().rightclick({ force: true })
+    cy.get('#svg_1').click({ force: true }).rightclick({ force: true })
     cy.get('#cmenu_canvas a[href="#delete"]').click({ force: true })
     cy.get('#svg_1').should('not.exist')
     cy.get('#svg_2').should('not.exist')

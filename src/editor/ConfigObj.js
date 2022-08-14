@@ -1,4 +1,4 @@
-import { mergeDeep } from './components/jgraduate/Util.js'
+import { mergeDeep } from '../common/util.js'
 
 /**
 * Escapes special characters in a regular expression.

@@ -1,4 +1,10 @@
 # SVG-Edit CHANGES
+
+## 7.2.0
+- introduce the notion of workspace 
+- separate svgcanvas into a package
+
+**Warning: This version will break applications using svgcanvas directly. You need to change your import to "@svgedit/svgcanvas"** 
 ## 7.1.4
 - Implement horizontal or vertical distribution alignment (mulder3062)
 - fix several bugs and update to latest dependencies

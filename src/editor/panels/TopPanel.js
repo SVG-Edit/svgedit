@@ -1,11 +1,10 @@
 /* eslint-disable max-len */
 /* globals seAlert */
 
-import SvgCanvas from '../../svgcanvas/svgcanvas.js'
-import { isValidUnit, getTypeMap, convertUnit } from '../../common/units.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import topPanelHTML from './TopPanel.html'
 
-const { $qa, $id, $click } = SvgCanvas
+const { $qa, $id, $click, isValidUnit, getTypeMap, convertUnit } = SvgCanvas
 
 /*
  * register actions for left panel

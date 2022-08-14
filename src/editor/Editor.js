@@ -18,7 +18,7 @@ import './dialogs/index.js'
 
 import { isMac } from '../common/browser.js'
 
-import SvgCanvas from '../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import ConfigObj from './ConfigObj.js'
 import EditorStartup from './EditorStartup.js'
 import LeftPanel from './panels/LeftPanel.js'
@@ -26,7 +26,7 @@ import TopPanel from './panels/TopPanel.js'
 import BottomPanel from './panels/BottomPanel.js'
 import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
-import { getParentsUntil } from './components/jgraduate/Util.js'
+import { getParentsUntil } from '../common/util.js'
 
 const { $id, $click, decode64, blankPageObjectURL } = SvgCanvas
 

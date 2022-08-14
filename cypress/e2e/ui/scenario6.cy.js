@@ -1,8 +1,8 @@
 import {
-  visitAndApproveStorage, testSnapshot
+  visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use all parts of svg-edit', function () {
+describe('use polygon tools of svg-edit', function () {
   before(() => {
     visitAndApproveStorage()
   })
@@ -17,7 +17,7 @@ describe('use all parts of svg-edit', function () {
        </g>
      </svg>`, { force: true, parseSpecialCharSequences: false })
     cy.get('#tool_source_save').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon', function () {
     cy.get('#tool_polygon')
@@ -26,12 +26,12 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown', 325, 250, { force: true })
       .trigger('mousemove', 325, 345, { force: true })
       .trigger('mouseup', { force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_clone', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_clone').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_change_class', function () {
     cy.get('#svg_2').click({ force: true })
@@ -59,7 +59,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_change_blur', function () {
     cy.get('#svg_2_id').click({ force: true })
@@ -67,7 +67,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#blur').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_change_opacity', function () {
     cy.get('#svg_2_id').click({ force: true })
@@ -75,29 +75,29 @@ describe('use all parts of svg-edit', function () {
       cy.get('#opacity').shadow().find('elix-number-spin-box').eq(0).shadow().find('#downButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_bring_to_back', function () {
     cy.get('#svg_2_id').click({ force: true })
     cy.get('#tool_move_bottom').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_bring_to_front', function () {
     cy.get('#svg_2_id').click({ force: true })
     cy.get('#tool_move_top').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_delete', function () {
     cy.get('#svg_2_id').click({ force: true })
     cy.get('#tool_delete').click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_align_to_page', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#tool_position').shadow().find('#select-container').eq(0).click({ force: true })
     cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('[aria-label="option"]').eq(0)
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   /* it('check tool_polygon_change_x_y_coordinate', function () {
     cy.get('#svg_1').click({ force: true });
@@ -109,7 +109,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    testSnapshot();
+    cy.svgSnapshot();
   }); */
   it('check tool_polygon_change_stroke_width', function () {
     cy.get('#svg_1').click({ force: true })
@@ -117,7 +117,7 @@ describe('use all parts of svg-edit', function () {
       cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_change_stoke_fill_color', function () {
     cy.get('#svg_1').click({ force: true })
@@ -135,12 +135,12 @@ describe('use all parts of svg-edit', function () {
     cy.get('#fill_color').shadow().find('#color_picker').eq(0)
       .find('#jGraduate_colPick').eq(0).find('#jPicker-table').eq(0)
       .find('#Ok').eq(0).click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
   it('check tool_polygon_change_sides', function () {
     cy.get('#svg_1').click({ force: true })
     cy.get('#polySides').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
       .click({ force: true })
-    testSnapshot()
+    cy.svgSnapshot()
   })
 })

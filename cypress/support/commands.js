@@ -23,3 +23,22 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('svgSnapshot', () => {
+  cy.wait(300) // necessary for some animations to complete
+  // console.log(Cypress.spec, Cypress.currentTest)
+  cy.window().then((win) => { // access to the remote Window so we can get the svgEditor variable
+    const svgString = win.svgEditor.svgCanvas.getSvgString()
+    const filename = `cypress/__svgSnapshots__/${Cypress.spec.fileName}-${Cypress.currentTest.title}.svg`
+    //
+    // console.log(filename)
+    cy.task('readFileMaybe', filename).then((text) => {
+      if (text === null) {
+        // file does not exist so we create it
+        cy.writeFile(filename, svgString)
+        cy.log('creating snapshot', filename)
+      } else {
+        expect(text).to.equal(svgString)
+      }
+    })
+  })
+})

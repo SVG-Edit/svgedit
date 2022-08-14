@@ -1,0 +1,56 @@
+{
+    "name": "@svgedit/svgcanvas",
+    "version": "7.1.6",
+    "description": "SVG Canvas",
+    "main": "dist/svgcanvas.js",
+    "author": "Narendra Sisodiya",
+    "publishConfig": {
+        "access": "public"
+    },
+    "bugs": {
+        "url": "https://github.com/SVG-Edit/svgedit/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SVG-Edit/svgedit.git"
+    },
+    "homepage": "https://github.com/SVG-Edit/svgedit#readme",
+    "contributors": [
+        "Pavol Rusnak",
+        "Jeff Schiller",
+        "Vidar Hokstad",
+        "Alexis Deveria",
+        "Brett Zamir",
+        "Fabien Jacq",
+        "OptimistikSAS"
+    ],
+    "keywords": [
+        "svg-editor",
+        "javascript",
+        "svg-edit",
+        "svg",
+        "svgcanvas"
+    ],
+    "license": "MIT",
+    "browserslist": [
+        "defaults",
+        "not IE 11",
+        "not OperaMini all"
+    ],
+    "standard": {
+        "ignore": ["dist"],
+        "globals": [
+            "cy",
+            "assert"
+        ],
+        "env": [
+            "mocha",
+            "browser"
+        ]
+    },
+    "scripts": {
+        "build": "rollup -c",
+        "prebuild": "standard . && npm i",
+        "prepublishOnly": "npm run build"
+    }
+}
