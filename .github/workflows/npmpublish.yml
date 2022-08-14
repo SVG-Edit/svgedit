@@ -13,10 +13,10 @@ jobs:
         with:
           node-version: 16.x
       - run: |
-        npm ci
-        npm run build --workspace=packages/svgcanvas
-        npm run lint
-        npm run test
+          npm ci
+          npm run build --workspace=packages/svgcanvas
+          npm run lint
+          npm run test
 
   publish-npm:
     needs: build

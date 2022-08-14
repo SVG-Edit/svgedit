@@ -20,7 +20,7 @@ SVGEdit is the most popular open source SVG editor. It was started more than 13 
 
 Please let us know with an issue or a discussions if you wish to contribute.
 
-## I want to use SVGEDit
+## I want to use SVGEdit
 
 Thanks to **Netlify**, you can access the following builds from your favorite browser:
 
@@ -38,18 +38,19 @@ We recommand using the V7 version but for older browsers or some abandoned featu
 Additional tip: you may try a version released on NPM using unpkg for example with version 3.2.0:
 [https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
 
-## I want to use SVGEdit in my environment
+## I want to host SVGEdit in my environment
 
-If you want to run a local version of SVGEdit, please follow these instructions:
+If you want to host a local version of SVGEdit, please follow these instructions:
 
 1. Clone or copy the repository contents from github
 1. run `npm i` to install dependencies
-1. run `npm run start` to start a local server
-1. Use your browser to access `http://localhost:8000/src/editor/index.html`
+1. to test, you can run `npm run start` to start a local server
+1. and access `http://localhost:8000/src/editor/index.html` with a supported browser
+1. run `npm run build` to build a bundle that you can serve from your own web server.
 
 ## I want to contribute to SVGEdit
 
-Thanks!
+**Thanks!**
 
 SVG-Edit is made of two major components:
 
