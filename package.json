@@ -81,7 +81,7 @@
     ]
   },
   "dependencies": {
-    "@svgedit/svgcanvas": "7.1.5",
+    "@svgedit/svgcanvas": "7.1.6",
     "browser-fs-access": "0.31.0",
     "core-js": "3.24.1",
     "elix": "15.0.1",
@@ -124,7 +124,7 @@
     "remark-cli": "11.0.0",
     "remark-lint-ordered-list-marker-value": "3.1.1",
     "rimraf": "3.0.2",
-    "rollup": "2.77.2",
+    "rollup": "2.78.0",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-filesize": "9.1.2",
     "rollup-plugin-html": "0.2.1",
