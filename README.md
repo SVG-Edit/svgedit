@@ -44,6 +44,7 @@ If you want to host a local version of SVGEdit, please follow these instructions
 
 1. Clone or copy the repository contents from github
 1. run `npm i` to install dependencies
+1. run `npm run build --workspace @svgedit/svgcanvas`to build the svgcanvas dependency locally
 1. to test, you can run `npm run start` to start a local server
 1. and access `http://localhost:8000/src/editor/index.html` with a supported browser
 1. run `npm run build` to build a bundle that you can serve from your own web server.
