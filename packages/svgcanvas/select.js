@@ -106,7 +106,6 @@ export class Selector {
   * @returns {void}
   */
   resize (bbox) {
-    console.info(' -------------- RESIZE -----------------')
     const dataStorage = svgCanvas.getDataStorage()
     const selectedBox = this.selectorRect
     const mgr = selectorManager_
@@ -140,12 +139,8 @@ export class Selector {
     // loop and transform our bounding box until we reach our first rotation
     const tlist = selected.transform.baseVal
 
-    let m = transformListToTransform(tlist).matrix
-
-    // combines the parent transformation with that of the selected element
-    if (parentTransformationMatrix) {
-      m = matrixMultiply(parentTransformationMatrix, m)
-    }
+    // combines the parent transformation with that of the selected element if necessary
+    const m = parentTransformationMatrix ? matrixMultiply(parentTransformationMatrix, transformListToTransform(tlist).matrix) : transformListToTransform(tlist).matrix
 
     // This should probably be handled somewhere else, but for now
     // it keeps the selection box correctly positioned when zoomed
