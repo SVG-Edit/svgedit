@@ -8,7 +8,8 @@
 
 import { isWebkit } from '../../src/common/browser.js'
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
-import { transformListToTransform, transformBox, transformPoint } from './math.js'
+import { transformListToTransform, transformBox, transformPoint, matrixMultiply } from './math.js'
+import { NS } from './namespaces'
 
 let svgCanvas
 let selectorManager_ // A Singleton
@@ -105,6 +106,7 @@ export class Selector {
   * @returns {void}
   */
   resize (bbox) {
+    console.info(' -------------- RESIZE -----------------')
     const dataStorage = svgCanvas.getDataStorage()
     const selectedBox = this.selectorRect
     const mgr = selectorManager_
@@ -122,9 +124,28 @@ export class Selector {
       offset += 2 / zoom
     }
 
+    // find the transformations applied to the parent of the selected element
+    const svg = document.createElementNS(NS.SVG, 'svg')
+    let parentTransformationMatrix = svg.createSVGMatrix()
+    let currentElt = selected
+    while (currentElt.parentNode) {
+      if (currentElt.parentNode && currentElt.parentNode.tagName === 'g' && currentElt.parentNode.transform) {
+        if (currentElt.parentNode.transform.baseVal.numberOfItems) {
+          parentTransformationMatrix = matrixMultiply(transformListToTransform(selected.parentNode.transform.baseVal).matrix, parentTransformationMatrix)
+        }
+      }
+      currentElt = currentElt.parentNode
+    }
+
     // loop and transform our bounding box until we reach our first rotation
     const tlist = selected.transform.baseVal
-    const m = transformListToTransform(tlist).matrix
+
+    let m = transformListToTransform(tlist).matrix
+
+    // combines the parent transformation with that of the selected element
+    if (parentTransformationMatrix) {
+      m = matrixMultiply(parentTransformationMatrix, m)
+    }
 
     // This should probably be handled somewhere else, but for now
     // it keeps the selection box correctly positioned when zoomed
