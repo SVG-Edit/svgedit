@@ -139,7 +139,7 @@ extensionDirs.forEach((extensionDir) => {
         }),
         commonjs({ exclude: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
         dynamicImportVars({ include: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
-        babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }),
+        babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] })
       ]
     }
   )

@@ -1,5 +1,6 @@
 {
   "name": "svgedit",
+  "type": "module",
   "version": "7.2.0",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/Editor.js",
