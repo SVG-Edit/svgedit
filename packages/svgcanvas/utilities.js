@@ -962,7 +962,15 @@ export const getStrokedBBox = (elems, addSVGElementsFromJson, pathActions) => {
 export const getVisibleElements = (parentElement) => {
   if (!parentElement) {
     const svgContent = svgCanvas.getSvgContent()
-    parentElement = svgContent.children[0] // Prevent layers from being included
+    for (let i = 0; i < svgContent.children.length; i++) {
+      if (svgContent.children[i].getBBox) {
+        const bbox = svgContent.children[i].getBBox()
+        if (bbox.width !== 0 && bbox.height !== 0 && bbox.width !== 0 && bbox.height !== 0) {
+          parentElement = svgContent.children[i]
+          break
+        }
+      }
+    }
   }
 
   const contentElems = []
