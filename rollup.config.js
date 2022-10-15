@@ -13,7 +13,6 @@ import url from '@rollup/plugin-url' // for XML/SVG files
 import html from 'rollup-plugin-html'
 
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars'
-import { terser } from 'rollup-plugin-terser'
 // import progress from 'rollup-plugin-progress';
 import filesize from 'rollup-plugin-filesize'
 
@@ -105,7 +104,6 @@ const config = [{
     commonjs(),
     dynamicImportVars({ include: 'src/editor/locale.js' }),
     babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }), // exclude core-js to avoid circular dependencies.
-    terser({ keep_fnames: true }), // keep_fnames is needed to avoid an error when calling extensions.
     filesize()
   ]
 }]
@@ -142,7 +140,6 @@ extensionDirs.forEach((extensionDir) => {
         commonjs({ exclude: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
         dynamicImportVars({ include: `src/editor/extensions/${extensionName}/${extensionName}.js` }),
         babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }),
-        terser({ keep_fnames: true })
       ]
     }
   )
