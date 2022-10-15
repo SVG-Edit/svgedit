@@ -28,18 +28,7 @@ const config = [{
       browser: true,
       preferBuiltins: false
     }),
-    commonjs({
-      // explicitely list packages to increase performance
-      include: [
-        '**/node_modules/rgbcolor/**/*',
-        '**/node_modules/raf/**/*',
-        '**/node_modules/font-family-papandreou/**/*',
-        '**/node_modules/svgpath/**/*',
-        '**/node_modules/cssesc/**/*',
-        '**/node_modules/core-js/**/*',
-        '**/node_modules/performance-now/**/*'
-      ]
-    }),
+    commonjs(),
     babel({ babelHelpers: 'bundled', exclude: [/\/core-js\//] }), // exclude core-js to avoid circular dependencies.
     filesize()
   ]

@@ -1,6 +1,5 @@
 {
     "name": "@svgedit/svgcanvas",
-    "type": "module",
     "version": "7.1.6",
     "description": "SVG Canvas",
     "main": "dist/svgcanvas.js",
