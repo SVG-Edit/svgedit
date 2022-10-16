@@ -63,7 +63,8 @@ export default {
       if (file.type.includes('svg')) {
         reader = new FileReader()
         reader.onloadend = (ev) => {
-          const newElement = this.svgCanvas.importSvgString(ev.target.result, true)
+          // imgImport.shiftKey (shift key pressed or not) will determine if import should preserve dimension)
+          const newElement = this.svgCanvas.importSvgString(ev.target.result, imgImport.shiftKey)
           this.svgCanvas.alignSelectedElements('m', 'page')
           this.svgCanvas.alignSelectedElements('c', 'page')
           // highlight imported element, otherwise we get strange empty selectbox
@@ -263,7 +264,8 @@ export default {
         $click($id('tool_open'), clickOpen.bind(this))
         $click($id('tool_save'), clickSave.bind(this, 'save'))
         $click($id('tool_save_as'), clickSave.bind(this, 'saveas'))
-        $click($id('tool_import'), () => imgImport.click())
+        // tool_import pressed with shiftKey will not scale the SVG
+        $click($id('tool_import'), (ev) => { imgImport.shiftKey = ev.shiftKey; imgImport.click() })
       }
     }
   }

@@ -617,6 +617,7 @@ const setSvgString = (xmlString, preventUndo) => {
  * `<use>` to the current layer.
  * @function module:svgcanvas.SvgCanvas#importSvgString
  * @param {string} xmlString - The SVG as XML text.
+ * @param {boolean} preserveDimension - A boolean to force to preserve initial dimension of the imported svg (force svgEdit don't apply a transformation on the imported svg)
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {null|Element} This function returns null if the import was unsuccessful, or the element otherwise.
  * @todo
@@ -626,7 +627,7 @@ const setSvgString = (xmlString, preventUndo) => {
  * arbitrary transform lists, but makes some assumptions about how the transform list
  * was obtained
  */
-const importSvgString = (xmlString) => {
+const importSvgString = (xmlString, preserveDimension) => {
   const dataStorage = svgCanvas.getDataStorage()
   let j
   let ts
@@ -731,8 +732,10 @@ const importSvgString = (xmlString) => {
     batchCmd.addSubCommand(new InsertElementCommand(useEl))
     svgCanvas.clearSelection()
 
-    useEl.setAttribute('transform', ts)
-    recalculateDimensions(useEl)
+    if (!preserveDimension) {
+      useEl.setAttribute('transform', ts)
+      recalculateDimensions(useEl)
+    }
     dataStorage.put(useEl, 'symbol', symbol)
     dataStorage.put(useEl, 'ref', symbol)
     svgCanvas.addToSelection([useEl])
