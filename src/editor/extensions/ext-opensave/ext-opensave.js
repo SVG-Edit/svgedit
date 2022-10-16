@@ -63,7 +63,7 @@ export default {
       if (file.type.includes('svg')) {
         reader = new FileReader()
         reader.onloadend = (ev) => {
-          const newElement = this.svgCanvas.importSvgString(ev.target.result, true)
+          const newElement = this.svgCanvas.importSvgString(ev.target.result)
           this.svgCanvas.alignSelectedElements('m', 'page')
           this.svgCanvas.alignSelectedElements('c', 'page')
           // highlight imported element, otherwise we get strange empty selectbox
