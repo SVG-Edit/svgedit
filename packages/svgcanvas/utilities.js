@@ -974,13 +974,15 @@ export const getVisibleElements = (parentElement) => {
   }
 
   const contentElems = []
-  const children = parentElement.children
-  // eslint-disable-next-line array-callback-return
-  Array.from(children, (elem) => {
-    if (elem.getBBox) {
-      contentElems.push(elem)
-    }
-  })
+  if (parentElement) {
+    const children = parentElement.children
+    // eslint-disable-next-line array-callback-return
+    Array.from(children, (elem) => {
+      if (elem.getBBox) {
+        contentElems.push(elem)
+      }
+    })
+  }
   return contentElems.reverse()
 }
 
