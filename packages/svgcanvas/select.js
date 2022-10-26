@@ -161,92 +161,93 @@ export class Selector {
       }
     }
 
-    // apply the transforms
-    const l = bbox.x; const t = bbox.y; const w = bbox.width; const h = bbox.height
-    // bbox = {x: l, y: t, width: w, height: h}; // Not in use
+    if (bbox) {
+      // apply the transforms
+      const l = bbox.x; const t = bbox.y; const w = bbox.width; const h = bbox.height
+      // bbox = {x: l, y: t, width: w, height: h}; // Not in use
 
-    // we need to handle temporary transforms too
-    // if skewed, get its transformed box, then find its axis-aligned bbox
+      // we need to handle temporary transforms too
+      // if skewed, get its transformed box, then find its axis-aligned bbox
 
-    // *
-    offset *= zoom
+      // *
+      offset *= zoom
 
-    const nbox = transformBox(l * zoom, t * zoom, w * zoom, h * zoom, m)
-    const { aabox } = nbox
-    let nbax = aabox.x - offset
-    let nbay = aabox.y - offset
-    let nbaw = aabox.width + (offset * 2)
-    let nbah = aabox.height + (offset * 2)
+      const nbox = transformBox(l * zoom, t * zoom, w * zoom, h * zoom, m)
+      const { aabox } = nbox
+      let nbax = aabox.x - offset
+      let nbay = aabox.y - offset
+      let nbaw = aabox.width + (offset * 2)
+      let nbah = aabox.height + (offset * 2)
 
-    // now if the shape is rotated, un-rotate it
-    const cx = nbax + nbaw / 2
-    const cy = nbay + nbah / 2
+      // now if the shape is rotated, un-rotate it
+      const cx = nbax + nbaw / 2
+      const cy = nbay + nbah / 2
 
-    const angle = getRotationAngle(selected)
-    if (angle) {
-      const rot = svgCanvas.getSvgRoot().createSVGTransform()
-      rot.setRotate(-angle, cx, cy)
-      const rotm = rot.matrix
-      nbox.tl = transformPoint(nbox.tl.x, nbox.tl.y, rotm)
-      nbox.tr = transformPoint(nbox.tr.x, nbox.tr.y, rotm)
-      nbox.bl = transformPoint(nbox.bl.x, nbox.bl.y, rotm)
-      nbox.br = transformPoint(nbox.br.x, nbox.br.y, rotm)
+      const angle = getRotationAngle(selected)
+      if (angle) {
+        const rot = svgCanvas.getSvgRoot().createSVGTransform()
+        rot.setRotate(-angle, cx, cy)
+        const rotm = rot.matrix
+        nbox.tl = transformPoint(nbox.tl.x, nbox.tl.y, rotm)
+        nbox.tr = transformPoint(nbox.tr.x, nbox.tr.y, rotm)
+        nbox.bl = transformPoint(nbox.bl.x, nbox.bl.y, rotm)
+        nbox.br = transformPoint(nbox.br.x, nbox.br.y, rotm)
 
-      // calculate the axis-aligned bbox
-      const { tl } = nbox
-      let minx = tl.x
-      let miny = tl.y
-      let maxx = tl.x
-      let maxy = tl.y
+        // calculate the axis-aligned bbox
+        const { tl } = nbox
+        let minx = tl.x
+        let miny = tl.y
+        let maxx = tl.x
+        let maxy = tl.y
 
-      const { min, max } = Math
+        const { min, max } = Math
 
-      minx = min(minx, min(nbox.tr.x, min(nbox.bl.x, nbox.br.x))) - offset
-      miny = min(miny, min(nbox.tr.y, min(nbox.bl.y, nbox.br.y))) - offset
-      maxx = max(maxx, max(nbox.tr.x, max(nbox.bl.x, nbox.br.x))) + offset
-      maxy = max(maxy, max(nbox.tr.y, max(nbox.bl.y, nbox.br.y))) + offset
+        minx = min(minx, min(nbox.tr.x, min(nbox.bl.x, nbox.br.x))) - offset
+        miny = min(miny, min(nbox.tr.y, min(nbox.bl.y, nbox.br.y))) - offset
+        maxx = max(maxx, max(nbox.tr.x, max(nbox.bl.x, nbox.br.x))) + offset
+        maxy = max(maxy, max(nbox.tr.y, max(nbox.bl.y, nbox.br.y))) + offset
 
-      nbax = minx
-      nbay = miny
-      nbaw = (maxx - minx)
-      nbah = (maxy - miny)
+        nbax = minx
+        nbay = miny
+        nbaw = (maxx - minx)
+        nbah = (maxy - miny)
+      }
+
+      const dstr = 'M' + nbax + ',' + nbay +
+        ' L' + (nbax + nbaw) + ',' + nbay +
+        ' ' + (nbax + nbaw) + ',' + (nbay + nbah) +
+        ' ' + nbax + ',' + (nbay + nbah) + 'z'
+
+      const xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : ''
+
+      // TODO(codedread): Is this needed?
+      //  if (selected === selectedElements[0]) {
+      this.gripCoords = {
+        nw: [nbax, nbay],
+        ne: [nbax + nbaw, nbay],
+        sw: [nbax, nbay + nbah],
+        se: [nbax + nbaw, nbay + nbah],
+        n: [nbax + (nbaw) / 2, nbay],
+        w: [nbax, nbay + (nbah) / 2],
+        e: [nbax + nbaw, nbay + (nbah) / 2],
+        s: [nbax + (nbaw) / 2, nbay + nbah]
+      }
+      selectedBox.setAttribute('d', dstr)
+      this.selectorGroup.setAttribute('transform', xform)
+      Object.entries(this.gripCoords).forEach(([dir, coords]) => {
+        selectedGrips[dir].setAttribute('cx', coords[0])
+        selectedGrips[dir].setAttribute('cy', coords[1])
+      })
+
+      // we want to go 20 pixels in the negative transformed y direction, ignoring scale
+      mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw) / 2)
+      mgr.rotateGripConnector.setAttribute('y1', nbay)
+      mgr.rotateGripConnector.setAttribute('x2', nbax + (nbaw) / 2)
+      mgr.rotateGripConnector.setAttribute('y2', nbay - (gripRadius * 5))
+
+      mgr.rotateGrip.setAttribute('cx', nbax + (nbaw) / 2)
+      mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius * 5))
     }
-
-    const dstr = 'M' + nbax + ',' + nbay +
-      ' L' + (nbax + nbaw) + ',' + nbay +
-      ' ' + (nbax + nbaw) + ',' + (nbay + nbah) +
-      ' ' + nbax + ',' + (nbay + nbah) + 'z'
-
-    const xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : ''
-
-    // TODO(codedread): Is this needed?
-    //  if (selected === selectedElements[0]) {
-    this.gripCoords = {
-      nw: [nbax, nbay],
-      ne: [nbax + nbaw, nbay],
-      sw: [nbax, nbay + nbah],
-      se: [nbax + nbaw, nbay + nbah],
-      n: [nbax + (nbaw) / 2, nbay],
-      w: [nbax, nbay + (nbah) / 2],
-      e: [nbax + nbaw, nbay + (nbah) / 2],
-      s: [nbax + (nbaw) / 2, nbay + nbah]
-    }
-    selectedBox.setAttribute('d', dstr)
-    this.selectorGroup.setAttribute('transform', xform)
-    Object.entries(this.gripCoords).forEach(([dir, coords]) => {
-      selectedGrips[dir].setAttribute('cx', coords[0])
-      selectedGrips[dir].setAttribute('cy', coords[1])
-    })
-
-    // we want to go 20 pixels in the negative transformed y direction, ignoring scale
-    mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw) / 2)
-    mgr.rotateGripConnector.setAttribute('y1', nbay)
-    mgr.rotateGripConnector.setAttribute('x2', nbax + (nbaw) / 2)
-    mgr.rotateGripConnector.setAttribute('y2', nbay - (gripRadius * 5))
-
-    mgr.rotateGrip.setAttribute('cx', nbax + (nbaw) / 2)
-    mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius * 5))
-    // }
   }
 
   // STATIC methods
