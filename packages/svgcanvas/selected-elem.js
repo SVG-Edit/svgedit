@@ -972,7 +972,7 @@ const convertToGroup = elem => {
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol')
 
-    ts = $elem.getAttribute('transform')
+    ts = $elem.getAttribute('transform') || ''
     const pos = {
       x: Number($elem.getAttribute('x')),
       y: Number($elem.getAttribute('y'))

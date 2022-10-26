@@ -359,7 +359,10 @@ export const recalculateDimensions = (selected) => {
             childTlist.appendItem(scale)
             childTlist.appendItem(translateOrigin)
           } // not rotated
-          batchCmd.addSubCommand(recalculateDimensions(child))
+          const recalculatedDimensions = recalculateDimensions(child)
+          if (recalculatedDimensions) {
+            batchCmd.addSubCommand(recalculatedDimensions)
+          }
           svgCanvas.setStartTransform(oldStartTransform)
         } // element
       } // for each child
@@ -420,7 +423,10 @@ export const recalculateDimensions = (selected) => {
               } else {
                 childTlist.appendItem(newxlate)
               }
-              batchCmd.addSubCommand(recalculateDimensions(child))
+              const recalculatedDimensions = recalculateDimensions(child)
+              if (recalculatedDimensions) {
+                batchCmd.addSubCommand(recalculatedDimensions)
+              }
               // If any <use> have this group as a parent and are
               // referencing this child, then impose a reverse translate on it
               // so that when it won't get double-translated
@@ -464,7 +470,10 @@ export const recalculateDimensions = (selected) => {
           childTlist.clear()
           childTlist.appendItem(e2m, 0)
 
-          batchCmd.addSubCommand(recalculateDimensions(child))
+          const recalculatedDimensions = recalculateDimensions(child)
+          if (recalculatedDimensions) {
+            batchCmd.addSubCommand(recalculatedDimensions)
+          }
           svgCanvas.setStartTransform(oldStartTransform)
 
           // Convert stroke
@@ -544,7 +553,10 @@ export const recalculateDimensions = (selected) => {
               childTlist.appendItem(newxlate)
             }
 
-            batchCmd.addSubCommand(recalculateDimensions(child))
+            const recalculatedDimensions = recalculateDimensions(child)
+            if (recalculatedDimensions) {
+              batchCmd.addSubCommand(recalculatedDimensions)
+            }
             svgCanvas.setStartTransform(oldStartTransform)
           }
         }

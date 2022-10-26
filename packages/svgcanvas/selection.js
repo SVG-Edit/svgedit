@@ -324,7 +324,7 @@ const getIntersectionListMethod = (rect) => {
     if (!rubberBBox.width) {
       continue
     }
-    if (rectsIntersect(rubberBBox, curBBoxes[i].bbox)) {
+    if (curBBoxes[i].bbox && rectsIntersect(rubberBBox, curBBoxes[i].bbox)) {
       resultList.push(curBBoxes[i].elem)
     }
   }
