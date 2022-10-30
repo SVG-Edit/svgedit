@@ -149,7 +149,6 @@ const mouseMoveEvent = (evt) => {
       preserveAspectRatio = aspectRatioAttrArr.length && ['xMinYMin', 'xMidYMin', 'xMaxYMin', 'xMinYMid', 'xMidYMid', 'xMaxYMid', 'xMinYMax', 'xMidYMax', 'xMaxYMax'].includes(aspectRatioAttrArr[0])
     }
   }
-  
   let tlist
   switch (svgCanvas.getCurrentMode()) {
     case 'select': {
