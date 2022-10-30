@@ -141,8 +141,14 @@ const mouseMoveEvent = (evt) => {
     y = snapToGrid(y)
   }
 
-  const aspectRatioAttr = selected.getAttribute('preserveAspectRatio').split(' ')
-  const preserveAspectRatio = ['xMinYMin', 'xMidYMin', 'xMaxYMin', 'xMinYMid', 'xMidYMid', 'xMaxYMid', 'xMinYMax', 'xMidYMax', 'xMaxYMax'].includes(aspectRatioAttr[0])
+  let preserveAspectRatio = false
+  if (selected) {
+    const aspectRatioAttr = selected.getAttribute('preserveAspectRatio')
+    if (aspectRatioAttr) {
+      const aspectRatioAttrArr = aspectRatioAttr.split(' ')
+      preserveAspectRatio = aspectRatioAttrArr.length && ['xMinYMin', 'xMidYMin', 'xMaxYMin', 'xMinYMid', 'xMidYMid', 'xMaxYMid', 'xMinYMax', 'xMidYMax', 'xMaxYMax'].includes(aspectRatioAttrArr[0])
+    }
+  }
   
   let tlist
   switch (svgCanvas.getCurrentMode()) {
