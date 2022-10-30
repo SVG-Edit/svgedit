@@ -141,6 +141,9 @@ const mouseMoveEvent = (evt) => {
     y = snapToGrid(y)
   }
 
+  const aspectRatioAttr = selected.getAttribute('preserveAspectRatio').split(' ')
+  const preserveAspectRatio = ['xMinYMin', 'xMidYMin', 'xMaxYMin', 'xMinYMid', 'xMidYMid', 'xMaxYMid', 'xMinYMax', 'xMidYMax', 'xMaxYMax'].includes(aspectRatioAttr[0])
+  
   let tlist
   switch (svgCanvas.getCurrentMode()) {
     case 'select': {
@@ -277,7 +280,7 @@ const mouseMoveEvent = (evt) => {
       }
 
       translateOrigin.setTranslate(-(left + tx), -(top + ty))
-      if (evt.shiftKey) {
+      if (evt.shiftKey || preserveAspectRatio) {
         if (sx === 1) {
           sx = sy
         } else { sy = sx }
@@ -343,7 +346,7 @@ const mouseMoveEvent = (evt) => {
     case 'square':
     case 'rect':
     case 'image': {
-      const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey
+      const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey || preserveAspectRatio
       let
         w = Math.abs(x - svgCanvas.getStartX())
       let h = Math.abs(y - svgCanvas.getStartY())
