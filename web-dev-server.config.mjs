@@ -2,7 +2,6 @@ import { fromRollup } from '@web/dev-server-rollup'
 import rollupCommonjs from '@rollup/plugin-commonjs'
 import rollupHtml from 'rollup-plugin-html'
 
-const commonjs = fromRollup(rollupCommonjs)
 const html = fromRollup(rollupHtml)
 
 export default {
@@ -28,18 +27,6 @@ export default {
         'instrumented/editor/templates/*.html',
         'instrumented/editor/dialogs/*.html',
         'instrumented/editor/extensions/*/*.html'
-      ]
-    }),
-    commonjs({
-      // explicitely list packages to increase performance
-      include: [
-        '**/node_modules/rgbcolor/**/*',
-        '**/node_modules/raf/**/*',
-        '**/node_modules/font-family-papandreou/**/*',
-        '**/node_modules/svgpath/**/*',
-        '**/node_modules/cssesc/**/*',
-        '**/node_modules/core-js/**/*',
-        '**/node_modules/performance-now/**/*'
       ]
     })
   ]
