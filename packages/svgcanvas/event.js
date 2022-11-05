@@ -277,7 +277,9 @@ const mouseMoveEvent = (evt) => {
       }
 
       translateOrigin.setTranslate(-(left + tx), -(top + ty))
-      if (evt.shiftKey) {
+      // For images, we maintain aspect ratio by default and relax when shift pressed
+      const maintainAspectRatio = (selected.tagName !== 'image' && evt.shiftKey) || (selected.tagName === 'image' && !evt.shiftKey)
+      if (maintainAspectRatio) {
         if (sx === 1) {
           sx = sy
         } else { sy = sx }
@@ -343,12 +345,16 @@ const mouseMoveEvent = (evt) => {
     case 'square':
     case 'rect':
     case 'image': {
-      const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey
+      // For images, we maintain aspect ratio by default and relax when shift pressed
+      const maintainAspectRatio = (svgCanvas.getCurrentMode() === 'square') ||
+        (svgCanvas.getCurrentMode() === 'image' && !evt.shiftKey) ||
+        (svgCanvas.getCurrentMode() !== 'image' && evt.shiftKey)
+
       let
         w = Math.abs(x - svgCanvas.getStartX())
       let h = Math.abs(y - svgCanvas.getStartY())
       let newX; let newY
-      if (square) {
+      if (maintainAspectRatio) {
         w = h = Math.max(w, h)
         newX = svgCanvas.getStartX() < x ? svgCanvas.getStartX() : svgCanvas.getStartX() - w
         newY = svgCanvas.getStartY() < y ? svgCanvas.getStartY() : svgCanvas.getStartY() - h
