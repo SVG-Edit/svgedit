@@ -1,5 +1,4 @@
 import { fromRollup } from '@web/dev-server-rollup'
-import rollupCommonjs from '@rollup/plugin-commonjs'
 import rollupHtml from 'rollup-plugin-html'
 
 const html = fromRollup(rollupHtml)

@@ -4,7 +4,7 @@
       "@babel/env",
       {
         "useBuiltIns": "entry",
-        "corejs": "3.24"
+        "corejs": "3.26"
       }
     ]
   ]
