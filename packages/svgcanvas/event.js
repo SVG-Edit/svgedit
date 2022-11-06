@@ -24,6 +24,7 @@ const {
 } = hstry
 
 let svgCanvas = null
+let moveSelectionThresholdReached = false
 
 /**
 * @function module:undo.init
@@ -155,7 +156,14 @@ const mouseMoveEvent = (evt) => {
           dy = snapToGrid(dy)
         }
 
-        if (dx || dy) {
+        // Enable moving selection only if mouse has been moved at least 4 px in any direction
+        // This prevents objects from being accidentally moved when (initially) selected
+        const deltaThreshold = 4
+        const deltaThresholdReached = Math.abs(dx) > deltaThreshold || Math.abs(dy) > deltaThreshold
+        moveSelectionThresholdReached = moveSelectionThresholdReached || deltaThresholdReached
+        const moveEnabled = deltaThresholdReached || moveSelectionThresholdReached
+
+        if (moveEnabled) {
           selectedElements.forEach((el) => {
             if (el) {
               updateTransformList(svgRoot, el, dx, dy)
@@ -563,6 +571,7 @@ const mouseOutEvent = () => {
 * @returns {void}
 */
 const mouseUpEvent = (evt) => {
+  moveSelectionThresholdReached = false
   if (evt.button === 2) { return }
   if (!svgCanvas.getStarted()) { return }
 
