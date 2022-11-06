@@ -161,9 +161,8 @@ const mouseMoveEvent = (evt) => {
         const deltaThreshold = 4
         const deltaThresholdReached = Math.abs(dx) > deltaThreshold || Math.abs(dy) > deltaThreshold
         moveSelectionThresholdReached = moveSelectionThresholdReached || deltaThresholdReached
-        const moveEnabled = deltaThresholdReached || moveSelectionThresholdReached
 
-        if (moveEnabled) {
+        if (moveSelectionThresholdReached) {
           selectedElements.forEach((el) => {
             if (el) {
               updateTransformList(svgRoot, el, dx, dy)
