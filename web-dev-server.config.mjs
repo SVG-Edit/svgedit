@@ -2,7 +2,7 @@ import { fromRollup } from '@web/dev-server-rollup'
 import rollupBabel from '@rollup/plugin-babel'
 import rollupHtml from 'rollup-plugin-html'
 
-const html = fromRollup(rollupHtml) 
+const html = fromRollup(rollupHtml)
 const babel = fromRollup(rollupBabel)
 
 export default {
@@ -24,25 +24,25 @@ export default {
     }),
     babel({
       babelHelpers: 'bundled',
-      "env": {
-        "test": {
-          "compact": false,
-          "plugins": [
-            ["istanbul", {
+      env: {
+        test: {
+          compact: false,
+          plugins: [
+            ['istanbul', {
               exclude: [
                 'editor/jquery.min.js',
                 'editor/jgraduate/**',
                 'editor/react-extensions/react-test'
               ],
               include: [
-                "src/**",
-                "packages/svgcanvas/core/**",
-                "packages/svgcanvas/common/**"
+                'src/**',
+                'packages/svgcanvas/core/**',
+                'packages/svgcanvas/common/**'
               ]
             }]
           ]
         }
       }
-    }),
+    })
   ]
 }

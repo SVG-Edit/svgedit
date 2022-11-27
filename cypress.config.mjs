@@ -37,7 +37,7 @@ export default defineConfig({
     env: {
       codeCoverage: {
         exclude: 'cypress/**/*.*'
-      },
+      }
     },
     baseUrl: 'http://localhost:8000',
     excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*']
