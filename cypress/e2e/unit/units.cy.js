@@ -1,4 +1,4 @@
-import * as units from '../../../instrumented/svgcanvas/units.js'
+import * as units from '../../../src/svgcanvas/units.js'
 
 describe('units', function () {
   /**

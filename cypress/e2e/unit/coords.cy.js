@@ -1,6 +1,6 @@
-import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
-import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
-import * as coords from '../../../instrumented/svgcanvas/coords.js'
+import { NS } from '../../../src/svgcanvas/namespaces.js'
+import * as utilities from '../../../src/svgcanvas/utilities.js'
+import * as coords from '../../../src/svgcanvas/coords.js'
 
 describe('coords', function () {
   let elemId = 1

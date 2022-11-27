@@ -20,7 +20,7 @@
 */
 import SvgCanvas from '@svgedit/svgcanvas'
 import { jPickerDefaults, jPickerMethod } from './jQuery.jPicker.js'
-import { findPos } from '../../../common/util.js'
+import { findPos } from '@svgedit/svgcanvas/common/util.js'
 
 /**
  * @todo JFH: This jQuery plugin was adapted to work within a Web Component.

@@ -1,5 +1,5 @@
 export const visitAndApproveStorage = () => {
-  cy.visit('/instrumented/editor/index.html')
+  cy.visit('/src/editor/index.html')
   cy.get('#storage_ok').click()
 }
 

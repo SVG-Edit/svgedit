@@ -1,4 +1,4 @@
-import * as contextmenu from '../../../instrumented/editor/contextmenu.js'
+import * as contextmenu from '../../../src/editor/contextmenu.js'
 
 describe('contextmenu', function () {
   /**

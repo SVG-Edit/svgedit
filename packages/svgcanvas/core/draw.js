@@ -15,7 +15,7 @@ import {
 import {
   copyElem as utilCopyElem
 } from './copy-elem.js'
-import { getParentsUntil } from '../../src/common/util.js'
+import { getParentsUntil } from '../common/util.js'
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',')
 

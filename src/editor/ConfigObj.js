@@ -1,4 +1,4 @@
-import { mergeDeep } from '../common/util.js'
+import { mergeDeep } from '@svgedit/svgcanvas/common/util.js'
 
 /**
 * Escapes special characters in a regular expression.

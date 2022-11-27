@@ -1,5 +1,5 @@
 /* eslint-disable max-len, no-console */
-import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js'
+import SvgCanvas from '../../../src/svgcanvas/svgcanvas.js'
 
 describe('Basic Module', function () {
   // helper functions

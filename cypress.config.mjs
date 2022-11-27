@@ -12,7 +12,7 @@ export default defineConfig({
   e2e: {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
-    setupNodeEvents(on, config) {
+    setupNodeEvents (on, config) {
       // `on` is used to hook into various events Cypress emits
       // `config` is the resolved Cypress config
 
@@ -23,7 +23,7 @@ export default defineConfig({
       codeCoverageTask(on, config)
 
       on('task', {
-        readFileMaybe(filename) {
+        readFileMaybe (filename) {
           if (fs.existsSync(filename)) {
             return fs.readFileSync(filename, 'utf8')
           }
@@ -34,7 +34,12 @@ export default defineConfig({
 
       return config
     },
+    env: {
+      codeCoverage: {
+        exclude: 'cypress/**/*.*'
+      },
+    },
     baseUrl: 'http://localhost:8000',
     excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*']
-  },
+  }
 })
