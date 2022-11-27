@@ -1,7 +1,7 @@
-import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
-import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
-import * as coords from '../../../instrumented/svgcanvas/coords.js'
-import * as recalculate from '../../../instrumented/svgcanvas/recalculate.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import * as coords from '../../../packages/svgcanvas/core/coords.js'
+import * as recalculate from '../../../packages/svgcanvas/core/recalculate.js'
 
 describe('recalculate', function () {
   const root = document.createElement('div')

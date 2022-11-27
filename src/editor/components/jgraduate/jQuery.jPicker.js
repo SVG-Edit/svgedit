@@ -18,7 +18,7 @@
 /* eslint-disable max-len */
 import ColorValuePicker from './ColorValuePicker.js'
 import Slider from './Slider.js'
-import { findPos, mergeDeep } from '../../../common/util.js'
+import { findPos, mergeDeep } from '@svgedit/svgcanvas/common/util.js'
 
 /**
 * @external Math

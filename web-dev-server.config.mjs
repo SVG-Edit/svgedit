@@ -1,9 +1,9 @@
 import { fromRollup } from '@web/dev-server-rollup'
-import rollupCommonjs from '@rollup/plugin-commonjs'
+import rollupBabel from '@rollup/plugin-babel'
 import rollupHtml from 'rollup-plugin-html'
 
-const commonjs = fromRollup(rollupCommonjs)
 const html = fromRollup(rollupHtml)
+const babel = fromRollup(rollupBabel)
 
 export default {
   mimeTypes: {
@@ -11,11 +11,7 @@ export default {
     'src/editor/panels/*.html': 'js',
     'src/editor/templates/*.html': 'js',
     'src/editor/dialogs/*.html': 'js',
-    'src/editor/extensions/*/*.html': 'js',
-    'instrumented/editor/panels/*.html': 'js',
-    'instrumented/editor/templates/*.html': 'js',
-    'instrumented/editor/dialogs/*.html': 'js',
-    'instrumented/editor/extensions/*/*.html': 'js'
+    'src/editor/extensions/*/*.html': 'js'
   },
   plugins: [
     html({
@@ -23,24 +19,30 @@ export default {
         'src/editor/panels/*.html',
         'src/editor/templates/*.html',
         'src/editor/dialogs/*.html',
-        'src/editor/extensions/*/*.html',
-        'instrumented/editor/panels/*.html',
-        'instrumented/editor/templates/*.html',
-        'instrumented/editor/dialogs/*.html',
-        'instrumented/editor/extensions/*/*.html'
+        'src/editor/extensions/*/*.html'
       ]
     }),
-    commonjs({
-      // explicitely list packages to increase performance
-      include: [
-        '**/node_modules/rgbcolor/**/*',
-        '**/node_modules/raf/**/*',
-        '**/node_modules/font-family-papandreou/**/*',
-        '**/node_modules/svgpath/**/*',
-        '**/node_modules/cssesc/**/*',
-        '**/node_modules/core-js/**/*',
-        '**/node_modules/performance-now/**/*'
-      ]
+    babel({
+      babelHelpers: 'bundled',
+      env: {
+        test: {
+          compact: false,
+          plugins: [
+            ['istanbul', {
+              exclude: [
+                'editor/jquery.min.js',
+                'editor/jgraduate/**',
+                'editor/react-extensions/react-test'
+              ],
+              include: [
+                'src/**',
+                'packages/svgcanvas/core/**',
+                'packages/svgcanvas/common/**'
+              ]
+            }]
+          ]
+        }
+      }
     })
   ]
 }

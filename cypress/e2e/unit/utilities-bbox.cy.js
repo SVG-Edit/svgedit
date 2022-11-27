@@ -1,9 +1,9 @@
 import 'pathseg'
 
-import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
-import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
-import * as math from '../../../instrumented/svgcanvas/math.js'
-import * as path from '../../../instrumented/svgcanvas/path.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import * as math from '../../../packages/svgcanvas/core/math.js'
+import * as path from '../../../packages/svgcanvas/core/path.js'
 import setAssertionMethods from '../../support/assert-close.js'
 
 // eslint-disable-next-line

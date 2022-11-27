@@ -29,8 +29,8 @@ import {
   transformListToTransform
 } from './math.js'
 import { recalculateDimensions } from './recalculate.js'
-import { isGecko } from '../../src/common/browser.js'
-import { getParents } from '../../src/common/util.js'
+import { isGecko } from '../common/browser.js'
+import { getParents } from '../common/util.js'
 
 const {
   MoveElementCommand,

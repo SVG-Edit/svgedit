@@ -15,7 +15,7 @@ import {
 } from './math.js'
 import {
   mergeDeep
-} from '../../src/common/util.js'
+} from '../common/util.js'
 
 let svgCanvas
 

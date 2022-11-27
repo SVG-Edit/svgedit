@@ -1,9 +1,9 @@
 /* eslint-disable max-len, no-console */
 import 'pathseg'
 
-import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
-import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
-import * as math from '../../../instrumented/svgcanvas/math.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import * as math from '../../../packages/svgcanvas/core/math.js'
 
 describe('utilities performance', function () {
   let currentLayer; let groupWithMatrixTransform; let textWithMatrixTransform

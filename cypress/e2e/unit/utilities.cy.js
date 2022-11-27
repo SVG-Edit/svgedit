@@ -1,5 +1,5 @@
-import * as utilities from '../../../instrumented/svgcanvas/utilities.js'
-import { NS } from '../../../instrumented/svgcanvas/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
 
 describe('utilities', function () {
   /**

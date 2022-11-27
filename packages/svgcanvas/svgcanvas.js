@@ -9,36 +9,36 @@
  */
 import 'pathseg' // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
-import Paint from './paint.js'
-import * as pathModule from './path.js'
-import * as history from './history.js'
-import * as draw from './draw.js'
-import { init as pasteInit, pasteElementsMethod } from './paste-elem.js'
-import { init as touchInit } from './touch.js'
-import { svgRootElement } from './svgroot.js'
+import Paint from './core/paint.js'
+import * as pathModule from './core/path.js'
+import * as history from './core/history.js'
+import * as draw from './core/draw.js'
+import { init as pasteInit, pasteElementsMethod } from './core/paste-elem.js'
+import { init as touchInit } from './core/touch.js'
+import { svgRootElement } from './core/svgroot.js'
 import {
   init as undoInit,
   changeSelectedAttributeNoUndoMethod,
   changeSelectedAttributeMethod
-} from './undo.js'
-import { init as selectionInit } from './selection.js'
-import { init as textActionsInit, textActionsMethod } from './text-actions.js'
-import { init as eventInit } from './event.js'
+} from './core/undo.js'
+import { init as selectionInit } from './core/selection.js'
+import { init as textActionsInit, textActionsMethod } from './core/text-actions.js'
+import { init as eventInit } from './core/event.js'
 import {
   init as jsonInit,
   getJsonFromSvgElements,
   addSVGElementsFromJson
-} from './json.js'
-import * as elemGetSet from './elem-get-set.js'
-import { init as selectedElemInit } from './selected-elem.js'
+} from './core/json.js'
+import * as elemGetSet from './core/elem-get-set.js'
+import { init as selectedElemInit } from './core/selected-elem.js'
 import {
   init as blurInit,
   setBlurNoUndo,
   setBlurOffsets,
   setBlur
-} from './blur-event.js'
-import { sanitizeSvg } from './sanitize.js'
-import { getReverseNS, NS } from './namespaces.js'
+} from './core/blur-event.js'
+import { sanitizeSvg } from './core/sanitize.js'
+import { getReverseNS, NS } from './core/namespaces.js'
 import {
   assignAttributes,
   cleanupElement,
@@ -65,28 +65,28 @@ import {
   getFeGaussianBlur,
   stringToHTML,
   insertChildAtIndex
-} from './utilities.js'
+} from './core/utilities.js'
 import {
   matrixMultiply,
   hasMatrixTransform,
   transformListToTransform
-} from './math.js'
-import { convertToNum, init as unitsInit, getTypeMap, isValidUnit, convertUnit } from './units.js'
-import { init as svgInit } from './svg-exec.js'
-import { remapElement, init as coordsInit } from './coords.js'
+} from './core/math.js'
+import { convertToNum, init as unitsInit, getTypeMap, isValidUnit, convertUnit } from './core/units.js'
+import { init as svgInit } from './core/svg-exec.js'
+import { remapElement, init as coordsInit } from './core/coords.js'
 import {
   recalculateDimensions,
   init as recalculateInit
-} from './recalculate.js'
-import { getSelectorManager, Selector, init as selectInit } from './select.js'
-import { clearSvgContentElementInit, init as clearInit } from './clear.js'
+} from './core/recalculate.js'
+import { getSelectorManager, Selector, init as selectInit } from './core/select.js'
+import { clearSvgContentElementInit, init as clearInit } from './core/clear.js'
 import {
   getClosest,
   getParents,
   mergeDeep
-} from '../../src/common/util.js'
+} from './common/util.js'
 
-import dataStorage from './dataStorage.js'
+import dataStorage from './core/dataStorage.js'
 
 const visElems =
   'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'

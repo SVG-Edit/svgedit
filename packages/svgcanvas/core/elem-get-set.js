@@ -13,7 +13,7 @@ import {
 import {
   convertToNum
 } from './units.js'
-import { getParents } from '../../src/common/util.js'
+import { getParents } from '../common/util.js'
 
 let svgCanvas = null
 

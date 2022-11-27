@@ -11,7 +11,7 @@ import {
 } from './utilities.js'
 import {
   isGecko
-} from '../../src/common/browser.js'
+} from '../common/browser.js'
 import {
   transformPoint, transformListToTransform
 } from './math.js'
