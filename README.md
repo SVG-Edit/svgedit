@@ -24,19 +24,19 @@ Please let us know with an issue or a discussions if you wish to contribute.
 
 Thanks to **Netlify**, you can access the following builds from your favorite browser:
 
-[Try SVGEdit V7 (master branch on github)](https://svgedit.netlify.app/editor/index.html)
-
-[Try SVGEdit V7 (latest published version on npm)](https://unpkg.com/svgedit@latest/dist/editor/index.html)
+- [Try SVGEdit V7 (master branch on github)](https://svgedit.netlify.app/editor/index.html)
+- [Try SVGEdit V7 (latest published version on npm)](https://unpkg.com/svgedit@latest/dist/editor/index.html)
 
 ### Prior V7:
 
 We recommand using the V7 version but for older browsers or some abandoned features, you may need to access to old versions of SVGEdit.
 
-[Try SVGEdit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
-[Try SVGEdit 5.1.0 here](https://unpkg.com/svgedit@5.1.0/editor/svg-editor.html)
+- [Try SVGEdit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
+- [Try SVGEdit 5.1.0 here](https://unpkg.com/svgedit@5.1.0/editor/svg-editor.html)
 
-Additional tip: you may try a version released on NPM using unpkg for example with version 3.2.0:
-[https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
+Additional tip: you may try a version released on NPM using unpkg for example with version 3.2.0
+
+- [https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
 
 ## I want to host SVGEdit in my environment
 
@@ -70,7 +70,7 @@ If you intend to contribute on a regular basis, let us know so we can add you in
 
 V7 is changing significantly the way to integrate and customize SVG-Edit. You can have a look to index.html to see how you can insert a div element into your HTML code and inject the editor into the div.
 
-```
+```html
 <head>
    <!-- You need to include the CSS for SVGEdit somewhere in your application -->
   <link href="./svgedit.css" rel="stylesheet" media="all"></link>
@@ -84,7 +84,7 @@ V7 is changing significantly the way to integrate and customize SVG-Edit. You ca
 <script type="module">
   /* You need to call the Editor and load it in the <div> */
   import Editor from './Editor.js'
-  /* for available options see the file `docs/tutorials/ConfigOptions.md */
+  /* for available options see the file `docs/tutorials/ConfigOptions.md` */
   const svgEditor = new Editor(document.getElementById('container'))
   /* initialize the Editor */
   svgEditor.init()
@@ -98,6 +98,7 @@ V7 is changing significantly the way to integrate and customize SVG-Edit. You ca
 </script>
 </html>
 ```
+
 ## I want to build my own svg editor
 You can just use the underlying canvas and use it in your application with your favorite framework.
 See example in the demos folder or the svg-edit-react repository. 
@@ -124,7 +125,7 @@ To activate:
 - "npm run build" from the extension folder "src/editor/react-extensions/react-test" in order to create the bundle for the extension.
 - modify "index.html" to activate the extension as a userExtensions
 
-```
+```javascript
 svgEditor.setConfig({
           allowInitialUserOverride: true,
           extensions: [],
@@ -142,4 +143,5 @@ svgEditor.setConfig({
 # Hosting
 
 SVGedit versions are deployed to:
+
 [![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)

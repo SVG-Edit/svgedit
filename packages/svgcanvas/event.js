@@ -24,6 +24,7 @@ const {
 } = hstry
 
 let svgCanvas = null
+let moveSelectionThresholdReached = false
 
 /**
 * @function module:undo.init
@@ -155,7 +156,13 @@ const mouseMoveEvent = (evt) => {
           dy = snapToGrid(dy)
         }
 
-        if (dx || dy) {
+        // Enable moving selection only if mouse has been moved at least 4 px in any direction
+        // This prevents objects from being accidentally moved when (initially) selected
+        const deltaThreshold = 4
+        const deltaThresholdReached = Math.abs(dx) > deltaThreshold || Math.abs(dy) > deltaThreshold
+        moveSelectionThresholdReached = moveSelectionThresholdReached || deltaThresholdReached
+
+        if (moveSelectionThresholdReached) {
           selectedElements.forEach((el) => {
             if (el) {
               updateTransformList(svgRoot, el, dx, dy)
@@ -277,7 +284,9 @@ const mouseMoveEvent = (evt) => {
       }
 
       translateOrigin.setTranslate(-(left + tx), -(top + ty))
-      if (evt.shiftKey) {
+      // For images, we maintain aspect ratio by default and relax when shift pressed
+      const maintainAspectRatio = (selected.tagName !== 'image' && evt.shiftKey) || (selected.tagName === 'image' && !evt.shiftKey)
+      if (maintainAspectRatio) {
         if (sx === 1) {
           sx = sy
         } else { sy = sx }
@@ -343,12 +352,16 @@ const mouseMoveEvent = (evt) => {
     case 'square':
     case 'rect':
     case 'image': {
-      const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey
+      // For images, we maintain aspect ratio by default and relax when shift pressed
+      const maintainAspectRatio = (svgCanvas.getCurrentMode() === 'square') ||
+        (svgCanvas.getCurrentMode() === 'image' && !evt.shiftKey) ||
+        (svgCanvas.getCurrentMode() !== 'image' && evt.shiftKey)
+
       let
         w = Math.abs(x - svgCanvas.getStartX())
       let h = Math.abs(y - svgCanvas.getStartY())
       let newX; let newY
-      if (square) {
+      if (maintainAspectRatio) {
         w = h = Math.max(w, h)
         newX = svgCanvas.getStartX() < x ? svgCanvas.getStartX() : svgCanvas.getStartX() - w
         newY = svgCanvas.getStartY() < y ? svgCanvas.getStartY() : svgCanvas.getStartY() - h
@@ -557,6 +570,7 @@ const mouseOutEvent = () => {
 * @returns {void}
 */
 const mouseUpEvent = (evt) => {
+  moveSelectionThresholdReached = false
   if (evt.button === 2) { return }
   if (!svgCanvas.getStarted()) { return }
 
