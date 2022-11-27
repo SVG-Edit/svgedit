@@ -1,7 +1,7 @@
 import 'pathseg'
-import { NS } from '../../../src/svgcanvas/namespaces.js'
-import * as draw from '../../../src/svgcanvas/draw.js'
-import * as units from '../../../src/svgcanvas/units.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as draw from '../../../packages/svgcanvas/core/draw.js'
+import * as units from '../../../packages/svgcanvas/core/units.js'
 
 describe('draw.Drawing', function () {
   const addOwnSpies = (obj) => {

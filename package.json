@@ -23,6 +23,7 @@
     "start": "web-dev-server --app-index src/editor/index.html --node-resolve",
     "start:iife": "web-dev-server --app-index dist/editor/iife-index.html --esbuild-target auto --open",
     "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q --headless && nyc report --reporter text-summary --reporter json-summary",
+    "cypress:open": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html 'cypress open'",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
     "build-docs-remove": "rimraf \"docs/jsdoc/*\"",

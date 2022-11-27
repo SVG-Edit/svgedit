@@ -1,5 +1,5 @@
-import { NS } from '../../../src/svgcanvas/namespaces.js'
-import * as math from '../../../src/svgcanvas/math.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as math from '../../../packages/svgcanvas/core/math.js'
 
 describe('math', function () {
   const svg = document.createElementNS(NS.SVG, 'svg')

@@ -1,6 +1,6 @@
-import { NS } from '../../../src/svgcanvas/namespaces.js'
-import * as utilities from '../../../src/svgcanvas/utilities.js'
-import * as history from '../../../src/svgcanvas/history.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import * as history from '../../../packages/svgcanvas/core/history.js'
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.

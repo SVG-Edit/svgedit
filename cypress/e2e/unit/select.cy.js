@@ -1,5 +1,5 @@
-import * as select from '../../../src/svgcanvas/select.js'
-import { NS } from '../../../src/svgcanvas/namespaces.js'
+import * as select from '../../../packages/svgcanvas/core/select.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
 
 describe('select', function () {
   const sandbox = document.createElement('div')

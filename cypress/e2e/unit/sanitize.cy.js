@@ -1,5 +1,5 @@
-import { NS } from '../../../src/svgcanvas/namespaces.js'
-import * as sanitize from '../../../src/svgcanvas/sanitize.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as sanitize from '../../../packages/svgcanvas/core/sanitize.js'
 
 describe('sanitize', function () {
   const svg = document.createElementNS(NS.SVG, 'svg')

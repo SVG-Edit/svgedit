@@ -1,10 +1,10 @@
 /* globals SVGPathSeg */
 import 'pathseg'
-import { NS } from '../../../src/svgcanvas/namespaces.js'
-import * as utilities from '../../../src/svgcanvas/utilities.js'
-import * as pathModule from '../../../src/svgcanvas/path.js'
-import { Path, Segment } from '../../../src/svgcanvas/path-method.js'
-import { init as unitsInit } from '../../../src/svgcanvas/units.js'
+import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
+import * as pathModule from '../../../packages/svgcanvas/core/path.js'
+import { Path, Segment } from '../../../packages/svgcanvas/core/path-method.js'
+import { init as unitsInit } from '../../../packages/svgcanvas/core/units.js'
 
 describe('path', function () {
   /**

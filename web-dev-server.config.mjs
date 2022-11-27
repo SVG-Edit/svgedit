@@ -26,6 +26,7 @@ export default {
       babelHelpers: 'bundled',
       "env": {
         "test": {
+          "compact": false,
           "plugins": [
             ["istanbul", {
               exclude: [

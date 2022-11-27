@@ -17,7 +17,7 @@ import {
 import * as draw from './draw.js'
 import * as pathModule from './path.js'
 import * as hstry from './history.js'
-import { findPos } from '../../src/common/util.js'
+import { findPos } from '../../svgcanvas/common/util.js'
 
 const {
   InsertElementCommand
