@@ -370,10 +370,7 @@ class TopPanel {
           $id(
             'tool_text_decoration_overline'
           ).pressed = this.editor.svgCanvas.hasTextDecoration('overline')
-          $id('tool_font_family').setAttribute(
-            'value',
-            elem.getAttribute('font-family')
-          )
+          $id('tool_font_family').value = elem.getAttribute('font-family')
           $id('tool_text_anchor').setAttribute(
             'value',
             elem.getAttribute('text-anchor')
