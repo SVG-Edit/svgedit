@@ -1,6 +1,6 @@
 export const visitAndApproveStorage = () => {
   cy.visit('/src/editor/index.html')
-  cy.get('#storage_ok').click({force: true})
+  cy.get('#storage_ok').click({ force: true })
 }
 
 export const openMainMenu = () => {
