@@ -10,7 +10,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
   "workspaces": [
     "packages/svgcanvas"
@@ -18,6 +18,7 @@
   "scripts": {
     "lint": "standard .",
     "test": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html cypress:run",
+    "prebuild": "npm run build --workspace=packages/svgcanvas",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
     "start": "web-dev-server --app-index src/editor/index.html --node-resolve",
