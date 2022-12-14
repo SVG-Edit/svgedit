@@ -71,7 +71,7 @@ class Editor extends EditorStartup {
     this.docprops = false
     this.configObj.preferences = false
     this.canvMenu = null
-    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'tr', 'uk', 'zh-CN', 'zh-TW']
+    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'sv', 'tr', 'uk', 'zh-CN', 'zh-TW']
     const modKey = (isMac() ? 'meta+' : 'ctrl+')
     this.shortcuts = [
       // Shortcuts not associated with buttons
