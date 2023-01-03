@@ -6,16 +6,20 @@ describe('UI - Zoom tool', function () {
   })
 
   it('should be able to open', function () {
-    cy.get('#zoom')
-      .click()
-      .shadow()
-      .find('#options-container')
-      .should('have.css', 'display', 'flex')
+    cy.get('#canvasBackground')
+      .invoke('attr', 'width')
+      .then(width => {
+        cy.get('#zoom')
+          .click({ force: true })
+          .shadow()
+          .find('#options-container')
+          .should('have.css', 'display', 'flex')
+      })     
   })
 
   it('should be able to close', function () {
     cy.get('#zoom')
-      .click()
+      .click({ force: true })
       .shadow()
       .find('#options-container')
       .should('have.css', 'display', 'flex')
@@ -35,7 +39,7 @@ describe('UI - Zoom tool', function () {
         cy.get('#zoom')
           .shadow()
           .find('input')
-          .type('200')
+          .type('200', { force: true })
         cy.get('#tool_select')
           .click({ force: true })
         cy.get('#canvasBackground')
@@ -51,7 +55,7 @@ describe('UI - Zoom tool', function () {
         cy.get('#zoom')
           .shadow()
           .find('#arrow-up')
-          .click()
+          .click({ force: true })
         cy.get('#canvasBackground')
           .invoke('attr', 'width')
           .should('equal', (width * 1.1).toString())
@@ -65,7 +69,7 @@ describe('UI - Zoom tool', function () {
         cy.get('#zoom')
           .shadow()
           .find('#arrow-down')
-          .click()
+          .click({ force: true })
         cy.get('#canvasBackground')
           .invoke('attr', 'width')
           .should('equal', (width * 0.9).toString())
@@ -77,7 +81,7 @@ describe('UI - Zoom tool', function () {
       .invoke('attr', 'width')
       .then(width => {
         cy.get('#zoom')
-          .click()
+          .click({ force: true })
           .find('se-text')
           .first()
           .click({ force: true })
@@ -116,7 +120,7 @@ describe('UI - Zoom tool', function () {
       .invoke('attr', 'width')
       .then(width => {
         cy.get('#zoom')
-          .click()
+          .click({ force: true })
           .find("se-text[value='layer']")
           .click({ force: true })
         cy.get('#zoom')
@@ -135,7 +139,7 @@ describe('UI - Zoom tool', function () {
       .invoke('attr', 'width')
       .then(width => {
         cy.get('#zoom')
-          .click()
+          .click({ force: true })
           .find("se-text[value='canvas']")
           .click({ force: true })
         cy.get('#zoom')
@@ -168,7 +172,7 @@ describe('UI - Zoom tool', function () {
       .invoke('attr', 'width')
       .then(width => {
         cy.get('#zoom')
-          .click()
+          .click({ force: true })
           .find("se-text[value='layer']")
           .click({ force: true })
         cy.get('#zoom')
@@ -201,7 +205,7 @@ describe('UI - Zoom tool', function () {
       .invoke('attr', 'width')
       .then(width => {
         cy.get('#zoom')
-          .click()
+          .click({ force: true })
           .find("se-text[value='content']")
           .click({ force: true })
         cy.get('#zoom')

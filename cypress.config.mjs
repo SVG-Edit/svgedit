@@ -40,7 +40,7 @@ export default defineConfig({
         exclude: 'cypress/**/*.*'
       }
     },
-    baseUrl: 'http://localhost:8000',
+    baseUrl: 'http://localhost:8888',
     excludeSpecPattern: ['**/__snapshots__/*', '**/__image_snapshots__/*']
   }
 })

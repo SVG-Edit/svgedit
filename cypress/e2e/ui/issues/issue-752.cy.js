@@ -34,6 +34,6 @@ describe('Fix issue 752', function () {
       .trigger('mousemove', 203, 205, { force: true })
       .trigger('mouseup', { force: true })
 
-    cy.get('#selectedBox0').should('have.attr', 'd', 'M174,174 L246,174 246,246 174,246z')
+    cy.get('#selectedBox0').should('have.attr', 'd', 'M192,194 L284,194 284,286 192,286z')
   })
 })

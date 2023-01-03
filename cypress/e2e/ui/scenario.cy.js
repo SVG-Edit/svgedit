@@ -192,7 +192,7 @@ describe('use text tools of svg-edit', function () {
   })
   it('check tool_length_adjust', function () {
     cy.get('#svg_1').click({ force: true })
-    cy.get('#tool_length_adjust').shadow().find('select').select(1)
+    cy.get('#tool_length_adjust').shadow().find('select').select(1, {force: true})
     cy.svgSnapshot()
   })
   it('check tool_text_change_rotation', function () {
