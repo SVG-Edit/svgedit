@@ -6,24 +6,15 @@ describe('UI - Zoom tool', function () {
   })
 
   it('should be able to open', function () {
-    cy.get('#canvasBackground')
-      .invoke('attr', 'width')
-      .then(width => {
-        cy.get('#zoom')
-          .click({ force: true })
-          .shadow()
-          .find('#options-container')
-          .should('have.css', 'display', 'flex')
-      })
-  })
-
-  it('should be able to close', function () {
-    cy.get('#zoom')
+    cy.get('#tool-wrapper > input')
       .click({ force: true })
+    cy.get('#zoom')
       .shadow()
       .find('#options-container')
       .should('have.css', 'display', 'flex')
+  })
 
+  it('should be able to close', function () {
     cy.get('#tool_select')
       .click({ force: true })
       .get('#zoom')
