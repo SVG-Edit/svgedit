@@ -14,7 +14,7 @@ describe('UI - Zoom tool', function () {
           .shadow()
           .find('#options-container')
           .should('have.css', 'display', 'flex')
-      })     
+      })
   })
 
   it('should be able to close', function () {
