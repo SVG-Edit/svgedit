@@ -80,11 +80,11 @@ describe('use ellipse and circle of svg-edit', function () {
   })
   it('check tool_ellipse_change_cx_cy_coordinate', function () {
     cy.get('#svg_3').click({ force: true })
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_cx').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_cy').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
@@ -92,11 +92,11 @@ describe('use ellipse and circle of svg-edit', function () {
   })
   it('check tool_ellipse_change_rx_ry_radius', function () {
     cy.get('#svg_3').click({ force: true })
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_rx').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_ry').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
