@@ -3,7 +3,7 @@
   <title>Layer 1</title>
   <circle cx="200" cy="200" fill="#FF0000" id="svg_1" r="100" stroke="#000000"/>
   <ellipse cx="220" cy="420" fill="#FF0000" filter="url(#svg_3_blur)" id="svg_3" rx="120" ry="120" stroke="#000000" transform="matrix(1 0 0 1 0 0) rotate(25 220 420)"/>
-  <ellipse cx="400" cy="250" fill="#ffff00" id="svg_2" opacity="0.5" rx="100" ry="50" stroke="#000000"/>
+  <ellipse cx="400" cy="250" fill="#ffff00" id="svg_2" opacity="0.5" rx="100" ry="50.5" stroke="#000000"/>
   <ellipse cx="420" cy="270" fill="#ffff00" id="svg_4" opacity="0.5" rx="100" ry="50" stroke="#000000"/>
  </g>
  <defs>

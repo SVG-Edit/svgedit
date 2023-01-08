@@ -9,6 +9,8 @@ export default defineConfig({
   pageLoadTimeout: 120000,
   includeShadowDom: true,
   scrollBehavior: false,
+  viewportWidth: 2048,
+  viewportHeight: 2048,
   e2e: {
     testIsolation: false,
     // We've imported your old cypress plugins here.
