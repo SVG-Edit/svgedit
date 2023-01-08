@@ -29,6 +29,7 @@ describe('use ellipse and circle of svg-edit', function () {
     cy.svgSnapshot()
   })
   it('check tool_fhellipse', function () {
+    cy.viewport(1024, 768)
     cy.get('#tool_fhellipse')
       .click({ force: true })
     cy.get('#svgcontent')

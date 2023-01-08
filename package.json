@@ -86,7 +86,7 @@
     "core-js": "3.27.1",
     "elix": "15.0.1",
     "html2canvas": "1.4.1",
-    "i18next": "22.4.7",
+    "i18next": "22.4.9",
     "jspdf": "2.5.1",
     "pathseg": "1.2.1",
     "regenerator-runtime": "0.13.11",
@@ -94,7 +94,7 @@
     "svg2pdf.js": "2.2.1"
   },
   "devDependencies": {
-    "@babel/core": "7.20.7",
+    "@babel/core": "7.20.12",
     "@babel/preset-env": "7.20.2",
     "@babel/register": "7.18.9",
     "@babel/runtime-corejs3": "7.20.7",
@@ -112,7 +112,7 @@
     "babel-plugin-transform-object-rest-spread": "7.0.0-beta.3",
     "core-js-bundle": "3.27.1",
     "cp-cli": "2.0.0",
-    "cypress": "12.2.0",
+    "cypress": "12.3.0",
     "cypress-multi-reporters": "1.6.2",
     "jamilih": "0.54.0",
     "jsdoc": "4.0.0",
