@@ -1,0 +1,40 @@
+{
+  "name": "@svgedit/react-test",
+  "version": "1.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "prebuild": "standard . && npm i",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SVG-Edit/svgedit.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "standard": {
+    "ignore": [
+      "dist"
+    ],
+    "globals": [
+      "cy",
+      "assert"
+    ],
+    "env": [
+      "mocha",
+      "browser"
+    ]
+  },
+  "author": "OptimistikSAS",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.18.6"
+  }
+}
