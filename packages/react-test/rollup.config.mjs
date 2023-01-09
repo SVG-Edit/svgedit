@@ -1,11 +1,13 @@
+/* eslint-env node */
+import rimraf from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
-import rimraf from 'rimraf'
 
 // remove existing distribution
 rimraf('./dist', () => console.info('recreating dist'))
+
 export default {
   input: 'src/index.js',
   output: {

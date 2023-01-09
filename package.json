@@ -13,7 +13,8 @@
     "node": ">=16"
   },
   "workspaces": [
-    "packages/svgcanvas"
+    "packages/svgcanvas",
+    "packages/react-test"
   ],
   "scripts": {
     "lint": "standard .",
