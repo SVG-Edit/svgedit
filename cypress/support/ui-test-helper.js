@@ -2,6 +2,8 @@ export const visitAndApproveStorage = () => {
   cy.clearLocalStorage()
   cy.visit('/src/editor/index.html')
   cy.get('#storage_ok').click({ force: true })
+  // move to English and snap mode (to correct potential differences between CI and local tests )
+  selectEnglishAndSnap()
 }
 
 export const openMainMenu = () => {
@@ -10,11 +12,12 @@ export const openMainMenu = () => {
 
 export const openEditorPreferences = () => {
   openMainMenu()
-  return cy.get('#tool_editor_prefs').click()
+  return cy.get('#tool_editor_prefs').click({ force: true })
 }
 
-export const selectEnglish = () => {
+export const selectEnglishAndSnap = () => {
   openEditorPreferences()
-  cy.get('#lang_select').select('en')
-  cy.get('#tool_prefs_save').click()
+  cy.get('#lang_select').select('en', { force: true })
+  cy.get('#grid_snapping_on').click({ force: true })
+  cy.get('#tool_prefs_save').click({ force: true })
 }

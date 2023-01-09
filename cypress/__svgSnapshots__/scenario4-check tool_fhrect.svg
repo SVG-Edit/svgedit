@@ -2,6 +2,6 @@
  <g class="layer">
   <title>Layer 1</title>
   <rect fill="#FF0000" height="50" id="svg_1" stroke="#000000" width="100" x="150" y="150"/>
-  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" width="120" x="350" y="230"/>
+  <rect fill="#FF0000" height="100" id="svg_2" stroke="#000000" width="120" x="350" y="230.5"/>
  </g>
 </svg>

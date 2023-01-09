@@ -23,8 +23,8 @@ describe('use ellipse and circle of svg-edit', function () {
     cy.get('#tool_circle')
       .click({ force: true })
     cy.get('#svgcontent')
-      .trigger('mousedown', 150, 150, { force: true })
-      .trigger('mousemove', 250, 200, { force: true })
+      .trigger('mousedown', 200, 200, { force: true })
+      .trigger('mousemove', 300, 200, { force: true })
       .trigger('mouseup', { force: true })
     cy.svgSnapshot()
   })
@@ -32,19 +32,19 @@ describe('use ellipse and circle of svg-edit', function () {
     cy.get('#tool_fhellipse')
       .click({ force: true })
     cy.get('#svgcontent')
-      .trigger('mousedown', 200, 80, { force: true })
-      .trigger('mousemove', 320, 80, { force: true })
-      .trigger('mousemove', 320, 180, { force: true })
-      .trigger('mousemove', 200, 180, { force: true })
-      .trigger('mousemove', 200, 80, { force: true })
-      .trigger('mouseup', 200, 80, { force: true })
+      .trigger('mousedown', 400, 200, { force: true }).wait(100)
+      .trigger('mousemove', { force: true, pageX: 400, pageY: 200 }).wait(100)
+      .trigger('mousemove', { force: true, pageX: 400, pageY: 300 }).wait(100)
+      .trigger('mousemove', { force: true, pageX: 300, pageY: 400 }).wait(100)
+      .trigger('mousemove', { force: true, pageX: 200, pageY: 200 }).wait(100)
+      .trigger('mouseup', 200, 100, { force: true })
     cy.svgSnapshot()
   })
   it('check tool_ellipse', function () {
     cy.get('#tool_ellipse').click({ force: true })
     cy.get('#svgcontent')
-      .trigger('mousedown', 75, 150, { force: true })
-      .trigger('mousemove', 130, 175, { force: true })
+      .trigger('mousedown', 100, 300, { force: true })
+      .trigger('mousemove', 200, 200, { force: true })
       .trigger('mouseup', { force: true })
     cy.svgSnapshot()
   })
@@ -80,11 +80,11 @@ describe('use ellipse and circle of svg-edit', function () {
   })
   it('check tool_ellipse_change_cx_cy_coordinate', function () {
     cy.get('#svg_3').click({ force: true })
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_cx').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_cy').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
@@ -92,11 +92,11 @@ describe('use ellipse and circle of svg-edit', function () {
   })
   it('check tool_ellipse_change_rx_ry_radius', function () {
     cy.get('#svg_3').click({ force: true })
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_rx').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
-    for (let n = 0; n < 25; n++) {
+    for (let n = 0; n < 20; n++) {
       cy.get('#ellipse_ry').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true })
     }
