@@ -121,7 +121,7 @@ class SeZoom extends HTMLElement {
     this.clickArea = this._shadowRoot.querySelector('#down')
     this.clickArea.addEventListener('click', this.handleClick.bind(this))
 
-    this.imgPath = svgEditor.configObj.curConfig.imgPath;
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
 
     this.downImageElement = this.clickArea.querySelector('img')
     this.downImageElement.setAttribute(
