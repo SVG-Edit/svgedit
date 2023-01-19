@@ -82,7 +82,7 @@ template.innerHTML = `
       <div id="arrow-down">▼</div>
     </div>
     <div id="down">
-      <img width="16" height="8" src="./images/arrow_down.svg"/>
+      <img width="16" height="8" src="arrow_down.svg"/>
     </div>
   </div>
   <div id="options-container" style="display:none">
@@ -121,12 +121,19 @@ class SeZoom extends HTMLElement {
     this.clickArea = this._shadowRoot.querySelector('#down')
     this.clickArea.addEventListener('click', this.handleClick.bind(this))
 
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
+
+    this.downImageElement = this.clickArea.querySelector('img')
+    this.downImageElement.setAttribute(
+      'src',
+      (this.imgPath + '/' + this.downImageElement.getAttribute('src'))
+    )
+
     // set src for imageElement
     this.imageElement = this._shadowRoot.querySelector('img')
     this.imageElement.setAttribute(
       'src',
-      (this.imgPath =
-        svgEditor.configObj.curConfig.imgPath + '/' + this.getAttribute('src'))
+      (this.imgPath + '/' + this.getAttribute('src'))
     )
 
     // hookup events for arrow buttons
