@@ -280,7 +280,7 @@ export class SeImgPropDialog extends HTMLElement {
   connectedCallback () {
     const onChangeHandler = (ev) => {
       if (!ev.target.selectedIndex) {
-        if (this.$canvasWidth.getAttribute('value') === 'fit') {
+        if (this.$canvasWidth.value === 'fit') {
           this.$canvasWidth.removeAttribute('disabled')
           this.$canvasWidth.value = 100
           this.$canvasHeight.removeAttribute('disabled')
