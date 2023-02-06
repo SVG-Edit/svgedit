@@ -30,7 +30,8 @@ const extensionDirs = getDirectories('src/editor/extensions')
 const dest = ['dist/editor']
 
 // remove existing distribution
-rimraf('./dist', () => console.info('recreating dist'))
+await rimraf('./dist')
+console.info('recreating dist')
 
 // config for svgedit core module
 const config = [{

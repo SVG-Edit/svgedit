@@ -10,7 +10,8 @@ import commonjs from '@rollup/plugin-commonjs'
 import filesize from 'rollup-plugin-filesize'
 
 // remove existing distribution
-rimraf('./dist', () => console.info('recreating dist'))
+await rimraf('./dist')
+console.info('recreating dist')
 
 // config for svgedit core module
 const config = [{
