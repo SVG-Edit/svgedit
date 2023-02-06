@@ -13,7 +13,7 @@ import {
   isGecko
 } from '../common/browser.js'
 import {
-  transformPoint, transformListToTransform
+  transformPoint, transformListToTransform, getTransformList
 } from './math.js'
 
 const {
@@ -228,7 +228,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       // we need to update the rotational transform attribute
       const angle = getRotationAngle(elem)
       if (angle !== 0 && attr !== 'transform') {
-        const tlist = elem.transform?.baseVal
+        const tlist = getTransformList(elem)
         let n = tlist.numberOfItems
         while (n--) {
           const xform = tlist.getItem(n)

@@ -11,7 +11,7 @@ import { shortFloat } from './units.js'
 import { ChangeElementCommand, BatchCommand } from './history.js'
 import {
   transformPoint, snapToAngle, rectsIntersect,
-  transformListToTransform
+  transformListToTransform, getTransformList
 } from './math.js'
 import {
   assignAttributes, getElement, getRotationAngle, snapToGrid,
@@ -876,7 +876,7 @@ export const pathActionsMethod = (function () {
     */
     resetOrientation (pth) {
       if (pth?.nodeName !== 'path') { return false }
-      const tlist = pth.transform.baseVal
+      const tlist = getTransformList(pth)
       const m = transformListToTransform(tlist).matrix
       tlist.clear()
       pth.removeAttribute('transform')

@@ -8,7 +8,7 @@ import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
 } from './utilities.js'
 import {
-  transformPoint, transformListToTransform, matrixMultiply, transformBox
+  transformPoint, transformListToTransform, matrixMultiply, transformBox, getTransformList
 } from './math.js'
 
 // this is how we map paths to our preferred relative segment types
@@ -98,7 +98,7 @@ export const remapElement = (selected, changes, m) => {
       changes.y = Number.parseFloat(changes.y) + tNew.f
     } else {
       // we just absorb all matrices into the element and don't do any remapping
-      const chlist = selected.transform.baseVal
+      const chlist = getTransformList(selected)
       const mt = svgCanvas.getSvgRoot().createSVGTransform()
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m))
       chlist.clear()
@@ -115,7 +115,7 @@ export const remapElement = (selected, changes, m) => {
     // Allow images to be inverted (give them matrix when flipped)
       if (elName === 'image' && (m.a < 0 || m.d < 0)) {
       // Convert to matrix
-        const chlist = selected.transform.baseVal
+        const chlist = getTransformList(selected)
         const mt = svgCanvas.getSvgRoot().createSVGTransform()
         mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m))
         chlist.clear()

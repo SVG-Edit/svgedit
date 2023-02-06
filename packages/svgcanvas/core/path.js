@@ -7,7 +7,7 @@
  */
 
 import { shortFloat } from './units.js'
-import { transformPoint } from './math.js'
+import { transformPoint, getTransformList } from './math.js'
 import {
   getRotationAngle, getBBox,
   getRefElem, findDefs,
@@ -511,7 +511,7 @@ export const recalcRotatedPath = () => {
 
   // now we must set the new transform to be rotated around the new center
   const Rnc = svgCanvas.getSvgRoot().createSVGTransform()
-  const tlist = currentPath.transform.baseVal
+  const tlist = getTransformList(currentPath)
   Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy)
   tlist.replaceItem(Rnc, 0)
 }

@@ -8,7 +8,7 @@
 
 import { isWebkit } from '../common/browser.js'
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
-import { transformListToTransform, transformBox, transformPoint, matrixMultiply } from './math.js'
+import { transformListToTransform, transformBox, transformPoint, matrixMultiply, getTransformList } from './math.js'
 import { NS } from './namespaces'
 
 let svgCanvas
@@ -130,14 +130,14 @@ export class Selector {
     while (currentElt.parentNode) {
       if (currentElt.parentNode && currentElt.parentNode.tagName === 'g' && currentElt.parentNode.transform) {
         if (currentElt.parentNode.transform.baseVal.numberOfItems) {
-          parentTransformationMatrix = matrixMultiply(transformListToTransform(selected.parentNode.transform.baseVal).matrix, parentTransformationMatrix)
+          parentTransformationMatrix = matrixMultiply(transformListToTransform(getTransformList(selected.parentNode)).matrix, parentTransformationMatrix)
         }
       }
       currentElt = currentElt.parentNode
     }
 
     // loop and transform our bounding box until we reach our first rotation
-    const tlist = selected.transform.baseVal
+    const tlist = getTransformList(selected)
 
     // combines the parent transformation with that of the selected element if necessary
     const m = parentTransformationMatrix ? matrixMultiply(parentTransformationMatrix, transformListToTransform(tlist).matrix) : transformListToTransform(tlist).matrix
