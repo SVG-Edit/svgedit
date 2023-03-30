@@ -70,6 +70,8 @@ If you intend to contribute on a regular basis, let us know so we can add you in
 
 V7 is changing significantly the way to integrate and customize SVG-Edit. You can have a look to index.html to see how you can insert a div element into your HTML code and inject the editor into the div.
 
+**Warning: This div can be positionned anywhere in the DOM but it must have a numeric width and a numeric height (i.e. not 'auto' which happens when the div is hidden)**
+
 ```html
 <head>
    <!-- You need to include the CSS for SVGEdit somewhere in your application -->
