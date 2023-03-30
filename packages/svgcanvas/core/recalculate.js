@@ -11,7 +11,7 @@ import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
 import {
   isIdentity, matrixMultiply, transformPoint, transformListToTransform,
-  hasMatrixTransform
+  hasMatrixTransform, getTransformList
 } from './math.js'
 import {
   mergeDeep
@@ -55,7 +55,7 @@ export const init = (canvas) => {
 */
 export const updateClipPath = (attr, tx, ty) => {
   const path = getRefElem(attr).firstChild
-  const cpXform = path.transform.baseVal
+  const cpXform = getTransformList(path)
   const newxlate = svgCanvas.getSvgRoot().createSVGTransform()
   newxlate.setTranslate(tx, ty)
 
@@ -75,7 +75,7 @@ export const recalculateDimensions = (selected) => {
   if (!selected) return null
   const svgroot = svgCanvas.getSvgRoot()
   const dataStorage = svgCanvas.getDataStorage()
-  const tlist = selected.transform?.baseVal
+  const tlist = getTransformList(selected)
   // remove any unnecessary transforms
   if (tlist?.numberOfItems > 0) {
     let k = tlist.numberOfItems
@@ -113,7 +113,6 @@ export const recalculateDimensions = (selected) => {
     selected.setAttribute('transform', '')
     // However, this still next line currently doesn't work at all in Chrome
     selected.removeAttribute('transform')
-    // selected.transform.baseVal.clear(); // Didn't help for Chrome bug
     return null
   }
 
@@ -296,7 +295,7 @@ export const recalculateDimensions = (selected) => {
         tx = 0
         ty = 0
         if (child.nodeType === 1) {
-          const childTlist = child.transform.baseVal
+          const childTlist = getTransformList(child)
 
           // some children might not have a transform (<metadata>, <defs>, etc)
           if (!childTlist) { continue }
@@ -413,7 +412,7 @@ export const recalculateDimensions = (selected) => {
             oldStartTransform = svgCanvas.getStartTransform()
             svgCanvas.setStartTransform(child.getAttribute('transform'))
 
-            const childTlist = child.transform?.baseVal
+            const childTlist = getTransformList(child)
             // some children might not have a transform (<metadata>, <defs>, etc)
             if (childTlist) {
               const newxlate = svgroot.createSVGTransform()
@@ -460,7 +459,7 @@ export const recalculateDimensions = (selected) => {
         if (child.nodeType === 1) {
           oldStartTransform = svgCanvas.getStartTransform()
           svgCanvas.setStartTransform(child.getAttribute('transform'))
-          const childTlist = child.transform?.baseVal
+          const childTlist = getTransformList(child)
 
           if (!childTlist) { continue }
 
@@ -544,7 +543,7 @@ export const recalculateDimensions = (selected) => {
           if (child.nodeType === 1) {
             oldStartTransform = svgCanvas.getStartTransform()
             svgCanvas.setStartTransform(child.getAttribute('transform'))
-            const childTlist = child.transform?.baseVal
+            const childTlist = getTransformList(child)
             const newxlate = svgroot.createSVGTransform()
             newxlate.setTranslate(tx, ty)
             if (childTlist.numberOfItems) {
@@ -629,7 +628,7 @@ export const recalculateDimensions = (selected) => {
         if (attrVal === 'userSpaceOnUse') {
           // Update the userSpaceOnUse element
           m = transformListToTransform(tlist).matrix
-          const gtlist = paint.transform.baseVal
+          const gtlist = getTransformList(paint)
           const gmatrix = transformListToTransform(gtlist).matrix
           m = matrixMultiply(m, gmatrix)
           const mStr = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')'

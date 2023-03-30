@@ -23,7 +23,7 @@ import {
   getBBox as utilsGetBBox,
   hashCode
 } from './utilities.js'
-import { transformPoint, transformListToTransform } from './math.js'
+import { transformPoint, transformListToTransform, getTransformList } from './math.js'
 import { convertUnit, shortFloat, convertToNum } from './units.js'
 import { isGecko, isChrome, isWebkit } from '../common/browser.js'
 import * as pathModule from './path.js'
@@ -1269,7 +1269,7 @@ const convertGradientsMethod = (elem) => {
         }
 
         // If has transform, convert
-        const tlist = grad.gradientTransform.baseVal
+        const tlist = getTransformList(grad)
         if (tlist?.numberOfItems > 0) {
           const m = transformListToTransform(tlist).matrix
           const pt1 = transformPoint(gCoords.x1, gCoords.y1, m)

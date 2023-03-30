@@ -13,7 +13,8 @@ import {
 import {
   transformPoint,
   transformListToTransform,
-  rectsIntersect
+  rectsIntersect,
+  getTransformList
 } from './math.js'
 import * as hstry from './history.js'
 import { getClosest } from '../common/util.js'
@@ -392,7 +393,7 @@ const setRotationAngle = (val, preventUndo) => {
   const bbox = getBBox(elem)
   const cx = bbox.x + bbox.width / 2
   const cy = bbox.y + bbox.height / 2
-  const tlist = elem.transform.baseVal
+  const tlist = getTransformList(elem)
 
   // only remove the real rotational transform if present (i.e. at index=0)
   if (tlist.numberOfItems > 0) {

@@ -12,7 +12,7 @@ import {
   convertAttrs
 } from './units.js'
 import {
-  transformPoint, hasMatrixTransform, getMatrix, snapToAngle
+  transformPoint, hasMatrixTransform, getMatrix, snapToAngle, getTransformList
 } from './math.js'
 import * as draw from './draw.js'
 import * as pathModule from './path.js'
@@ -83,7 +83,7 @@ const getBsplinePoint = (t) => {
 const updateTransformList = (svgRoot, element, dx, dy) => {
   const xform = svgRoot.createSVGTransform()
   xform.setTranslate(dx, dy)
-  const tlist = element.transform?.baseVal
+  const tlist = getTransformList(element)
   if (tlist.numberOfItems) {
     const firstItem = tlist.getItem(0)
     if (firstItem.type === 2) { // SVG_TRANSFORM_TRANSLATE = 2
@@ -221,7 +221,7 @@ const mouseMoveEvent = (evt) => {
       // we track the resize bounding box and translate/scale the selected element
       // while the mouse is down, when mouse goes up, we use this to recalculate
       // the shape's coordinates
-      tlist = selected.transform.baseVal
+      tlist = getTransformList(selected)
       const hasMatrix = hasMatrixTransform(tlist)
       box = hasMatrix ? svgCanvas.getInitBbox() : getBBox(selected)
       let left = box.x
@@ -1026,7 +1026,7 @@ const mouseDownEvent = (evt) => {
 
   svgCanvas.setStartTransform(mouseTarget.getAttribute('transform'))
 
-  const tlist = mouseTarget.transform.baseVal
+  const tlist = getTransformList(mouseTarget)
   // consolidate transforms using standard SVG but keep the transformation used for the move/scale
   if (tlist.numberOfItems > 1) {
     const firstTransform = tlist.getItem(0)
@@ -1060,7 +1060,7 @@ const mouseDownEvent = (evt) => {
           // a transform to use for its translate
           for (const selectedElement of selectedElements) {
             if (!selectedElement) { continue }
-            const slist = selectedElement.transform?.baseVal
+            const slist = getTransformList(selectedElement)
             if (slist.numberOfItems) {
               slist.insertItemBefore(svgRoot.createSVGTransform(), 0)
             } else {

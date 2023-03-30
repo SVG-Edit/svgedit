@@ -9,7 +9,7 @@
 import { NS } from './namespaces.js'
 import { setUnitAttr, getTypeMap } from './units.js'
 import {
-  hasMatrixTransform, transformListToTransform, transformBox
+  hasMatrixTransform, transformListToTransform, transformBox, getTransformList
 } from './math.js'
 import { getClosest, mergeDeep } from '../common/util.js'
 
@@ -770,7 +770,7 @@ export const convertToPath = (elem, attrs, svgCanvas) => {
 
     // Reorient if it has a matrix
     if (eltrans) {
-      const tlist = path.transform.baseVal
+      const tlist = getTransformList(path)
       if (hasMatrixTransform(tlist)) {
         svgCanvas.pathActions.resetOrientation(path)
       }
@@ -841,7 +841,7 @@ export const getBBoxWithTransform = function (elem, addSVGElementsFromJson, path
     return null
   }
 
-  const tlist = elem.transform.baseVal
+  const tlist = getTransformList(elem)
   const angle = getRotationAngleFromTransformList(tlist)
   const hasMatrixXForm = hasMatrixTransform(tlist)
 
@@ -1029,7 +1029,7 @@ export const getRotationAngleFromTransformList = (tlist, toRad) => {
 export let getRotationAngle = (elem, toRad) => {
   const selected = elem || svgCanvas.getSelectedElements()[0]
   // find the rotation transform (if any) and set it
-  const tlist = selected.transform?.baseVal
+  const tlist = getTransformList(selected)
   return getRotationAngleFromTransformList(tlist, toRad)
 }
 
