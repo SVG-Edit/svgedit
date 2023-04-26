@@ -142,8 +142,12 @@ svgEditor.setConfig({
 - See [AUTHORS](AUTHORS) file for authors.
 - [StackOverflow](https://stackoverflow.com/tags/svg-edit) group.
 
-# Hosting
+## Hosting
 
 SVGedit versions are deployed to:
 
 [![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)
+
+---
+
+[⇈ Back to Top](#svgedit)
