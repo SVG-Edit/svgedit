@@ -4,7 +4,7 @@
 
 import path from 'path'
 import { lstatSync, readdirSync } from 'fs'
-import rimraf from 'rimraf'
+import { rimraf } from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve'

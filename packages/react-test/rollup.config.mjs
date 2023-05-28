@@ -1,5 +1,5 @@
 /* eslint-env node */
-import rimraf from 'rimraf'
+import { rimraf } from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
