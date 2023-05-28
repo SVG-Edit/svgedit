@@ -1,5 +1,13 @@
 # SVG-Edit CHANGES
 
+## 7.3.1
+- npm packages ugrade 
+- refresh Arabic language
+
+## 7.3.0
+- bug fixes 
+- add Ukrainien and Swedish languages
+
 ## 7.2.0
 - introduce the notion of workspace 
 - separate svgcanvas into a package
