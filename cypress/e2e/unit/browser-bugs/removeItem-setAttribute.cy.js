@@ -1,4 +1,3 @@
-
 describe('Browser bugs', function () {
   it('removeItem and setAttribute test (Chromium 843901; now fixed)', function () {
     // See https://bugs.chromium.org/p/chromium/issues/detail?id=843901
