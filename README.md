@@ -16,9 +16,9 @@ works in any modern browser. **SVGEdit** is based on a powerful SVG canvas **@sv
 
 ## Contributions
 
-SVGEdit is the most popular open source SVG editor. It was started more than 13 years ago by a fantastic team of developers. Unfortunately, the product was not maintained for a quite long period. We decided to give this tool a new life by refreshing many aspects.
+SVGEdit is the most popular open source SVG editor. It was started more than 13 years ago by a fantastic team of developers. Unfortunately, the product was not maintained for quite a long time. We decided to give this tool a new life by refreshing many aspects.
 
-Please let us know with an issue or a discussions if you wish to contribute.
+Please let us know by creating an issue or a discussion if you wish to contribute.
 
 ## I want to use SVGEdit
 
@@ -27,14 +27,14 @@ Thanks to **Netlify**, you can access the following builds from your favorite br
 - [Try SVGEdit V7 (master branch on github)](https://svgedit.netlify.app/editor/index.html)
 - [Try SVGEdit V7 (latest published version on npm)](https://unpkg.com/svgedit@latest/dist/editor/index.html)
 
-### Prior V7:
+### Prior to V7:
 
-We recommand using the V7 version but for older browsers or some abandoned features, you may need to access to old versions of SVGEdit.
+We recommend using the V7 version but for older browsers or some abandoned features, you may need to access older versions of SVGEdit.
 
 - [Try SVGEdit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
 - [Try SVGEdit 5.1.0 here](https://unpkg.com/svgedit@5.1.0/editor/svg-editor.html)
 
-Additional tip: you may try a version released on NPM using unpkg for example with version 3.2.0
+Additional tip: you may try a version released on NPM using `unpkg`, for example, with version 3.2.0
 
 - [https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html](https://unpkg.com/svgedit@3.2.0/editor/svg-editor.html)
 
@@ -42,35 +42,36 @@ Additional tip: you may try a version released on NPM using unpkg for example wi
 
 If you want to host a local version of SVGEdit, please follow these instructions:
 
-1. Clone or copy the repository contents from github
+1. clone or copy the repository contents from github
 1. run `npm i` to install dependencies
-1. run `npm run build --workspace @svgedit/svgcanvas`to build the svgcanvas dependency locally
+1. run `npm run build --workspace @svgedit/svgcanvas` to build the svgcanvas dependency locally
 1. to test, you can run `npm run start` to start a local server
 1. and access `http://localhost:8000/src/editor/index.html` with a supported browser
-1. run `npm run build` to build a bundle that you can serve from your own web server.
+1. run `npm run build` to build a bundle that you can serve from your own web server
 
 ## I want to contribute to SVGEdit
 
 **Thanks!**
 
-SVG-Edit is made of two major components:
+SVGEdit is made of two major components:
 
-1. The "svgcanvas" that takes care of the underlying svg edition. It can be used to build your own editor.
+1. The "svgcanvas" that takes care of the underlying svg editor. It can be used to build your own editor
 1. The "editor" that takes care of the editor UI (menus, buttons, etc.)
 
-You should fork SVGEdit in your github environment and install locally SVGEdit as explained above.
+You should fork SVGEdit in your github environment and install SVGEdit locally as explained above.
+
 Before you submit your PR, please make sure you run locally:
 
 1. `npm run lint` to check that you follow the standardjs rules (https://standardjs.com/rules) for the linter
-1. `npm run test` to run a suite of Cypress tests (https://www.cypress.io/).
+1. `npm run test` to run a suite of Cypress tests (https://www.cypress.io/)
 
-If you intend to contribute on a regular basis, let us know so we can add you in the maintainer team.
+If you intend to contribute on a regular basis, let us know so we can add you to the maintainer team.
 
 ## I want to integrate SVGEdit into my own Web application
 
-V7 is changing significantly the way to integrate and customize SVG-Edit. You can have a look to index.html to see how you can insert a div element into your HTML code and inject the editor into the div.
+V7 is changing significantly the way to integrate and customize SVGEdit. You can have a look at `index.html` to see how you can insert a `div` element into your HTML code and inject the editor into the `div`.
 
-**Warning: This div can be positionned anywhere in the DOM but it must have a numeric width and a numeric height (i.e. not 'auto' which happens when the div is hidden)**
+**Warning: This `div` can be positioned anywhere in the DOM but it must have a numeric width and a numeric height (i.e. not 'auto' which happens when the `div` is hidden)**
 
 ```html
 <head>
@@ -79,7 +80,7 @@ V7 is changing significantly the way to integrate and customize SVG-Edit. You ca
 </head>
 
 <body>
-  <!-- svgedit container can be positionned anywhere in the DOM
+  <!-- svgedit container can be positioned anywhere in the DOM
        but it must have a width and a height -->
   <div id="container" style="width:100%;height:100vh"></div>
 </body>
@@ -115,17 +116,18 @@ you can then import it in your application:
 
 ## Supported browsers
 
-Developments and Continuous Integration are done with a **Chrome** environment. Chrome, FireFox and Safari recent versions are supported (in the meaning that we will try to fix bugs for these browsers).
+Development and Continuous Integration are done with a **Chrome** environment. Recent versions of Chrome, FireFox, and Safari are supported (in the meaning that we will try to fix bugs for these browsers).
 
-Support for old browsers may require to use an older version of the package. However, please open an issue if you need support for a specific version of your browser so the project team can decide if we should support with the latest version.
+To support old browsers, you may need to use an older version of the package. However, please open an issue if you need support for a specific version of your browser so that the project team can decide if we should support it in the latest version of SVGEdit.
 
 ## Sample extension based on React
 
-A sample React component was used to build a svgedit extension.
+A sample React component was used to build a SVGEdit extension.
+
 To activate:
 
 - "npm run build" from the extension folder "src/editor/react-extensions/react-test" in order to create the bundle for the extension.
-- modify "index.html" to activate the extension as a userExtensions
+- modify "index.html" to activate the extension as a `userExtensions`
 
 ```javascript
 svgEditor.setConfig({
@@ -144,7 +146,7 @@ svgEditor.setConfig({
 
 ## Hosting
 
-SVGedit versions are deployed to:
+SVGEdit versions are deployed to:
 
 [![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)
 
