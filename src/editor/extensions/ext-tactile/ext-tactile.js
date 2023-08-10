@@ -17,7 +17,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
-    translationModule = await import('./locale/en.js')
+    translationModule = await import('../ext-guidance/locale/en.js')
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
 }
@@ -27,62 +27,53 @@ export default {
   async init () {
     const svgEditor = this
     const { svgCanvas } = svgEditor
+    const svgroot = svgCanvas.getSvgRoot()
     await loadExtensionTranslation(svgEditor)
+    const { ChangeElementCommand } = svgCanvas.history
+    // svgdoc = S.svgroot.parentNode.ownerDocument,
+    const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const { $id, $click } = svgCanvas
+    const startClientPos = {}
 
+    let targetId=0
+    let lastBBox = {}
+    let curShape
+    let startX
+    let startY
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback () {
         // Add the button and its handler(s)
-        const title = `${name}:buttons.0.title`
-        const key = `${name}:buttons.0.key`
+        const title = `${name}:buttons.0.main_title`
+        const guidance_title = `${name}:buttons.0.guidance_title`
+        const zoomLvl_title = `${name}:buttons.0.zoomLvl_title`
+        const label_title = `${name}:buttons.0.label_title`
         const buttonTemplate = `
-        <se-button id="tool_tactile" title="${title}" src="tactile.svg" shortcut=${key}></se-button>
+        <se-flyingbutton id="tools_guidance" title="${title}">
+          <se-button id="tool_guidance" title="${guidance_title}" src="guide.svg"></se-button>
+          <se-button id="tool_setZoomLvl" title="${zoomLvl_title}" src="zoomLvl.svg"></se-button>
+          <se-button id="tool_label" title="${label_title}" src="label.svg"></se-button>
+        </se-flyingbutton>
         `
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12)
-        $click($id('tool_tactile'), () => {
-          if (this.leftPanel.updateLeftPanel('tool_tactile')) {
-            svgCanvas.setMode('tactile')
-            $id('tool_tactile').pressed = !$id('tool_tactile').pressed
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://ven1998.pythonanywhere.com/render");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("Access-Control-Allow-Origin", '*');
-            xhr.setRequestHeader("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-            xhr.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
-            xhr.setRequestHeader('Access-Control-Allow-Credentials', 'true')
-            xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-              console.warn(xhr.status);
-              console.warn(xhr.responseText);
-            }};
-            xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgCanvas.getSvgString())}));
+        
+        $click($id('tool_guidance'), () => {
+          if (this.leftPanel.updateLeftPanel('tool_guidance')) {
+            svgCanvas.setMode('guidance')
+          }
+        })
+        $click($id('tool_setZoomLvl'), () => {
+          if (this.leftPanel.updateLeftPanel('tool_setZoomLvl')) {
+            svgCanvas.setMode('setZoomLvl')
+          }
+        })
+        $click($id('tool_label'), () => {
+          if (this.leftPanel.updateLeftPanel('tool_label')) {
+            svgCanvas.setMode('label')
           }
         })
       }
-      /*,
-      mouseDown (opts) {
-        if (svgCanvas.getMode()=="tactile"){
-          // console.warn(svgCanvas.getSvgString())
-           let xhr = new XMLHttpRequest();
-           xhr.open("POST", "http://ven1998.pythonanywhere.com/render");
-           xhr.setRequestHeader("Content-Type", "application/json");
-           xhr.setRequestHeader("Access-Control-Allow-Origin", '*');
-           xhr.setRequestHeader("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-           xhr.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
-           xhr.setRequestHeader('Access-Control-Allow-Credentials', 'true')
-
-           xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-             console.warn(xhr.status);
-             console.warn(xhr.responseText);
-            }};
-
-           xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgCanvas.getSvgString())}));
-          // console.warn("Logging is working!")
-        }
-      }*/
     }
   }
 }

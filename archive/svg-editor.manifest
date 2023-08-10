@@ -138,7 +138,7 @@ extensions/ext-arrows.js
 extensions/ext-closepath.js
 extensions/ext-connector.js
 extensions/ext-eyedropper.js
-extensions/ext-tactile.js
+extensions/ext-tactile-render.js
 extensions/ext-foreignobject.js
 extensions/ext-grid.js
 extensions/ext-helloworld.js

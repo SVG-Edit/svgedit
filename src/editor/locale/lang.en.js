@@ -13,6 +13,12 @@ export default {
     width: 'Width',
     height: 'Height'
   },
+  label:{
+    ok: 'OK',
+    cancel: 'Cancel',
+    short_label: 'Label',
+    long_description: 'Description'
+  },
   misc: {
     powered_by: 'Powered by'
   },
@@ -161,6 +167,7 @@ export default {
     redo: 'Redo',
     tool_source: 'Edit Source',
     wireframe_mode: 'Wireframe Mode',
+    showAll_mode:'Layer View',
     clone: 'Duplicate Element(s)',
     del: 'Delete Element(s)',
     group_elements: 'Group Elements',
