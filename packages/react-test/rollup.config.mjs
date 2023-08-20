@@ -6,7 +6,9 @@ import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
 
 // remove existing distribution
-rimraf('./dist', () => console.info('recreating dist'))
+// remove existing distribution
+await rimraf('./dist')
+console.info('recreating dist')
 
 export default {
   input: 'src/index.js',
