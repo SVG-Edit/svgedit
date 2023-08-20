@@ -4,6 +4,7 @@
  * @license MIT
  *
  * @copyright 2010 Alexis Deveria
+ * @copyright 2023 Optimistik SAS
  *
  */
 
@@ -29,9 +30,8 @@ export default {
   async init(S) {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
-    const { getElem, $id, mergeDeep } = svgCanvas;
+    const { getElement, $id, mergeDeep, addSVGElementsFromJson } = svgCanvas;
     const { svgroot } = S;
-    const addElem = svgCanvas.addSVGElementFromJson;
     const selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);
 
@@ -41,7 +41,7 @@ export default {
     let startElem;
     let endElem;
     let seNs;
-    let { svgcontent } = S;
+    let { svgContent } = S;
     let started = false;
     let connections = [];
     let selElems = [];
@@ -195,7 +195,7 @@ export default {
     const findConnectors = (elems = selElems) => {
       const dataStorage = svgCanvas.getDataStorage();
       // const connectors = svgcontent.querySelectorAll('.se_connector');
-      const connectors = svgcontent.querySelectorAll('.se_connector');
+      const connectors = svgContent.querySelectorAll('.se_connector');
       connections = [];
 
       // Loop through connectors to see if one is connected to the element
@@ -339,8 +339,8 @@ export default {
         if (conn) {
           curthis.setAttribute('class', 'se_connector');
           const connData = conn.split(' ');
-          const sbb = svgCanvas.getStrokedBBox([ getElem(connData[0]) ]);
-          const ebb = svgCanvas.getStrokedBBox([ getElem(connData[1]) ]);
+          const sbb = svgCanvas.getStrokedBBox([ getElement(connData[0]) ]);
+          const ebb = svgCanvas.getStrokedBBox([ getElement(connData[1]) ]);
           dataStorage.put(curthis, 'c_start', connData[0]);
           dataStorage.put(curthis, 'c_end', connData[1]);
           dataStorage.put(curthis, 'start_bb', sbb);
@@ -399,7 +399,7 @@ export default {
             const y = bb.y + bb.height / 2;
 
             started = true;
-            curLine = addElem({
+            curLine = addSVGElementsFromJson({
               element: 'polyline',
               attr: {
                 id: svgCanvas.getNextId(),
@@ -545,7 +545,7 @@ export default {
       selectedChanged(opts) {
         const dataStorage = svgCanvas.getDataStorage();
         // TODO: Find better way to skip operations if no connectors are in use
-        if (!svgcontent.querySelectorAll('.se_connector').length) { return; }
+        if (!svgContent.querySelectorAll('.se_connector').length) { return; }
 
         if (svgCanvas.getMode() === 'connector') {
           svgCanvas.setMode('select');
@@ -604,7 +604,7 @@ export default {
             const { id } = elem;
 
             const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
-            const pline = addElem({
+            const pline = addSVGElementsFromJson({
               element: 'polyline',
               attr: {
                 points: (x1 + ',' + y1 + midPt + x2 + ',' + y2),
@@ -625,7 +625,7 @@ export default {
         }
         // Update line if it's a connector
         if (elem.getAttribute('class') === 'se_connector') {
-          const start = getElem(dataStorage.get(elem, 'c_start'));
+          const start = getElement(dataStorage.get(elem, 'c_start'));
           updateConnectors([ start ]);
         } else {
           updateConnectors();
