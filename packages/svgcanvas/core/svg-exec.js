@@ -5,8 +5,8 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import { jsPDF as JsPDF } from 'jspdf/dist/jspdf.es.min.js'
-import 'svg2pdf.js/dist/svg2pdf.es.js'
+import { jsPDF as JsPDF } from 'jspdf'
+import 'svg2pdf.js'
 import html2canvas from 'html2canvas'
 import * as hstry from './history.js'
 import {
@@ -23,7 +23,11 @@ import {
   getBBox as utilsGetBBox,
   hashCode
 } from './utilities.js'
-import { transformPoint, transformListToTransform, getTransformList } from './math.js'
+import {
+  transformPoint,
+  transformListToTransform,
+  getTransformList
+} from './math.js'
 import { convertUnit, shortFloat, convertToNum } from './units.js'
 import { isGecko, isChrome, isWebkit } from '../common/browser.js'
 import * as pathModule from './path.js'
@@ -90,7 +94,7 @@ const svgCanvasToString = () => {
 
   // Unwrap gsvg if it has no special attributes (only id and style)
   const gsvgElems = svgCanvas.getSvgContent().querySelectorAll('g[data-gsvg]')
-  Array.prototype.forEach.call(gsvgElems, (element) => {
+  Array.prototype.forEach.call(gsvgElems, element => {
     const attrs = element.attributes
     let len = attrs.length
     for (let i = 0; i < len; i++) {
@@ -109,7 +113,7 @@ const svgCanvasToString = () => {
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
-    Array.prototype.forEach.call(nakedSvgs, (el) => {
+    Array.prototype.forEach.call(nakedSvgs, el => {
       svgCanvas.groupSvgElem(el)
     })
   }
@@ -162,26 +166,14 @@ const svgToString = (elem, indent) => {
       // }
       if (curConfig.dynamicOutput) {
         vb = elem.getAttribute('viewBox')
-        out.push(
-          ' viewBox="' +
-            vb +
-            '" xmlns="' +
-            NS.SVG +
-            '"'
-        )
+        out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
       } else {
         if (unit !== 'px') {
           res.w = convertUnit(res.w, unit) + unit
           res.h = convertUnit(res.h, unit) + unit
         }
         out.push(
-          ' width="' +
-            res.w +
-            '" height="' +
-            res.h +
-            '" xmlns="' +
-            NS.SVG +
-            '"'
+          ' width="' + res.w + '" height="' + res.h + '" xmlns="' + NS.SVG + '"'
         )
       }
 
@@ -191,7 +183,7 @@ const svgToString = (elem, indent) => {
       const csElements = elem.querySelectorAll('*')
       const cElements = Array.prototype.slice.call(csElements)
       cElements.push(elem)
-      Array.prototype.forEach.call(cElements, (el) => {
+      Array.prototype.forEach.call(cElements, el => {
         // const el = this;
         // for some elements have no attribute
         const uri = el.namespaceURI
@@ -441,7 +433,7 @@ const setSvgString = (xmlString, preventUndo) => {
 
     // change image href vals if possible
     const elements = content.querySelectorAll('image')
-    Array.prototype.forEach.call(elements, (image) => {
+    Array.prototype.forEach.call(elements, image => {
       preventClickDefault(image)
       const val = svgCanvas.getHref(image)
       if (val) {
@@ -487,7 +479,7 @@ const setSvgString = (xmlString, preventUndo) => {
 
     // Wrap child SVGs in group elements
     const svgElements = content.querySelectorAll('svg')
-    Array.prototype.forEach.call(svgElements, (element) => {
+    Array.prototype.forEach.call(svgElements, element => {
       // Skip if it's in a <defs>
       if (getClosest(element.parentNode, 'defs')) {
         return
@@ -511,7 +503,7 @@ const setSvgString = (xmlString, preventUndo) => {
       const findElems = content.querySelectorAll(
         'linearGradient, radialGradient, pattern'
       )
-      Array.prototype.forEach.call(findElems, (ele) => {
+      Array.prototype.forEach.call(findElems, ele => {
         svgDefs.appendChild(ele)
       })
     }
@@ -538,7 +530,7 @@ const setSvgString = (xmlString, preventUndo) => {
       attrs.height = vb[3]
       // handle content that doesn't have a viewBox
     } else {
-      ;['width', 'height'].forEach((dim) => {
+      ;['width', 'height'].forEach(dim => {
         // Set to 100 if not given
         const val = content.getAttribute(dim) || '100%'
         if (String(val).substr(-1) === '%') {
@@ -555,9 +547,9 @@ const setSvgString = (xmlString, preventUndo) => {
 
     // Give ID for any visible layer children missing one
     const chiElems = content.children
-    Array.prototype.forEach.call(chiElems, (chiElem) => {
+    Array.prototype.forEach.call(chiElems, chiElem => {
       const visElems = chiElem.querySelectorAll(svgCanvas.getVisElems())
-      Array.prototype.forEach.call(visElems, (elem) => {
+      Array.prototype.forEach.call(visElems, elem => {
         if (!elem.id) {
           elem.id = svgCanvas.getNextId()
         }
@@ -696,7 +688,7 @@ const importSvgString = (xmlString, preserveDimension) => {
         const elements = svg.querySelectorAll(
           'linearGradient, radialGradient, pattern'
         )
-        Array.prototype.forEach.call(elements, (el) => {
+        Array.prototype.forEach.call(elements, el => {
           defs.appendChild(el)
         })
       }
@@ -766,7 +758,7 @@ const importSvgString = (xmlString, preserveDimension) => {
  * @param {string} src - The path/URL of the image
  * @returns {Promise<string|false>} Resolves to a Data URL (string|false)
  */
-const embedImage = (src) => {
+const embedImage = src => {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
   return new Promise((resolve, reject) => {
     // load in the image and once it's loaded, get the dimensions
@@ -1011,7 +1003,7 @@ const exportPDF = async (
  * @param {Element} g - The parent element of the tree to give unique IDs
  * @returns {void}
  */
-const uniquifyElemsMethod = (g) => {
+const uniquifyElemsMethod = g => {
   const ids = {}
   // TODO: Handle markers and connectors. These are not yet re-identified properly
   // as their referring elements do not get remapped.
@@ -1031,7 +1023,7 @@ const uniquifyElemsMethod = (g) => {
     'use'
   ]
 
-  walkTree(g, (n) => {
+  walkTree(g, n => {
     // if it's an element node
     if (n.nodeType === 1) {
       // and the element has an ID
@@ -1046,7 +1038,7 @@ const uniquifyElemsMethod = (g) => {
 
       // now search for all attributes on this element that might refer
       // to other elements
-      svgCanvas.getrefAttrs().forEach((attr) => {
+      svgCanvas.getrefAttrs().forEach(attr => {
         const attrnode = n.getAttributeNode(attr)
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -1115,7 +1107,7 @@ const uniquifyElemsMethod = (g) => {
  * @param {Element} parent
  * @returns {void}
  */
-const setUseDataMethod = (parent) => {
+const setUseDataMethod = parent => {
   let elems = parent
 
   if (parent.tagName !== 'use') {
@@ -1210,17 +1202,15 @@ const removeUnusedDefElemsMethod = () => {
  * @param {Element} elem
  * @returns {void}
  */
-const convertGradientsMethod = (elem) => {
+const convertGradientsMethod = elem => {
   let elems = elem.querySelectorAll('linearGradient, radialGradient')
   if (!elems.length && isWebkit()) {
     // Bug in webkit prevents regular *Gradient selector search
-    elems = Array.prototype.filter.call(elem.querySelectorAll('*'), (
-      curThis
-    ) => {
+    elems = Array.prototype.filter.call(elem.querySelectorAll('*'), curThis => {
       return curThis.tagName.includes('Gradient')
     })
   }
-  Array.prototype.forEach.call(elems, (grad) => {
+  Array.prototype.forEach.call(elems, grad => {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
       const svgContent = svgCanvas.getSvgContent()
       // TODO: Support more than one element with this ref by duplicating parent grad
