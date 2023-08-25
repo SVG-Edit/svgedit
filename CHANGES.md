@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## 7.3.2
+- npm packages ugrade 
+- refactor, fix and and put back the connector extension
+
 ## 7.3.1
 - npm packages ugrade 
 - refresh Arabic language
