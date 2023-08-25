@@ -1,5 +1,5 @@
 export default {
-  name: 'Connector',
+  name: 'Connecteur',
   langListTitle: 'Connecter deux objets',
   langList: [
     { id: 'mode_connect', title: 'Connecter deux objets' }
@@ -9,4 +9,4 @@ export default {
       title: 'Connecter deux objets'
     }
   ]
-};
+}

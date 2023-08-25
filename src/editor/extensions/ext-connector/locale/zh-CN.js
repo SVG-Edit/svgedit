@@ -9,4 +9,4 @@ export default {
       title: '连接两个对象'
     }
   ]
-};
+}
