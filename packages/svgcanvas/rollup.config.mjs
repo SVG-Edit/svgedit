@@ -2,7 +2,7 @@
 // This rollup script is run by the command:
 // 'npm run build'
 
-import rimraf from 'rimraf'
+import pkg from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
