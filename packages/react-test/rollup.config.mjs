@@ -1,9 +1,11 @@
 /* eslint-env node */
-import { rimraf } from 'rimraf'
+import pkg from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
+
+const { rimraf } = pkg;
 
 // remove existing distribution
 // remove existing distribution

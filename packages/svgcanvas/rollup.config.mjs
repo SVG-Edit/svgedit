@@ -2,12 +2,14 @@
 // This rollup script is run by the command:
 // 'npm run build'
 
-import { rimraf } from 'rimraf'
+import rimraf from 'rimraf'
 import babel from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 // import progress from 'rollup-plugin-progress';
 import filesize from 'rollup-plugin-filesize'
+
+const { rimraf } = pkg;
 
 // remove existing distribution
 await rimraf('./dist')
