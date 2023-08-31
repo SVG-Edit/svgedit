@@ -9,7 +9,7 @@ import commonjs from '@rollup/plugin-commonjs'
 // import progress from 'rollup-plugin-progress';
 import filesize from 'rollup-plugin-filesize'
 
-const { rimraf } = pkg;
+const { rimraf } = pkg
 
 // remove existing distribution
 await rimraf('./dist')
