@@ -526,6 +526,7 @@ const setPaintMethod = (type, paint) => {
       break
   }
 }
+
 /**
 * Sets the stroke width for the current selected elements.
 * When attempting to set a line's width to 0, this changes it to 1 instead.
@@ -599,54 +600,41 @@ const setStrokeAttrMethod = (attr, val) => {
     svgCanvas.call('changed', selectedElements)
   }
 }
+
 /**
-* Check whether selected element is bold or not.
-* @function module:svgcanvas.SvgCanvas#getBold
-* @returns {boolean} Indicates whether or not element is bold
-*/
+ * Check if all selected text elements are in bold.
+ * @function module:svgcanvas.SvgCanvas#getBold
+ * @returns {boolean} `true` if all selected elements are bold, `false` otherwise.
+ */
 const getBoldMethod = () => {
   const selectedElements = svgCanvas.getSelectedElements()
-  // should only have one element selected
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' &&
-    !selectedElements[1]) {
-    return (selected.getAttribute('font-weight') === 'bold')
-  }
-  return false
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  return textElements.every(el => el.getAttribute('font-weight') === 'bold')
 }
 
 /**
-* Make the selected element bold or normal.
-* @function module:svgcanvas.SvgCanvas#setBold
-* @param {boolean} b - Indicates bold (`true`) or normal (`false`)
-* @returns {void}
-*/
+ * Make the selected element(s) bold or normal.
+ * @function module:svgcanvas.SvgCanvas#setBold
+ * @param {boolean} b - Indicates bold (`true`) or normal (`false`)
+ * @returns {void}
+ */
 const setBoldMethod = (b) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' &&
-    !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('font-weight', b ? 'bold' : 'normal')
-  }
-  if (!selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('font-weight', b ? 'bold' : 'normal', textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
 
 /**
- * Check whether selected element has the given text decoration value or not.
- * @returns {boolean} Indicates whether or not element has the text decoration value
+ * Check if all selected text elements have the given text decoration value or not.
+ * @returns {boolean} Indicates whether or not elements have the text decoration value
  */
 const hasTextDecorationMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    const attribute = selected.getAttribute('text-decoration') || ''
-    return attribute.includes(value)
-  }
-
-  return false
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  return textElements.every(el => (el.getAttribute('text-decoration') || '').includes(value))
 }
 
 /**
@@ -655,13 +643,24 @@ const hasTextDecorationMethod = (value) => {
  * @returns {void}
  */
 const addTextDecorationMethod = (value) => {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    const oldValue = selected.getAttribute('text-decoration') || ''
-    svgCanvas.changeSelectedAttribute('text-decoration', (oldValue + ' ' + value).trim())
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+
+  const batchCmd = new BatchCommand()
+  textElements.forEach(elem => {
+    const oldValue = elem.getAttribute('text-decoration') || ''
+    // Add the new text decoration value if it did not exist
+    if (!oldValue.includes(value)) {
+      batchCmd.addSubCommand(new ChangeElementCommand(elem, { 'text-decoration': oldValue }))
+      svgCanvas.changeSelectedAttributeNoUndo('text-decoration', (oldValue + ' ' + value).trim(), [elem])
+    }
+  })
+  if (!batchCmd.isEmpty()) {
+    svgCanvas.undoMgr.addCommandToHistory(batchCmd)
   }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -672,44 +671,47 @@ const addTextDecorationMethod = (value) => {
  * @returns {void}
  */
 const removeTextDecorationMethod = (value) => {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    const actualValues = selected.getAttribute('text-decoration') || ''
-    svgCanvas.changeSelectedAttribute('text-decoration', actualValues.replace(value, '').trim())
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+
+  const batchCmd = new BatchCommand()
+  textElements.forEach(elem => {
+    const actualValues = elem.getAttribute('text-decoration') || ''
+    batchCmd.addSubCommand(new ChangeElementCommand(elem, { 'text-decoration': actualValues }))
+    svgCanvas.changeSelectedAttributeNoUndo('text-decoration', actualValues.replace(value, '').trim(), [elem])
+  })
+  if (!batchCmd.isEmpty()) {
+    svgCanvas.undoMgr.addCommandToHistory(batchCmd)
   }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
 
 /**
-* Check whether selected element is in italics or not.
-* @function module:svgcanvas.SvgCanvas#getItalic
-* @returns {boolean} Indicates whether or not element is italic
-*/
+ * Check if all selected elements have an italic font style.
+ * @function module:svgcanvas.SvgCanvas#getItalic
+ * @returns {boolean} `true` if all selected elements are in italics, `false` otherwise.
+ */
 const getItalicMethod = () => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    return (selected.getAttribute('font-style') === 'italic')
-  }
-  return false
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  return textElements.every(el => el.getAttribute('font-style') === 'italic')
 }
 
 /**
-* Make the selected element italic or normal.
-* @function module:svgcanvas.SvgCanvas#setItalic
-* @param {boolean} i - Indicates italic (`true`) or normal (`false`)
-* @returns {void}
-*/
+ * Make the selected element(s) italic or normal.
+ * @function module:svgcanvas.SvgCanvas#setItalic
+ * @param {boolean} i - Indicates italic (`true`) or normal (`false`)
+ * @returns {void}
+ */
 const setItalicMethod = (i) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('font-style', i ? 'italic' : 'normal')
-  }
-  if (!selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('font-style', i ? 'italic' : 'normal', textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -721,13 +723,8 @@ const setItalicMethod = (i) => {
  */
 const setTextAnchorMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('text-anchor', value)
-  }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
-    svgCanvas.textActions.setCursor()
-  }
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('text-anchor', value, textElements)
 }
 
 /**
@@ -737,11 +734,9 @@ const setTextAnchorMethod = (value) => {
  */
 const setLetterSpacingMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('letter-spacing', value)
-  }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('letter-spacing', value, textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -753,11 +748,9 @@ const setLetterSpacingMethod = (value) => {
  */
 const setWordSpacingMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('word-spacing', value)
-  }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('word-spacing', value, textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -769,11 +762,9 @@ const setWordSpacingMethod = (value) => {
  */
 const setTextLengthMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('textLength', value)
-  }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('textLength', value, textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -785,11 +776,9 @@ const setTextLengthMethod = (value) => {
  */
 const setLengthAdjustMethod = (value) => {
   const selectedElements = svgCanvas.getSelectedElements()
-  const selected = selectedElements[0]
-  if (selected?.tagName === 'text' && !selectedElements[1]) {
-    svgCanvas.changeSelectedAttribute('lengthAdjust', value)
-  }
-  if (selectedElements.length > 0 && !selectedElements[0].textContent) {
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
+  svgCanvas.changeSelectedAttribute('lengthAdjust', value, textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }
@@ -810,9 +799,10 @@ const getFontFamilyMethod = () => {
 */
 const setFontFamilyMethod = (val) => {
   const selectedElements = svgCanvas.getSelectedElements()
+  const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.setCurText('font_family', val)
-  svgCanvas.changeSelectedAttribute('font-family', val)
-  if (!selectedElements[0]?.textContent) {
+  svgCanvas.changeSelectedAttribute('font-family', val, textElements)
+  if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
   }
 }

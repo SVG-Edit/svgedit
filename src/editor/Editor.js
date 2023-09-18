@@ -470,7 +470,7 @@ class Editor extends EditorStartup {
     const isNode = mode === 'pathedit'
     // if this.elems[1] is present, then we have more than one element
     this.selectedElement = elems.length === 1 || !elems[1] ? elems[0] : null
-    this.multiselected = elems.length >= 2 && elems[1]
+    this.multiselected = elems.length >= 2 && !!elems[1]
     if (this.selectedElement && !isNode) {
       this.topPanel.update()
     } // if (elem)
