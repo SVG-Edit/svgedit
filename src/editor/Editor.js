@@ -28,7 +28,7 @@ import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
 import { getParentsUntil } from '@svgedit/svgcanvas/common/util.js'
 
-const { $id, $click, decode64, blankPageObjectURL } = SvgCanvas
+const { $id, $click, decode64 } = SvgCanvas
 
 /**
  *
@@ -295,9 +295,7 @@ class Editor extends EditorStartup {
    */
   exportHandler (win, data) {
     const { issues, exportWindowName } = data
-
-    this.exportWindow = window.open(blankPageObjectURL || '', exportWindowName) // A hack to get the window via JSON-able name without opening a new one
-
+    this.exportWindow = window.open('', exportWindowName) // A hack to get the window via JSON-able name without opening a new one
     if (!this.exportWindow || this.exportWindow.closed) {
       seAlert(this.i18next.t('notification.popupWindowBlocked'))
       return
@@ -319,7 +317,6 @@ class Editor extends EditorStartup {
           pre +
           issues.join(pre)
       }
-
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
       this.configObj.pref('export_notice_done', 'all')
