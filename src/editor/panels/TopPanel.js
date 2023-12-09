@@ -254,14 +254,14 @@ class TopPanel {
             y = convertUnit(y)
           }
           /**
-           * Updates the value of an input field if needed 
+           * Updates the value of an input field if needed
            * @param {string} id - The ID of the input element to be updated.
            * @param {number} newValue - The new numeric value to set in the input field.
            */
           const updateValue = (id, newValue) => {
             const currentValue = $id(id).value // Get current value from the field
-            // do nothing if nothing changed... 
-            if (parseFloat(currentValue) == newValue) {
+            // do nothing if nothing changed...
+            if (parseFloat(currentValue) === newValue) {
               return
             }
             $id(id).value = newValue
