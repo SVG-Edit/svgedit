@@ -944,10 +944,10 @@ export const getStrokedBBox = (elems, addSVGElementsFromJson, pathActions) => {
     })
   }
 
-  fullBb.x = minX
-  fullBb.y = minY
-  fullBb.width = maxX - minX
-  fullBb.height = maxY - minY
+  fullBb.x = minX.toFixed(2)
+  fullBb.y = minY.toFixed(2)
+  fullBb.width = (maxX - minX).toFixed(2)
+  fullBb.height = (maxY - minY).toFixed(2)
   return fullBb
 }
 
