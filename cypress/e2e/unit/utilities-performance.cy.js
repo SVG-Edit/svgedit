@@ -6,7 +6,6 @@ import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
 import * as math from '../../../packages/svgcanvas/core/math.js'
 import * as units from '../../../packages/svgcanvas/core/units.js'
 
-
 describe('utilities performance', function () {
   let currentLayer; let groupWithMatrixTransform; let textWithMatrixTransform
   units.init({ getRoundDigits: () => 2 }) // mock getRoundDigits
