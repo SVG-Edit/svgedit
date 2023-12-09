@@ -169,7 +169,6 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       const bbox = getStrokedBBoxDefaultVisible([elem])
       const diffX = attr === 'x' ? parseFloat(newValue) - bbox.x : 0
       const diffY = attr === 'y' ? parseFloat(newValue) - bbox.y : 0
-      console.log('diffX, diffY', diffX, diffY)
       svgCanvas.moveSelectedElements(diffX * zoom, diffY * zoom, true)
       continue
     }
@@ -190,7 +189,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       } else if (attr === '#href') {
         setHref(elem, newValue)
       } else if (newValue) {
-        elem.setAttribute(attr, parseFloat(newValue))
+        elem.setAttribute(attr, isNaN(parseFloat(newValue)) ? newValue : parseFloat(newValue))
       } else if (typeof newValue === 'number') {
         elem.setAttribute(attr, newValue)
       } else {

@@ -5,6 +5,7 @@ import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
 import * as math from '../../../packages/svgcanvas/core/math.js'
 import * as path from '../../../packages/svgcanvas/core/path.js'
 import setAssertionMethods from '../../support/assert-close.js'
+import * as units from '../../../packages/svgcanvas/core/units.js'
 
 // eslint-disable-next-line
 chai.use(setAssertionMethods)
@@ -94,6 +95,7 @@ describe('utilities bbox', function () {
     }
 
     path.init(mockSvgCanvas)
+    units.init({ getRoundDigits: () => 2 }) // mock getRoundDigits
     mockaddSVGElementsFromJsonCallCount = 0
   })
 

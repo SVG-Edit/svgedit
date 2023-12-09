@@ -232,7 +232,7 @@ class TopPanel {
       if (!isNode && currentMode !== 'pathedit') {
         this.displayTool('selected_panel')
         // Elements in this array already have coord fields
-        if (['line', 'circle', 'ellipse'].includes(elname)) {
+        if (['line', 'circle', 'ellipse', 'polygon'].includes(elname)) {
           this.hideTool('xy_panel')
         } else {
           let x
