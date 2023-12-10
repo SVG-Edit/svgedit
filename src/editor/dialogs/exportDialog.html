@@ -3,7 +3,6 @@
         margin: 10px 10px 5px 10px;
         background: #5a6162;
         overflow: auto;
-        text-align: left;
         border: 1px solid #c8c8c8;
     }
 
@@ -12,6 +11,7 @@
     #dialog_content label {
         margin: 10px;
         line-height: 0.3em;
+        color: #fff
     }
 
     #dialog_container {
@@ -56,19 +56,9 @@
     <div class="overlay"></div>
     <div id="dialog_container">
         <div id="dialog_content">
-            <p class="se-select" id="export_select"></p>
-            <p class="se-select">
-                <select id="se-storage-pref">
-                    <option value="PNG">PNG</option>
-                    <option value="JPEG">JPEG</option>
-                    <option value="BMP">BMP</option>
-                    <option value="WEBP">WEBP</option>
-                    <option value="PDF">PDF</option>
-                </select>
-            </p>
-            <p id="se-quality">
-                <elix-number-spin-box min="-1" max="101" step="5" value="100"></elix-number-spin-box>
-            </p>
+            <p id="export_select"></p>
+            <se-select id="se-storage-pref" label="" options="PNG,JPEG,BMP,WEBP,PDF" values="PNG::JPEG::BMP::WEBP::PDF"></se-select>
+            <se-spin-input id="se-quality" label="ui.quality" size="3" min="0" max="100" value="100" step="5" />
         </div>
         <div id="dialog_buttons">
             <button id="export_ok"></button>

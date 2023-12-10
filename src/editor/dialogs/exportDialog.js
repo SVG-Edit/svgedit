@@ -21,7 +21,7 @@ export class SeExportDialog extends HTMLElement {
     this.$cancelBtn = this._shadowRoot.querySelector('#export_cancel')
     this.$exportOption = this._shadowRoot.querySelector('#se-storage-pref')
     this.$qualityCont = this._shadowRoot.querySelector('#se-quality')
-    this.$input = this._shadowRoot.querySelector('elix-number-spin-box')
+    this.$input = this._shadowRoot.querySelector('#se-quality')
     this.value = 1
   }
 
@@ -33,8 +33,8 @@ export class SeExportDialog extends HTMLElement {
   init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'))
     this.setAttribute('common-cancel', i18next.t('common.cancel'))
-    this.setAttribute('ui-quality', i18next.t('ui.quality'))
     this.setAttribute('ui-export_type_label', i18next.t('ui.export_type_label'))
+    this.value = 100
   }
 
   /**
@@ -42,7 +42,7 @@ export class SeExportDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'common-ok', 'common-cancel', 'ui-quality', 'ui-export_type_label']
+    return ['dialog', 'common-ok', 'common-cancel', 'ui-export_type_label']
   }
 
   /**
@@ -67,10 +67,6 @@ export class SeExportDialog extends HTMLElement {
         break
       case 'common-cancel':
         this.$cancelBtn.textContent = newValue
-        break
-      case 'ui-quality':
-        node = this._shadowRoot.querySelector('#se-quality')
-        node.prepend(newValue)
         break
       case 'ui-export_type_label':
         node = this._shadowRoot.querySelector('#export_select')

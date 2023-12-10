@@ -21,7 +21,7 @@ export default {
     palette_info: 'Cliquer pour changer la couleur de remplissage, Maj+clic pour changer la couleur de contour',
     zoom_level: 'Changer le niveau de zoom',
     panel_action: 'Cliquer pour ouvrir le panel de côté',
-    quality: 'Quality:',
+    quality: 'Qualité:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
