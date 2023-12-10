@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## 7.3.3
+- npm packages ugrade 
+- fix export and xy panel
+
 ## 7.3.2
 - npm packages ugrade 
 - refactor, fix and and put back the connector extension
