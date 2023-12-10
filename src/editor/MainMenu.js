@@ -129,35 +129,11 @@ class MainMenu {
      * @returns {void}
      */
     const openExportWindow = () => {
-      const loadingImage = this.editor.i18next.t('notification.loadingImage')
       if (this.editor.configObj.curConfig.exportWindowType === 'new') {
         this.editor.exportWindowCt++
       }
       this.editor.exportWindowName =
         this.editor.configObj.curConfig.canvasName + this.editor.exportWindowCt
-      let popHTML; let popURL
-      if (this.editor.loadingURL) {
-        popURL = this.editor.loadingURL
-      } else {
-        popHTML = `<!DOCTYPE html><html>
-          <head>
-            <meta charset="utf-8">
-            <title>${loadingImage}</title>
-          </head>
-          <body><h1>${loadingImage}</h1></body>
-        <html>`
-        if (URL?.createObjectURL) {
-          const blob = new Blob([popHTML], { type: 'text/html' })
-          popURL = URL.createObjectURL(blob)
-        } else {
-          popURL = 'data:text/html;base64;charset=utf-8,' + popHTML
-        }
-        this.editor.loadingURL = popURL
-      }
-      this.editor.exportWindow = window.open(
-        popURL,
-        this.editor.exportWindowName
-      )
     }
     const chrome = isChrome()
     if (imgType === 'PDF') {

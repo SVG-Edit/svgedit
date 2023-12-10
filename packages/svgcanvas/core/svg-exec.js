@@ -896,7 +896,7 @@ const rasterExport = async (imgType, quality, WindowName, opts = {}) => {
                 WindowName
               }
               if (!opts.avoidEvent) {
-                svgCanvas.call('ed', obj)
+                svgCanvas.call('exported', obj)
               }
               resolve(obj)
             }
