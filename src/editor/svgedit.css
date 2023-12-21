@@ -323,14 +323,16 @@ hr {
 
 #tools_bottom {
   grid-area: bottom;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   align-items: center;
   scrollbar-width: thin; /* Firefox */
 }
 
-#tools_bottom ::-webkit-scrollbar { /* Chrome, Edge, and Safari */
+#tools_bottom::-webkit-scrollbar { /* Chrome, Edge, and Safari */
   width: 3px;
+  height: 3px;
 }
 
 #tools_bottom se-list, #tools_bottom se-select {
@@ -358,11 +360,11 @@ hr {
   width: 3px;
 }
 
-#tools_left::-webkit-scrollbar-track {
+#tools_left::-webkit-scrollbar-track,  #tools_bottom::-webkit-scrollbar-track{
   background: transparent;
 }
 
-#tools_left::-webkit-scrollbar-thumb {
+#tools_left::-webkit-scrollbar-thumb, #tools_bottom::-webkit-scrollbar-thumb {
   background-color:rgb(70, 70, 70);
 }
 
@@ -530,6 +532,9 @@ input[type=text] {
 
 #palette {
   margin-left: auto;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
 }
 
 #stroke_expand {
