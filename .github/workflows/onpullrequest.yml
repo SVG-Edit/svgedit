@@ -1,6 +1,9 @@
 name: Node CI
 
 on: [pull_request]
+# To be able to write in the PR, we need write permission. 
+permissions:
+   pull-requests: write
 
 jobs:
   build:
