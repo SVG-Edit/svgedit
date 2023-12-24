@@ -634,7 +634,7 @@ div.jGraduate_Slider img {
   }
   #color_picker {
     z-index: 1000;
-    top: 60%;
+    bottom: 0;
   }
   </style>
   <div id="picker">
@@ -651,8 +651,8 @@ div.jGraduate_Slider img {
  */
 export class SeColorPicker extends HTMLElement {
   /**
-    * @function constructor
-    */
+   * @function constructor
+   */
   constructor () {
     super()
     // create the shadowDom and insert the template
