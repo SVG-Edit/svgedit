@@ -117,6 +117,10 @@ class EditorStartup {
       $id('svgcanvas'),
       this.configObj.curConfig
     )
+    
+    //once svgCanvas is init - adding listener to the changes of the current mode
+    this.modeEvent = this.svgCanvas.modeEvent
+    document.addEventListener('modeChange', (evt) => this.modeListener(evt))
 
     this.leftPanel.init()
     this.bottomPanel.init()
@@ -694,6 +698,32 @@ class EditorStartup {
       // Todo: Report errors through the UI
       console.error(err)
     }
+  }
+/**
+ * Listens to the mode change, listener is to be added on document
+* @param {Event} evt custom modeChange event
+*/
+  modeListener(evt) {
+    const mode = evt.detail.getMode()
+    
+    this.setCursorStyle(mode)
+  }
+
+  /**
+   * sets cursor styling for workarea depending on the current mode
+   * @param {string} mode 
+   */
+  setCursorStyle(mode) {
+    let cs = 'auto'
+    switch (mode) {
+      case 'ext-panning':
+        cs = 'grab';
+        break;
+      default:
+        cs = 'auto'
+    }
+
+    this.workarea.style.cursor = cs
   }
 }
 
