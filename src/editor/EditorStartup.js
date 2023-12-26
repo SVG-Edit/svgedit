@@ -117,8 +117,8 @@ class EditorStartup {
       $id('svgcanvas'),
       this.configObj.curConfig
     )
-    
-    //once svgCanvas is init - adding listener to the changes of the current mode
+
+    // once svgCanvas is init - adding listener to the changes of the current mode
     this.modeEvent = this.svgCanvas.modeEvent
     document.addEventListener('modeChange', (evt) => this.modeListener(evt))
 
@@ -282,7 +282,7 @@ class EditorStartup {
 
     let lastX = null; let lastY = null
     let panning = false; let keypan = false
-    let previousMode = 'select' 
+    let previousMode = 'select'
 
     $id('svgcanvas').addEventListener('mouseup', (evt) => {
       if (panning === false) { return true }
@@ -310,7 +310,7 @@ class EditorStartup {
     })
     $id('svgcanvas').addEventListener('mousedown', (evt) => {
       if (evt.button === 1 || keypan === true) {
-        //prDefault to avoid firing of browser's panning on mousewheel
+        // prDefault to avoid firing of browser's panning on mousewheel
         evt.preventDefault()
         panning = true
         previousMode = this.svgCanvas.getMode()
@@ -323,6 +323,13 @@ class EditorStartup {
       return true
     })
 
+    // preventing browser's scaling with Ctrl+wheel
+    this.$container.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault()
+      }
+    })
+
     window.addEventListener('mouseup', (evt) => {
       if (evt.button === 1) {
         this.svgCanvas.setMode(previousMode ?? 'select')
@@ -330,7 +337,7 @@ class EditorStartup {
       panning = false
     })
 
-    //Allows quick change to the select mode while panning mode is active
+    // Allows quick change to the select mode while panning mode is active
     this.workarea.addEventListener('dblclick', (evt) => {
       if (this.svgCanvas.getMode() === 'ext-panning') {
         this.svgCanvas.setMode('select')
@@ -716,39 +723,35 @@ class EditorStartup {
       console.error(err)
     }
   }
-/**
+
+  /**
  * Listens to the mode change, listener is to be added on document
 * @param {Event} evt custom modeChange event
 */
-  modeListener(evt) {
+  modeListener (evt) {
     const mode = evt.detail.getMode()
-    
+
     this.setCursorStyle(mode)
   }
 
   /**
    * sets cursor styling for workarea depending on the current mode
-   * @param {string} mode 
+   * @param {string} mode
    */
-  setCursorStyle(mode) {
+  setCursorStyle (mode) {
     let cs = 'auto'
     switch (mode) {
       case 'ext-panning':
-        cs = 'grab';
-        break;
+        cs = 'grab'
+        break
+      case 'zoom':
+        cs = 'crosshair'
+        break
       default:
         cs = 'auto'
     }
 
     this.workarea.style.cursor = cs
-  }
-
-  /**
-   * Ensures that the button for the current mode is pressed even if the mode was activated by a shortcut
-   * @param {string} mode 
-   */
-  pressButton(mode) {
-
   }
 }
 
