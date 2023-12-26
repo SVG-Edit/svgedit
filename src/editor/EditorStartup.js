@@ -340,7 +340,7 @@ class EditorStartup {
     // Allows quick change to the select mode while panning mode is active
     this.workarea.addEventListener('dblclick', (evt) => {
       if (this.svgCanvas.getMode() === 'ext-panning') {
-        this.svgCanvas.setMode('select')
+        this.leftPanel.clickSelect()
       }
     })
 
@@ -359,7 +359,7 @@ class EditorStartup {
       if (e.target.nodeName !== 'BODY') return
       if (e.code.toLowerCase() === 'space') {
         this.svgCanvas.spaceKey = keypan = false
-        this.svgCanvas.setMode(previousMode)
+        this.svgCanvas.setMode(previousMode === 'ext-panning' ? 'select' : previousMode ?? 'select')
         e.preventDefault()
       } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')) {
         this.workarea.style.cursor = zoomInIcon
@@ -729,7 +729,7 @@ class EditorStartup {
 * @param {Event} evt custom modeChange event
 */
   modeListener (evt) {
-    const mode = evt.detail.getMode()
+    const mode = this.svgCanvas.getMode()
 
     this.setCursorStyle(mode)
   }
