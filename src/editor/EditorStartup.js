@@ -282,6 +282,7 @@ class EditorStartup {
 
     let lastX = null; let lastY = null
     let panning = false; let keypan = false
+    let previousMode = 'select' 
 
     $id('svgcanvas').addEventListener('mouseup', (evt) => {
       if (panning === false) { return true }
@@ -309,7 +310,12 @@ class EditorStartup {
     })
     $id('svgcanvas').addEventListener('mousedown', (evt) => {
       if (evt.button === 1 || keypan === true) {
+        //prDefault to avoid firing of browser's panning on mousewheel
+        evt.preventDefault()
         panning = true
+        previousMode = this.svgCanvas.getMode()
+        this.svgCanvas.setMode('ext-panning')
+        this.workarea.style.cursor = 'grab'
         lastX = evt.clientX
         lastY = evt.clientY
         return false
@@ -317,8 +323,18 @@ class EditorStartup {
       return true
     })
 
-    window.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', (evt) => {
+      if (evt.button === 1) {
+        this.svgCanvas.setMode(previousMode ?? 'select')
+      }
       panning = false
+    })
+
+    //Allows quick change to the select mode while panning mode is active
+    this.workarea.addEventListener('dblclick', (evt) => {
+      if (this.svgCanvas.getMode() === 'ext-panning') {
+        this.svgCanvas.setMode('select')
+      }
     })
 
     document.addEventListener('keydown', (e) => {
@@ -336,6 +352,7 @@ class EditorStartup {
       if (e.target.nodeName !== 'BODY') return
       if (e.code.toLowerCase() === 'space') {
         this.svgCanvas.spaceKey = keypan = false
+        this.svgCanvas.setMode(previousMode)
         e.preventDefault()
       } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')) {
         this.workarea.style.cursor = zoomInIcon
@@ -724,6 +741,14 @@ class EditorStartup {
     }
 
     this.workarea.style.cursor = cs
+  }
+
+  /**
+   * Ensures that the button for the current mode is pressed even if the mode was activated by a shortcut
+   * @param {string} mode 
+   */
+  pressButton(mode) {
+
   }
 }
 

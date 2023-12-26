@@ -9,8 +9,8 @@
   </div> <!-- editor_panel -->
   <div id="history_panel">
     <div class="tool_sep"></div>
-    <se-button id="tool_undo" title="tools.undo" shortcut="Z" src="undo.svg" disabled></se-button>
-    <se-button id="tool_redo" title="tools.redo" shortcut="Y" src="redo.svg" disabled></se-button>
+    <se-button id="tool_undo" title="tools.undo" shortcut="ctrl+Z" src="undo.svg" disabled></se-button>
+    <se-button id="tool_redo" title="tools.redo" shortcut="ctrl+y" src="redo.svg" disabled></se-button>
   </div> <!-- history_panel -->
   <!-- Buttons when a single element is selected -->
   <div class="selected_panel">
@@ -43,27 +43,27 @@
       <se-list-item id="tool_posleft" value="l" title="tools.align_left" src="align_left.svg" img-height="22px">
       </se-list-item>
       <se-list-item id="tool_poscenter" value="c" title="tools.align_center" src="align_center.svg"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
       <se-list-item id="tool_posright" value="r" title="tools.align_right" src="align_right.svg"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
       <se-list-item id="tool_postop" value="t" title="tools.align_top" src="align_top.svg" img-height="22px">
       </se-list-item>
       <se-list-item id="tool_posmiddle" value="m" title="tools.align_middle" src="align_middle.svg"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
       <se-list-item id="tool_posbottom" value="b" src="align_bottom.svg" title="tools.align_bottom"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
       <se-list-item id="tool_poshoriz" value="dh" src="align_distrib_horiz.svg" title="tools.align_distrib_horiz"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
       <se-list-item id="tool_posverti" value="dv" src="align_distrib_verti.svg" title="tools.align_distrib_verti"
-                    img-height="22px"></se-list-item>
+        img-height="22px"></se-list-item>
     </se-list>
   </div>
   <div class="xy_panel">
     <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="properties.x_label"
-                   title="properties.pos_x">
+      title="properties.pos_x">
     </se-spin-input>
     <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="properties.y_label"
-                   title="properties.pos_y">
+      title="properties.pos_y">
     </se-spin-input>
   </div>
   <!-- Buttons when multiple elements are selected -->
@@ -83,27 +83,29 @@
     <se-button id="tool_align_top" title="tools.align_top" src="align_top.svg"></se-button>
     <se-button id="tool_align_middle" title="tools.align_middle" src="align_middle.svg"></se-button>
     <se-button id="tool_align_bottom" title="tools.align_bottom" src="align_bottom.svg"></se-button>
-    <se-button id="tool_align_distrib_horiz" title="tools.align_distrib_horiz" src="align_distrib_horiz.svg"></se-button>
-    <se-button id="tool_align_distrib_verti" title="tools.align_distrib_verti" src="align_distrib_verti.svg"></se-button>
+    <se-button id="tool_align_distrib_horiz" title="tools.align_distrib_horiz"
+      src="align_distrib_horiz.svg"></se-button>
+    <se-button id="tool_align_distrib_verti" title="tools.align_distrib_verti"
+      src="align_distrib_verti.svg"></se-button>
     <se-select id="tool_align_relative" label="tools.relativeTo"
-               options="tools.selected_objects,tools.largest_object,tools.smallest_object,tools.page"
-               values="selected::largest::smallest::page">
+      options="tools.selected_objects,tools.largest_object,tools.smallest_object,tools.page"
+      values="selected::largest::smallest::page">
       </se-list-item>
     </se-select>
   </div> <!-- multiselected_panel -->
   <div class="rect_panel">
     <se-spin-input id="rect_width" data-attr="width" size="4" label="properties.w_label"
-                   title="properties.rect_width"></se-spin-input>
+      title="properties.rect_width"></se-spin-input>
     <se-spin-input id="rect_height" data-attr="height" size="4" label="properties.h_label"
-                   title="properties.rect_height"></se-spin-input>
+      title="properties.rect_height"></se-spin-input>
     <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="properties.corner_radius"
-                   data-attr="Corner Radius" src="c_radius.svg"></se-spin-input>
+      data-attr="Corner Radius" src="c_radius.svg"></se-spin-input>
   </div> <!-- rect_panel -->
   <div class="image_panel">
     <se-spin-input id="image_width" data-attr="width" size="4" type="text" label="properties.w_label"
-                   title="properties.image_width"></se-spin-input>
+      title="properties.image_width"></se-spin-input>
     <se-spin-input id="image_height" data-attr="height" size="4" type="text" label="properties.h_label"
-                   title="properties.image_height"></se-spin-input>
+      title="properties.image_height"></se-spin-input>
   </div>
   <div class="image_panel">
     <se-input id="image_url" data-attr="image_url" size="15" label="properties.image_url"></se-input>
@@ -117,15 +119,15 @@
   </div>
   <div class="ellipse_panel">
     <se-spin-input id="ellipse_cx" data-attr="cx" size="4" title="properties.ellipse_cx"
-                   label="properties.cx_label"></se-spin-input>
+      label="properties.cx_label"></se-spin-input>
     <se-spin-input id="ellipse_cy" data-attr="cy" size="4" title="properties.ellipse_cy"
-                   label="properties.cy_label"></se-spin-input>
+      label="properties.cy_label"></se-spin-input>
   </div>
   <div class="ellipse_panel">
     <se-spin-input id="ellipse_rx" data-attr="rx" size="4" title="properties.ellipse_rx"
-                   label="properties.rx_label"></se-spin-input>
+      label="properties.rx_label"></se-spin-input>
     <se-spin-input id="ellipse_ry" data-attr="ry" size="4" title="properties.ellipse_ry"
-                   label="properties.ry_label"></se-spin-input>
+      label="properties.ry_label"></se-spin-input>
   </div>
   <div class="line_panel">
     <se-spin-input id="line_x1" data-attr="x1" size="4" title="properties.line_x1" label="properties.x1_label">
@@ -141,43 +143,49 @@
     <!-- Text styles -->
     <se-button id="tool_bold" title="properties.bold" src="bold.svg" shortcut="B"></se-button>
     <se-button id="tool_italic" title="properties.italic" src="italic.svg" shortcut="I"></se-button>
-    <se-button id="tool_text_decoration_underline" title="properties.text_decoration_underline" src="text_decoration_underline.svg"></se-button>
-    <se-button id="tool_text_decoration_linethrough" title="properties.text_decoration_linethrough" src="text_decoration_linethrough.svg"></se-button>
-    <se-button id="tool_text_decoration_overline" title="properties.text_decoration_overline" src="text_decoration_overline.svg"></se-button>
+    <se-button id="tool_text_decoration_underline" title="properties.text_decoration_underline"
+      src="text_decoration_underline.svg"></se-button>
+    <se-button id="tool_text_decoration_linethrough" title="properties.text_decoration_linethrough"
+      src="text_decoration_linethrough.svg"></se-button>
+    <se-button id="tool_text_decoration_overline" title="properties.text_decoration_overline"
+      src="text_decoration_overline.svg"></se-button>
 
     <!-- Font Size-->
     <se-select id="tool_font_family" label="properties.font_family_label"
-               options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times"
-               values="Serif::Sans-serif::Cursive::Fantasy::Monospace::Courier::Helvetica::Times"></se-select>
+      options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times"
+      values="Serif::Sans-serif::Cursive::Fantasy::Monospace::Courier::Helvetica::Times"></se-select>
     <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="properties.font_size"
-                   src="fontsize.svg"></se-spin-input>
+      src="fontsize.svg"></se-spin-input>
 
     <!-- Text Anchor -->
     <se-list id="tool_text_anchor" label="" width="22px" height="22px">
-      <se-list-item id="tool_text_anchor_start" value="start" title="properties.text_anchor_start" src="anchor_start.svg" img-height="25px"></se-list-item>
-      <se-list-item id="tool_text_anchor_middle" value="middle" title="properties.text_anchor_middle" src="anchor_middle.svg" img-height="25px"></se-list-item>
-      <se-list-item id="tool_text_anchor_end" value="end" title="properties.text_anchor_end" src="anchor_end.svg" img-height="25px"></se-list-item>
+      <se-list-item id="tool_text_anchor_start" value="start" title="properties.text_anchor_start"
+        src="anchor_start.svg" img-height="25px"></se-list-item>
+      <se-list-item id="tool_text_anchor_middle" value="middle" title="properties.text_anchor_middle"
+        src="anchor_middle.svg" img-height="25px"></se-list-item>
+      <se-list-item id="tool_text_anchor_end" value="end" title="properties.text_anchor_end" src="anchor_end.svg"
+        img-height="25px"></se-list-item>
     </se-list>
 
     <!-- Letter Spacing -->
     <se-spin-input size="2" id="tool_letter_spacing" min=0 max=100 step=1 title="properties.text_letter_spacing"
-                   src="letter_spacing.svg"></se-spin-input>
+      src="letter_spacing.svg"></se-spin-input>
 
     <!-- Word Spacing -->
     <se-spin-input size="2" id="tool_word_spacing" min=0 max=1000 step=1 title="properties.text_word_spacing"
-                   src="word_spacing.svg"></se-spin-input>
+      src="word_spacing.svg"></se-spin-input>
 
     <!-- Text Length -->
     <se-spin-input size="2" id="tool_text_length" min=0 max=1000 step=1 title="properties.text_length"
-                   src="text_length.svg"></se-spin-input>
+      src="text_length.svg"></se-spin-input>
 
     <!-- Length Adjust -->
     <se-select id="tool_length_adjust" label="properties.text_length_adjust"
-               options="properties.text_length_adjust_spacing,properties.text_length_adjust_spacing_and_glyphs"
-               values="spacing::spacingAndGlyphs"></se-select>
+      options="properties.text_length_adjust_spacing,properties.text_length_adjust_spacing_and_glyphs"
+      values="spacing::spacingAndGlyphs"></se-select>
   </div>
   <!-- Not visible, but still used -->
-  <input id="text" type="text" size="35"/>
+  <input id="text" type="text" size="35" />
   <div class="container_panel">
     <div class="tool_sep"></div>
     <se-input id="g_title" data-attr="title" size="8" label="properties.label"></se-input>
@@ -192,7 +200,7 @@
   <div class="a_panel">
     <label id="tool_link_url">
       <span id="linkLabel" class="icon_label"></span>
-      <input id="link_url" type="text" size="35"/>
+      <input id="link_url" type="text" size="35" />
     </label>
   </div> <!-- a_panel -->
   <div class="path_node_panel">
@@ -204,7 +212,7 @@
     <se-spin-input id="path_node_y" data-attr="y" size="4" title="properties.node_y" label="properties.y_label">
     </se-spin-input>
     <se-select id="seg_type" title="properties.seg_type" label=""
-               options="properties.straight_segments,properties.curve_segments" values="4::6"></se-select>
+      options="properties.straight_segments,properties.curve_segments" values="4::6"></se-select>
     <se-button id="tool_node_clone" title="tools.node_clone" src="tool_node_clone.svg"></se-button>
     <se-button id="tool_node_delete" title="tools.node_delete" src="tool_node_delete.svg"></se-button>
     <se-button id="tool_openclose_path" title="tools.openclose_path" src="tool_openclose_path.svg"></se-button>
