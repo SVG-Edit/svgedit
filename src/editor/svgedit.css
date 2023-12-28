@@ -19,7 +19,7 @@
   display: grid;
   grid-template-rows: auto 15px 1fr 40px;
   grid-template-columns: 40px 15px 50px 1fr 15px;
-  grid-template-areas: 
+  grid-template-areas:
     "main main   main top top"
     "left corner rulerX rulerX side"
     "left rulerY workarea workarea side"
@@ -33,7 +33,7 @@
   height: 100%;
 }
 
-#title_panel > p {
+#title_panel>p {
   color: white;
   padding-left: 5px;
   padding-right: 3px;
@@ -86,7 +86,7 @@
   color: white;
   position: absolute;
   cursor: pointer;
-  top:50%;
+  top: 50%;
 }
 
 .svg_editor:not(.open) #sidepanel_content {
@@ -272,7 +272,8 @@ hr {
   top: -9px;
 }
 
-#main_menu ul, #main_menu li {
+#main_menu ul,
+#main_menu li {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -327,15 +328,18 @@ hr {
   overflow-y: hidden;
   display: flex;
   align-items: center;
-  scrollbar-width: thin; /* Firefox */
+  scrollbar-width: thin;
+  /* Firefox */
 }
 
-#tools_bottom::-webkit-scrollbar { /* Chrome, Edge, and Safari */
+#tools_bottom::-webkit-scrollbar {
+  /* Chrome, Edge, and Safari */
   width: 3px;
   height: 3px;
 }
 
-#tools_bottom se-list, #tools_bottom se-select {
+#tools_bottom se-list,
+#tools_bottom se-select {
   margin-bottom: 8px;
 }
 
@@ -353,19 +357,24 @@ hr {
   margin-left: auto;
   margin-right: auto;
   overflow-y: scroll;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
+  user-select: none;
 }
 
-#tools_left::-webkit-scrollbar { /* Chrome, Edge, and Safari */
+#tools_left::-webkit-scrollbar {
+  /* Chrome, Edge, and Safari */
   width: 3px;
 }
 
-#tools_left::-webkit-scrollbar-track,  #tools_bottom::-webkit-scrollbar-track{
+#tools_left::-webkit-scrollbar-track,
+#tools_bottom::-webkit-scrollbar-track {
   background: transparent;
 }
 
-#tools_left::-webkit-scrollbar-thumb, #tools_bottom::-webkit-scrollbar-thumb {
-  background-color:rgb(70, 70, 70);
+#tools_left::-webkit-scrollbar-thumb,
+#tools_bottom::-webkit-scrollbar-thumb {
+  background-color: rgb(70, 70, 70);
 }
 
 /* End scrollbar styling */
@@ -486,7 +495,8 @@ input[type=text] {
   margin-right: 0;
 }
 
-#main_menu li#tool_open, #main_menu li#tool_import {
+#main_menu li#tool_open,
+#main_menu li#tool_import {
   position: relative;
   overflow: hidden;
 }
@@ -495,7 +505,9 @@ input[type=text] {
   overflow: hidden;
 }
 
-#tool_open input, #tool_import input, #tool_image input {
+#tool_open input,
+#tool_import input,
+#tool_image input {
   position: absolute;
   opacity: 0;
   font-size: 10em;
@@ -616,5 +628,3 @@ ul li.current {
 .dropdown li.tool_button {
   width: 24px;
 }
-
-

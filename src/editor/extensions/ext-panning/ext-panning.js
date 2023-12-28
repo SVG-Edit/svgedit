@@ -39,7 +39,7 @@ export default {
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback () {
-        const btitle = `${name}:buttons.0.title`
+        const btitle = `${name} [Space / mouse wheel + drag]`
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement('template')
         buttonTemplate.innerHTML = `

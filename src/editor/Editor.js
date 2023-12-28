@@ -388,8 +388,10 @@ class Editor extends EditorStartup {
     this.svgCanvas.randomizeIds(arg)
   }
 
-  /** @lends module:SVGEditor~Actions */
   /**
+   *  @lends module:SVGEditor~Actions */
+  /**
+   * editor shortcuts init
    * @returns {void}
    */
   setAll () {

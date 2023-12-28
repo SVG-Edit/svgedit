@@ -118,6 +118,10 @@ class EditorStartup {
       this.configObj.curConfig
     )
 
+    // once svgCanvas is init - adding listener to the changes of the current mode
+    this.modeEvent = this.svgCanvas.modeEvent
+    document.addEventListener('modeChange', (evt) => this.modeListener(evt))
+
     this.leftPanel.init()
     this.bottomPanel.init()
     this.topPanel.init()
@@ -278,6 +282,7 @@ class EditorStartup {
 
     let lastX = null; let lastY = null
     let panning = false; let keypan = false
+    let previousMode = 'select'
 
     $id('svgcanvas').addEventListener('mouseup', (evt) => {
       if (panning === false) { return true }
@@ -305,7 +310,12 @@ class EditorStartup {
     })
     $id('svgcanvas').addEventListener('mousedown', (evt) => {
       if (evt.button === 1 || keypan === true) {
+        // prDefault to avoid firing of browser's panning on mousewheel
+        evt.preventDefault()
         panning = true
+        previousMode = this.svgCanvas.getMode()
+        this.svgCanvas.setMode('ext-panning')
+        this.workarea.style.cursor = 'grab'
         lastX = evt.clientX
         lastY = evt.clientY
         return false
@@ -313,8 +323,25 @@ class EditorStartup {
       return true
     })
 
-    window.addEventListener('mouseup', () => {
+    // preventing browser's scaling with Ctrl+wheel
+    this.$container.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault()
+      }
+    })
+
+    window.addEventListener('mouseup', (evt) => {
+      if (evt.button === 1) {
+        this.svgCanvas.setMode(previousMode ?? 'select')
+      }
       panning = false
+    })
+
+    // Allows quick change to the select mode while panning mode is active
+    this.workarea.addEventListener('dblclick', (evt) => {
+      if (this.svgCanvas.getMode() === 'ext-panning') {
+        this.leftPanel.clickSelect()
+      }
     })
 
     document.addEventListener('keydown', (e) => {
@@ -332,6 +359,7 @@ class EditorStartup {
       if (e.target.nodeName !== 'BODY') return
       if (e.code.toLowerCase() === 'space') {
         this.svgCanvas.spaceKey = keypan = false
+        this.svgCanvas.setMode(previousMode === 'ext-panning' ? 'select' : previousMode ?? 'select')
         e.preventDefault()
       } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')) {
         this.workarea.style.cursor = zoomInIcon
@@ -694,6 +722,36 @@ class EditorStartup {
       // Todo: Report errors through the UI
       console.error(err)
     }
+  }
+
+  /**
+ * Listens to the mode change, listener is to be added on document
+* @param {Event} evt custom modeChange event
+*/
+  modeListener (evt) {
+    const mode = this.svgCanvas.getMode()
+
+    this.setCursorStyle(mode)
+  }
+
+  /**
+   * sets cursor styling for workarea depending on the current mode
+   * @param {string} mode
+   */
+  setCursorStyle (mode) {
+    let cs = 'auto'
+    switch (mode) {
+      case 'ext-panning':
+        cs = 'grab'
+        break
+      case 'zoom':
+        cs = 'crosshair'
+        break
+      default:
+        cs = 'auto'
+    }
+
+    this.workarea.style.cursor = cs
   }
 }
 
