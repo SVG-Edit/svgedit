@@ -824,6 +824,7 @@ class Editor extends EditorStartup {
    * @param {module:svgcanvas.SvgCanvas#event:zoomed} bbox
    * @param {boolean} autoCenter
    * @listens module:svgcanvas.SvgCanvas#event:zoomed
+   * @fires module:svgcanvas.SvgCanvas#event:ext_zoomChanged
    * @returns {void}
    */
   zoomChanged (win, bbox, autoCenter) {
@@ -865,6 +866,11 @@ class Editor extends EditorStartup {
     }
 
     this.zoomDone()
+
+    this.svgCanvas.runExtensions(
+      'zoomChanged',
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ this.svgCanvas.getZoom()
+    )
   }
 
   /**
