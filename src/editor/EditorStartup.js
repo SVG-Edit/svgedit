@@ -122,6 +122,11 @@ class EditorStartup {
     this.modeEvent = this.svgCanvas.modeEvent
     document.addEventListener('modeChange', (evt) => this.modeListener(evt))
 
+    /**if true - selected tool can be cancelled with Esc key
+     * disables on dragging (mousedown) to avoid changing mode in the middle of drawing
+    */
+    this.enableToolCancel = true 
+
     //custom cursor element (appears when some modes (e.g. ellipse) are active)
     // const cursorDiv = document.createElement('div')
     // cursorDiv.setAttribute('id', 'editor-cursor')
@@ -319,6 +324,7 @@ class EditorStartup {
       return false
     })
     $id('svgcanvas').addEventListener('mousedown', (evt) => {
+      this.enableToolCancel = false
       if (evt.button === 1 || keypan === true) {
         // prDefault to avoid firing of browser's panning on mousewheel
         evt.preventDefault()
@@ -341,6 +347,7 @@ class EditorStartup {
     })
 
     window.addEventListener('mouseup', (evt) => {
+      this.enableToolCancel = true
       if (evt.button === 1) {
         this.svgCanvas.setMode(previousMode ?? 'select')
       }
@@ -774,6 +781,18 @@ class EditorStartup {
     }
 
     this.workarea.style.cursor = cs
+  }
+
+  /**
+   * Listens for Esc key to be pressed to cancel active mode, sets mode to Select
+   */
+  cancelTool() {
+    const mode = this.svgCanvas.getMode()
+    //list of modes that are currently save to cancel
+    const modesToCancel = ['zoom', 'rect', 'square', 'circle', 'ellipse', 'line', 'text', 'star', 'polygon', 'eyedropper']
+    if (modesToCancel.includes(mode)) {
+      this.leftPanel.clickSelect()
+    }
   }
 
   /**

@@ -779,9 +779,14 @@ class TopPanel {
    * @returns {false}
    */
   clickItalic () {
-    this.editor.svgCanvas.setItalic(!this.editor.svgCanvas.getItalic())
-    this.updateContextPanel()
-    return false
+    //Checks if there are currently selected text elements
+    const selected = this.editor.svgCanvas.getSelectedElements()
+    const anyTextSelected = selected.length > 0 && selected.filter(el => el.tagName === 'text').length > 0
+    if (anyTextSelected) {
+      this.editor.svgCanvas.setItalic(!this.editor.svgCanvas.getItalic())
+      this.updateContextPanel()
+      return false
+    }
   }
 
   /**
