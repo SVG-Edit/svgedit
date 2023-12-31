@@ -39,9 +39,17 @@ export class FlyingButton extends HTMLElement {
         :host {
           position:relative;
         }
-        .overall:hover *
-        {
-          background-color: var(--icon-bg-color-hover);
+        @keyframes btnHover {
+          from {
+            background-color: transparent;
+          }
+
+          to {
+            background-color: var(--icon-bg-color-hover);
+          }
+        }
+        .overall .menu-button:hover {
+          animation: btnHover 0.2s forwards;
         }
         img {
           border: none;
