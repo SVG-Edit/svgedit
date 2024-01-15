@@ -127,16 +127,6 @@ class EditorStartup {
     */
     this.enableToolCancel = true 
 
-    //custom cursor element (appears when some modes (e.g. ellipse) are active)
-    // const cursorDiv = document.createElement('div')
-    // cursorDiv.setAttribute('id', 'editor-cursor')
-    // this.cursor = cursorDiv
-    // this.setCursorCoorinates(0, 0)
-    // document.body.appendChild(cursorDiv)
-
-    // this.workarea.addEventListener('mousemove', (e) => this.handleCursorMove(e))
-    // this.workarea.addEventListener('mouseleave', () => this.setCursorCoorinates(-100, -100))
-
     this.leftPanel.init()
     this.bottomPanel.init()
     this.topPanel.init()
@@ -793,27 +783,6 @@ class EditorStartup {
     if (modesToCancel.includes(mode)) {
       this.leftPanel.clickSelect()
     }
-  }
-
-  /**
-   * Listens to the mouse coordinates when ose is moving on workarea
-   * @param {Event} e - mosemove Event 
-   */
-  handleCursorMove(e) {
-    const x = e.clientX
-    const y = e.clientY
-
-    this.setCursorCoorinates(x, y)
-  }
-
-  /**
-   * Sets new coordinates for the custom cursor
-   * @param {number} x
-   * @param {number} y
-   */
-  setCursorCoorinates(x, y) {
-    this.cursor.style.left = x + 2 + 'px'
-    this.cursor.style.top = y + 2 + 'px'
   }
 }
 

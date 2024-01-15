@@ -5,7 +5,7 @@ template.innerHTML = `
   <style>
   @keyframes btnHover {
     from {
-      background-color: transparent;
+      background-color: var(--main-bg-color);
     }
 
     to {

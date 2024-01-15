@@ -83,6 +83,7 @@ export default {
       callback () {
         // Add the button and its handler(s)
         const title = `${name}:buttons.0.title`
+        //#TODO: Come up with another shortcut (?) because 'I' is reserved for italic
         const key = `${name}:buttons.0.key`
         const buttonTemplate = `
         <se-button id="tool_eyedropper" title="${title}" src="eye_dropper.svg" shortcut=${key}></se-button>
