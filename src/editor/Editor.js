@@ -96,7 +96,7 @@ class Editor extends EditorStartup {
       'zh-CN',
       'zh-TW'
     ]
-    
+
     const modKey = isMac() ? 'meta+' : 'ctrl+'
     this.shortcuts = [
       // Shortcuts not associated with buttons
@@ -312,7 +312,7 @@ class Editor extends EditorStartup {
           if (this.enableToolCancel) {
             this.cancelTool()
           }
-          }
+        }
       }
     ]
     this.leftPanel = new LeftPanel(this)

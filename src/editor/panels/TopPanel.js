@@ -763,11 +763,12 @@ class TopPanel {
       this.editor.svgCanvas.moveToBottomSelectedElement()
     }
   }
+
   /**
    * Checks if there are currently selected text elements to avoid firing of bold,italic when no text selected
    * @returns {boolean}
    */
-  get anyTextSelected() {
+  get anyTextSelected () {
     const selected = this.editor.svgCanvas.getSelectedElements()
     return selected.filter(el => el.tagName === 'text').length > 0
   }
