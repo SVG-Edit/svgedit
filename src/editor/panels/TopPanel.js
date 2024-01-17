@@ -765,13 +765,24 @@ class TopPanel {
   }
 
   /**
+   * Checks if there are currently selected text elements to avoid firing of bold,italic when no text selected
+   * @returns {boolean}
+   */
+  get anyTextSelected () {
+    const selected = this.editor.svgCanvas.getSelectedElements()
+    return selected.filter(el => el.tagName === 'text').length > 0
+  }
+
+  /**
    *
    * @returns {false}
    */
   clickBold () {
-    this.editor.svgCanvas.setBold(!this.editor.svgCanvas.getBold())
-    this.updateContextPanel()
-    return false
+    if (this.anyTextSelected) {
+      this.editor.svgCanvas.setBold(!this.editor.svgCanvas.getBold())
+      this.updateContextPanel()
+      return false
+    }
   }
 
   /**
@@ -779,9 +790,11 @@ class TopPanel {
    * @returns {false}
    */
   clickItalic () {
-    this.editor.svgCanvas.setItalic(!this.editor.svgCanvas.getItalic())
-    this.updateContextPanel()
-    return false
+    if (this.anyTextSelected) {
+      this.editor.svgCanvas.setItalic(!this.editor.svgCanvas.getItalic())
+      this.updateContextPanel()
+      return false
+    }
   }
 
   /**

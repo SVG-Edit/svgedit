@@ -3,9 +3,18 @@ import { t } from '../locale.js'
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+  @keyframes btnHover {
+    from {
+      background-color: var(--main-bg-color);
+    }
+
+    to {
+      background-color: var(--icon-bg-color-hover);
+    }
+  }
   :host(:hover) :not(.disabled)
   {
-    background-color: var(--icon-bg-color-hover);
+    animation: btnHover 0.2s forwards;
   }
   div
   {

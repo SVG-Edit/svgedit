@@ -44,6 +44,23 @@ template.innerHTML = `
     margin-top: 2px;
     margin-bottom: 1px;
   }
+  #arrow-up, #arrow-down {
+    user-select: none;
+  }
+  @keyframes hover-arrows {
+    from {
+      background: transparent;
+      color: var(--icon-bg-color-hover);
+    }
+
+    to {
+      background: var(--icon-bg-color-hover);
+      color: var(--orange-color);
+    }
+  }
+  #arrow-up:hover, #arrow-down:hover {
+    animation: hover-arrows 0.2s forwards;
+  }
   #down{
     width:18px;
     height:23px;
