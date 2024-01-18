@@ -1,5 +1,5 @@
 import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js'
-import { template } from 'elix/src/base/internal.js'
+import { template, keydown } from 'elix/src/base/internal.js'
 import { fragmentFrom } from 'elix/src/core/htmlLiterals.js'
 
 /**
@@ -62,6 +62,24 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
       `
     )
     return result
+  }
+
+  /**
+   * Tracks if users wants to cancel (close dialog without any changes) with Esc
+   * if null - seConfirm will use responce.choice 
+   */
+  keyChoice = null
+
+  get [keydown] () {
+    /**
+     * Listens to Esc key to close dialog
+     */
+    return (e) => {
+      if (e.key === 'Escape') {
+        this.keyChoice = 'Cancel'
+        this.close()
+      }
+    }
   }
 }
 
