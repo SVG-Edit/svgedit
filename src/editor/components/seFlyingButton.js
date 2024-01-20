@@ -25,7 +25,7 @@ export class FlyingButton extends HTMLElement {
     // we retrieve all elements added in the slot (i.e. se-buttons)
     this.$elements = this.$menu.lastElementChild.assignedElements()
 
-    //Closes opened menu on click
+    // Closes opened menu on click
     document.addEventListener('click', e => {
       if (this.opened) {
         this.opened = false

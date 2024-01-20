@@ -66,7 +66,7 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
 
   /**
    * Tracks if users wants to cancel (close dialog without any changes) with Esc
-   * if null - seConfirm will use responce.choice 
+   * if null - seConfirm will use responce.choice
    */
   keyChoice = null
 
