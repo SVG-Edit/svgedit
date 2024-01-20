@@ -713,7 +713,9 @@ const mouseUpEvent = (evt) => {
       const width = element.getAttribute('width')
       const height = element.getAttribute('height')
       // Image should be kept regardless of size (use inherit dimensions later)
-      keep = (width || height) || svgCanvas.getCurrentMode() === 'image'
+      const widthNum = Number(width)
+      const heightNum = Number(height)
+      keep = widthNum >= 1 || heightNum >= 1 || svgCanvas.getCurrentMode() === 'image'
     }
       break
     case 'circle':
