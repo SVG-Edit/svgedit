@@ -25,6 +25,13 @@ export class ExplorerButton extends HTMLElement {
     this.files = []
     this.request = new XMLHttpRequest()
     this.imgPath = svgEditor.configObj.curConfig.imgPath
+
+    // Closes opened (pressed) lib menu on click on the canvas
+    const workarea = document.getElementById('workarea')
+    workarea.addEventListener('click', (e) => {
+      this.$menu.classList.remove('open')
+      this.$lib.classList.remove('open-lib')
+    })
   }
 
   /**
@@ -262,8 +269,8 @@ export class ExplorerButton extends HTMLElement {
       ev.stopPropagation()
       switch (ev.target.nodeName) {
         case 'SE-EXPLORERBUTTON':
-          this.$menu.classList.add('open')
-          this.$lib.classList.add('open-lib')
+          this.$menu.classList.toggle('open')
+          this.$lib.classList.toggle('open-lib')
           break
         case 'SE-BUTTON':
         // change to the current action

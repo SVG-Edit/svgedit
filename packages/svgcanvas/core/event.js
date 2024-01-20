@@ -713,7 +713,9 @@ const mouseUpEvent = (evt) => {
       const width = element.getAttribute('width')
       const height = element.getAttribute('height')
       // Image should be kept regardless of size (use inherit dimensions later)
-      keep = (width || height) || svgCanvas.getCurrentMode() === 'image'
+      const widthNum = Number(width)
+      const heightNum = Number(height)
+      keep = widthNum >= 1 || heightNum >= 1 || svgCanvas.getCurrentMode() === 'image'
     }
       break
     case 'circle':
@@ -886,8 +888,8 @@ const mouseUpEvent = (evt) => {
       if (svgCanvas.getCurrentMode() === 'path') {
         svgCanvas.pathActions.toEditMode(element)
       } else if (svgCanvas.getCurConfig().selectNew) {
-        const modes = ['circle', 'ellipse', 'square', 'rect', 'fhpath', 'line', 'fhellipse', 'fhrect', 'star', 'polygon']
-        if (modes.indexOf(svgCanvas.getCurrentMode()) !== -1) {
+        const modes = ['circle', 'ellipse', 'square', 'rect', 'fhpath', 'line', 'fhellipse', 'fhrect', 'star', 'polygon', 'shapelib']
+        if (modes.indexOf(svgCanvas.getCurrentMode()) !== -1 && !evt.altKey) {
           svgCanvas.setMode('select')
         }
         svgCanvas.selectOnly([element], true)

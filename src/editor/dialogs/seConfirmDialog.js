@@ -6,7 +6,7 @@ const seConfirm = async (text, choices) => {
   dialog.choices = (choices === undefined) ? ['Ok', 'Cancel'] : choices
   dialog.open()
   const response = await dialog.whenClosed()
-  return response.choice
+  return dialog.keyChoice ?? response.choice
 }
 
 window.seConfirm = seConfirm
