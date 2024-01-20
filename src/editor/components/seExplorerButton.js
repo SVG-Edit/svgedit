@@ -26,7 +26,7 @@ export class ExplorerButton extends HTMLElement {
     this.request = new XMLHttpRequest()
     this.imgPath = svgEditor.configObj.curConfig.imgPath
 
-    // Closes opened (pressed) lib menu on click on the canvas
+    //Closes opened (pressed) lib menu on click on the canvas
     const workarea = document.getElementById('workarea')
     workarea.addEventListener('click', (e) => {
       this.$menu.classList.remove('open')
