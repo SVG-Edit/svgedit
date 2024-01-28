@@ -40,14 +40,14 @@ export default {
     helperCursor.style.height = '14px'
     helperCursor.style.position = 'absolute'
     svgEditor.workarea.appendChild(helperCursor)
-    
+
     const styleHelper = () => {
       const mode = svgCanvas.getMode()
 
       if (mode === name) {
         helperCursor.style.display = 'block'
 
-        const strokeWidthNum = Number(currentStyle.strokeWidth);
+        const strokeWidthNum = Number(currentStyle.strokeWidth)
         const borderStyle = currentStyle.strokeDashArray === 'none' || !currentStyle.strokeDashArray ? 'solid' : 'dotted'
 
         helperCursor.style.background = currentStyle.fillPaint ?? 'transparent'
@@ -77,7 +77,6 @@ export default {
      * @returns {void}
      */
     const getStyle = (opts) => {
-
       let elem = null
       if (!opts.multiselected && opts.elems[0] &&
         !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
@@ -125,7 +124,7 @@ export default {
           }
         })
 
-        //Positions helper
+        // Positions helper
         svgEditor.workarea.addEventListener('mousemove', (e) => {
           const x = e.clientX
           const y = e.clientY
@@ -135,7 +134,6 @@ export default {
             helperCursor.style.left = x + 12 + 'px'
             styleHelper()
           }
-          
         })
 
         svgEditor.workarea.addEventListener('mouseleave', e => {
@@ -161,12 +159,11 @@ export default {
 
             // If some style is picked - applies it to the target, if no style - picks it from the target
             if (Object.keys(currentStyle).length > 0) {
-
               const change = function (elem, attrname, newvalue) {
                 changes[attrname] = elem.getAttribute(attrname)
                 elem.setAttribute(attrname, newvalue)
               }
-  
+
               if (currentStyle.fillPaint) { change(target, 'fill', currentStyle.fillPaint) }
               if (currentStyle.fillOpacity) { change(target, 'fill-opacity', currentStyle.fillOpacity) }
               if (currentStyle.strokePaint) { change(target, 'stroke', currentStyle.strokePaint) }
@@ -176,12 +173,11 @@ export default {
               if (currentStyle.opacity) { change(target, 'opacity', currentStyle.opacity) }
               if (currentStyle.strokeLinecap) { change(target, 'stroke-linecap', currentStyle.strokeLinecap) }
               if (currentStyle.strokeLinejoin) { change(target, 'stroke-linejoin', currentStyle.strokeLinejoin) }
-  
+
               addToHistory(new ChangeElementCommand(target, changes))
             } else {
-              getStyle({elems: [target]})
+              getStyle({ elems: [target] })
             }
-
           }
         }
       }
