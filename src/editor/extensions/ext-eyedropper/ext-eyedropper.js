@@ -47,9 +47,12 @@ export default {
       if (mode === name) {
         helperCursor.style.display = 'block'
 
+        const strokeWidthNum = Number(currentStyle.strokeWidth);
+        const borderStyle = currentStyle.strokeDashArray === 'none' || !currentStyle.strokeDashArray ? 'solid' : 'dotted'
+
         helperCursor.style.background = currentStyle.fillPaint ?? 'transparent'
         helperCursor.style.opacity = currentStyle.opacity ?? 1
-        helperCursor.style.border = (Number(currentStyle.strokeWidth) > 0 && currentStyle.strokePaint) ? `1px solid ${currentStyle.strokePaint}` : 'none'
+        helperCursor.style.border = (strokeWidthNum > 0 && currentStyle.strokePaint) ? `2px ${borderStyle} ${currentStyle.strokePaint}` : 'none'
       }
     }
 
@@ -74,9 +77,6 @@ export default {
      * @returns {void}
      */
     const getStyle = (opts) => {
-      // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
-      // const mode = svgCanvas.getMode()
-      // if (mode === name) { return }
 
       let elem = null
       if (!opts.multiselected && opts.elems[0] &&
@@ -151,7 +151,6 @@ export default {
       },
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,
-      elementChanged: getStyle,
       mouseDown (opts) {
         const mode = svgCanvas.getMode()
         if (mode === name) {
@@ -160,7 +159,7 @@ export default {
           if (!['svg', 'g', 'use'].includes(target.nodeName)) {
             const changes = {}
 
-            // If some style is picked - applies it to the target, if no style - picks it from target
+            // If some style is picked - applies it to the target, if no style - picks it from the target
             if (Object.keys(currentStyle).length > 0) {
 
               const change = function (elem, attrname, newvalue) {
