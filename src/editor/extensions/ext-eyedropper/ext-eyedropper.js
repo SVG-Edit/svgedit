@@ -31,18 +31,24 @@ export default {
     const { ChangeElementCommand } = svgCanvas.history
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
-    const currentStyle = {
-      fillPaint: 'red',
-      fillOpacity: 1.0,
-      strokePaint: 'black',
-      strokeOpacity: 1.0,
-      strokeWidth: 5,
-      strokeDashArray: null,
-      opacity: 1.0,
-      strokeLinecap: 'butt',
-      strokeLinejoin: 'miter'
-    }
+    const currentStyle = {}
     const { $id, $click } = svgCanvas
+
+    // Helper to show what style is currectly picked
+    const helperCursor = document.createElement('div')
+    helperCursor.style.width = '14px'
+    helperCursor.style.height = '14px'
+    helperCursor.style.position = 'absolute'
+    svgEditor.workarea.appendChild(helperCursor)
+    
+    const styleHelper = () => {
+      const mode = svgCanvas.getMode()
+
+      if (mode === name) {
+        helperCursor.style.display = 'block'
+        helperCursor.style.background = 'red'
+      }
+    }
 
     /**
      *
@@ -52,7 +58,7 @@ export default {
     const getStyle = (opts) => {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
       const mode = svgCanvas.getMode()
-      if (mode === 'eyedropper') { return }
+      if (mode === name) { return }
 
       const tool = $id('tool_eyedropper')
       // enable-eye-dropper if one element is selected
@@ -72,9 +78,6 @@ export default {
         currentStyle.strokeLinecap = elem.getAttribute('stroke-linecap')
         currentStyle.strokeLinejoin = elem.getAttribute('stroke-linejoin')
         currentStyle.opacity = elem.getAttribute('opacity') || 1.0
-        // disable eye-dropper tool
-      } else {
-        tool.classList.add('disabled')
       }
     }
 
@@ -91,8 +94,26 @@ export default {
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12)
         $click($id('tool_eyedropper'), () => {
           if (this.leftPanel.updateLeftPanel('tool_eyedropper')) {
-            svgCanvas.setMode('eyedropper')
+            svgCanvas.setMode(name)
           }
+        })
+
+        document.addEventListener('modeChange', e => {
+          styleHelper()
+        })
+
+        svgEditor.workarea.addEventListener('mousemove', (e) => {
+          const x = e.clientX
+          const y = e.clientY
+
+          helperCursor.style.display = 'block'
+          helperCursor.style.top = y + 'px'
+          helperCursor.style.left = x + 10 + 'px'
+          
+        })
+
+        svgEditor.workarea.addEventListener('mouseleave', e => {
+          helperCursor.style.display = 'none'
         })
       },
       // if we have selected an element, grab its paint and enable the eye dropper button
@@ -100,7 +121,7 @@ export default {
       elementChanged: getStyle,
       mouseDown (opts) {
         const mode = svgCanvas.getMode()
-        if (mode === 'eyedropper') {
+        if (mode === name) {
           const e = opts.event
           const { target } = e
           if (!['svg', 'g', 'use'].includes(target.nodeName)) {
