@@ -169,10 +169,15 @@ export default {
               if (currentStyle.strokePaint) { change(target, 'stroke', currentStyle.strokePaint) }
               if (currentStyle.strokeOpacity) { change(target, 'stroke-opacity', currentStyle.strokeOpacity) }
               if (currentStyle.strokeWidth) { change(target, 'stroke-width', currentStyle.strokeWidth) }
-              if (currentStyle.strokeDashArray) { change(target, 'stroke-dasharray', currentStyle.strokeDashArray) }
               if (currentStyle.opacity) { change(target, 'opacity', currentStyle.opacity) }
               if (currentStyle.strokeLinecap) { change(target, 'stroke-linecap', currentStyle.strokeLinecap) }
               if (currentStyle.strokeLinejoin) { change(target, 'stroke-linejoin', currentStyle.strokeLinejoin) }
+
+              if (currentStyle.strokeDashArray) {
+                change(target, 'stroke-dasharray', currentStyle.strokeDashArray)
+              } else {
+                target.removeAttribute('stroke-dasharray')
+              }
 
               addToHistory(new ChangeElementCommand(target, changes))
             } else {
