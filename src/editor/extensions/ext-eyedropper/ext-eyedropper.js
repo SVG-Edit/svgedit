@@ -46,7 +46,25 @@ export default {
 
       if (mode === name) {
         helperCursor.style.display = 'block'
-        helperCursor.style.background = 'red'
+
+        helperCursor.style.background = currentStyle.fillPaint ?? 'transparent'
+        helperCursor.style.opacity = currentStyle.opacity ?? 1
+        helperCursor.style.border = (Number(currentStyle.strokeWidth) > 0 && currentStyle.strokePaint) ? `1px solid ${currentStyle.strokePaint}` : 'none'
+      }
+    }
+
+    const resetCurrentStyle = () => {
+      const keys = Object.keys(currentStyle)
+
+      keys.forEach(key => delete currentStyle[key])
+    }
+
+    const cancelHandler = () => {
+      if (Object.keys(currentStyle).length > 0) {
+        resetCurrentStyle()
+        styleHelper()
+      } else {
+        svgEditor.leftPanel.clickSelect()
       }
     }
 
@@ -57,17 +75,14 @@ export default {
      */
     const getStyle = (opts) => {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
-      const mode = svgCanvas.getMode()
-      if (mode === name) { return }
+      // const mode = svgCanvas.getMode()
+      // if (mode === name) { return }
 
-      const tool = $id('tool_eyedropper')
-      // enable-eye-dropper if one element is selected
       let elem = null
       if (!opts.multiselected && opts.elems[0] &&
         !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0]
-        tool.classList.remove('disabled')
         // grab the current style
         currentStyle.fillPaint = elem.getAttribute('fill') || 'black'
         currentStyle.fillOpacity = elem.getAttribute('fill-opacity') || 1.0
@@ -86,8 +101,8 @@ export default {
       callback () {
         // Add the button and its handler(s)
         const title = `${name}:buttons.0.title`
-        // #TODO: Come up with another shortcut (?) because 'I' is reserved for italic
-        const key = `${name}:buttons.0.key`
+        // const key = `${name}:buttons.0.key`
+        const key = 'ctrl+I'
         const buttonTemplate = `
         <se-button id="tool_eyedropper" title="${title}" src="eye_dropper.svg" shortcut=${key}></se-button>
         `
@@ -98,22 +113,40 @@ export default {
           }
         })
 
+        // enables helper, resets currently picked style if no element selected
         document.addEventListener('modeChange', e => {
-          styleHelper()
+          if (svgCanvas.getMode() === name) {
+            styleHelper()
+          } else {
+            helperCursor.style.display = 'none'
+          }
+          if (svgCanvas.getSelectedElements().length === 0) {
+            resetCurrentStyle()
+          }
         })
 
+        //Positions helper
         svgEditor.workarea.addEventListener('mousemove', (e) => {
           const x = e.clientX
           const y = e.clientY
 
-          helperCursor.style.display = 'block'
-          helperCursor.style.top = y + 'px'
-          helperCursor.style.left = x + 10 + 'px'
+          if (svgCanvas.getMode() === name) {
+            helperCursor.style.top = y + 'px'
+            helperCursor.style.left = x + 12 + 'px'
+            styleHelper()
+          }
           
         })
 
         svgEditor.workarea.addEventListener('mouseleave', e => {
           helperCursor.style.display = 'none'
+        })
+
+        // Listens to Esc to reset currently picked style / set Select mode
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && svgCanvas.getMode() === name) {
+            cancelHandler()
+          }
         })
       },
       // if we have selected an element, grab its paint and enable the eye dropper button
@@ -127,22 +160,29 @@ export default {
           if (!['svg', 'g', 'use'].includes(target.nodeName)) {
             const changes = {}
 
-            const change = function (elem, attrname, newvalue) {
-              changes[attrname] = elem.getAttribute(attrname)
-              elem.setAttribute(attrname, newvalue)
+            // If some style is picked - applies it to the target, if no style - picks it from target
+            if (Object.keys(currentStyle).length > 0) {
+
+              const change = function (elem, attrname, newvalue) {
+                changes[attrname] = elem.getAttribute(attrname)
+                elem.setAttribute(attrname, newvalue)
+              }
+  
+              if (currentStyle.fillPaint) { change(target, 'fill', currentStyle.fillPaint) }
+              if (currentStyle.fillOpacity) { change(target, 'fill-opacity', currentStyle.fillOpacity) }
+              if (currentStyle.strokePaint) { change(target, 'stroke', currentStyle.strokePaint) }
+              if (currentStyle.strokeOpacity) { change(target, 'stroke-opacity', currentStyle.strokeOpacity) }
+              if (currentStyle.strokeWidth) { change(target, 'stroke-width', currentStyle.strokeWidth) }
+              if (currentStyle.strokeDashArray) { change(target, 'stroke-dasharray', currentStyle.strokeDashArray) }
+              if (currentStyle.opacity) { change(target, 'opacity', currentStyle.opacity) }
+              if (currentStyle.strokeLinecap) { change(target, 'stroke-linecap', currentStyle.strokeLinecap) }
+              if (currentStyle.strokeLinejoin) { change(target, 'stroke-linejoin', currentStyle.strokeLinejoin) }
+  
+              addToHistory(new ChangeElementCommand(target, changes))
+            } else {
+              getStyle({elems: [target]})
             }
 
-            if (currentStyle.fillPaint) { change(target, 'fill', currentStyle.fillPaint) }
-            if (currentStyle.fillOpacity) { change(target, 'fill-opacity', currentStyle.fillOpacity) }
-            if (currentStyle.strokePaint) { change(target, 'stroke', currentStyle.strokePaint) }
-            if (currentStyle.strokeOpacity) { change(target, 'stroke-opacity', currentStyle.strokeOpacity) }
-            if (currentStyle.strokeWidth) { change(target, 'stroke-width', currentStyle.strokeWidth) }
-            if (currentStyle.strokeDashArray) { change(target, 'stroke-dasharray', currentStyle.strokeDashArray) }
-            if (currentStyle.opacity) { change(target, 'opacity', currentStyle.opacity) }
-            if (currentStyle.strokeLinecap) { change(target, 'stroke-linecap', currentStyle.strokeLinecap) }
-            if (currentStyle.strokeLinejoin) { change(target, 'stroke-linejoin', currentStyle.strokeLinejoin) }
-
-            addToHistory(new ChangeElementCommand(target, changes))
           }
         }
       }
