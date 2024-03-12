@@ -2,6 +2,7 @@ import 'pathseg'
 import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
 import * as draw from '../../../packages/svgcanvas/core/draw.js'
 import * as units from '../../../packages/svgcanvas/core/units.js'
+import { Layer } from '../../../packages/svgcanvas/core/draw'
 
 describe('draw.Drawing', function () {
   const addOwnSpies = (obj) => {
@@ -28,8 +29,8 @@ describe('draw.Drawing', function () {
 
   units.init(
     /**
-    * @implements {module:units.ElementContainer}
-    */
+     * @implements {module:units.ElementContainer}
+     */
     {
       // used by units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
       getRoundDigits () { return 3 }
@@ -45,8 +46,8 @@ describe('draw.Drawing', function () {
   const setCurrentGroup = () => { /* empty fn */ }
   draw.init(
     /**
-    * @implements {module:draw.DrawCanvasInit}
-    */
+     * @implements {module:draw.DrawCanvasInit}
+     */
     {
       getCurrentDrawing,
       setCurrentGroup
@@ -67,18 +68,21 @@ describe('draw.Drawing', function () {
 
   const setupSVGWith3Layers = function (svgElem) {
     const layer1 = document.createElementNS(NS.SVG, 'g')
+    layer1.setAttribute('class', Layer.CLASS_NAME)
     const layer1Title = document.createElementNS(NS.SVG, 'title')
     layer1Title.append(LAYER1)
     layer1.append(layer1Title)
     svgElem.append(layer1)
 
     const layer2 = document.createElementNS(NS.SVG, 'g')
+    layer2.setAttribute('class', Layer.CLASS_NAME)
     const layer2Title = document.createElementNS(NS.SVG, 'title')
     layer2Title.append(LAYER2)
     layer2.append(layer2Title)
     svgElem.append(layer2)
 
     const layer3 = document.createElementNS(NS.SVG, 'g')
+    layer3.setAttribute('class', Layer.CLASS_NAME)
     const layer3Title = document.createElementNS(NS.SVG, 'title')
     layer3Title.append(LAYER3)
     layer3.append(layer3Title)
