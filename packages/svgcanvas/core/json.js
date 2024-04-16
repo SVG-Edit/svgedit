@@ -86,7 +86,7 @@ export const addSVGElementsFromJson = (data) => {
     assignAttributes(shape, {
       fill: curShape.fill,
       stroke: curShape.stroke,
-      'stroke-width': curShape.strokeWidth,
+      'stroke-width': curShape.stroke_width,
       'stroke-dasharray': curShape.stroke_dasharray,
       'stroke-linejoin': curShape.stroke_linejoin,
       'stroke-linecap': curShape.stroke_linecap,
