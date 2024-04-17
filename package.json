@@ -29,7 +29,7 @@
     "cypress:open": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html 'cypress open'",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
-    "build-docs-remove": "rimraf \"docs/jsdoc/*\"",
+    "build-docs-remove": "rimraf \"docs/jsdoc/\"",
     "build-docs-create": "jsdoc --pedantic -c docs/jsdoc-config.js src",
     "build-docs": "run-s -c build-docs-remove build-docs-create",
     "build-and-open-docs-no-start": "run-s build-docs open-docs-no-start",
