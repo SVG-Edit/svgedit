@@ -1415,3 +1415,4 @@ class Editor extends EditorStartup {
 }
 
 export default Editor
+export { SvgCanvas }
