@@ -1291,6 +1291,7 @@ class SvgCanvas {
     this.hasMatrixTransform = hasMatrixTransform
     this.transformListToTransform = transformListToTransform
     this.convertToNum = convertToNum
+    this.convertUnit = convertUnit
     this.findDefs = findDefs
     this.getUrlFromAttr = getUrlFromAttr
     this.getHref = getHref
