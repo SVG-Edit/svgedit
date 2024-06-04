@@ -17,7 +17,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
-    translationModule = await import('../ext-guidance/locale/en.js')
+    translationModule = await import('../ext-tactile/locale/en.js')
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
 }
@@ -33,13 +33,6 @@ export default {
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const { $id, $click } = svgCanvas
-    const startClientPos = {}
-
-    let targetId=0
-    let lastBBox = {}
-    let curShape
-    let startX
-    let startY
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
@@ -65,7 +58,7 @@ export default {
         })
         $click($id('tool_setZoomLvl'), () => {
           if (this.leftPanel.updateLeftPanel('tool_setZoomLvl')) {
-            svgCanvas.setMode('setZoomLvl')
+            svgCanvas.setMode('zoomLvl')
           }
         })
         $click($id('tool_label'), () => {

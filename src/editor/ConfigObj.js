@@ -181,6 +181,7 @@ export default class ConfigObj {
       'ext-tactile',
       'ext-guidance',
       'ext-label',
+      'ext-zoom_lvl',
       'ext-grid',
       // 'ext-imagelib',
       // 'ext-arrows',

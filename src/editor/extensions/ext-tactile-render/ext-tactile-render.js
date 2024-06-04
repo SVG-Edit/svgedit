@@ -57,7 +57,8 @@ export default {
               console.warn(xhr.status);
               console.warn(xhr.responseText);
             }};
-            xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgCanvas.getSvgString())}));
+            let svgString= svgCanvas.getSvgString().replaceAll("data-image-label", "aria-label").replaceAll("data-image-description", "aria-description");
+            xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString)}));
           }
         })
       }

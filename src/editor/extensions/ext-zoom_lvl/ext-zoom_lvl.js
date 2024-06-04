@@ -8,8 +8,8 @@
  *
  */
 
-const name = 'label'
-import labelDialogHTML from './labelDialog.html'
+const name = 'zoom_lvl'
+import labelDialogHTML from './zoomLvlDialog.html'
 
 const template = document.createElement('template')
 template.innerHTML = labelDialogHTML
@@ -21,7 +21,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
-    translationModule = await import('../ext-label/locale/en.js')
+    translationModule = await import('../ext-zoom_lvl/locale/en.js')
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
 }
@@ -29,7 +29,7 @@ const loadExtensionTranslation = async function (svgEditor) {
 /**
  * @class SeLabelDialog
  */
-export class SeLabelDialog extends HTMLElement {
+export class SeZoomLvlDialog extends HTMLElement {
   /**
     * @function constructor
     */
@@ -38,11 +38,10 @@ export class SeLabelDialog extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(template.content.cloneNode(true))
-    this.$dialog = this._shadowRoot.querySelector('#label_box')
-    this.$okBtn = this._shadowRoot.querySelector('#label_ok')
-    this.$cancelBtn = this._shadowRoot.querySelector('#label_cancel')
-    this.$shortLabel = this._shadowRoot.querySelector('#short_label')
-    this.$longDesc = this._shadowRoot.querySelector('#long_description')
+    this.$dialog = this._shadowRoot.querySelector('#zoom_lvl_box')
+    this.$okBtn = this._shadowRoot.querySelector('#ok')
+    this.$cancelBtn = this._shadowRoot.querySelector('#cancel')
+    this.$zoomVal = this._shadowRoot.querySelector('#zoom_value')
 
   }
 
@@ -54,8 +53,8 @@ export class SeLabelDialog extends HTMLElement {
   init (i18next) {
     this.setAttribute('label-ok', i18next.t(`common.ok`))
     this.setAttribute('label-cancel', i18next.t(`common.cancel`))
-    this.setAttribute('label-short_label', i18next.t(`${name}:label.short_label`))
-    this.setAttribute('label-long_description', i18next.t(`${name}:label.long_description`))
+    this.setAttribute('label-zoom_val', i18next.t(`${name}:zoom_lvl.zoom_level`))
+    //this.setAttribute('label-long_description', i18next.t(`${name}:zoom_lvl.long_description`))
     
   }
 
@@ -64,7 +63,7 @@ export class SeLabelDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'label-ok', 'label-cancel', 'label-short_label', 'label-long_description', 'short_label', 'short_description']
+    return ['dialog', 'label-ok', 'label-cancel', 'label-zoom_val', 'zoom_val']
   }
 
   /**
@@ -84,16 +83,10 @@ export class SeLabelDialog extends HTMLElement {
           this.$dialog.close()
         }
 
-        if (document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).hasAttribute('data-image-label'))
-            this.$shortLabel.value= document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).getAttribute('data-image-label')
+        if (document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).hasAttribute('data-image-zoom'))
+            this.$zoomVal.value= document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).getAttribute('data-image-zoom')
         else
-            this.$shortLabel.value = ''
-
-        if (document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).hasAttribute('data-image-description'))
-            this.$longDesc.value= document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).getAttribute('data-image-description')
-        else
-            this.$longDesc.value = ''
-
+            this.$zoomVal.value = ''
         break
       case 'label-ok':
         this.$okBtn.textContent = newValue
@@ -101,18 +94,14 @@ export class SeLabelDialog extends HTMLElement {
       case 'label-cancel':
         this.$cancelBtn.textContent = newValue
         break
-      case 'label-short_label':
-        node = this._shadowRoot.querySelector('#object_label')
+      case 'label-zoom_val':
+        node = this._shadowRoot.querySelector('#zoom_value_prompt')
         node.textContent = newValue
         break
-      case 'label-long_description':
-        node = this._shadowRoot.querySelector('#object_description')
+      case 'zoom_val':
+        node = this._shadowRoot.querySelector('#zoom_value')
         node.textContent = newValue
-        break
-      case 'short_label':
-        break
-      case 'long_description':
-        break    
+        break 
       default:
       // super.attributeChangedCallback(name, oldValue, newValue);
         break
@@ -124,14 +113,13 @@ export class SeLabelDialog extends HTMLElement {
    */
 connectedCallback () {
   const onSaveHandler = () => {
-      document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).setAttribute('data-image-label', this.$shortLabel.value)
-      document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).setAttribute('data-image-description', this.$longDesc.value)
-      document.getElementById('se-label-dialog').setAttribute('dialog', 'close')
+      document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).setAttribute('data-image-zoom', this.$zoomVal.value)
+      document.getElementById('se-zoom-lvl-dialog').setAttribute('dialog', 'close')
       svgEditor.svgCanvas.clearSelection()
     }
 
     const onCancelHandler = () => {
-      document.getElementById('se-label-dialog').setAttribute('dialog', 'close')
+      document.getElementById('se-zoom-lvl-dialog').setAttribute('dialog', 'close')
       svgEditor.svgCanvas.clearSelection() 
     }
   svgEditor.$click(this.$okBtn, onSaveHandler)
@@ -140,7 +128,7 @@ connectedCallback () {
 }
 
 // Register
-customElements.define('se-label-dialog', SeLabelDialog)  
+customElements.define('se-zoom-lvl-dialog', SeZoomLvlDialog)  
 
 export default {
   name,
@@ -157,20 +145,20 @@ export default {
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback () {
-        const labelDialog = document.createElement('se-label-dialog')
-        labelDialog.setAttribute('id', 'se-label-dialog')
-        document.getElementById('container').append(labelDialog)
-        labelDialog.init(svgEditor.i18next)
+        const zoomLvlDialog = document.createElement('se-zoom-lvl-dialog')
+        zoomLvlDialog.setAttribute('id', 'se-zoom-lvl-dialog')
+        document.getElementById('container').append(zoomLvlDialog)
+        zoomLvlDialog.init(svgEditor.i18next)
       },
       mouseDown(opts){
         const mode = svgCanvas.getMode()
-        if (mode === "label") {
+        if (mode === "zoomLvl") {
           svgCanvas.clearSelection()
           const e = opts.event
           const { target } = e
           if (!['svg', 'use'].includes(target.nodeName)){
             svgCanvas.addToSelection([target])
-            document.getElementById('se-label-dialog').setAttribute('dialog', 'open')
+            document.getElementById('se-zoom-lvl-dialog').setAttribute('dialog', 'open')
           }
         }
       }

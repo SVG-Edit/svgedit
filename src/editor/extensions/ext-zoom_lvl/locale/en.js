@@ -9,9 +9,11 @@ export default {
     }
   ],
   label:{
-    ok: 'OK',
-    cancel: 'Cancel',
     short_label: 'Label',
     long_description: 'Description'
+  },
+  zoom_lvl:{
+    zoom_description:'Zoom value at which the object is shown on a tactile display',
+    zoom_level:'Zoom value'
   }
 }

@@ -13,12 +13,6 @@ export default {
     width: 'Width',
     height: 'Height'
   },
-  label:{
-    ok: 'OK',
-    cancel: 'Cancel',
-    short_label: 'Label',
-    long_description: 'Description'
-  },
   misc: {
     powered_by: 'Powered by'
   },
