@@ -219,7 +219,7 @@ export default {
         // console.log('elementChanged');
         const elem = singleSelectedObject(opts);
         if (elem != null) {
-          console.log(elem);
+          // console.log(elem);
           resetStartEnd(elem);
           elem.setAttribute('d', getCurvyPath(startX,startY,endX,endY));
         }
