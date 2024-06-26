@@ -13,7 +13,7 @@
   <!-- STYLESHEETS (others loaded dynamically) -->
   <style id="styleoverrides" media="screen"></style>
   <link href="./svgedit.css" rel="stylesheet" media="all">
-  <link href="./cs-drill-extensions/svgedit.css" rel="stylesheet" media="all">
+  <link href="./cs-drill-editor/drilleditor.css" rel="stylesheet" media="all">
 
   <!-- Lacking browser support -->
   <script type="module" src="browser-not-supported.js"></script>
@@ -33,7 +33,23 @@
 <!-- If you do not wish to add extensions by URL, you can add calls
       within the following file to svgEditor.setConfig -->
 <script type="module">
-  import Extensions from './cs-drill-extensions/extensions.js'
+  import DrillEditor from './cs-drill-editor/DrillEditor.js'
+  function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = decodeURI(value);
+    });
+    return vars;
+  }
+  function getUrlParam(parameter, defaultvalue){
+    var urlparameter = defaultvalue;
+    if(window.location.href.indexOf(parameter) > -1){
+      urlparameter = getUrlVars()[parameter];
+    }
+    return urlparameter;
+  }
+  const sport = getUrlParam("sport","soccer");
+  const templateName = getUrlParam("template", "Blank")
 
   import Editor from './Editor.js'
 
@@ -43,24 +59,20 @@
   svgEditor.setConfig({
     noDefaultExtensions: true,
     showRulers: false,
-    //imgPath: './cs-drill-extensions/tool-icons', //TODO THIS BREAKS DEFAULT TOOL IMAGES
-    extPath: './cs-drill-extensions',
-    extIconsPath: './cs-drill-extensions/tool-icons', //TODO THIS DOES NOT WORK!!!
-    stylesheets: ['@default', './cs-drill-extensions/svgedit.css'], //TODO THIS DOES NOT WORK!!!
-    //dimensions: [640,480], //TODO CAUSES ERROR!!!
+    allowInitialUserOverride: true,
+    extensions: DrillEditor.ToolExtensions["common"].concat(DrillEditor.ToolExtensions[sport]),
+    extPath: './cs-drill-editor/tool-extensions',
+    //imgPath: './cs-drill-extensions/tool-icons', //TODO THIS BREAKS DEFAULT TOOL IMAGES...HAVE TO PUT TOOL ICONS IN IMAGES DIR
+    //extIconsPath: './cs-drill-extensions/tool-icons', //TODO THIS DOES NOT WORK...HAVE TO PUT TOOL ICONS IN IMAGES DIR
+    //stylesheets: ['@default', './cs-drill-extensions/svgedit.css'], //TODO THIS DOES NOT WORK...MANUALLY INCLUDING CUSTOM CSS FILE
+    //dimensions: [640,480], //TODO CAUSES ERROR...BUT DON'T THINK IT MATTERS (CHECK SJ COMMIT IN OLD REPO)
   })
 
   svgEditor.init()
 
-  svgEditor.setConfig({
-    allowInitialUserOverride: true,
-    extensions: [],
-    userExtensions: Extensions.soccerExtensions,
-    //dimensions: [100,100], //TODO CAUSES ERROR!!!
-  })
-
-
-  //svgEditor.loadFromURL('./cs-drill-extensions/backgrounds/whole_field.svg');
+  const template = DrillEditor.Templates[sport].find(t => t.name === templateName);
+  //todo config setting for path
+  svgEditor.loadFromURL("./cs-drill-editor/templates"+ template.filePath);
 
   // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
   /* globals XDOMAIN */

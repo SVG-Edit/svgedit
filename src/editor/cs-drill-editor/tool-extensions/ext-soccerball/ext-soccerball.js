@@ -207,7 +207,7 @@ export default {
         );
 
         svgCanvas.selectOnly([newFO]);
-        //svgCanvas.moveSelectedElements(startX, startY, false);
+        svgCanvas.moveSelectedElements(startX, startY, false);
 
         return {
           started: true

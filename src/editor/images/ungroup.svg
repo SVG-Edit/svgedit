@@ -1,21 +1,3 @@
-<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-  <linearGradient id="svg_90" x1="0" y1="0" x2="1" y2="1">
-   <stop offset="0" stop-color="#ccddff" stop-opacity="1"/>
-   <stop offset="1" stop-color="#789fed" stop-opacity="1"/>
-  </linearGradient>
-  <linearGradient id="svg_92" x1="0" y1="0" x2="1" y2="1">
-   <stop offset="0" stop-color="#70a1e5" stop-opacity="1"/>
-   <stop offset="1" stop-color="#4b6baf" stop-opacity="1"/>
-  </linearGradient>
- </defs>
-  <rect x="2.5" y="2.5" width="8" height="7" fill="url(#svg_90)" stroke="url(#svg_92)" id="svg_87"/>
-  <rect x="5.5" y="6.5" width="8" height="7" id="svg_84" fill="#7399d6" stroke="url(#svg_92)"/>
-  <rect x="9.5" y="1.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_79"/>
-  <rect x="1.5" y="8.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_83"/>
-  <rect x="1.5" y="1.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
-  <rect id="svg_93" x="12.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
-  <rect id="svg_94" x="12.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
-  <rect id="svg_95" x="4.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
-  <rect id="svg_96" x="4.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
-</svg>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg_icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M5 14v.8125A.1876.1876 0 0 1 4.8125 15h-1.625A.1876.1876 0 0 1 3 14.8125v-1.625C3 13.084 3.084 13 3.1875 13H4V7h-.8125A.1876.1876 0 0 1 3 6.8125v-1.625C3 5.084 3.084 5 3.1875 5h1.625C4.916 5 5 5.084 5 5.1875V6h9v-.8125C14 5.084 14.084 5 14.1875 5h1.625c.1035 0 .1875.084.1875.1875v1.625A.1876.1876 0 0 1 15.8125 7H15v6h.8125c.1035 0 .1875.084.1875.1875v1.625a.1876.1876 0 0 1-.1875.1875h-1.625A.1876.1876 0 0 1 14 14.8125V14H5zm15-3v6h.8125c.1034 0 .1875.084.1875.1875v1.625a.1876.1876 0 0 1-.1875.1875h-1.625A.1876.1876 0 0 1 19 18.8125V18h-9v.8125A.1876.1876 0 0 1 9.8125 19h-1.625A.1876.1876 0 0 1 8 18.8125v-1.625C8 17.084 8.084 17 8.1875 17H9v-2.25h4.25V15a.75.75 0 0 0 .75.75h2a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 0-.75-.75h-.25V10H19v-.8125C19 9.084 19.084 9 19.1875 9h1.625c.1034 0 .1875.084.1875.1875v1.625a.1876.1876 0 0 1-.1875.1875H20z" fill="#000" fill-rule="nonzero"/>
+  </svg></svg>
