@@ -49,7 +49,6 @@
     return urlparameter;
   }
   const sport = getUrlParam("sport","soccer");
-  const templateName = getUrlParam("template", "Blank")
 
   import Editor from './Editor.js'
 
@@ -69,10 +68,6 @@
   })
 
   svgEditor.init()
-
-  const template = DrillEditor.Templates[sport].find(t => t.name === templateName);
-  //todo config setting for path
-  svgEditor.loadFromURL("./cs-drill-editor/templates"+ template.filePath);
 
   // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
   /* globals XDOMAIN */

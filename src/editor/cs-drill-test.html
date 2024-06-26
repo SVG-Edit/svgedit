@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Drill Editor Testing Page</title>
 </head>
 <script>
   function saveDrillImage() {
@@ -14,48 +14,18 @@
   function handleSaveMessage(e) {
     window.removeEventListener('message', this.handleSaveMessage, false);
     alert(e.data);
-    // Adding viewBox back to the data string
-    // const width = e.data.match(/width="([^"]+)"/)[1];
-    // const height = e.data.match(/height="([^"]+)"/)[1];
-    // const newData = e.data.replace('xmlns:svg="http://www.w3.org/2000/svg"', `xmlns:svg="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"`);
-    // const svgBlob = new Blob([newData], { type: 'image/svg+xml;charset=utf-8' });
-    // if (this.$refs.uploadCustomDrillProgress && this.$refs.uploadCustomDrillProgress.uploadFileNew && svgBlob &&
-    //   !this.uploading) {
-    //   this.$refs.uploadCustomDrillProgress.uploadFileNew(svgBlob).then((result) => {
-    //     this.uploading = true;
-    //     if (this.createDrillImage.template) {
-    //       this.images[this.images.length - 1].image_url = result.url;
-    //     } else {
-    //       const imageIndex = this.images.findIndex(image => image.image_url === this.createDrillImage.image_url);
-    //       this.images[imageIndex].image_url = result.url;
-    //     }
-    //     this.uploading = false;
-    //     this.$store.dispatch('setCreateDrillImage', null);
-    //   }).catch(() => {
-    //     this.uploading = false;
-    //   });
     }
 
 </script>
 <body>
-<header class="modal-card-head">
-  <div class="modal-card-title">
-    <app-editable-text
-      v-model="images[editingImageIndex].name"
-      :required="false"
-      style="max-width: 70vw"
-      placeholder="YOUR IMAGE NAME"
-    />
-
-  </div>
+<header>
   <input type="button" value="Save"
     onclick="saveDrillImage()"
   >
-
 </header>
   <iframe
     id="drill_edit_frame" style="width: 750px;height: 500px;"
-    src="./cs-drill-editor.html?url=./cs-drill-extensions/backgrounds/soccer/field_bottom_w_players.svg"
+    src="./cs-drill-editor.html?url=./cs-drill-editor/templates/soccer/field_bottom_w_players.svg&sport=soccer"
     class="drill-edit-frame"/>
 
 </body>

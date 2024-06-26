@@ -2,14 +2,15 @@ export default {
 
   ToolExtensions: {
     common: [
-      'ext-shapes',
-      'ext-soccerpass',
+      'ext-push-message-save',
+      // 'ext-shapes',
       'ext-bluetriangle',
       'ext-redcircle',
       'ext-cone',
       // 'ext-arrows',
     ],
     soccer: [
+      'ext-soccerpass',
       'ext-soccerrun',
       'ext-soccerrunball',
       'ext-orangetriangle',
@@ -50,7 +51,7 @@ export default {
       ],
   },
 
-  Templates: { //TODO for future use in DrillDiagramTemplateModal.vue
+  Templates: {
     soccer: [
       { name: 'Blank Field', filePath: '/soccer/field_blank.svg' },
       { name: 'Full Field', filePath: '/soccer/field_full.svg' },
@@ -61,7 +62,7 @@ export default {
       { name: 'Field Top', filePath: '/soccer/field_top.svg' },
       { name: 'Field Bottom', filePath: '/soccer/field_bottom.svg' },
       { name: 'Futsal Court', filePath: '/soccer/futsal_court.svg' },
-      { name: 'Blank', filePath: '/templates/blank.svg' },
+      { name: 'Blank', filePath: '/blank.svg' },
     ],
     basketball: [
       { name: 'Full Court', filePath: '/basketball/basketball-court.svg' },
