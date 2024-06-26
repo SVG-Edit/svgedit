@@ -13,16 +13,16 @@
     "node": ">=16"
   },
   "workspaces": [
-    "packages/svgcanvas",
-    "packages/react-test"
+    "packages/svgcanvas"
   ],
   "scripts": {
     "lint": "standard .",
     "test": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html cypress:run",
-    "prebuild": "npm run build --workspace=packages/svgcanvas --workspace=packages/react-test",
+    "prebuild": "npm run build --workspace=packages/svgcanvas",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
-    "start": "web-dev-server --app-index src/editor/index.html --node-resolve",
+    "copy-images": "cp src/editor/cs-drill-extensions/tool-icons/* src/editor/images",
+    "start": "npm run copy-images && web-dev-server --app-index src/editor/cs-drill-editor.html --node-resolve",
     "prestart": "echo svgedit is available at http://localhost:8000/src/editor/index.html",
     "start:iife": "web-dev-server --app-index dist/editor/iife-index.html --esbuild-target auto --open",
     "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q --headless  --browser electron && nyc report --reporter text-summary --reporter json-summary",
@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SVG-Edit/svgedit.git"
+    "url": "git+https://github.com/eminorinc/svgedit-update.git"
   },
   "keywords": [
     "svg-editor",

@@ -1,0 +1,73 @@
+<svg height="620" viewBox="0 0 720 620" width="720" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path id="a" d="m0 0h434v620h-434z" />
+        <mask id="b" fill="#fff">
+            <use fill="#fff" fill-rule="evenodd" xlink:href="#a" />
+        </mask>
+        <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8"
+            refY="5" viewBox="0 0 10 10">
+            <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000" />
+        </marker>
+        <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+            @media print {
+                .background {
+                    fill: #FFFFFF !important;
+                }
+
+                .outline {
+                    stroke: #000000 !important;
+                }
+            }
+        </style>
+    </defs>
+
+    <g class="layer">
+        <title>Rink</title>
+        <path d="m0 0h720v620h-720z" fill="#c5e8f6" fill-rule="nonzero" />
+    </g>
+    <g class="layer" fill="none" fill-rule="evenodd">
+
+        <title>Lines</title>
+        <g transform="translate(142)">
+            <use fill="#c5e8f6" transform="matrix(-1 0 0 1 434 0)" xlink:href="#a" />
+            <g mask="url(#b)">
+                <g transform="translate(-185 30)">
+                    <path
+                        d="m437.5-28.5c41.697499 0 79.447499 16.9012507 106.773124 44.226876 27.325625 27.3256254 44.226876 65.0756254 44.226876 106.773124v315c0 41.697499-16.901251 79.447499-44.226876 106.773124s-65.075625 44.226876-106.773124 44.226876h-259.544025c-41.697498 0-79.4474981-16.901251-106.7731235-44.226876-27.3256253-27.325625-44.226876-65.075625-44.2268714-106.776157l.9567885-315.455285c.1262894-41.6078425 17.0720983-79.2432631 44.3883434-106.476723 27.3162452-27.2334598 65.002927-44.064959 106.610961-44.064959z"
+                        fill="#fff" fill-opacity=".9" stroke="#0e1535" stroke-width="2"
+                        transform="matrix(0 1 -1 0 587.5 -27.5)" />
+                    <path d="m543 21v518" stroke="#ff3860" stroke-width="2" />
+                    <path d="m559 297c0-17.673112-14.326888-32-32-32s-32 14.326888-32 32" stroke="#ff3860"
+                        stroke-width="2" transform="matrix(0 -1 1 0 246 808)" />
+                    <path d="m559 297c0-17.673112-14.326888-32-32-32s-32 14.326888-32 32" stroke="#ff3860"
+                        stroke-width="2" transform="matrix(0 -1 1 0 246 808)" />
+                    <path d="m249 0v560" opacity=".5" stroke="#364fc7" stroke-width="4" />
+                    <circle cx="431" cy="408" r="80" stroke="#ff3860" stroke-width="2"
+                        transform="matrix(0 1 -1 0 839 -23)" />
+                    <circle cx="431" cy="152" r="80" stroke="#ff3860" stroke-width="2"
+                        transform="matrix(0 1 -1 0 583 -279)" />
+                    <circle cx="431" cy="408" fill="#ff3860" r="4" transform="matrix(0 1 1 0 23 -23)" />
+                    <circle cx="431" cy="408" fill="#ff3860" r="4" transform="matrix(0 1 1 0 23 -23)" />
+                    <circle cx="431" cy="152" fill="#ff3860" r="4" transform="matrix(0 1 1 0 279 -279)" />
+                    <circle cx="213" cy="408" fill="#ff3860" r="4" transform="matrix(0 1 1 0 -195 195)" />
+                    <circle cx="213" cy="152" fill="#ff3860" r="4" transform="matrix(0 1 1 0 61 -61)" />
+                    <g stroke-width="2">
+                        <path d="m409 493.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 909 78)" />
+                        <path d="m441 493.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 941 46)" />
+                        <path d="m409 322.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 738 -93)" />
+                        <path d="m441 322.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 770 -125)" />
+                        <path d="m409 237.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 653 -178)" />
+                        <path d="m441 237.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 685 -210)" />
+                        <path d="m409 66.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 482 -349)" />
+                        <path d="m441 66.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 514 -381)" />
+                        <circle cx="431" cy="408" r="80" stroke="#ff3860" transform="matrix(0 1 -1 0 839 -23)" />
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+    <g class="layer">
+        <title>Drill</title>
+    </g>
+</svg>

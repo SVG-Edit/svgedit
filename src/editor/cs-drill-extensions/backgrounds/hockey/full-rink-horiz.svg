@@ -1,0 +1,78 @@
+<svg height="720" viewBox="0 0 1120 720" width="1120" xmlns="http://www.w3.org/2000/svg">
+<defs>
+        <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8"
+            refY="5" viewBox="0 0 10 10">
+            <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000" />
+        </marker>
+        <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+            @media print {
+                .background {
+                    fill: #FFFFFF !important;
+                }
+
+                .outline {
+                    stroke: #000000 !important;
+                }
+            }
+        </style>
+    </defs>
+    <g class="layer" fill-rule="even0dd">
+        <title>Rink</title>
+        <path d="m200-200h720v1120h-720z" fill="#c5e8f6" fill-rule="nonzero" transform="matrix(0 1 -1 0 920 -200)" />
+    </g>
+    <g class="layer" fill="none" fill-rule="evenodd">
+        <title> Lines </title>
+        <path d="m200-200h720v1120h-720z" fill="#c5e8f6" fill-rule="nonzero" transform="matrix(0 1 -1 0 920 -200)" />
+        <path
+            d="m696-160c41.697499 0 79.447499 16.901251 106.773124 44.226876 27.325625 27.3256254 44.226876 65.0756254 44.226876 106.773124v740c0 41.697499-16.901251 79.447499-44.226876 106.773124s-65.075625 44.226876-106.773124 44.226876h-259.730528c-41.697498 0-79.447498-16.901251-106.773124-44.226876-27.325625-27.325625-44.226876-65.075625-44.226874-106.774919l1.328447-740.2692302c.074746-41.6445204 17.002392-79.3267641 44.322497-106.5978778 27.320106-27.271113 65.032672-44.131097 106.67726-44.131097z"
+            fill="#fff" fill-opacity=".9" stroke="#0e1535" stroke-width="2" transform="matrix(0 1 -1 0 927 -205)" />
+        <path d="m1014 102v518" stroke="#ff3860" stroke-width="2" />
+        <path d="m1030 378c0-17.673112-14.32689-32-32-32-17.673112 0-32 14.326888-32 32" stroke="#ff3860"
+            stroke-width="2" transform="matrix(0 -1 1 0 636 1360)" />
+        <path d="m1030 378c0-17.673112-14.32689-32-32-32-17.673112 0-32 14.326888-32 32" stroke="#ff3860"
+            stroke-width="2" transform="matrix(0 -1 1 0 636 1360)" />
+        <path d="m560 81v560" stroke="#ff3860" stroke-width="2" />
+        <circle cx="560" cy="361" r="80" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 921 -199)" />
+        <path d="m608 641c0-26.509668-21.490332-48-48-48s-48 21.490332-48 48" stroke="#ff3860" stroke-width="2" />
+        <path d="m720 81v560" opacity=".5" stroke="#364fc7" stroke-width="4" />
+        <path d="m400 81v560" opacity=".5" stroke="#364fc7" stroke-width="4" />
+        <path d="m118 103v517" stroke="#ff3860" stroke-width="2" />
+        <path d="m166 377c0-17.673112-14.326888-32-32-32s-32 14.326888-32 32" stroke="#ff3860" stroke-width="2"
+            transform="matrix(0 1 -1 0 495 227)" />
+        <circle cx="230" cy="489" r="80" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 719 259)" />
+        <circle cx="230" cy="233" r="80" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 463 3)" />
+        <circle cx="230" cy="233" fill="#ff3860" r="4" transform="matrix(0 1 1 0 -3 3)" />
+        <circle cx="230" cy="489" fill="#ff3860" r="4" transform="matrix(0 1 1 0 -259 259)" />
+        <circle cx="436" cy="233" fill="#ff3860" r="4" transform="matrix(0 1 1 0 203 -203)" />
+        <circle cx="436" cy="489" fill="#ff3860" r="4" transform="matrix(0 1 1 0 -53 53)" />
+        <g stroke-width="2">
+            <path d="m208 318.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 533 104)" />
+            <path d="m240 318.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 565 72)" />
+            <path d="m208 147.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 362 -67)" />
+            <path d="m240 147.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 394 -99)" />
+            <path d="m208 574.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 789 360)" />
+            <path d="m240 574.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 821 328)" />
+            <path d="m208 403.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 618 189)" />
+            <path d="m240 403.5h13" stroke="#ff3860" transform="matrix(0 1 -1 0 650 157)" />
+            <circle cx="902" cy="489" r="80" stroke="#ff3860" transform="matrix(0 1 -1 0 1391 -413)" />
+            <circle cx="902" cy="233" r="80" stroke="#ff3860" transform="matrix(0 1 -1 0 1135 -669)" />
+        </g>
+        <circle cx="902" cy="489" fill="#ff3860" r="4" transform="matrix(0 1 1 0 413 -413)" />
+        <circle cx="902" cy="489" fill="#ff3860" r="4" transform="matrix(0 1 1 0 413 -413)" />
+        <circle cx="902" cy="233" fill="#ff3860" r="4" transform="matrix(0 1 1 0 669 -669)" />
+        <circle cx="684" cy="489" fill="#ff3860" r="4" transform="matrix(0 1 1 0 195 -195)" />
+        <circle cx="684" cy="233" fill="#ff3860" r="4" transform="matrix(0 1 1 0 451 -451)" />
+        <path d="m880 574.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1461 -312)" />
+        <path d="m912 574.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1493 -344)" />
+        <path d="m880 403.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1290 -483)" />
+        <path d="m912 403.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1322 -515)" />
+        <path d="m880 318.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1205 -568)" />
+        <path d="m912 318.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1237 -600)" />
+        <path d="m880 147.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1034 -739)" />
+        <path d="m912 147.5h13" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1066 -771)" />
+        <circle cx="902" cy="489" r="80" stroke="#ff3860" stroke-width="2" transform="matrix(0 1 -1 0 1391 -413)" />
+    </g>
+     <g class="layer">
+        <title>Drill</title>
+    </g>
+</svg>
