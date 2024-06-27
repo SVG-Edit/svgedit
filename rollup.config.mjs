@@ -66,6 +66,10 @@ const config = [{
           dest: 'dist/editor'
         },
         {
+          src: 'src/editor/cs-drill-editor/tool-icons/*',
+          dest: 'src/editor/images'
+        },
+        {
           src: 'src/editor/index.html',
           dest: 'dist/editor',
           rename: 'xdomain-index.html',
@@ -88,7 +92,9 @@ const config = [{
         { src: 'src/editor/embedapi.js', dest },
         { src: 'src/editor/browser-not-supported.html', dest },
         { src: 'src/editor/browser-not-supported.js', dest },
-        { src: 'src/editor/svgedit.css', dest }
+        { src: 'src/editor/svgedit.css', dest },
+        { src: 'src/editor/cs-drill-editor', dest },
+        { src: 'src/editor/cs-drill-editor.html', dest }
       ]
     }),
     html({

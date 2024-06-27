@@ -2,7 +2,7 @@ BACKGROUND
 CS uses an external package SVGEdit as the base for the drill editor functionality. The drill editor extends SVGEditor by
 using natively supported "tool" extensions to provide the addition of sport specific graphics (like a soccer net or a soccer ball).
 Some extensions store data in the SVG files which creates some issues (see below). The drill editor UI is also customized through
-CSS and by overlaying CS images for the native tools (like undo, align, select, etc).
+CSS and by overlaying custom images for the native tools (like undo, align, select, etc).
 
 
 USE/IMPLEMENTATION
