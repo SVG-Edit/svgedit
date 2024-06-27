@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g id="tool_hockeynet">
+    <svg height="17" viewBox="0 0 65 17" width="65" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" fill-rule="evenodd" stroke-width="2" transform="translate(1 1)">
+        <g stroke="#c7c9cb">
+          <path d="m31 0v15"/>
+          <path d="m23 0v15"/>
+          <path d="m7 2v13"/>
+          <path d="m39 0v15"/>
+          <path d="m47 0v15"/>
+          <path d="m55 2v13"/>
+          <path d="m15 0v15"/>
+          <path d="m2 8h60"/>
+        </g>
+        <path d="m15 0h33c8.2842712 0 15 6.71572875 15 15h-63c0-8.28427125 6.71572875-15 15-15z" stroke="#ff3860" stroke-linejoin="round"/>
+      </g>
+    </svg>
+  </g>
+</svg>
