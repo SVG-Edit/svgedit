@@ -21,7 +21,7 @@
     "prebuild": "npm run build --workspace=packages/svgcanvas",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
-    "copy-images": "cp src/editor/cs-drill-extensions/tool-icons/* src/editor/images",
+    "copy-images": "cp src/editor/cs-drill-editor/tool-icons/* src/editor/images",
     "start": "npm run copy-images && web-dev-server --app-index src/editor/cs-drill-editor.html --node-resolve",
     "prestart": "echo svgedit is available at http://localhost:8000/src/editor/index.html",
     "start:iife": "web-dev-server --app-index dist/editor/iife-index.html --esbuild-target auto --open",
