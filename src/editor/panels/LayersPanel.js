@@ -258,12 +258,12 @@ class LayersPanel {
       layerVis.className = (!drawing.getLayerVisibility(name)) ? 'layerinvis layervis' : 'layervis'
 
       // fix the eye icon lost at right layers
-      const _eye = document.createElement('img');
-      _eye.src="./images/eye.svg";
-      _eye.style.width = '14px';
-      _eye.style.width = '14px';
-      layerVis.appendChild(_eye);
-      
+      const _eye = document.createElement('img')
+      _eye.src = './images/eye.svg'
+      _eye.style.width = '14px'
+      _eye.style.width = '14px'
+      layerVis.appendChild(_eye)
+
       const layerName = document.createElement('td')
       layerName.className = 'layername'
       layerName.textContent = name
