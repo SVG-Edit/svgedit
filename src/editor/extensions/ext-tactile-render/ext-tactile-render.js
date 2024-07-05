@@ -11,6 +11,7 @@
 const name = 'tactilerender'
 import tactileRenderHTML from './tactileRenderDialog.html'
 import { fileOpen, fileSave } from 'browser-fs-access'
+import {Md5} from 'ts-md5'
 
 const template = document.createElement('template')
 template.innerHTML = tactileRenderHTML
@@ -132,20 +133,16 @@ export class SeTactileRenderDialog extends HTMLElement {
 connectedCallback () {
   const { svgCanvas } = svgEditor
   const { $id, $click } = svgCanvas
-  const onSaveHandler = () => {
+  const onSaveHandler = async function (){
     document.getElementById('se-tactile-render-dialog').setAttribute('dialog', 'close')
     let xhr = new XMLHttpRequest();
     let svgString= svgCanvas.getSvgString().replaceAll("data-image-label", "aria-label").replaceAll("data-image-description", "aria-description");
-    const crypto = require('crypto');
-    let etag = crypto.createHash('md5').update(svgString).digest('hex');
-    console.warn(etag);
     xhr.open("POST", "http://ven1998.pythonanywhere.com/render");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Access-Control-Allow-Origin", '*');
     xhr.setRequestHeader("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
     xhr.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, ETag")
     xhr.setRequestHeader('Access-Control-Allow-Credentials', 'true')
-    xhr.setRequestHeader('ETag', etag)
     xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       console.warn(xhr.responseText);
