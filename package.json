@@ -88,12 +88,15 @@
     "core-js": "3.37.1",
     "elix": "15.0.1",
     "html2canvas": "1.4.1",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "i18next": "23.11.5",
     "jspdf": "2.5.1",
     "pathseg": "1.2.1",
     "regenerator-runtime": "0.14.1",
     "replace-in-file": "^8.1.0",
-    "svg2pdf.js": "2.2.4"
+    "svg2pdf.js": "2.2.4",
+    "url": "^0.11.1"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",
@@ -116,6 +119,7 @@
     "cp-cli": "2.0.0",
     "cypress": "13.13.0",
     "cypress-multi-reporters": "1.6.4",
+    "jamilih": "0.58.0",
     "jsdoc": "4.0.3",
     "node-static": "0.7.11",
     "npm-run-all": "4.1.5",

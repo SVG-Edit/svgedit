@@ -38,6 +38,6 @@ export const clearSvgContentElementInit = () => {
   pel.appendChild(el)
 
   // TODO: make this string optional and set by the client
-  const comment = svgCanvas.getDOMDocument().createComment(' Created with SVG-edit - https://github.com/SVG-Edit/svgedit')
-  svgCanvas.getSvgContent().append(comment)
+  // const comment = svgCanvas.getDOMDocument().createComment(' Created with SVG-edit - https://github.com/SVG-Edit/svgedit')
+  // svgCanvas.getSvgContent().append(comment)
 }

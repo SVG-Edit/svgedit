@@ -175,6 +175,7 @@ export default class ConfigObj {
     this.defaultExtensions = [
       'ext-connector',
       'ext-eyedropper',
+      'ext-tactile',
       'ext-grid',
       // 'ext-imagelib',
       // 'ext-arrows',

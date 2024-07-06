@@ -47,7 +47,7 @@ class Layer {
       }
     }
 
-    addLayerClass(this.group_)
+    addLayerClass(this.group_, name)
     walkTree(this.group_, function (e) {
       e.setAttribute('style', 'pointer-events:inherit')
     })
@@ -212,17 +212,23 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
 
 /**
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
- *
+ * @param {string} name - Layer name
  * @param {SVGGElement} elem - The SVG element to update
  * @returns {void}
  */
-function addLayerClass (elem) {
+function addLayerClass (elem, name) {
   const classes = elem.getAttribute('class')
   if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
     elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)
   }
+  // const dataImageLayer = elem.getAttribute('data-image-layer')
+  // if (!dataImageLayer || !dataImageLayer.length) {
+  elem.setAttribute('data-image-layer', name)
+  // } else if (!Layer.CLASS_REGEX.test(dataImageLayer)) {
+  //  elem.setAttribute('data-image-layer', dataImageLayer + ' ' + Layer.CLASS_NAME)
+  // }
 }
 
 export default Layer
