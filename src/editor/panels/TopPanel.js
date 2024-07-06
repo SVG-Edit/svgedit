@@ -510,6 +510,26 @@ class TopPanel {
    *
    * @returns {void}
    */
+  clickShowAll () {
+    $id('tool_showAll').pressed = !$id('tool_showAll').pressed
+    this.editor.workarea.classList.toggle('showAll')
+    const saRules = $id('showAll_rules')
+    if (!saRules) {
+      const fcRules = document.createElement('style')
+      fcRules.setAttribute('id', 'showAll_rules')
+      document.getElementsByTagName('head')[0].appendChild(fcRules)
+    } else {
+      while (saRules.firstChild) {
+        saRules.removeChild(saRules.firstChild)
+      }
+    }
+    this.editor.updateShowAll()
+  }
+
+  /**
+   *
+   * @returns {void}
+   */
   clickUndo () {
     const { undoMgr, textActions } = this.editor.svgCanvas
     if (undoMgr.getUndoStackSize() > 0) {
@@ -950,6 +970,7 @@ class TopPanel {
     // register action to top panel buttons
     $click($id('tool_source'), this.showSourceEditor.bind(this))
     $click($id('tool_wireframe'), this.clickWireframe.bind(this))
+    $click($id('tool_showAll'), this.clickShowAll.bind(this))
     $click($id('tool_undo'), this.clickUndo.bind(this))
     $click($id('tool_redo'), this.clickRedo.bind(this))
     $click($id('tool_clone'), this.clickClone.bind(this))

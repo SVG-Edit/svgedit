@@ -131,6 +131,11 @@ hr {
   align-items: center;
 }
 
+#table-scroll{
+  height: 100px;
+  overflow-y: scroll;
+}
+
 #layerlist {
   margin: 1px;
   padding: 0;
@@ -144,6 +149,7 @@ hr {
   background-color: #FFFFFF;
   margin: 0;
   padding: 0;
+  height: 16px;
 }
 
 #layerlist tr.layersel {
