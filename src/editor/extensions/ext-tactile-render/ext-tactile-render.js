@@ -11,7 +11,6 @@
 const name = 'tactilerender'
 import tactileRenderHTML from './tactileRenderDialog.html'
 import { fileOpen, fileSave } from 'browser-fs-access'
-import {Md5} from 'ts-md5'
 
 const template = document.createElement('template')
 template.innerHTML = tactileRenderHTML
