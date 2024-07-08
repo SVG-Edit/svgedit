@@ -1,0 +1,12 @@
+<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="36px" height="36px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+<g>
+	<path style="fill:#BE1E2D;" d="M18,35.1C8.6,35.1,0.9,27.4,0.9,18C0.9,8.6,8.6,0.9,18,0.9S35.1,8.6,35.1,18
+		C35.1,27.4,27.4,35.1,18,35.1z"/>
+	<path style="fill:#FFFFFF;" d="M18,1.8c8.9,0,16.2,7.3,16.2,16.2S26.9,34.2,18,34.2S1.8,26.9,1.8,18S9.1,1.8,18,1.8 M18,0
+		C8.1,0,0,8.1,0,18s8.1,18,18,18s18-8.1,18-18S27.9,0,18,0L18,0z"/>
+  <text data-field="label" fill="#FFFFFF" font-family="Sans-Serif" font-size="20" text-anchor="middle"
+        dominant-baseline="central" x="18" y="18" font-weight="bold" font-stretch="extra-condensed"
+        style="pointer-events:inherit">C</text>
+</g>
+</svg>

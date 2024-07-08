@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g id="tool_svgshapelib">
+    <svg width="24" height="25" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" fill-rule="evenodd" stroke="#000" stroke-width="1.5">
+        <path d="M9.8284 17l1.7678 1.7678a.5.5 0 0 1 0 .707l-2.1213 2.1214a.5.5 0 0 1-.7071 0L7 19.8284l-1.7678 1.7678a.5.5 0 0 1-.707 0l-2.1214-2.1213a.5.5 0 0 1 0-.7071L4.1716 17l-1.7678-1.7678a.5.5 0 0 1 0-.707l2.1213-2.1214a.5.5 0 0 1 .7071 0L7 14.1716l1.7678-1.7678a.5.5 0 0 1 .707 0l2.1214 2.1213a.5.5 0 0 1 0 .7071L9.8284 17z"/>
+        <circle cx="7.5" cy="5.5" r="4.5"/>
+        <rect transform="rotate(45 18 10.5858)" x="14" y="6.5858" width="8" height="8" rx="1"/>
+      </g>
+    </svg>
+  </g>
+</svg>

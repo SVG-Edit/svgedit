@@ -5,7 +5,7 @@
 :root {
   --main-bg-color: lightgray; //TODO CHANGE TO WHITE
   --canvas-bg-color: #B8E8B8;
-  --icon-bg-color: #white;
+  --icon-bg-color: lightgray;
   --icon-bg-color-hover: #FFC;
   --text-color: black;
 }
@@ -14,23 +14,32 @@
   display: none;
 }
 
-#tool_path, #tool_zoom, #tools_rect, #tools_ellipse, #tool_image {
+/* #tool_path, #tool_zoom, #tools_rect */
+#tool_image, #tools_ellipse {
   display: none;
 }
 
-#title_panel, #editor_panel, #history_panel .tool_sep  {
+#title_panel   { /* #history_panel .tool_sep, #editor_panel,*/
   display: none;
 }
 
-#g_title, #elem_id, #elem_class, #angle, #blur, #stroke_style, #stroke_linejoin, #stroke_linecap, #palette, #opacity,
-#selected_x, #selected_y, #line_x1, #line_y1, #line_x2, #line_y2 {
+/* #stroke_style */
+#g_title, #elem_id, #elem_class,
+#stroke_linejoin, #stroke_linecap,
+#palette, #opacity, #angle, #blur,
+#selected_x, #selected_y,
+#line_x1, #line_y1, #line_x2, #line_y2,
+#ellipse_cx, #ellipse_cy, #ellipse_rx, #ellipse_ry,
+#rect_width, #rect_height, #rect_rx,
+#circle_cx, #circle_cy, #circle_r,
+#path_node_x, #path_node_y {
   display: none;
 }
 
-#tool_text_anchor, #tool_text_decoration_linethrough, #tool_text_decoration_overline, #tool_text_decoration_overline,
+#tool_source, #tool_text_anchorAAA, #tool_text_decoration_linethrough, #tool_text_decoration_overline, #tool_text_decoration_overline,
 #tool_text_decoration_underline, #tool_length_adjust, #tool_text_length, #tool_word_spacing, #tool_letter_spacing,
-#tool_align_distrib_horiz, #tool_align_distrib_verti, #tool_make_link_multi, #tool_topath, #tool_reorient, #tool_make_link,
-#circle_cx, #circle_cy, #circle_r {
+#tool_make_link_multi, #tool_topath, #tool_reorient, #tool_make_link, #tool_add_subpath
+ {
   display: none;
 }
 
@@ -46,3 +55,29 @@
 #label {
   color: green !important;
 }
+
+#cur_context_panel {
+  padding-top: 11px;
+  padding-left: 15px;
+  background: none;
+  color: var(--text-color);
+  border-left: 2px; /*not working*/
+  border-color: black; /*not working*/
+}
+
+#cur_context_panel a {
+  color: var(--text-color);
+}
+
+#options-container {
+  background-color: rgba(211,211,211,100) !important;
+}
+
+#options-container div {
+  color: var(--text-color) !important;
+}
+
+#options-container:before {
+  content:"Navigation > ";
+}
+

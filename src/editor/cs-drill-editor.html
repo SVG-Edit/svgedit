@@ -9,6 +9,9 @@
   <!-- No-op until loaded dynamically (could make configurable) -->
 
   <link rel="icon" href="images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
 
   <!-- STYLESHEETS (others loaded dynamically) -->
   <style id="styleoverrides" media="screen"></style>
@@ -56,13 +59,21 @@
   const svgEditor = new Editor(document.getElementById('container'))
 
   svgEditor.setConfig({
+    canvasName: `${sport}`, //HACK TO PASS SPORT TO EXTENSIONS
+    initFill: {
+      color: 'none', // NEW DEFAULT VALUE
+      opacity: 1
+    },
+    initStroke: {
+      width: 4, // NEW DEFAULT VALUE
+      color: '000000',
+      opacity: 1
+    },
     noDefaultExtensions: true,
     showRulers: false,
     allowInitialUserOverride: true,
     extensions: DrillEditor.ToolExtensions["common"].concat(DrillEditor.ToolExtensions[sport]),
     extPath: './cs-drill-editor/tool-extensions',
-    //imgPath: './cs-drill-extensions/tool-icons', //TODO THIS BREAKS DEFAULT TOOL IMAGES...HAVE TO PUT TOOL ICONS IN IMAGES DIR
-    //extIconsPath: './cs-drill-extensions/tool-icons', //TODO THIS DOES NOT WORK...HAVE TO PUT TOOL ICONS IN IMAGES DIR
     //stylesheets: ['@default', './cs-drill-extensions/svgedit.css'], //TODO THIS DOES NOT WORK...MANUALLY INCLUDING CUSTOM CSS FILE
     //dimensions: [640,480], //TODO CAUSES ERROR...BUT DON'T THINK IT MATTERS (CHECK SJ COMMIT IN OLD REPO)
   })

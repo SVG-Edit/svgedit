@@ -1,19 +1,13 @@
 {
     "lib": [
         "basic",
-      "equipment",
         "arrow",
-      "misc"
-//        "animal",
-//        "dialog_balloon",
-//        "electronics",
-//        "flowchart",
-//        "game",
-//        "math",
-//        "music",
-//        "object",
-//        "raphael_1",
-//        "raphael_2",
-//        "symbol"
+        "dialog_balloon",
+        "flowchart",
+        "misc",
+        "object",
+        "raphael_1",
+        "raphael_2",
+        "symbol"
     ]
 }

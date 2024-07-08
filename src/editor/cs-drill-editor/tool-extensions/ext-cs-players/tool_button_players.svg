@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33 33">
+  <g>
+      <polygon points="16.165,0 0,28 32.32,28 16.165,0 " style="fill:#364fc7"/>
+      <text data-field="label" fill="#FFFFFF" font-family="Sans-Serif" font-size="18" text-anchor="middle"
+            dominant-baseline="central" x="17" y="17" font-weight="bold" font-stretch="extra-condensed"
+            style="pointer-events:inherit">1</text>
+  </g>
+</svg>

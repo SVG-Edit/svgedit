@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <g data-cs-shape="coach">
+    <circle cx="16.5" cy="15.5" fill="#000" r="15" stroke-width="0"/>
+    <text fill="#fff" font-family="Cursive" font-size="24" text-anchor="middle" x="15" y="23.5">C</text>
+  </g>
+</svg>

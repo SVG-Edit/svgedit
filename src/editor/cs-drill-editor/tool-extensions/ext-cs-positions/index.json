@@ -1,0 +1,101 @@
+{
+  "common": [
+  ],
+  "soccer": [
+    {
+      "id": "red_position_gk",
+      "title": "Goal Keeper",
+      "shape": "./soccer/red_position_gk.svg"
+    },
+    {
+      "id": "red_position_lb",
+      "title": "Left Back",
+      "shape": "./soccer/red_position_lb.svg"
+    },
+    {
+      "id": "red_position_cb",
+      "title": "Center Back",
+      "shape": "./soccer/red_position_cb.svg"
+    },
+    {
+      "id": "red_position_rb",
+      "title": "Right Back",
+      "shape": "./soccer/red_position_rb.svg"
+    },
+    {
+      "id": "red_position_lm",
+      "title": "Left Midfielder",
+      "shape": "./soccer/red_position_lm.svg"
+    },
+    {
+      "id": "red_position_cm",
+      "title": "Center Midfielder",
+      "shape": "./soccer/red_position_cm.svg"
+    },
+    {
+      "id": "red_position_rm",
+      "title": "Right Midfielder",
+      "shape": "./soccer/red_position_rm.svg"
+    },
+    {
+      "id": "red_position_lw",
+      "title": "Left Wing",
+      "shape": "./soccer/red_position_lw.svg"
+    },
+    {
+      "id": "red_position_cf",
+      "title": "Center Forwards",
+      "shape": "./soccer/red_position_cf.svg"
+    },
+    {
+      "id": "red_position_rw",
+      "title": "Right Wing",
+      "shape": "./soccer/red_position_rw.svg"
+    },
+    {
+      "id": "red_position_st",
+      "title": "Striker",
+      "shape": "./soccer/red_position_st.svg"
+    }
+  ],
+  "basketball": [
+  ],
+  "hockey": [
+    {
+      "id": "red_position_g",
+      "title": "Goalie",
+      "shape": "./hockey/red_position_g.svg"
+    },
+    {
+      "id": "red_position_ld",
+      "title": "Left Defenseman",
+      "shape": "./hockey/red_position_ld.svg"
+    },
+    {
+      "id": "red_position_rd",
+      "title": "Right Defenseman",
+      "shape": "./hockey/red_position_rd.svg"
+    },
+    {
+      "id": "red_position_lw",
+      "title": "Left Wing",
+      "shape": "./hockey/red_position_lw.svg"
+    },
+    {
+      "id": "red_position_c",
+      "title": "Center",
+      "shape": "./hockey/red_position_c.svg"
+    },
+    {
+      "id": "red_position_rw",
+      "title": "Right Wing",
+      "shape": "./hockey/red_position_rw.svg"
+    }
+  ],
+  "lacrosse": [
+  ],
+  "rugby": [
+  ],
+  "volleyball": [
+  ]
+}

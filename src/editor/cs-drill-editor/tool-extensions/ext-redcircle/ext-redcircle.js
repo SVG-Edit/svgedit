@@ -112,11 +112,11 @@ export default {
         // <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
         // `
 
-        const buttonTemplate = `
-        <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
-        `
-        //$id('tools_left').appendChild(buttonTemplate.content.cloneNode(true))
-        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 8)
+        // const buttonTemplate = `
+        // <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
+        // `
+        // //$id('tools_left').appendChild(buttonTemplate.content.cloneNode(true))
+        // svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 8)
 
         $click($id(idButton), () => {
           if (this.leftPanel.updateLeftPanel(idButton)) {

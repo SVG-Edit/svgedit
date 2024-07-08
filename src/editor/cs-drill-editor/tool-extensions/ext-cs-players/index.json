@@ -1,0 +1,63 @@
+{
+  "common" : [
+    {
+      "id": "new_blue_triangle",
+      "title": "Your Player",
+      "shape": "newbluetriangle.svg"
+    },
+    {
+      "id": "new_red_triangle",
+      "title": "Opponent",
+      "shape": "newredcircle.svg"
+    },
+    {
+      "id": "neutral_player",
+      "title": "Neutral Player",
+      "shape": "neutral_player.svg"
+    },
+    {
+      "id": "o",
+      "title": "O",
+      "shape": "white_O.svg",
+      "button": "black_O.svg"
+    },
+    {
+      "id": "x",
+      "title": "X",
+      "shape": "white_X.svg",
+      "button": "black_X.svg"
+    },
+    {
+      "id": "red_head_shoulders",
+      "title": "Red Head & Shoulders",
+      "shape": "red_head_shoulders.svg"
+    },
+    {
+      "id": "blue_head_shoulders",
+      "title": "Blue Head & Shoulders",
+      "shape": "blue_head_shoulders.svg"
+    }
+  ],
+  "soccer" : [
+    {
+      "id": "red_player",
+      "title": "Red Player",
+      "shape": "./soccer/red_player.svg"
+    },
+    {
+      "id": "red_player_dribbling",
+      "title": "Red Player Dribbling",
+      "shape": "./soccer/red_player_dribble.svg"
+    },
+    {
+      "id": "blue_player",
+      "title": "Blue Player",
+      "shape": "./soccer/blue_player.svg"
+    },
+    {
+      "id": "blue_player_dribbling",
+      "title": "Blue Player Dribbling",
+      "shape": "./soccer/blue_player_dribble.svg"
+    }
+  ]
+}

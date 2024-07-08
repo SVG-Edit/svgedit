@@ -1,53 +1,30 @@
 export default {
 
-  ToolExtensions: {
+  ToolExtensions: { //order of extensions determined by LeftPanel.html (appending them via DOM does not preserve order?)
     common: [
-      'ext-push-message-save',
-      // 'ext-shapes',
-      'ext-bluetriangle',
-      'ext-redcircle',
-      'ext-cone',
-      // 'ext-arrows',
+      'ext-shapes', // default generic shapes
+      'ext-markers', // default line arrows
+      'ext-panning',
+      'ext-grid',
+      'ext-bluetriangle', //old extensions for backward compatability?
+      'ext-redcircle', //old extensions for backward compatability?
+      'ext-cs-push-message-save', //save message between vue app and drill editor
+      'ext-cs-actions', //run, run w/ ball, pass
+      'ext-cs-players', // new blue triangle/red circle, x's and o's, generic players + sport specific players
+      'ext-cs-positions', // sport specific positions (GK, Left Back, Striker, etc)
+      'ext-cs-shapes' // sport specific shapes + common shapes (cone, coach, etc)
     ],
     soccer: [
-      'ext-soccerpass',
-      'ext-soccerrun',
-      'ext-soccerrunball',
-      'ext-orangetriangle',
-      'ext-soccerball',
-      'ext-soccernet',
     ],
     basketball: [
-      'ext-basketball',
-      'ext-basketballnet',
-      'ext-soccerrun',
-      'ext-soccerrunball',
-      'ext-soccerpass',
     ],
     hockey: [
-      'ext-hockeypuck',
-      'ext-hockeynet',
-      'ext-hockeyskate',
-      'ext-hockeyskatepuck',
-      'ext-hockeypass',
     ],
     lacrosse: [
-      'ext-lacrosseball',
-      'ext-lacrossepass',
-      'ext-lacrosserun',
-      'ext-soccerrunball',
     ],
     rugby: [
-      'ext-rugbyball',
-      'ext-soccerrun',
-      'ext-soccerrunball',
-      'ext-soccerpass',
     ],
     volleyball: [
-      'ext-volleyball',
-      'ext-soccerrun',
-      'ext-soccerrunball',
-      'ext-soccerpass',
       ],
   },
 

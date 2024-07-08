@@ -1,0 +1,21 @@
+<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px"
+     y="0px" width="61.2px" height="43.2px" viewBox="0 0 61.2 43.2" style="enable-background:new 0 0 61.2 43.2;"
+     xml:space="preserve">
+<g data-cs-player="red_head_shoulders">
+		<g>
+      <path style="fill:#A7A9AC;" d="M47.8,42.2H13.4C7.1,42.2,2,37.1,2,30.8v0c0-6.2,5.1-11.3,11.3-11.3h34.5
+						c6.2,0,11.3,5.1,11.3,11.3v0C59.2,37.1,54.1,42.2,47.8,42.2z"/>
+      <rect x="11" y="19.5" style="fill:#BE1E2D;" width="39.1" height="22.7"/>
+      <path style="fill:#FFFFFF;" d="M50.2,20.8c4.2,0,7.6,3.4,7.6,7.6v4.7c0,4.2-3.4,7.6-7.6,7.6H11c-4.2,0-7.7-3.4-7.7-7.6v-4.7
+			c0-4.2,3.4-7.6,7.7-7.6H50.2 M50.2,19.5H11c-5,0-9,4.1-9,9v4.7c0,4.9,4.1,9,9,9h39.1c5,0,9-4.1,9-9v-4.7
+			C59.2,23.5,55.1,19.5,50.2,19.5L50.2,19.5z"/>
+    </g>
+  <g>
+			<circle style="fill:#A7A9AC;" cx="30.6" cy="14.5" r="12.8"/>
+    <path style="fill:#FFFFFF;" d="M30.6,2.4c6.7,0,12.1,5.5,12.1,12.2c0,6.7-5.5,12.1-12.1,12.1s-12.1-5.5-12.1-12.1
+				C18.5,7.8,23.9,2.4,30.6,2.4 M30.6,1c-7.5,0-13.5,6-13.5,13.5S23.1,28,30.6,28c7.5,0,13.5-6,13.5-13.5S38.1,1,30.6,1L30.6,1z"/>
+    <text data-field="label" fill="#FFFFFF" transform="matrix(0.8 0 0 1 30.5 15)" font-family="Sans-Serif"
+          font-size="22" text-anchor="middle" dominant-baseline="central">5</text>
+    </g>
+</g>
+</svg>

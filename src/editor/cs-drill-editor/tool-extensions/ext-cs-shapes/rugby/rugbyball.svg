@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g data-cs-shape="rugbyball">
+    <svg height="26" viewBox="0 0 26 26" width="26" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" fill-rule="evenodd" stroke="#000" transform="matrix(.70710678 .70710678 -.70710678 .70710678 15.12132 2.393398)">
+        <ellipse cx="6" cy="9" fill="#fff" rx="6" ry="9"/>
+        <ellipse cx="6" cy="9" fill="#fff" rx="3" ry="9"/>
+        <path d="m6.00105424 1.41575955c1.80356797 1.59948251 2.99894576 4.39857233 2.99894576 7.58424045 0 3.1856681-1.19537779 5.9847579-2.99894576 7.5842404-1.80523359-1.5984456-3.00105424-4.3979822-3.00105424-7.5842404 0-3.15439559 1.17202382-5.92976542 2.94600725-7.53678981z"/>
+        <g stroke-linejoin="round">
+          <path d="m8 3-2-3-2 3"/>
+          <path d="m8 18-2-3-2 3" transform="matrix(-1 0 0 -1 12 33)"/>
+        </g>
+      </g>
+    </svg>
+  </g>
+</svg>

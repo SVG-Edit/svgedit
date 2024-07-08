@@ -1,0 +1,37 @@
+[
+      {
+        "id": "hockey_puck",
+        "title": "Hockey Puck",
+        "path": "hockeypuck.svg"
+      },
+      {
+        "id": "hockey_net",
+        "title": "Hockey Net",
+        "path": "hockeynet.svg"
+      },
+      {
+        "id": "coach",
+        "title": "Coach",
+        "path": "coach.svg"
+      },
+      {
+        "id": "yellow_cone",
+        "title": "Yellow Cone",
+        "path": "yellow_cone.svg"
+      },
+      {
+        "id": "blue_cone",
+        "title": "Blue Cone",
+        "path": "blue_cone.svg"
+      },
+      {
+        "id": "red_cone",
+        "title": "Red Cone",
+        "path": "red_cone.svg"
+      },
+      {
+        "id": "dummy",
+        "title": "Dummy",
+        "path": "dummy.svg"
+      }
+    ]

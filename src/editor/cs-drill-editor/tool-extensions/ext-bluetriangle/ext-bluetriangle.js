@@ -14,6 +14,7 @@
  */
 
 const name = 'bluetriangle'
+const hasPosition = true
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule
@@ -64,33 +65,6 @@ export default {
       svgCanvas.call('changed', selElems);
     }
 
-    // const buttons = [{
-    //   id: 'tool_' + name,
-    //   type: 'mode',
-    //   position: 8,
-    //   key: 'U',
-    //   events: {
-    //     click () {
-    //       svgCanvas.setMode(name);
-    //       svgEditor.toolButtonClick('#tool_' + name);
-    //       showPanel(true);
-    //     }
-    //   }
-    // }];
-    // const contextTools = [{
-    //   type: 'input',
-    //   panel: name + '_panel',
-    //   id: name + '_pos',
-    //   size: 2,
-    //   defval: '',
-    //   events: {
-    //     change () {
-    //       // console.log("position number changed to " + this.value);
-    //       setAttr('position', this.value);
-    //     }
-    //   }
-    // }];
-
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       // svgicons: 'bluetriangle.svg',
@@ -112,11 +86,11 @@ export default {
         // <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
         // `
 
-        const buttonTemplate=`
-        <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
-        `
-        // $id('tools_left').appendChild(buttonTemplate.content.cloneNode(true))
-        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 7)
+        // const buttonTemplate=`
+        // <se-button id="${idButton}" title="${title}" src="${imgButton}"></se-button>
+        // `
+        // // $id('tools_left').appendChild(buttonTemplate.content.cloneNode(true))
+        // svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 7)
 
         $click($id(idButton), () => {
           if (this.leftPanel.updateLeftPanel(idButton)) {
