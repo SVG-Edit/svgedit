@@ -145,7 +145,7 @@ export default {
         const panelTemplate = document.createElement('template')
         panelTemplate.innerHTML = `
           <div id="${idPanel}">
-            <se-input id="${idInput}" label="${label0}" title="${title0}" size="10">
+            <se-input id="${idInput}" label="${label0}" title="${title0}" size="10" class="fix_me">
             </se-input>
           </div>
            `

@@ -3,6 +3,6 @@
       <circle cx="16" cy="16" fill="#eb244c" r="16" stroke-width="0"/>
       <text data-field="label" fill="#FFFFFF" font-family="Sans-Serif" font-size="18" text-anchor="middle"
             dominant-baseline="central" x="16" y="16.5" font-weight="bold" font-stretch="extra-condensed"
-            style="pointer-events:inherit"></text>
+            style="pointer-events:inherit">X</text>
   </g>
 </svg>

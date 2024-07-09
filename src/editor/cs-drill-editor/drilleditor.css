@@ -22,6 +22,10 @@
   color: var(--text-color);
 }
 
+/*#tool_export :hover {*/
+/*  color: var(--text-color);*/
+/*}*/
+
 #layersLabel {
   color: var(--text-color);
 }

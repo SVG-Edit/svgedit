@@ -3,12 +3,14 @@
     {
       "id": "new_blue_triangle",
       "title": "Your Player",
-      "shape": "newbluetriangle.svg"
+      "shape": "newbluetriangle.svg",
+      "button": "newbluetriangle_button.svg"
     },
     {
       "id": "new_red_triangle",
       "title": "Opponent",
-      "shape": "newredcircle.svg"
+      "shape": "newredcircle.svg",
+      "button": "newredcircle_button.svg"
     },
     {
       "id": "neutral_player",
