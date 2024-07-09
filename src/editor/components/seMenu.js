@@ -10,7 +10,7 @@ template.innerHTML = `
   }
   elix-menu-button::part(menu) {
     background-color: var(--icon-bg-color) !important;
-    color: #fff;
+    color: var(--text-color);
   }
   elix-menu-button::part(popup-toggle) {
     padding: 0.25em 0.30em !important

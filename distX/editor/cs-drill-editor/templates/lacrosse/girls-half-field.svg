@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="880px" height="657px" viewBox="0 0 880 657" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10">
+            <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000"/>
+        </marker>
+        <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+            @media print {
+                .background{
+                    fill: #FFFFFF !important;
+                }
+                .outline {
+                    stroke: #000000 !important;
+                }
+                .circle {
+                    fill: #FFFFFF !important;
+                }
+            }
+        </style>
+        <mask id="mask-1">
+            <polygon fill="white" points="-5.68434189e-14 0 880 0 880 338.304687 880 560 -5.68434189e-14 560" />
+        </mask>
+    </defs>
+    <g class="layer" fill-rule="nonzero">
+        <title>Field</title>
+        <polygon fill="#7FC784" points="-5.68434189e-14 0 880 0 880 396.903892 880 657 -5.68434189e-14 657" class="background" />
+        <rect fill="#87D888" mask="url(#mask-1)" x="160" y="80" width="560" height="480" class="background" />
+    </g>
+    <g class="layer">
+        <title>Lines</title>
+        <g mask="url(#mask-1)" stroke="#FFFFFF" stroke-width="2" fill="none" class="outline">
+            <circle cx="440" cy="560" r="56" />
+            <rect x="159" y="79" width="562" height="480" />
+            <g transform="translate(440, 236) scale(1, -1) translate(-440, -236) translate(335, 171)">
+                <path d="M-1.18030207,-1 L210.348271,-1 L210.154384,0.164268454 C199.18283,66.0473593 163.923745,99.1308594 104.583984,99.1308594 C45.2442234,99.1308594 9.98513899,66.0473593 -0.986415671,0.164268454 L-1.18030207,-1 Z" transform="translate(104.583984, 49.065430) scale(1, -1) translate(-104.583984, -49.065430)" />
+                <path d="M80.7049733,99.8789525 L48.1092831,67.2832623 L48.4974041,66.6174715 C60.3136865,46.3475753 78.3685165,36.1816406 102.53418,36.1816406 C126.699843,36.1816406 144.754673,46.3475753 156.570955,66.6174715 L156.959076,67.2832623 L124.363386,99.8789525 L123.77933,98.5275889 C119.465833,88.5472055 112.431299,83.6259766 102.53418,83.6259766 C92.6370599,83.6259766 85.6025263,88.5472055 81.2890293,98.5275889 L80.7049733,99.8789525 Z" />
+            </g>
+            <line x1="160.5" y1="399.666667" x2="720.5" y2="399.666667" />
+            <line x1="374.6328125" y1="223.3359375" x2="383.6881053" y2="220.4633652" stroke-linecap="round" />
+            <line x1="387.5976562" y1="245.3847656" x2="395.4421575" y2="240.0262397" stroke-linecap="round" />
+            <line x1="409.0976563" y1="264.8183594" x2="413.9399898" y2="256.6451222" stroke-linecap="round" />
+            <line x1="502.097656" y1="223.3359375" x2="493.042363" y2="220.4633652" stroke-linecap="round" />
+            <line x1="489.132813" y1="245.3847656" x2="481.2883111" y2="240.0262397" stroke-linecap="round" />
+            <line x1="467.632812" y1="264.8183594" x2="462.790479" y2="256.6451222" stroke-linecap="round" />
+            <line x1="437.53418" y1="270.8574219" x2="437.53418" y2="261.3574219" stroke-linecap="round" />
+            <line x1="373.6328125" y1="206.8691406" x2="373.6328125" y2="198.869141" stroke-linecap="round" />
+            <line x1="503.097656" y1="206.8691406" x2="503.097656" y2="198.869141" stroke-linecap="round" />
+            <circle class="circle" fill="#87D888" fill-rule="evenodd" cx="437.43999" cy="195.384766" r="24.5" />
+            <path d="M85.88542,99.9975586 L118.99456,99.9975586 L102.43999,117.696835 L85.88542,99.9975586 Z" transform="translate(440, 236) scale(1, -1) translate(-440, -236) translate(335, 171)" />
+        </g>
+    </g>
+    <g class="layer">
+        <title>Drill</title>
+        <g></g>
+    </g>
+</svg>

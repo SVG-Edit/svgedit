@@ -7,8 +7,8 @@ export default {
   ],
   contextTools: [
     {
-      title: 'Player Position',
-      label: 'Position'
+      title: 'Player Label',
+      label: 'Label'
     }
   ]
 };

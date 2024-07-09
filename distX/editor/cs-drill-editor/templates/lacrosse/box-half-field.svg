@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="880px" height="665px" viewBox="0 0 880 665" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10">
+            <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000"/>
+        </marker>
+        <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+            @media print {
+                .background{
+                    fill: #FFFFFF !important;
+                }
+                .outline {
+                    stroke: #000000 !important;
+                }
+            }
+        </style>
+        <path d="M351,22.7716954 C351,119.697669 272.425974,198.271695 175.5,198.271695 C78.5740264,198.271695 0,119.697669 0,22.7716954 L0,22.7716954 Z" id="path-1" />
+        <mask id="mask-1" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-2" y="-2" width="355" height="179.5">
+            <rect x="-2" y="20.7716954" width="355" height="179.5" fill="white" />
+            <use xlink:href="#path-1" fill="black" />
+        </mask>
+        <mask id="mask-2">
+            <rect x="0" y="0" width="880" height="561" fill="white" />
+        </mask>
+    </defs>
+    <g class="layer" fill-rule="nonzero">
+        <title>Field</title>
+        <rect fill="#ADB5BD" x="0" y="0" width="880" height="665" class="background" />
+        <g mask="url(#mask-2)" class="background">
+            <rect fill="#87D888" x="0" y="0" width="560" height="1029" rx="170" transform="translate(160, 45)" class="background" />
+        </g>
+    </g>
+    <g class="layer">
+        <title>Lines</title>
+        <g stroke="#FFFFFF" fill="none" stroke-width="2" mask="url(#mask-2)" class="outline">
+            <rect x="159" y="44" width="562" height="1031" rx="170" />
+            <g transform="translate(264.5, 96)">
+                <use mask="url(#mask-1)" stroke-width="4" stroke-dasharray="14,3" xlink:href="#path-1" />
+                <path d="M233.580506,-0.309660417 C235.540262,5.72957162 236.549805,12.0724951 236.549805,18.5506947 C236.549805,52.2675709 209.216876,79.6004994 175.5,79.6004994 C141.783124,79.6004994 114.450195,52.2675709 114.450195,18.5506947 C114.450195,12.0724951 115.459738,5.72957162 117.419494,-0.309660417 L117.643837,-1.00100093 L233.356163,-1.00100093 L233.580506,-0.309660417 Z" />
+                <path d="M174,7.41078724 L189.557651,21.7716954 L158.442349,21.7716954 L174,7.41078724 Z" />
+            </g>
+            <line x1="160.5" y1="479.5" x2="720.5" y2="479.5" />
+            <line x1="160.5" y1="560" x2="720.5" y2="560" />
+            <ellipse cx="440" cy="560" rx="15.5" ry="13" />
+            <circle stroke="none" stroke-width="0" fill="#FFFFFF" fill-rule="evenodd" cx="440" cy="560" r="4.25" />
+        </g>
+    </g>
+    <g class="layer">
+        <title>Drill</title>
+        <g></g>
+    </g>
+</svg>

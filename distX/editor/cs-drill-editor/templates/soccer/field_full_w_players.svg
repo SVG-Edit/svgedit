@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="1050" viewBox="0 0 1400 1050" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10">
+   <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000"/>
+  </marker>
+   <defs>
+     <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+       @media print {
+         .background{
+           fill: #FFFFFF !important;
+         }
+         .outline {
+           stroke: #000000 !important;
+         }
+        }
+     </style>
+   </defs>
+ </defs>
+ <g class="layer" fill-rule="nonzero" >
+  <title>Field</title>
+    <path fill="#7FC784" d="M0 0h1400v1050H0z" class="background"/>
+    <path fill="#87D888" d="M980 1005H420V45h560z" class="background"/>
+    <path fill="#7FC784" d="M420 685h560v80H420zM420 845h560v80H420zM420 525h560v80H420zM420 205h560v80H420zM420 365h560v80H420zM420 45h560v80H420z" class="background"/>
+</g>
+<g class="layer">
+  <title>Lines</title>
+    <g id="lines" stroke="#FFFFFF" fill="none" stroke-width="1">
+        <path d="M770 864c-13.6373-24.4436-39.946-41-70.1635-41-29.9777 0-56.1085 16.2947-69.8365 40.4197M630 186c13.6373 24.4436 39.946 41 70.1635 41 29.9777 0 56.1085-16.2947 69.8365-40.4197" stroke="#FFF" stroke-width="2" class="outline"/>
+        <g transform="translate(393 -7)">
+            <path d="M569 1012a17.9886 17.9886 0 0 1 5.2694-12.7275A18.0038 18.0038 0 0 1 587 994M27 994c4.5683 0 8.9494 1.8967 12.179 5.2725 3.2296 3.376 5.043 7.9543 5.0411 12.7275M44.2201 52c.002 4.6198-1.8115 9.051-5.041 12.3184-3.2297 3.2674-7.6108 5.103-12.1791 5.103M587 69.4215c-4.7752 0-9.3547-1.8357-12.7306-5.103C570.8935 61.051 568.998 56.6197 569 52" stroke="#FFF" stroke-width="2" class="outline"/>
+            <circle stroke="#FFF" stroke-width="2" cx="307" cy="532" r="81" class="outline"/>
+            <path stroke="#FFF" stroke-width="2" d="M138 871h338v142H138z" class="outline"/>
+            <path stroke="#FFF" stroke-width="2" d="M226 963h162v50H226zM138 51h338v142H138z" class="outline"/>
+            <path stroke="#FFF" stroke-width="2" d="M26 51h562v962H26z" class="outline"/>
+            <path stroke="#FFF" stroke-width="2" d="M226 51h162v50H226zM587 532.5H27" class="outline"/>
+            <g transform="translate(584.6603 1011)" fill-rule="nonzero">
+                <path fill="#F50" d="M18.3397 27.3137l8 13.8564 19.4724-7.5276z"/>
+                <rect fill="#FFF" transform="rotate(150 14 22)" x="12" y="-2" width="4" height="48" rx="2" class="outline"/>
+            </g>
+            <g transform="translate(.4225 .8695)" fill-rule="nonzero">
+                <path fill="#FF4000" d="M4.5775 10.4441l8 13.8564L32.05 16.773z"/>
+                <rect fill="#FFF" transform="rotate(-30 14.3731 30.5863)" x="12.3731" y="6.5863" width="4" height="48" rx="2" class="outline"/>
+            </g>
+            <g transform="translate(584.7956 7.4558)" fill-rule="nonzero">
+                <path fill="#FF4000" d="M26.2044 3.4794l-8 13.8564 27.4724-6.5277z"/>
+                <rect fill="#FFF" transform="rotate(30 14 23)" x="12" y="-1" width="4" height="48" rx="2" class="outline"/>
+            </g>
+            <g transform="translate(.4722 1010.4558)" fill-rule="nonzero">
+                <path fill="#F50" d="M12.5278 28.4794l-8 13.8564 27.4724-6.5277z"/>
+                <rect fill="#0" transform="rotate(-150 14.6439 22)" x="12.6439" y="-2" width="4" height="48" rx="2" class="outline"/>
+            </g>
+        </g>
+    </g>
+</g>
+
+<g class="layer">
+  <title>Drill</title>
+  <g>
+   <circle cx="382.89474" cy="971.05264" fill="#000" r="15" stroke-width="0"></circle>
+   <text fill="#fff" font-family="Cursive" font-size="24" text-anchor="middle" x="380.89474" y="979.55264">C</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#ff9900" points="702.1929931640625,972.3683910369873 687.1929931640625,1002.3683910369873 717.1929931640625,1002.3683910369873 702.1929931640625,972.3683910369873 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="702.19296" y="1001.36839">1</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="940.7894897460938,748.6842041015625 925.7894897460938,778.6842041015625 955.7894897460938,778.6842041015625 940.7894897460938,748.6842041015625 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="940.78949" y="777.6842">2</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="458.3333435058594,748.6842041015625 443.3333435058594,778.6842041015625 473.3333435058594,778.6842041015625 458.3333435058594,748.6842041015625 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="458.33334" y="777.6842">3</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="788.1578979492188,783.7719116210938 773.1578979492188,813.7719116210938 803.1578979492188,813.7719116210938 788.1578979492188,783.7719116210938 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="788.1579" y="812.77191">4</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="635.5263061523438,783.760986328125 620.5263061523438,813.760986328125 650.5263061523438,813.760986328125 635.5263061523438,783.760986328125 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="635.52631" y="812.76099">5</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="765.3508911132812,562.7192993164062 750.3508911132812,592.7192993164062 780.3508911132812,592.7192993164062 765.3508911132812,562.7192993164062 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="765.35089" y="591.7193">6</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="937.2807006835938,249.5614013671875 922.2807006835938,279.5614013671875 952.2807006835938,279.5614013671875 937.2807006835938,249.5614013671875 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="937.2807" y="278.56139">7</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="610.9649047851562,503.07017517089844 595.9649047851562,533.0701751708984 625.9649047851562,533.0701751708984 610.9649047851562,503.07017517089844 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="610.9649" y="532.07018">8</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="702.1929626464844,154.82455444335938 687.1929626464844,184.82455444335938 717.1929626464844,184.82455444335938 702.1929626464844,154.82455444335938 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="701.19296" y="183.82455">9</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="702.1929626464844,408.3333435058594 687.1929626464844,438.3333435058594 717.1929626464844,438.3333435058594 702.1929626464844,408.3333435058594 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="701.19296" y="437.33334">10</text>
+  </g>
+  <g shape="bluetriangle">
+   <polygon fill="#364fc7" points="449.5614013671875,249.5614013671875 434.5614013671875,279.5614013671875 464.5614013671875,279.5614013671875 449.5614013671875,249.5614013671875 " stroke-width="0"></polygon>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="448.5614" y="278.5614">11</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="702.19294" cy="61.05263" fill="#ff9900" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="702.19294" y="70.05263">1</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="460.9649" cy="230.35088" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="460.9649" y="239.35088">2</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="938.1579" cy="230.35088" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="938.1579" y="239.35088">3</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="796.05264" cy="204.91228" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="796.05264" y="213.91228">4</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="603.07018" cy="204.91228" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="603.07018" y="213.91228">5</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="631.14035" cy="465.4386" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="631.14035" y="474.4386">6</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="457.45615" cy="799.64911" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="457.45615" y="808.64911">7</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="780.26316" cy="519.82455" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="780.26316" y="528.82455">8</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="702.19296" cy="847.01755" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="701.19296" y="856.01755">9</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="702.19296" cy="607.54386" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="701.19296" y="616.54386">10</text>
+  </g>
+  <g shape="redcircle">
+   <circle cx="941.66666" cy="799.64911" fill="#eb244c" r="15" stroke-width="0"></circle>
+   <text fill="#ffffff" font-family="Sans-serif" font-size="24" text-anchor="middle" x="940.66666" y="808.64911">11</text>
+  </g>
+ </g>
+</svg>

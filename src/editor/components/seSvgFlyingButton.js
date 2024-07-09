@@ -22,7 +22,7 @@ export class SvgFlyingButton extends HTMLElement {
     //this.$menu = this._shadowRoot.querySelector('.menu')
     this.$handle = this._shadowRoot.querySelector('.handle')
     this.$lib = this._shadowRoot.querySelector('.image-lib')
-    this.files = []
+
     this.data = {}
     this.sport = 'soccer'
 
@@ -191,23 +191,22 @@ export class SvgFlyingButton extends HTMLElement {
         }
         break
       case 'lib':
-        let arrImages = ''
+        let jsonCommon = []
+        let jsonSport = []
         try {
-          const response = await fetch(`${newValue}index.json`)
-          let json = await response.json()
-          //const { lib } = json
-          // this.$menu.innerHTML = lib.map((menu, i) => (
-          // `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
-          // )).join('')
-
-          const commonButtons = json["common"] || []
-          const sportButtons = json[this.sport] || []
-          const arrButtons = sportButtons.concat(commonButtons);
-          await this.updateLib(arrButtons)
-
+          let response = await fetch(`${newValue}index.json`)
+          jsonCommon = await response.json()
         } catch (error) {
-          console.error(error)
+          console.warn(error)
         }
+        try {
+          let response = await fetch(`${newValue}${this.sport}/index.json`)
+          jsonSport = await response.json()
+        } catch (error) {
+          console.warn(error)
+        }
+          const shapes = jsonSport.concat(jsonCommon)
+          await this.updateLib(shapes)
         break
       case 'src':
         this.$img.setAttribute('src', this.imgPath + '/' + newValue)
@@ -216,6 +215,22 @@ export class SvgFlyingButton extends HTMLElement {
         console.error(`unknown attribute: ${name}`)
         break
     }
+  }
+
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get sport () {
+    return this.getAttribute('sport')
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set sport (value) {
+    this.setAttribute('sport', value)
   }
 
   /**
@@ -364,7 +379,7 @@ export class SvgFlyingButton extends HTMLElement {
    * @param {string} lib
    * @returns {void}
    */
-  async updateLib (lib) {
+  async updateLib (shapes) {
     const libDir = this.getAttribute('lib')
     try {
       // initialize buttons for all shapes defined for this library
@@ -378,8 +393,8 @@ export class SvgFlyingButton extends HTMLElement {
       // const stroke = json.fill ? 0 : (size / 30)
       let innerHTML = ''
       let svgPath =''
-      for (let i = 0; i < lib.length; i++) {
-        let s =lib[i]
+      for (let i = 0; i < shapes.length; i++) {
+        let s =shapes[i]
         const id = s.id
         svgPath =`${libDir}${s.shape}`
         const response = await fetch(svgPath)

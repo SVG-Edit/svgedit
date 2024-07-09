@@ -1,5 +1,4 @@
-{
-  "common": [
+[
     {
       "id": "coach",
       "title": "Coach",
@@ -25,64 +24,4 @@
       "title": "Dummy",
       "shape": "dummy.svg"
     }
-  ],
-  "soccer": [
-    {
-      "id": "soccer_ball",
-      "title": "Soccer Ball",
-      "shape": "./soccer/soccerball.svg"
-    },
-    {
-      "id": "soccer_net",
-      "title": "Soccer Net",
-      "shape": "./soccer/soccernet.svg",
-      "button": "./soccer/soccernet-button.svg"
-    }
-  ],
-  "basketball": [
-    {
-      "id": "basketball",
-      "title": "Basketball",
-      "shape": "./basketball/basketball.svg"
-    },
-    {
-      "id": "basketball_net",
-      "title": "Basketball Net",
-      "shape": "./basketball/basketballnet.svg"
-    }
-  ],
-  "hockey": [
-    {
-      "id": "hockey_net",
-      "title": "Hockey Net",
-      "shape": "./hockey/hockeynet.svg"
-    },
-    {
-      "id": "hockey_puck",
-      "title": "Hockey Puck",
-      "shape": "./hockey/hockeypuck.svg"
-    }
-  ],
-  "lacrosse": [
-    {
-      "id": "lacrosse_ball",
-      "title": "Lacrosse Ball",
-      "shape": "./lacrosse/lacrosseball.svg"
-    }
-  ],
-  "rugby": [
-    {
-      "id": "rugbyball",
-      "title": "Rugby Ball",
-      "shape": "./rugby/rugbyball.svg"
-    }
-  ],
-  "volleyball": [
-    {
-      "id": "volleyball",
-      "title": "Volleyball",
-      "shape": "./volleyball/volleyball.svg"
-    }
-  ]
-}
-
+]

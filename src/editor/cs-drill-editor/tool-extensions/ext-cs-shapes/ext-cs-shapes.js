@@ -65,6 +65,8 @@ export default {
     const svgroot = canv.getSvgRoot()
     let lastBBox = {}
     await loadExtensionTranslation(svgEditor)
+
+    const extPath = svgEditor.configObj.curConfig.extPath
     const sport = svgEditor.configObj.curConfig.canvasName
 
     const modeId = 'cs_shapes'
@@ -75,10 +77,10 @@ export default {
     let startY
 
     let tool_id = 'tools_' + name;
+    let shapes = []
 
     return {
       callback () {
-        const extPath = svgEditor.configObj.curConfig.extPath
         if ($id(tool_id) === null) {
           const buttonTemplate = `
           <se-svgexplorerbutton id="${tool_id}">
@@ -87,9 +89,11 @@ export default {
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 99)
         }
 
+        const sportCap  = sport.charAt(0).toUpperCase() + sport.slice(1)
+
         //set sport specific attributes
         $id(tool_id).setAttribute("sport", sport);
-        $id(tool_id).setAttribute("title", `${sport} Shapes`);
+        $id(tool_id).setAttribute("title", `${sportCap} Shapes`);
         $id(tool_id).setAttribute("src", `../cs-drill-editor/tool-extensions/ext-cs-shapes/${sport}/tool_button_shapes.svg`);
         $id(tool_id).setAttribute("lib", `${extPath}/ext-cs-shapes/`);
 
@@ -126,6 +130,7 @@ export default {
           const shape = new DOMParser().parseFromString(currentD,"image/svg+xml");
           const newShape = convertDomToJson(shape.documentElement);
           curShape = canv.addSVGElementsFromJson(newShape);
+          curShape.setAttribute("id", canv.getNextId())
 
           // // below is for drag/size
           // curShape.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(0.005) translate(' + -x + ',' + -y + ')')
@@ -152,66 +157,69 @@ export default {
       },
 
       mouseMove (opts) {
-        // if (!started) {
-        //   return undefined
-        // }
         const mode = canv.getMode()
         if (mode !== modeId) {
           return undefined
         }
+        //
+        // const zoom = canv.getZoom()
+        // const evt = opts.event
+        //
+        // const x = opts.mouse_x / zoom
+        // const y = opts.mouse_y / zoom
+        //
+        // const tlist = curShape.transform.baseVal
+        // const box = curShape.getBBox()
+        // const left = box.x; const top = box.y
+        //
+        // const newbox = {
+        //   x: Math.min(startX, x),
+        //   y: Math.min(startY, y),
+        //   width: Math.abs(x - startX),
+        //   height: Math.abs(y - startY)
+        // }
+        //
+        // let sx = (newbox.width / lastBBox.width) || 1
+        // let sy = (newbox.height / lastBBox.height) || 1
+        //
+        // // Not perfect, but mostly works...
+        // let tx = 0
+        // if (x < startX) {
+        //   tx = lastBBox.width
+        // }
+        // let ty = 0
+        // if (y < startY) {
+        //   ty = lastBBox.height
+        // }
+        //
+        // // update the transform list with translate,scale,translate
+        // const translateOrigin = svgroot.createSVGTransform()
+        // const scale = svgroot.createSVGTransform()
+        // const translateBack = svgroot.createSVGTransform()
+        //
+        // translateOrigin.setTranslate(-(left + tx), -(top + ty))
+        // if (!evt.shiftKey) {
+        //   const max = Math.min(Math.abs(sx), Math.abs(sy))
+        //
+        //   sx = max * (sx < 0 ? -1 : 1)
+        //   sy = max * (sy < 0 ? -1 : 1)
+        // }
+        // scale.setScale(sx, sy)
+        //
+        // translateBack.setTranslate(left + tx, top + ty)
+        // tlist.appendItem(translateBack)
+        // tlist.appendItem(scale)
+        // tlist.appendItem(translateOrigin)
+        //
+        // canv.recalculateDimensions(curShape)
+        //
+        // lastBBox = curShape.getBBox()
 
-        const zoom = canv.getZoom()
-        const evt = opts.event
-
-        const x = opts.mouse_x / zoom
-        const y = opts.mouse_y / zoom
-
-        const tlist = curShape.transform.baseVal
-        const box = curShape.getBBox()
-        const left = box.x; const top = box.y
-
-        const newbox = {
-          x: Math.min(startX, x),
-          y: Math.min(startY, y),
-          width: Math.abs(x - startX),
-          height: Math.abs(y - startY)
-        }
-
-        let sx = (newbox.width / lastBBox.width) || 1
-        let sy = (newbox.height / lastBBox.height) || 1
-
-        // Not perfect, but mostly works...
-        let tx = 0
-        if (x < startX) {
-          tx = lastBBox.width
-        }
-        let ty = 0
-        if (y < startY) {
-          ty = lastBBox.height
-        }
-
-        // update the transform list with translate,scale,translate
-        const translateOrigin = svgroot.createSVGTransform()
-        const scale = svgroot.createSVGTransform()
-        const translateBack = svgroot.createSVGTransform()
-
-        translateOrigin.setTranslate(-(left + tx), -(top + ty))
-        if (!evt.shiftKey) {
-          const max = Math.min(Math.abs(sx), Math.abs(sy))
-
-          sx = max * (sx < 0 ? -1 : 1)
-          sy = max * (sy < 0 ? -1 : 1)
-        }
-        scale.setScale(sx, sy)
-
-        translateBack.setTranslate(left + tx, top + ty)
-        tlist.appendItem(translateBack)
-        tlist.appendItem(scale)
-        tlist.appendItem(translateOrigin)
-
-        canv.recalculateDimensions(curShape)
-
-        lastBBox = curShape.getBBox()
+        const newX = opts.mouse_x;
+        const newY = opts.mouse_y;
+        canv.moveSelectedElements(newX - startX, newY - startY, false);
+        startX = newX;
+        startY = newY;
 
         return {
           started: true

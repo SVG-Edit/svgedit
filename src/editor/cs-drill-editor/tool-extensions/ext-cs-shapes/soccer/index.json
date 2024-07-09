@@ -1,0 +1,14 @@
+[
+    {
+      "id": "soccer_ball",
+      "title": "Soccer Ball",
+      "shape": "./soccer/soccerball.svg"
+    },
+    {
+      "id": "soccer_net",
+      "title": "Soccer Net",
+      "shape": "./soccer/soccernet.svg",
+      "button": "./soccer/soccernet-button.svg"
+    }
+]
+

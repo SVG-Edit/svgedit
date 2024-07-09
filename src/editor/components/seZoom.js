@@ -85,7 +85,7 @@ template.innerHTML = `
   ::slotted(*) {
     margin:2px;
     padding:3px;
-    color:white;
+    /* color:white; */
   }
   ::slotted(*:hover) {
     background-color: rgb(43, 60, 69);

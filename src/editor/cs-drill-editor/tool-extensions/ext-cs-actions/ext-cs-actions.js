@@ -147,9 +147,10 @@ export default {
           svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 99)
         }
 
+        const sportCap  = sport.charAt(0).toUpperCase() + sport.slice(1)
         //set sport specific attributes
-        $id(tool_id).setAttribute("sport", sport); //should be dataset "data-"
-        $id(tool_id).setAttribute("title", `${sport} Actions`);
+        $id(tool_id).setAttribute("sport", sport); //should be dataset "data-"?
+        $id(tool_id).setAttribute("title", `${sportCap} Actions`);
         $id(tool_id).setAttribute("src", `../cs-drill-editor/tool-extensions/ext-cs-actions/tool_button_actions.svg`);
         $id(tool_id).setAttribute("lib", `${extPath}/ext-cs-actions/`);
 
@@ -175,30 +176,13 @@ export default {
         startY = opts.start_y; // * zoom;
 
         started = true;
-        // newFO = svgCanvas.addSVGElementsFromJson(
-        //   { element: "line",
-        //     attr: {
-        //       id: svgCanvas.getNextId(),
-        //       x1: startX,
-        //       y1: startY,
-        //       x2: startX,
-        //       y2: startY,
-        //       'marker-end': 'url(#se_arrow_fw)',
-        //       'stroke-miterlimit': 10,
-        //       'stroke-width': 2,
-        //       stroke: "#000",
-        //       shape: this.name
-        //     },
-        //     children: []}
-        // );
-        // newShape.attr.x1 = newShape.attr.x2 = startX;
-        // newShape.attr.y1 = newShape.attr.y2 = startY;
         const currentD = document.getElementById(tool_id).dataset.draw
 
         try {
           const shape = new DOMParser().parseFromString(currentD,"image/svg+xml");
           const newShape = convertDomToJson(shape.documentElement);
           curShape = svgCanvas.addSVGElementsFromJson(newShape);
+          curShape.setAttribute("id", svgCanvas.getNextId())
           curShape.setAttribute('x1', startX);
           curShape.setAttribute('y1', startY);
           curShape.setAttribute('x2', startX);
@@ -208,7 +192,6 @@ export default {
             curShape.setAttribute('d', getCurvyPath(startX, startY, startX, startY));
           }
           svgCanvas.selectOnly([curShape]);
-          //svgCanvas.moveSelectedElements(startX * zoom, startY * zoom, false);
 
           return {
             started: true

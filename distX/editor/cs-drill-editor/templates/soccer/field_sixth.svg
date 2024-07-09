@@ -1,0 +1,32 @@
+<svg width="650" height="490" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10">
+   <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000"/>
+  </marker>
+</defs>
+ <g class="layer">
+  <title>Field</title>
+  <g>
+    <path fill="#7FC784" d="M0 0h650v490H0z"/>
+    <path fill="#87D888" d="M551 471H101V21h450z"/>
+    <path fill="#7FC784" d="M551 359H100V246h451zM551 133H100V20h451z"/>
+  </g>
+ </g>
+ <g class="layer">
+  <title>Lines</title>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2">
+      <path d="M100 447a23.0049 23.0049 0 0 1 16.2669 6.7371A22.9855 22.9855 0 0 1 123 470" stroke-width="1.5"/>
+      <path stroke-width="2" d="M550 470H100V20"/>
+      <path stroke-width="1.5" d="M551 284H327v186M551 405H441v64"/>
+      <path d="M101 21h450v450" stroke-width="2" stroke-dasharray="4,8"/>
+      <path d="M551 230c-39.4915 0-73.9153 21.7694-92 54" stroke-width="1.5"/>
+  </g>
+ </g>
+ <g class="layer">
+  <title>Drill</title>
+    <g>
+        <circle cx="25" cy="458" fill="#000" r="15" stroke-width="0"/>
+        <text fill="#fff" font-family="Cursive" font-size="24" text-anchor="middle" x="23" y="466.5">C</text>
+    </g>
+ </g>
+</svg>

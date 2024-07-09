@@ -1,0 +1,35 @@
+{
+  "Hockey Positions" : [
+    {
+      "id": "red_position_g",
+      "title": "Goalie",
+      "shape": "./hockey/red_position_g.svg"
+    },
+    {
+      "id": "red_position_ld",
+      "title": "Left Defenseman",
+      "shape": "./hockey/red_position_ld.svg"
+    },
+    {
+      "id": "red_position_rd",
+      "title": "Right Defenseman",
+      "shape": "./hockey/red_position_rd.svg"
+    },
+    {
+      "id": "red_position_lw",
+      "title": "Left Wing",
+      "shape": "./hockey/red_position_lw.svg"
+    },
+    {
+      "id": "red_position_c",
+      "title": "Center",
+      "shape": "./hockey/red_position_c.svg"
+    },
+    {
+      "id": "red_position_rw",
+      "title": "Right Wing",
+      "shape": "./hockey/red_position_rw.svg"
+    }
+  ]
+
+}

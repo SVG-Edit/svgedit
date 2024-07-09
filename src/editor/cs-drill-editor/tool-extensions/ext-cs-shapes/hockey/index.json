@@ -1,0 +1,12 @@
+[
+    {
+      "id": "hockey_net",
+      "title": "Hockey Net",
+      "shape": "./hockey/hockeynet.svg"
+    },
+    {
+      "id": "hockey_puck",
+      "title": "Hockey Puck",
+      "shape": "./hockey/hockeypuck.svg"
+    }
+  ]

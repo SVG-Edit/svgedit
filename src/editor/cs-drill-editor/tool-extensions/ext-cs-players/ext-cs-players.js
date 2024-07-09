@@ -68,16 +68,52 @@ export default {
     const modeId = 'cs_players'
     const startClientPos = {}
     const sport = svgEditor.configObj.curConfig.canvasName
-
+    const extPath = svgEditor.configObj.curConfig.extPath
+    let json
     let curShape
     let startX
     let startY
-
+    let selElems
     let tool_id = 'tools_' + name;
 
+    const singleSelectedObject = function (opts) {
+      selElems = opts.elems;
+      if (selElems.length != 1) {
+        return null;
+      }
+      const elem = selElems[0].querySelectorAll('[data-field="label"]');
+      if (elem.length > 0) {
+        return elem[0];
+      } else {
+        return null;
+      }
+    }
+
+    function showPanel(on) {
+      if ($id(name + '_panel')) {
+        $id(name + '_panel').style.display = (on) ? 'block' : 'none';
+      }
+    }
+
+    function setAttr(attr, val) {
+      canv.changeSelectedAttribute(attr, val);
+      canv.call('changed', selElems);
+    }
+
+    try {
+      // const response = await fetch(`{extPath}/../cs-drill-editor/tool-extensions/ext-cs-players/index.json`)
+      // json = await response.json()
+
+      // const commonButtons = json["common"] || []
+      // const sportFigures = json[`${sport}-figures`] || []
+      // const sportPositions = json[`${sport}-positions`] || []
+      // console.log(commonButtons); console.log(sportFigures); console.log(sportPositions);
+
+    } catch (error) {
+      console.error(error)
+    }
     return {
       callback () {
-        const extPath = svgEditor.configObj.curConfig.extPath
 
         if ($id(tool_id) === null) {
           const extPath = svgEditor.configObj.curConfig.extPath
@@ -88,9 +124,10 @@ export default {
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 99)
         }
 
+        const sportCap  = sport.charAt(0).toUpperCase() + sport.slice(1)
         //set sport specific attributes
         $id(tool_id).setAttribute("sport", sport);
-        $id(tool_id).setAttribute("title", `${sport} Player`);
+        $id(tool_id).setAttribute("title", `${sportCap} Players`);
         $id(tool_id).setAttribute("src", `../cs-drill-editor/tool-extensions/ext-cs-players/tool_button_players.svg`);
         $id(tool_id).setAttribute("lib", `${extPath}/ext-cs-players/`);
 
@@ -98,6 +135,24 @@ export default {
           if (this.leftPanel.updateLeftPanel(tool_id)) {
             canv.setMode(modeId)
           }
+        })
+
+        const idPanel = `${name}_panel`
+        const idInput = `${name}_input`
+        const label0 = `Label`
+        const title0 = `Player Label`
+
+        const panelTemplate = document.createElement('template')
+        panelTemplate.innerHTML = `
+          <div id="${idPanel}">
+            <se-input id="${idInput}" label="${label0}" title="${title0}" size="10">
+            </se-input>
+          </div>
+           `
+        $id('tools_top').appendChild(panelTemplate.content.cloneNode(true))
+        showPanel(false, idPanel)
+        $id(idInput).addEventListener('change', (event) => {
+          setAttr('data-value', event.target.value)
         })
 
       },
@@ -125,6 +180,7 @@ export default {
           const shape = new DOMParser().parseFromString(currentD,"image/svg+xml");
           const newShape = convertDomToJson(shape.documentElement);
           curShape = canv.addSVGElementsFromJson(newShape);
+          curShape.setAttribute("id", canv.getNextId())
 
           // // below is for drag/size
           // curShape.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(0.005) translate(' + -x + ',' + -y + ')')
@@ -153,58 +209,68 @@ export default {
         const mode = canv.getMode()
         if (mode !== modeId) { return }
 
-        const zoom = canv.getZoom()
-        const evt = opts.event
+        // const zoom = canv.getZoom()
+        // const evt = opts.event
+        //
+        // const x = opts.mouse_x / zoom
+        // const y = opts.mouse_y / zoom
+        //
+        // const tlist = curShape.transform.baseVal
+        // const box = curShape.getBBox()
+        // const left = box.x; const top = box.y
+        //
+        // const newbox = {
+        //   x: Math.min(startX, x),
+        //   y: Math.min(startY, y),
+        //   width: Math.abs(x - startX),
+        //   height: Math.abs(y - startY)
+        // }
+        //
+        // let sx = (newbox.width / lastBBox.width) || 1
+        // let sy = (newbox.height / lastBBox.height) || 1
+        //
+        // // Not perfect, but mostly works...
+        // let tx = 0
+        // if (x < startX) {
+        //   tx = lastBBox.width
+        // }
+        // let ty = 0
+        // if (y < startY) {
+        //   ty = lastBBox.height
+        // }
+        //
+        // // update the transform list with translate,scale,translate
+        // const translateOrigin = svgroot.createSVGTransform()
+        // const scale = svgroot.createSVGTransform()
+        // const translateBack = svgroot.createSVGTransform()
+        //
+        // translateOrigin.setTranslate(-(left + tx), -(top + ty))
+        // if (!evt.shiftKey) {
+        //   const max = Math.min(Math.abs(sx), Math.abs(sy))
+        //
+        //   sx = max * (sx < 0 ? -1 : 1)
+        //   sy = max * (sy < 0 ? -1 : 1)
+        // }
+        // scale.setScale(sx, sy)
+        //
+        // translateBack.setTranslate(left + tx, top + ty)
+        // tlist.appendItem(translateBack)
+        // tlist.appendItem(scale)
+        // tlist.appendItem(translateOrigin)
+        //
+        // canv.recalculateDimensions(curShape)
+        //
+        // lastBBox = curShape.getBBox()
 
-        const x = opts.mouse_x / zoom
-        const y = opts.mouse_y / zoom
+        const newX = opts.mouse_x;
+        const newY = opts.mouse_y;
+        canv.moveSelectedElements(newX - startX, newY - startY, false);
+        startX = newX;
+        startY = newY;
 
-        const tlist = curShape.transform.baseVal
-        const box = curShape.getBBox()
-        const left = box.x; const top = box.y
-
-        const newbox = {
-          x: Math.min(startX, x),
-          y: Math.min(startY, y),
-          width: Math.abs(x - startX),
-          height: Math.abs(y - startY)
-        }
-
-        let sx = (newbox.width / lastBBox.width) || 1
-        let sy = (newbox.height / lastBBox.height) || 1
-
-        // Not perfect, but mostly works...
-        let tx = 0
-        if (x < startX) {
-          tx = lastBBox.width
-        }
-        let ty = 0
-        if (y < startY) {
-          ty = lastBBox.height
-        }
-
-        // update the transform list with translate,scale,translate
-        const translateOrigin = svgroot.createSVGTransform()
-        const scale = svgroot.createSVGTransform()
-        const translateBack = svgroot.createSVGTransform()
-
-        translateOrigin.setTranslate(-(left + tx), -(top + ty))
-        if (!evt.shiftKey) {
-          const max = Math.min(Math.abs(sx), Math.abs(sy))
-
-          sx = max * (sx < 0 ? -1 : 1)
-          sy = max * (sy < 0 ? -1 : 1)
-        }
-        scale.setScale(sx, sy)
-
-        translateBack.setTranslate(left + tx, top + ty)
-        tlist.appendItem(translateBack)
-        tlist.appendItem(scale)
-        tlist.appendItem(translateOrigin)
-
-        canv.recalculateDimensions(curShape)
-
-        lastBBox = curShape.getBBox()
+        return {
+          started: true
+        };
       },
 
       mouseUp (opts) {
@@ -227,6 +293,50 @@ export default {
           element: curShape,
         }
 
+      },
+
+      selectedChanged(opts) {
+
+        selElems = opts.elems
+        let i = selElems.length
+        // Hide panels if nothing is selected
+        if (!i) {
+          showPanel(false)
+          return
+        }
+
+        const idInput = `${name}_input`;
+        while (i--) {
+          const elem = selElems[i]
+          // console.log(elem);
+          const label = elem.querySelectorAll('[data-field="label"]');
+          // console.log(label);
+          if (label.length > 0) {
+            if (opts.selectedElement && !opts.multiselected) {
+              const shapeValue = label[0].textContent
+              $id(idInput).value = shapeValue
+              showPanel(true)
+            } else {
+              showPanel(false)
+            }
+          } else {
+            showPanel(false)
+          }
+        }
+
+      },
+
+      elementChanged(opts) {
+        const elem = singleSelectedObject(opts);
+
+        if (elem != null) {
+          showPanel(true);
+          const idInput = `${name}_input`;
+          const labelValue = $id(idInput).value
+          elem.textContent = labelValue || ''
+        } else {
+          showPanel(false);
+        }
       }
     }
   }

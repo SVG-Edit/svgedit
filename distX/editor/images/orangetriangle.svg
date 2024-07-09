@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g id="tool_orangetriangle">
+    <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33">
+      <g>
+        <polygon points="16.165,0 0,28 32.32,28 16.165,0 " style="fill:#ee0"/>
+        <text fill="#000" font-family="sans-serif" font-size="24" text-anchor="middle" x="16" y="24">N</text>
+      </g>
+    </svg>
+  </g>
+  <g id="svg_eof"/>
+</svg>

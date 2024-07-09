@@ -1,5 +1,7 @@
 /* globals svgEditor */
 
+import {t} from "../locale";
+
 /**
  * @class ExplorerButton
  */
@@ -26,6 +28,7 @@ export class SvgExplorerButton extends HTMLElement {
     this.request = new XMLHttpRequest()
     this.imgPath = svgEditor.configObj.curConfig.imgPath
     this.data = {}
+    this.sport = 'soccer'
 
     // Closes opened (pressed) lib menu on click on the canvas
     const workarea = document.getElementById('workarea')
@@ -147,7 +150,7 @@ export class SvgExplorerButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled', 'lib', 'src']
+    return ['title', 'pressed', 'disabled', 'lib', 'src', 'sport']
   }
 
   /**
@@ -160,10 +163,15 @@ export class SvgExplorerButton extends HTMLElement {
   async attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return
     switch (name) {
+      case 'sport':
+      {
+        this.sport = newValue
+      }
+      break
       case 'title':
         {
           const shortcut = this.getAttribute('shortcut')
-          this.$button.setAttribute('title', `${newValue} [${shortcut}]`)
+          this.$button.setAttribute('title', `${newValue} ${shortcut ? `[${t(shortcut)}]` : ''}`)
         }
         break
       case 'pressed':
@@ -181,17 +189,27 @@ export class SvgExplorerButton extends HTMLElement {
         }
         break
       case 'lib':
+        let jsonCommon = {}
+        let jsonSport = {}
         try {
           const response = await fetch(`${newValue}index.json`)
-          this.data = await response.json()
-          //const { lib } = json
-          this.$menu.innerHTML = Object.keys(this.data).map((menu, i) => (
-          `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
-          )).join('')
-          await this.updateLib(Object.keys(this.data)[0])
+          jsonCommon = await response.json()
         } catch (error) {
-          console.error(error)
+          console.warn(error)
         }
+        try {
+          const response = await fetch(`${newValue}${this.sport}/index.json`)
+          jsonSport = await response.json()
+        } catch (error) {
+          console.warn(error)
+        }
+        this.data = {...this.data, ...jsonCommon, ...jsonSport}
+
+        this.$menu.innerHTML = Object.keys(this.data).map((menu, i) => (
+          `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
+        )).join('')
+        await this.updateLib(Object.keys(this.data)[0])
+
         break
       case 'src':
         this.$img.setAttribute('src', this.imgPath + '/' + newValue)
@@ -200,6 +218,22 @@ export class SvgExplorerButton extends HTMLElement {
         console.error(`unknown attribute: ${name}`)
         break
     }
+  }
+
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get sport () {
+    return this.getAttribute('sport')
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set sport (value) {
+    this.setAttribute('sport', value)
   }
 
   /**

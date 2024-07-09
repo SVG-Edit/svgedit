@@ -1,0 +1,12 @@
+[
+    {
+      "id": "basketball",
+      "title": "Basketball",
+      "shape": "./basketball/basketball.svg"
+    },
+    {
+      "id": "basketball_net",
+      "title": "Basketball Net",
+      "shape": "./basketball/basketballnet.svg"
+    }
+]

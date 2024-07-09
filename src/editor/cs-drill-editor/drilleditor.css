@@ -10,7 +10,27 @@
   --text-color: black;
 }
 
-#main_button, #sidepanels {
+.svg_editor {
+  grid-template-columns: 40px 15px auto 1fr 15px;
+}
+
+/*.tool_sep {*/
+/*  border-color: black;*/
+/*}*/
+
+#main_button {
+  color: var(--text-color);
+}
+
+#layersLabel {
+  color: var(--text-color);
+}
+
+elix-menu-button {
+  color: var(--text-color) !important;
+}
+
+#sidepanels { /* #main_button, */
   display: none;
 }
 
@@ -40,6 +60,10 @@
 #tool_text_decoration_underline, #tool_length_adjust, #tool_text_length, #tool_word_spacing, #tool_letter_spacing,
 #tool_make_link_multi, #tool_topath, #tool_reorient, #tool_make_link, #tool_add_subpath
  {
+  display: none;
+}
+
+#tool_clear, #tool_save, #tool_open, #tool_docprops, #tool_editor_homepage {
   display: none;
 }
 

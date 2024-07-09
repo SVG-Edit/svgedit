@@ -28,6 +28,8 @@ let svgCanvas = null
  * @returns {void}
  */
 export const init = (canvas) => {
+  console.log("selection.js init")
+
   svgCanvas = canvas
   svgCanvas.getMouseTarget = getMouseTargetMethod
   svgCanvas.clearSelection = clearSelectionMethod
@@ -70,6 +72,7 @@ const clearSelectionMethod = (noCall) => {
  * @fires module:selection.SvgCanvas#event:selected
  */
 const addToSelectionMethod = (elemsToAdd, showGrips) => {
+  console.log("PPPPPP")
   const selectedElements = svgCanvas.getSelectedElements()
   if (!elemsToAdd.length) {
     return

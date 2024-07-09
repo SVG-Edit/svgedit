@@ -1,0 +1,54 @@
+<svg width="900" height="675" viewBox="0 -25 900 675" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+   <style xmlns="http://www.w3.org/2000/svg" type="text/css">
+     @media print {
+     .background{
+     fill: #FFFFFF !important;
+     }
+     .outline {
+     stroke: #000000 !important;
+     }
+     }
+   </style>
+  <marker id="se_arrow_fw" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10">
+   <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#000000"/>
+  </marker>
+ </defs>
+ <g class="layer">
+  <title>Field</title>
+    <path fill="#7FC784" fill-rule="nonzero" d="M0 -25h900v700H0z" class="background"/>
+    <g fill-rule="nonzero">
+      <path fill="#87D888" d="M860 663H40V13h820z" class="background"/>
+      <path fill="#7FC784" d="M860 338H40V230h820zM860 122H40V13h820zM860 554H40V446h820z" class="background"/>
+    </g>
+</g>
+<g class="layer">
+  <title>Lines</title>
+    <g stroke="#FFF" stroke-width="2" fill="none" class="outline">
+      <path d="M63.5685 13c.0026 6.2294-2.4427 12.2046-6.7976 16.6104-4.3549 4.4058-10.2624 6.8811-16.4225 6.8811M860 37.4915c-6.16 0-12.0676-2.4753-16.4225-6.881-4.3549-4.4059-6.8001-10.381-6.7975-16.6105M222 13.4915h455.7671v191.4761H222z"/>
+      <path d="M40 13.4916h820v650H40z"/>
+      <path d="M341 13.4916h218.4446v67.4212H341zM354 203.4915c18.731 33.9362 54.8662 56.9222 96.3702 56.9222 41.1747 0 77.0656-22.6227 95.9211-56.1165M560 663.4915c0-60.7513-49.2487-110-110-110s-110 49.2487-110 110"/>
+    </g>
+</g>
+<g class="layer">
+  <title>Drill</title>
+    <g>
+        <circle cx="-20" cy="600" fill="#000" r="15" stroke-width="0"/>
+        <text fill="#fff" font-family="Cursive" font-size="24" text-anchor="middle" x="-23" y="608.5">C</text>
+    </g>
+    <g fill="none" shape="soccernet" stroke="#fff" stroke-linecap="round" stroke-width="2" class="outline">
+      <polyline points="395.57098388671875,13.224128723144531 391.7808532714844,1.4333572387695312 509.5216979980469,1.4333572387695312 505.73175048828125,13.224128723144531 " stroke-linejoin="round"></polyline>
+      <rect height="22.79537" width="117.74109" x="391.7809" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="399.13971" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="413.85734" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="428.57497" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="443.29261" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="458.01024" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="472.72789" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="487.44552" y="-21.36197"></rect>
+      <rect height="22.79537" width="7.35881" x="502.16315" y="-21.36197"></rect>
+      <rect height="7.86048" width="117.74103" x="391.89923" y="-13.89452"></rect>
+    </g>
+
+</g>
+</svg>
