@@ -14,7 +14,7 @@ export default {
       'ext-cs-actions', // run, run w/ ball, pass
       'ext-cs-players', // new blue triangle/red circle, x's and o's, generic players + sport specific players
       // 'ext-cs-positions', // sport specific positions (GK, Left Back, Striker, etc)
-      'ext-cs-shapes' // sport specific shapes + common shapes (cone, coach, etc)
+      'ext-cs-shapes', // sport specific shapes + common shapes (cone, coach, etc)
     ],
     soccer: [
     ],
@@ -27,7 +27,7 @@ export default {
     rugby: [
     ],
     volleyball: [
-      ],
+    ],
   },
 
   Templates: {
@@ -76,7 +76,7 @@ export default {
       { name: 'Blank', filePath: '/blank.svg' },
     ],
     default: [
-      { name: 'Blank', filePath: '/blank.svg' }
-    ]
+      { name: 'Blank', filePath: '/blank.svg' },
+    ],
   },
-}
+};

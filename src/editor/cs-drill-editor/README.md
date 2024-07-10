@@ -58,7 +58,7 @@ To package for distribution...
 npm run build
 
 This creates a /dist directory containing a semi-optimized (I think) version of the SVGEdit code and all of the Drill Editor code (IN PROCESS).
-Manually copy the /dist into the CS repo under SVGEdit-7.3.3 (LOCATION SUBJECT TO CHANGE). Due the nature of SVGEdit and expected infrequent updates,
+Manually copy the /dist/editor directory into the CS repo under /public and rename 'drill-editor'. Due the nature of SVGEdit and expected infrequent updates,
 it was determined that manually copying SVGEdit and Drill Editor is sufficient for now (i.e. automating build/package process not worth the effort)
 
 
