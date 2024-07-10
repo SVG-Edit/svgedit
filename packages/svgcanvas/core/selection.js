@@ -70,7 +70,6 @@ const clearSelectionMethod = (noCall) => {
  * @fires module:selection.SvgCanvas#event:selected
  */
 const addToSelectionMethod = (elemsToAdd, showGrips) => {
-  console.log("PPPPPP")
   const selectedElements = svgCanvas.getSelectedElements()
   if (!elemsToAdd.length) {
     return

@@ -26,7 +26,6 @@ export class Selector {
   * @param {module:utilities.BBoxObject} [bbox] - Optional bbox to use for initialization (prevents duplicate `getBBox` call).
   */
   constructor (id, elem, bbox) {
-    console.log("select.js constructor")
     // this is the selector's unique number
     this.id = id
 

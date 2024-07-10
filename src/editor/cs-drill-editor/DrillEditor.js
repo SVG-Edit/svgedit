@@ -1,6 +1,6 @@
 export default {
 
-  ToolExtensions: { //order of extensions determined by LeftPanel.html (appending them via DOM does not preserve order?)
+  ToolExtensions: { // order of extensions determined by LeftPanel.html (appending them via DOM does not preserve order?)
     common: [
       'ext-shapes', // default generic shapes
       'ext-markers', // default line arrows
@@ -8,10 +8,10 @@ export default {
       'ext-panning',
       'ext-grid',
       'ext-opensave',
-      'ext-bluetriangle', //old extensions for backward compatability?
-      'ext-redcircle', //old extensions for backward compatability?
-      'ext-cs-push-message-save', //save message between vue app and drill editor
-      'ext-cs-actions', //run, run w/ ball, pass
+      'ext-bluetriangle', // old extensions for backward compatability?
+      'ext-redcircle', // old extensions for backward compatability?
+      'ext-cs-push-message-save', // save message between vue app and drill editor
+      'ext-cs-actions', // run, run w/ ball, pass
       'ext-cs-players', // new blue triangle/red circle, x's and o's, generic players + sport specific players
       // 'ext-cs-positions', // sport specific positions (GK, Left Back, Striker, etc)
       'ext-cs-shapes' // sport specific shapes + common shapes (cone, coach, etc)
