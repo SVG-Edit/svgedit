@@ -80,15 +80,23 @@ export default {
         const fbtitle = `${name}:title`
         const titleStar = `${name}:buttons.0.title`
         const titlePolygon = `${name}:buttons.1.title`
+        // const buttonTemplate = `
+        //     <se-flyingbutton>
+        //       <se-button id="tool_star" title="${titleStar}" src="star.svg">
+        //       </se-button>
+        //       <se-button id="tool_polygon" title="${titlePolygon}" src="polygon.svg">
+        //       </se-button>
+        //     </se-flyingbutton>
+        //   `
         const buttonTemplate = `
-            <se-flyingbutton id="tools_polygon" title="${fbtitle}">
               <se-button id="tool_star" title="${titleStar}" src="star.svg">
               </se-button>
               <se-button id="tool_polygon" title="${titlePolygon}" src="polygon.svg">
               </se-button>
-            </se-flyingbutton>
           `
-        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 10)
+        // svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 10)
+        //svgCanvas.insertChildAtIndex($id('tools_rect'), buttonTemplate, 99)
+
         // handler
         $click($id('tool_star'), () => {
           if (this.leftPanel.updateLeftPanel('tool_star')) {

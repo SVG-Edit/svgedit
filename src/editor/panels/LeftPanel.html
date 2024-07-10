@@ -12,11 +12,12 @@
 
   <se-flyingbutton id="tools_rect" title="Basic Shapes">
     <se-button id="tool_rect" title="tools.mode_rect" src="rect.svg" shortcut="R"></se-button>
-    <se-button id="tool_square" title="tools.mode_square" src="square.svg"></se-button>
+<!--    <se-button id="tool_square" title="tools.mode_square" src="square.svg"></se-button>-->
     <se-button id="tool_fhrect" title="tools.mode_fhrect" src="fh_rect.svg"></se-button>
     <se-button id="tool_ellipse" title="tools.mode_ellipse" src="ellipse.svg" shortcut="E"></se-button>
-    <se-button id="tool_circle" title="tools.mode_circle" src="circle.svg"></se-button>
+<!--    <se-button id="tool_circle" title="tools.mode_circle" src="circle.svg"></se-button>-->
     <se-button id="tool_fhellipse" title="tools.mode_fhellipse" src="fh_ellipse.svg"></se-button>
+    <se-button id="tool_polygon" title="${titlePolygon}" src="polygon.svg"></se-button>
   </se-flyingbutton>
 
   <se-svgflyingbutton id="tools_cs_actions"></se-svgflyingbutton>
@@ -34,6 +35,10 @@
   <!-- not used (hidden by custom CSS) but js refers to tools_ellipse so must have -->
   <se-flyingbutton id="tools_ellipse" title="tools.ellipse_circle_tool">
     <se-button id="tool_image" title="tools.mode_image" src="image.svg"></se-button>
+        <se-button id="tool_square" title="tools.mode_square" src="square.svg"></se-button>
+        <se-button id="tool_circle" title="tools.mode_circle" src="circle.svg"></se-button>
+    <se-button id="tool_star" title="${titleStar}" src="star.svg"></se-button>
+
     <!--old player extensions -- needed for backward compatibility)-->
     <se-button id="tool_bluetriangle" title="Your Player" src="bluetriangle.svg"></se-button>
     <se-button id="tool_redcircle" title="Opponent" src="redcircle.svg"></se-button>

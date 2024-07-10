@@ -94,7 +94,8 @@ const config = [{
         { src: 'src/editor/browser-not-supported.js', dest },
         { src: 'src/editor/svgedit.css', dest },
         { src: 'src/editor/cs-drill-editor', dest },
-        { src: 'src/editor/cs-drill-editor.html', dest }
+        { src: 'src/editor/cs-drill-editor.html', dest },
+        { src: 'src/editor/cs-drill-test.html', dest }
       ]
     }),
     html({

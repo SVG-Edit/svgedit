@@ -8,6 +8,10 @@ export default {
     const {svgCanvas} = svgEditor
     // const {$id, $click} = svgCanvas
     // message event handler (e is event object)
+
+    //svgEditor.bottomPanel.changeZoom(400)
+
+
     window.handleMessage = function(e) {
       // Check origin
       // if ( e.origin === window.location.origin ) {

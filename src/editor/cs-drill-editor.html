@@ -51,6 +51,11 @@
     }
     return urlparameter;
   }
+
+  function handleSvgReady() {
+    //svgEditor.bottomPanel.changeZoom('canvas') //todo setting zoom to view entire drill not working
+  }
+
   const sport = getUrlParam("sport","soccer");
 
   import Editor from './Editor.js'
@@ -70,14 +75,14 @@
       opacity: 1
     },
     noDefaultExtensions: true,
-    // showRulers: true,
+    showRulers: true,
     allowInitialUserOverride: true,
     extensions: DrillEditor.ToolExtensions["common"].concat(DrillEditor.ToolExtensions[sport]),
     extPath: './cs-drill-editor/tool-extensions',
     //stylesheets: ['@default', './cs-drill-extensions/svgedit.css'], //TODO THIS DOES NOT WORK...MANUALLY INCLUDING CUSTOM CSS FILE
     //dimensions: [640,480], //TODO CAUSES ERROR...BUT DON'T THINK IT MATTERS (CHECK SJ COMMIT IN OLD REPO)
   })
-
+  svgEditor.ready(handleSvgReady)
   svgEditor.init()
 
   // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)

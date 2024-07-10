@@ -4,6 +4,7 @@ export default {
     common: [
       'ext-shapes', // default generic shapes
       'ext-markers', // default line arrows
+      'ext-polystar', // polygons and stars (only showing polygons now)
       'ext-panning',
       'ext-grid',
       'ext-opensave',

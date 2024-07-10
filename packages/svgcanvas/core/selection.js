@@ -28,8 +28,6 @@ let svgCanvas = null
  * @returns {void}
  */
 export const init = (canvas) => {
-  console.log("selection.js init")
-
   svgCanvas = canvas
   svgCanvas.getMouseTarget = getMouseTargetMethod
   svgCanvas.clearSelection = clearSelectionMethod
