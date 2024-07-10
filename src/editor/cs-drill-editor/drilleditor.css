@@ -50,7 +50,7 @@ elix-menu-button {
 /* #stroke_style */
 #g_title, #elem_id, #elem_class,
 #stroke_linejoin, #stroke_linecap,
-#palette, #opacity, #angle, #blur,
+#paletteX, #opacity, #angle, #blur,
 #selected_x, #selected_y,
 #line_x1, #line_y1, #line_x2, #line_y2,
 #ellipse_cx, #ellipse_cy, #ellipse_rx, #ellipse_ry,
