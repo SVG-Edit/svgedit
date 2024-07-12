@@ -14,6 +14,7 @@ import { fileOpen, fileSave } from 'browser-fs-access'
 
 const template = document.createElement('template')
 template.innerHTML = tactileRenderHTML
+var layerSelected = "None"
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule
@@ -46,6 +47,7 @@ export class SeTactileRenderDialog extends HTMLElement {
     this.$exportBtn = this._shadowRoot.querySelector('#export')
     this.$idVal = this._shadowRoot.querySelector('#id_value')
     this.$secretVal = this._shadowRoot.querySelector('#secret_value')
+    this.$lyrSelect = this._shadowRoot.querySelector('#layer_select_dd')
   }
 
   /**
@@ -60,7 +62,7 @@ export class SeTactileRenderDialog extends HTMLElement {
     this.setAttribute('label-export', i18next.t(`${name}:render_id.export_lbl`))
     this.setAttribute('label-id_val', i18next.t(`${name}:render_id.id_val`))
     this.setAttribute('label-secret_val', i18next.t(`${name}:render_id.secret_val`))
-    
+    this.setAttribute('label-layer_val', i18next.t(`${name}:render_id.layer_val`))
   }
 
   /**
@@ -68,7 +70,7 @@ export class SeTactileRenderDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'label-ok', 'label-cancel', 'label-import', 'label-export', 'label-id_val', 'label-secret_val', 'id_val', 'secret_val']
+    return ['dialog', 'label-ok', 'label-cancel', 'label-import', 'label-export', 'label-id_val', 'label-secret_val', 'id_val', 'secret_val', 'label-layer_val', 'layer_val', 'layer_num']
   }
 
   /**
@@ -85,10 +87,12 @@ export class SeTactileRenderDialog extends HTMLElement {
         if (newValue === 'open') {
           this._shadowRoot.querySelector('#id_value').value = svgEditor.graphicId
           this._shadowRoot.querySelector('#secret_value').value = svgEditor.secretKey
+          this._shadowRoot.querySelector('#layer_select_dd').value = layerSelected
           this.$dialog.open()
         } else {
           svgEditor.graphicId = this._shadowRoot.querySelector('#id_value').value
           svgEditor.secretKey = this._shadowRoot.querySelector('#secret_value').value
+          layerSelected = this._shadowRoot.querySelector('#layer_select_dd').value
           this.$dialog.close()
         }
         break
@@ -118,6 +122,14 @@ export class SeTactileRenderDialog extends HTMLElement {
         break 
       case 'secret_val':
         node = this._shadowRoot.querySelector('#secret_value')
+        node.textContent = newValue
+        break
+      case 'label-layer_val':
+        node = this._shadowRoot.querySelector('#layer_select_prompt')
+        node.textContent = newValue
+        break
+      case 'layer_val':
+        node = this._shadowRoot.querySelector('#layer_select_dd')
         node.textContent = newValue
         break 
       default:
@@ -151,7 +163,9 @@ connectedCallback () {
     
     xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
       "id": svgEditor.graphicId,
-      "secret": svgEditor.secretKey}));
+      "secret": svgEditor.secretKey,
+      "layer": layerSelected
+    }));
     
     }
 
@@ -237,6 +251,23 @@ export default {
             svgCanvas.setMode('tactile')
             svgCanvas.clearSelection()
             document.getElementById('se-tactile-render-dialog').setAttribute('dialog', 'open')
+            // making sure the dropdown is correctly populated
+            let container =document.getElementById('se-tactile-render-dialog').shadowRoot
+            let select = container.querySelector("#layer_select_dd")
+            let drawing= svgCanvas.getCurrentDrawing()
+            let layer = drawing.getNumLayers()
+            select.replaceChildren()
+            var opt = document.createElement('option')
+            opt.value = "None";
+            opt.innerHTML = "None";
+            select.appendChild(opt);
+            for (let i = 0; i < layer; i++) {
+              const name = drawing.getLayerName(i)
+              var opt = document.createElement('option')
+              opt.value = name;
+              opt.innerHTML = name;
+              select.appendChild(opt);
+            }
         })
       }
     }
