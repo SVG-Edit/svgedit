@@ -39,23 +39,29 @@ export default {
       callback () {
         // Add the button and its handler(s)
         const title = `${name}:buttons.0.main_title`
-        const guidance_title = `${name}:buttons.0.guidance_title`
+        // const guidance_title = `${name}:buttons.0.guidance_title`
         const zoomLvl_title = `${name}:buttons.0.zoomLvl_title`
         const label_title = `${name}:buttons.0.label_title`
-        const buttonTemplate = `
+        /*const buttonTemplate = `
         <se-flyingbutton id="tools_guidance" title="${title}">
           <se-button id="tool_guidance" title="${guidance_title}" src="guide.svg"></se-button>
+          <se-button id="tool_setZoomLvl" title="${zoomLvl_title}" src="zoomLvl.svg"></se-button>
+          <se-button id="tool_label" title="${label_title}" src="label.svg"></se-button>
+        </se-flyingbutton>
+        `*/
+        const buttonTemplate = `
+        <se-flyingbutton id="tools_guidance" title="${title}">
           <se-button id="tool_setZoomLvl" title="${zoomLvl_title}" src="zoomLvl.svg"></se-button>
           <se-button id="tool_label" title="${label_title}" src="label.svg"></se-button>
         </se-flyingbutton>
         `
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12)
         
-        $click($id('tool_guidance'), () => {
+        /*$click($id('tool_guidance'), () => {
           if (this.leftPanel.updateLeftPanel('tool_guidance')) {
             svgCanvas.setMode('guidance')
           }
-        })
+        })*/
         $click($id('tool_setZoomLvl'), () => {
           if (this.leftPanel.updateLeftPanel('tool_setZoomLvl')) {
             svgCanvas.setMode('zoomLvl')
