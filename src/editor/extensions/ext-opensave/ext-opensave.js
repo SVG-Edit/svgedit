@@ -165,6 +165,8 @@ export default {
           size: blob.size,
           type: blob.type
         })
+        svgEditor.layersPanel.populateLayers()
+        svgEditor.topPanel.updateShowAll()
       } catch (err) {
         if (err.name !== 'AbortError') {
           return console.error(err)

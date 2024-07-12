@@ -662,6 +662,7 @@ class Editor extends EditorStartup {
    *
    * @returns {void}
    */
+  /*
     updateShowAll () {
       let drawing= this.svgCanvas.getCurrentDrawing()
       let curLayer= drawing.getCurrentLayerName()
@@ -683,7 +684,7 @@ class Editor extends EditorStartup {
       ).textContent = this.workarea.classList.contains('showAll') ? rule : ''
     }
     
-    }
+    }*/
 
   // called when we've selected a different element
   /**
@@ -846,6 +847,7 @@ class Editor extends EditorStartup {
       this.svgCanvas.selectorManager.requestSelector(el).resize()
     }
     this.updateWireFrame()
+    this.topPanel.updateShowAll()
   }
 
   /**

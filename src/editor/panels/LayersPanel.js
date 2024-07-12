@@ -106,7 +106,7 @@ class LayersPanel {
     this.editor.svgCanvas.createLayer(newName)
     this.updateContextPanel()
     this.populateLayers()
-    this.editor.updateShowAll()
+    // this.editor.updateShowAll()
   }
 
   /**
@@ -233,6 +233,7 @@ class LayersPanel {
         this.editor.svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 1.0)
       })
     }
+    this.editor.topPanel.updateShowAll()
   }
 
   /**
@@ -290,7 +291,7 @@ class LayersPanel {
       })
       element.addEventListener('mouseup', (evt) => {
         self.toggleHighlightLayer(evt.currentTarget.textContent)
-        self.editor.updateShowAll ()
+        // self.editor.updateShowAll ()
       })
       element.addEventListener('mouseout', (_evt) => {
         self.toggleHighlightLayer()

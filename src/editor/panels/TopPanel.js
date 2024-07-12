@@ -523,7 +523,34 @@ class TopPanel {
         saRules.removeChild(saRules.firstChild)
       }
     }
-    this.editor.updateShowAll()
+    this.updateShowAll()
+  }
+
+  /**
+   *
+   * @returns {void}
+   */
+  updateShowAll () {
+      const { workarea } = this.editor
+      let drawing= this.editor.svgCanvas.getCurrentDrawing()
+      let curLayer= drawing.getCurrentLayerName()
+      let layer = drawing.getNumLayers()
+      let rule= `
+      #workarea.showAll `
+      while(layer--) {
+        const name = drawing.getLayerName(layer)
+        if (name!=curLayer)
+          rule+= `g[data-image-layer="`+name+`"], `
+      }
+      rule= rule.slice(0, rule.length - 2)
+      rule+= ` {
+        display: none;
+        `
+    if (document.querySelectorAll('#showAll_rules').length > 0) {
+      document.querySelector(
+        '#showAll_rules'
+      ).textContent = workarea.classList.contains('showAll') ? rule : ''
+    } 
   }
 
   /**

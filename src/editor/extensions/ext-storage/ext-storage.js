@@ -99,6 +99,7 @@ export default {
         const name = storage.getItem(`title-${key}`) ?? 'untitled.svg'
         svgEditor.topPanel.updateTitle(name)
         svgEditor.layersPanel.populateLayers()
+        svgEditor.topPanel.updateShowAll()
       }
     }
 
