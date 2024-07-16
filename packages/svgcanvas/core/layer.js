@@ -172,6 +172,7 @@ class Layer {
       while (title.firstChild) { title.removeChild(title.firstChild) }
       title.textContent = name
       this.name_ = name
+      this.group_.setAttribute('data-image-layer', name)
       if (hrService) {
         hrService.changeElement(title, { '#text': previousName })
       }

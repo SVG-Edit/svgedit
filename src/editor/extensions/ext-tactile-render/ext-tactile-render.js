@@ -87,7 +87,6 @@ export class SeTactileRenderDialog extends HTMLElement {
         if (newValue === 'open') {
           this._shadowRoot.querySelector('#id_value').value = svgEditor.graphicId
           this._shadowRoot.querySelector('#secret_value').value = svgEditor.secretKey
-          this._shadowRoot.querySelector('#layer_select_dd').value = layerSelected
           this.$dialog.open()
         } else {
           svgEditor.graphicId = this._shadowRoot.querySelector('#id_value').value
@@ -260,12 +259,16 @@ export default {
             var opt = document.createElement('option')
             opt.value = "None";
             opt.innerHTML = "None";
+            if (layerSelected == "None")
+              opt.selected = "selected"
             select.appendChild(opt);
             for (let i = 0; i < layer; i++) {
               const name = drawing.getLayerName(i)
               var opt = document.createElement('option')
               opt.value = name;
               opt.innerHTML = name;
+              if (layerSelected == name)
+                opt.selected = "selected"
               select.appendChild(opt);
             }
         })
