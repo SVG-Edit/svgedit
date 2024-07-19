@@ -147,6 +147,10 @@ connectedCallback () {
     document.getElementById('se-tactile-render-dialog').setAttribute('dialog', 'close')
     let xhr = new XMLHttpRequest();
     let svgString= svgCanvas.getSvgString().replaceAll("data-image-label", "aria-label").replaceAll("data-image-description", "aria-description");
+    let parser = new DOMParser();
+    let svgDoc = parser.parseFromString(svgString, "text/xml");
+    svgDoc.querySelectorAll('g[data-image-layer] title').forEach(e => e.remove())
+    svgString = new XMLSerializer().serializeToString(svgDoc)
     xhr.open("POST", "http://ven1998.pythonanywhere.com/render");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Access-Control-Allow-Origin", '*');
