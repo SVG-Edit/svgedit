@@ -44,6 +44,7 @@ function historyRecordingService (hrService) {
  */
 function findLayerNameInGroup (group) {
   const sel = group.querySelector('title')
+  // console.log(group.getAttribute('data-image-layer'))
   return sel ? sel.textContent : ''
 }
 
