@@ -10,11 +10,15 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
+
+
+Install these dependencies using npm:
+
+```bash
+npm i
+```
+
 
 Open [http://localhost:3000/home/tutorial](http://localhost:3000/home/tutorial) with your browser to see the result.
 
