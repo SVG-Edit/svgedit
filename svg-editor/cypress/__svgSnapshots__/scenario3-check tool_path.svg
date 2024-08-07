@@ -1,0 +1,6 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <path d="m50,50l100,50l-20,100l-80,-150z" fill="#FF0000" id="svg_1" stroke="#000000" stroke-width="5"/>
+ </g>
+</svg>

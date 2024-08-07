@@ -1,0 +1,46 @@
+{
+    "name": "svg-edit/svgedit",
+    "description": "SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works in any modern browser.",
+    "authors": [
+        {
+            "name": "Narendra Sisodiya",
+            "email": "narendra@narendrasisodiya.com"
+        },
+        {
+            "name": "Pavol Rusnak",
+            "email": "pavol@rusnak.io"
+        },
+        {
+            "name": "Jeff Schiller",
+            "email": "codedread@gmail.com"
+        },
+        {
+            "name": "Vidar Hokstad",
+            "email": "vidar.hokstad@gmail.com"
+        },
+        {
+            "name": "Alexis Deveria",
+            "email": "adeveria@gmail.com"
+        },
+        {
+            "name": "Brett Zamir",
+            "email": "brettz9@yahoo.com"
+        },
+        {
+            "name": "Optimistik SAS",
+            "email": "contact@optimistik.com"
+        }
+    ],
+    "keywords": [
+        "svg",
+        "svg-edit",
+        "drawing",
+        "editor"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "homepage": "https://github.com/SVG-Edit/svgedit/tree/master",
+    "require": {
+    }
+}

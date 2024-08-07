@@ -1,0 +1,94 @@
+<style>
+    :not(:defined) {
+        display: none;
+    }
+
+    /* Force the scroll bar to appear so we see it hide when overlay opens. */
+    body::-webkit-scrollbar {
+        background: lightgray;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background: darkgray;
+    }
+
+    #svg_source_editor #svg_source_container {
+        background-color: #5a6162;
+        color: #c5c5c5;
+        opacity: 1.0;
+        text-align: center;
+        border: 1px outset #777;
+        z-index: 6;
+    }
+
+    #save_output_btns {
+        display: none;
+        text-align: left;
+    }
+
+    #save_output_btns p {
+        margin: .5em 1.5em;
+        display: inline-block;
+    }
+
+    #svg_source_editor form {
+        width: 100%;
+    }
+
+    #svg_source_editor #svg_source_textarea {
+        padding: 5px;
+        font-size: 12px;
+        min-height: 200px;
+        width: 95%;
+        height: 95%;
+    }
+
+    #svg_source_editor #tool_source_back {
+        text-align: left;
+        height: 30px;
+    }
+
+    #tool_source_save {
+        width: 20%;
+        background-color: #c79605;
+        margin-left: 30%;
+        margin-top: 5px;
+    }
+    
+    #tool_source_dynamic {
+        cursor: pointer;
+    }
+    
+    .tool_label {
+        cursor: pointer;
+        margin: 5px 0;
+        display: inline-block;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    #tool_source_cancel {
+        width: 20%;
+        background-color: #c8c8c8;
+    }
+</style>
+<elix-dialog id="svg_source_editor" aria-label="SVG Source Editor" closed>
+    <div id="svg_source_container">
+        <div id="tool_source_back" class="toolbar_button">
+            <button id="tool_source_save"></button>
+            <button id="tool_source_cancel"></button>
+        </div>
+        <div id="save_output_btns">
+            <p id="copy_save_note"></p>
+            <button id="copy_save_done"></button>
+        </div>
+        <form>
+            <textarea id="svg_source_textarea" spellcheck="false" rows="5" cols="80"></textarea>
+        </form>
+        <label class="tool_label" for="tool_source_dynamic">
+          <input type="checkbox" id="tool_source_dynamic" checked>Toggle dynamic size
+        </label>
+    </div>
+</elix-dialog>

@@ -1,0 +1,20 @@
+ignore
+node_modules
+src/editor/react-extensions/react-test/node_modules
+docs/jsdoc
+cypress/results
+cypress/screenshots
+cypress/videos
+cypress.env.json
+# do not ignore the coverage summary so it can be used to compare master and PR coverage 
+# see .github/workflows/onpushandpullrequest.yml
+!coverage/
+coverage/*
+!coverage/coverage-summary.json
+instrumented
+.nyc_output
+.vscode
+.DS_Store
+.idea
+dist
+coverage/coverage-summary.json
