@@ -1,0 +1,29 @@
+/*
+import { NextResponse } from "next/server"
+import db from "@/lib/db"
+
+export async function PATCH(
+    req: Request,
+    { params }: { params: { courseid: string } },
+) {
+    try {
+        const { courseid } = params;
+        const values = await req.json();
+        
+            } catch (error) {
+                console.log("[COURSE_ID]", error);
+                return new NextResponse("InternalError", {status: 500})
+            }
+
+        const course = await db.course.update({
+            where: {
+                id: courseid
+            },
+            data: {
+                ...values
+            }
+        })
+        return NextResponse.json(course)
+
+}       
+}      */
