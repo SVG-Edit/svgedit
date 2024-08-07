@@ -6,6 +6,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 Node.js version >= v18.17.0 is required.
 
+Install these dependencies using npm:
+
+```bash
+npm i
+```
+
 First, run the development server:
 
 ```bash
@@ -13,11 +19,7 @@ npm run dev
 ```
 
 
-Install these dependencies using npm:
 
-```bash
-npm i
-```
 
 
 Open [http://localhost:3000/home/tutorial](http://localhost:3000/home/tutorial) with your browser to see the result.
