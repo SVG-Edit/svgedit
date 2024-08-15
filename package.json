@@ -136,5 +136,8 @@
     "rollup-plugin-re": "1.0.7",
     "standard": "17.1.0",
     "start-server-and-test": "2.0.5"
+  },
+  "optionalDependencies": {
+     "@rollup/rollup-linux-x64-gnu": "4.20.0"  
   }
 }
