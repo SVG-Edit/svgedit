@@ -2,7 +2,7 @@ import {
   visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use ellipse and circle of svg-edit', function () {
+describe('use ellipse and circle of svg-edit', { testIsolation: false }, function () {
   before(() => {
     visitAndApproveStorage()
   })
