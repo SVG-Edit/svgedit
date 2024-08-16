@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "lint": "standard .",
+    "pretest": "run-s lint cypress:instrument",
     "test": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html cypress:run",
     "prebuild": "npm run build --workspace=packages/svgcanvas --workspace=packages/react-test",
     "build": "rollup -c",
