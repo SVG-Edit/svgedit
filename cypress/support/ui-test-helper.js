@@ -1,7 +1,7 @@
 export const visitAndApproveStorage = () => {
   cy.clearLocalStorage()
   cy.clearCookies()
-  cy.visit('/instrumented/editor/index.html')
+  cy.visit('/src/editor/index.html')
   cy.get('#storage_ok').click({ force: true })
   // move to English and snap mode (to correct potential differences between CI and local tests )
   selectEnglishAndSnap()
