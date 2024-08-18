@@ -2,7 +2,7 @@ import {
   visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('check tool shape and image of svg-edit', function () {
+describe('check tool shape and image of svg-edit', { testIsolation: false }, function () {
   before(() => {
     visitAndApproveStorage()
   })
