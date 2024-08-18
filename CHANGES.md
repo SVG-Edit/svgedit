@@ -1,5 +1,10 @@
 # SVG-Edit CHANGES
 
+## 7.3.4
+- update dependencies
+- package @rollup/rollup-linux-x64-gnu was added for a bug in the CI
+
+
 ## 7.3.3
 - npm packages ugrade 
 - fix export and xy panel
