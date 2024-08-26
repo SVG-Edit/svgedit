@@ -1,0 +1,14 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <rect fill="#ffff00" filter="url(#svg_1_blur)" height="50" id="svg_1" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0) rotate(25 200 175)" width="100" x="150" y="150"/>
+  <rect fill="#FF0000" height="125" id="svg_2" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="145" x="375" y="255"/>
+  <rect fill="#FF0000" height="50" id="svg_4" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="250" y="320"/>
+  <rect fill="#FF0000" height="50" id="svg_3" stroke="#000000" stroke-width="5" width="50" x="230" y="300"/>
+ </g>
+ <defs>
+  <filter height="200%" id="svg_1_blur" width="200%" x="-50%" y="-50%">
+   <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+  </filter>
+ </defs>
+</svg>

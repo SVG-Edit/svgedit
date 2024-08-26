@@ -1,0 +1,19 @@
+{
+  "bundledRootPackages": [
+    "load-stylesheets",
+    "jamilih",
+    "query-result",
+    "qr-manipulation",
+    "stackblur-canvas",
+    "regenerator-runtime",
+    "core-js-bundle",
+    "underscore"
+  ],
+  "filesByLicense": {
+    "(MIT OR GPL-2.0)": ["src/editor/jquerybbq/jquery.bbq.min.js"],
+    "(MIT OR GPL-2.0-or-later)": ["src/editor/extensions/ext-server_moinsave.js"],
+    "Apache-2.0": ["src/editor/contextmenu.js", "src/editor/extensions/ext-foreignobject.js", "src/editor/extensions/ext-grid.js", "src/editor/extensions/ext-markers.js", "screencasts/svgopen2010/index.html", "src/editor/jgraduate/jQuery.jGraduate.js", "src/editor/extensions/mathjax/MathJax.min.js", "src/editor/extensions/mathjax/TeX-AMS-MML_SVG.js"],
+    "LGPL-3.0-or-later": ["src/editor/jspdf/jspdf.plugin.svgToPdf.js"],
+    "X11": ["src/editor/jspdf/jspdf.min.js"]
+  }
+}

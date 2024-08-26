@@ -1,0 +1,10 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <line fill="none" id="svg_3" opacity="0.25" stroke="#bf5f00" stroke-width="5" x1="390" x2="640" y1="220" y2="470">
+   <animate attributeName="opacity" begin="indefinite" dur="0.2" fill="freeze" id="svg_4" to="0.5"/>
+  </line>
+  <line fill="none" id="svg_2" opacity="0.5" stroke="#000000" stroke-width="15" transform="matrix(1 0 0 1 0 0)" x1="225" x2="475" y1="175" y2="425"/>
+ </g>
+
+</svg>

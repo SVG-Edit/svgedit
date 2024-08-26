@@ -1,0 +1,143 @@
+{
+  "name": "svgedit",
+  "version": "7.3.3",
+  "description": "Powerful SVG-Editor for your browser ",
+  "main": "dist/editor/Editor.js",
+  "module": "dist/editor/Editor.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "workspaces": [
+    "packages/svgcanvas",
+    "packages/react-test"
+  ],
+  "scripts": {
+    "lint": "standard .",
+    "test": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html cypress:run",
+    "prebuild": "npm run build --workspace=packages/svgcanvas --workspace=packages/react-test",
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch",
+    "start": "web-dev-server --app-index src/editor/index.html --node-resolve",
+    "prestart": "echo svgedit is available at http://localhost:8000/src/editor/index.html",
+    "start:iife": "web-dev-server --app-index dist/editor/iife-index.html --esbuild-target auto --open",
+    "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q --headless  --browser electron && nyc report --reporter text-summary --reporter json-summary",
+    "cypress:open": "NODE_ENV=test start-server-and-test start http://localhost:8000/src/editor/index.html 'cypress open'",
+    "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
+    "open-docs": "run-p start open-docs-no-start",
+    "build-docs-remove": "rimraf \"docs/jsdoc/\"",
+    "build-docs-create": "jsdoc --pedantic -c docs/jsdoc-config.js src",
+    "build-docs": "run-s -c build-docs-remove build-docs-create",
+    "build-and-open-docs-no-start": "run-s build-docs open-docs-no-start",
+    "build-and-open-docs": "run-s build-docs open-docs",
+    "remark": "remark -q -f .",
+    "prepublishOnly": "run-s build-docs build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SVG-Edit/svgedit.git"
+  },
+  "keywords": [
+    "svg-editor",
+    "javascript",
+    "svg-edit",
+    "svg"
+  ],
+  "author": "Narendra Sisodiya",
+  "contributors": [
+    "Pavol Rusnak",
+    "Jeff Schiller",
+    "Vidar Hokstad",
+    "Alexis Deveria",
+    "Brett Zamir",
+    "Fabien Jacq",
+    "OptimistikSAS"
+  ],
+  "license": "(MIT AND Apache-2.0 AND ISC AND LGPL-3.0-or-later AND X11)",
+  "bugs": {
+    "url": "https://github.com/SVG-Edit/svgedit/issues"
+  },
+  "homepage": "https://github.com/SVG-Edit/svgedit#readme",
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "not OperaMini all"
+  ],
+  "standard": {
+    "ignore": [
+      "archive/"
+    ],
+    "globals": [
+      "cy",
+      "assert",
+      "expect",
+      "Cypress"
+    ],
+    "env": [
+      "mocha",
+      "browser"
+    ]
+  },
+  "dependencies": {
+    "@svgedit/svgcanvas": "7.2.2",
+    "browser-fs-access": "0.35.0",
+    "core-js": "3.37.1",
+    "elix": "15.0.1",
+    "html2canvas": "1.4.1",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "i18next": "23.11.5",
+    "jspdf": "2.5.1",
+    "pathseg": "1.2.1",
+    "regenerator-runtime": "0.14.1",
+    "replace-in-file": "^8.1.0",
+    "svg2pdf.js": "2.2.4",
+    "url": "^0.11.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.24.7",
+    "@babel/preset-env": "7.24.7",
+    "@babel/register": "7.24.6",
+    "@babel/runtime-corejs3": "7.24.7",
+    "@cypress/code-coverage": "3.12.40",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "26.0.1",
+    "@rollup/plugin-dynamic-import-vars": "2.1.2",
+    "@rollup/plugin-node-resolve": "15.2.3",
+    "@rollup/plugin-replace": "5.0.7",
+    "@rollup/plugin-url": "8.0.2",
+    "@web/dev-server": "0.4.6",
+    "@web/dev-server-esbuild": "^1.0.2",
+    "@web/dev-server-rollup": "0.6.4",
+    "babel-plugin-istanbul": "^6.1.1",
+    "babel-plugin-transform-object-rest-spread": "7.0.0-beta.3",
+    "core-js-bundle": "3.37.1",
+    "cp-cli": "2.0.0",
+    "cypress": "13.13.0",
+    "cypress-multi-reporters": "1.6.4",
+    "jamilih": "0.58.0",
+    "jsdoc": "4.0.3",
+    "node-static": "0.7.11",
+    "npm-run-all": "4.1.5",
+    "nyc": "17.0.0",
+    "open-cli": "8.0.0",
+    "promise-fs": "2.1.1",
+    "qr-manipulation": "0.7.0",
+    "query-result": "1.0.5",
+    "remark-cli": "12.0.1",
+    "remark-lint-ordered-list-marker-value": "4.0.0",
+    "rimraf": "5.0.7",
+    "rollup": "4.18.0",
+    "rollup-plugin-copy": "3.5.0",
+    "rollup-plugin-filesize": "10.0.0",
+    "rollup-plugin-html": "0.2.1",
+    "rollup-plugin-progress": "1.1.2",
+    "rollup-plugin-re": "1.0.7",
+    "standard": "17.1.0",
+    "start-server-and-test": "2.0.4"
+  }
+}

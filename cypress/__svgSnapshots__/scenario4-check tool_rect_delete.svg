@@ -1,0 +1,8 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Layer 1</title>
+  <path d="m375,255l145,0l0,125l-145,0l0,-125z" fill="#FF0000" id="svg_2" opacity="0.5" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)"/>
+  <rect fill="#FF0000" height="50" id="svg_4" rx="25" ry="25" stroke="#000000" stroke-width="5" transform="matrix(1 0 0 1 0 0)" width="50" x="250" y="320"/>
+ </g>
+
+</svg>

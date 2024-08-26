@@ -1,0 +1,68 @@
+<style>
+    #dialog_content {
+        margin: 10px 10px 5px 10px;
+        background: #5a6162;
+        overflow: auto;
+        border: 1px solid #c8c8c8;
+    }
+
+    #dialog_content p,
+    #dialog_content select,
+    #dialog_content label {
+        margin: 10px;
+        line-height: 0.3em;
+        color: #fff
+    }
+
+    #dialog_container {
+        font-family: Verdana;
+        text-align: center;
+        left: 50%;
+        top: 50%;
+        max-width: 400px;
+        z-index: 50001;
+        background: #5a6162;
+        border: 1px outset #777;
+        font-family: Verdana, Helvetica, sans-serif;
+        font-size: 0.8em;
+    }
+
+    #dialog_container,
+    #dialog_content {
+        border-radius: 5px;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+    }
+
+    #dialog_buttons input[type=text] {
+        width: 90%;
+        display: block;
+        margin: 0 0 5px 11px;
+    }
+
+    #dialog_buttons input[type=button] {
+        margin: 0 1em;
+    }
+
+    .se-select {
+        text-align: center;
+    }
+
+    elix-number-spin-box {
+        margin-left: 15px;
+    }
+</style>
+<elix-dialog id="export_box" aria-label="export svg" closed>
+    <div class="overlay"></div>
+    <div id="dialog_container">
+        <div id="dialog_content">
+            <p id="export_select"></p>
+            <se-select id="se-storage-pref" label="" options="PNG,JPEG,BMP,WEBP,PDF" values="PNG::JPEG::BMP::WEBP::PDF"></se-select>
+            <se-spin-input id="se-quality" label="ui.quality" size="3" min="0" max="100" value="100" step="5" />
+        </div>
+        <div id="dialog_buttons">
+            <button id="export_ok"></button>
+            <button id="export_cancel"></button>
+        </div>
+    </div>
+</elix-dialog>

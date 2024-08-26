@@ -1,0 +1,6 @@
+lgtm.yml
+coverage/**
+.nyc_output
+instrumented/**
+node_modules/**
+src/editor/react-extensions/react-test/node_modules/**
