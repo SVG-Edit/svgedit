@@ -2,7 +2,7 @@ import {
   visitAndApproveStorage
 } from '../../support/ui-test-helper.js'
 
-describe('use path tools of svg-edit', function () {
+describe('use path tools of svg-edit', { testIsolation: false }, function () {
   before(() => {
     visitAndApproveStorage()
   })
