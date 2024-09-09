@@ -1,0 +1,386 @@
+.canvas-box {
+  width: 996px;
+  height: 664px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  position: relative;
+  margin: 0 auto;
+}
+
+.canvas-header {
+  background-color: #f0f0f0;
+  padding: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  gap: 20px; /* Added gap for spacing */
+}
+
+.title-input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.title-input {
+  font-size: 1rem;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  padding: 5px 5px 5px 10px;
+  flex-grow: 1;
+  transition: border-color 0.3s;
+}
+
+.title-input:focus {
+  outline: none;
+  border-bottom: 2px solid #000;
+}
+
+.title-input.placeholder-active {
+  color: #ccc;
+}
+
+.edit-icon {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.download-button,
+.presenter-button {
+  font-size: 14px;
+}
+
+.round-button.edit-title-button {
+  position: absolute;
+  top: 125px; 
+  right: 12px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.canvas-content {
+  padding: 12px;
+  width: 100%;
+  height: calc(100% - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.uploaded-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.round-button {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  z-index: 1;
+}
+
+.left-button {
+  left: 10px;
+}
+
+.right-button {
+  right: 10px;
+}
+
+.canvas-footer {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.thumbnails-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 10px 0;
+  width: 100%;
+  height: 100px; /* Adjusted height for better visibility */
+}
+
+.thumbnail-box {
+  width: 100px;
+  height: 75px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumbnail-box.active-thumbnail {
+  border: 2px solid blue;
+}
+
+.thumbnail-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-number {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.note-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.note-input:focus {
+  outline: none;
+  border: 1px solid #000;
+}
+
+.progress-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.progress {
+  height: 100%;
+  background-color: #007bff;
+  transition: width 0.3s;
+}
+
+.slide-count {
+  margin-left: 10px;
+  font-size: 1rem;
+}
+
+.presenter-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+}
+
+.presenter-content {
+  position: relative;
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.presenter-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80%;
+  margin-bottom: 20px;
+}
+
+.presenter-image-container img {
+  max-width: 80%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.presenter-notes-container {
+  width: 80%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+.presenter-note-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 1.2em;
+  color: black;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.presenter-note-input:focus {
+  outline: none;
+  border: 1px solid #000;
+}
+
+.round-button.presenter-left-button,
+.round-button.presenter-right-button {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 1;
+}
+
+.presenter-left-button {
+  left: 10px;
+}
+
+.presenter-right-button {
+  right: 10px;
+}
+
+.send-to-monarch-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1px; 
+}
+
+.popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+.presenter-progress-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.presenter-progress-bar {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.presenter-slide-count {
+  margin-left: 10px;
+  font-size: 1.5rem;
+}
+
+
+
+.layer-select-container {
+  position: absolute;
+  top: 87px;
+  right: 10px;
+}
+
+.layer-select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: black; /* Ensure text color is black */
+}
+
+.presenter-layer-select {
+  margin-left: 10px;
+  color: black; /* Ensure text color is black */
+}
+
