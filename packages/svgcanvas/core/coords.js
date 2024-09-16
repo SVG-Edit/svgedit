@@ -196,7 +196,7 @@ export const remapElement = (selected, changes, m) => {
         pt.y = y
       })
       const pstr = changes.points.map(pt => `${pt.x},${pt.y}`).join(' ')
-      selected.setAttribute('points', pstr)
+      selected.setAttribute('points', pstr.trimEnd())
       break
     }
     case 'path': {
@@ -328,7 +328,7 @@ export const remapElement = (selected, changes, m) => {
         }
       })
 
-      selected.setAttribute('d', dstr)
+      selected.setAttribute('d', dstr.trimEnd())
       break
     }
     default:
