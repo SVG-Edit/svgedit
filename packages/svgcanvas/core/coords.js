@@ -18,6 +18,9 @@ import {
   transformBox,
   getTransformList
 } from './math.js'
+import {
+  convertToNum
+} from './units.js'
 
 let svgCanvas = null
 
@@ -109,7 +112,7 @@ export const remapElement = (selected, changes, m) => {
 
   const elName = selected.tagName
 
-  // **Skip remapping for '<use>' elements**
+  // Skip remapping for '<use>' elements
   if (elName === 'use') {
     // Do not remap '<use>' elements; transformations are handled via 'transform' attribute
     return
@@ -172,7 +175,40 @@ export const remapElement = (selected, changes, m) => {
       finishUp()
       break
     }
-    case 'text':
+    case 'text': {
+      const pt = remap(changes.x, changes.y)
+      changes.x = pt.x
+      changes.y = pt.y
+      finishUp()
+
+      // Handle child 'tspan' elements
+      const childNodes = selected.childNodes
+      for (let i = 0; i < childNodes.length; i++) {
+        const child = childNodes[i]
+        if (child.nodeType === 1 && child.tagName === 'tspan') {
+          const childChanges = {}
+          const childX = child.getAttribute('x')
+          const childY = child.getAttribute('y')
+          if (childX !== null) {
+            childChanges.x = convertToNum('x', childX)
+          } else {
+            // If 'x' is not set, inherit from parent
+            childChanges.x = changes.x
+          }
+          if (childY !== null) {
+            childChanges.y = convertToNum('y', childY)
+          } else {
+            // If 'y' is not set, inherit from parent
+            childChanges.y = changes.y
+          }
+          const childPt = remap(childChanges.x, childChanges.y)
+          childChanges.x = childPt.x
+          childChanges.y = childPt.y
+          assignAttributes(child, childChanges, 1000, true)
+        }
+      }
+      break
+    }
     case 'tspan': {
       const pt = remap(changes.x, changes.y)
       changes.x = pt.x
@@ -196,7 +232,7 @@ export const remapElement = (selected, changes, m) => {
         pt.y = y
       })
       const pstr = changes.points.map(pt => `${pt.x},${pt.y}`).join(' ')
-      selected.setAttribute('points', pstr.trimEnd())
+      selected.setAttribute('points', pstr)
       break
     }
     case 'path': {
@@ -328,7 +364,7 @@ export const remapElement = (selected, changes, m) => {
         }
       })
 
-      selected.setAttribute('d', dstr.trimEnd())
+      selected.setAttribute('d', dstr.trim())
       break
     }
     default:
