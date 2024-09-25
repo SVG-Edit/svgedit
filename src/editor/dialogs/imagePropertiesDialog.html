@@ -13,14 +13,14 @@
     }
 
     #svg_docprops #svg_docprops_container {
-        padding: 10px;
-        background-color: #5a6162;
+        background-color: #222;
         color: #c5c5c5;
-        border: 1px outset #777;
         opacity: 1.0;
-        font-family: Verdana, Helvetica, sans-serif;
-        font-size: .8em;
+        border: 1px solid #777;
         z-index: 20001;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius: 10px;
+        padding: 10px;
     }
 
     #svg_docprops .error {
@@ -33,13 +33,15 @@
     }
 
     #tool_docprops_back {
+        width: 100%;
+        padding: 10px;
         margin-left: 1em;
         overflow: auto;
     }
 
     #svg_docprops_container #svg_docprops_docprops {
         float: left;
-        width: 221px;
+        width: 450px;
         margin: 5px .7em;
         overflow: hidden;
     }
@@ -56,7 +58,15 @@
     #svg_docprops_container fieldset {
         padding: 5px;
         margin: 5px;
-        border: 1px solid #DDD;
+        border: 1px solid #444;
+    }
+    input[type='text'] , select{
+        background-color: #444;
+        color: #ddd;
+        padding: 5px;
+        width: 100%;
+        border: 1px #444 solid;
+        border-radius: 5px;
     }
 
     #svg_docprops_container label {
@@ -67,8 +77,8 @@
 <elix-dialog id="svg_docprops" aria-label="Sample dialog" closed>
     <div id="svg_docprops_container">
         <div id="tool_docprops_back" class="toolbar_button">
-            <button id="tool_docprops_save"></button>
-            <button id="tool_docprops_cancel"></button>
+            <button id="tool_docprops_save" class="btn btn-primary"></button>
+            <button id="tool_docprops_cancel"  class="btn btn-secondary"></button>
         </div>
         <fieldset id="svg_docprops_docprops">
             <legend id="svginfo_image_props"></legend>

@@ -19,7 +19,6 @@ class SePlainBorderButton extends PlainButton {
         <style>
           [part~="button"] {
             background: var(--main-bg-color);
-            border: 1px solid #ccc;
           }
         </style>
       `

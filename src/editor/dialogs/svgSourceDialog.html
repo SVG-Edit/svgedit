@@ -1,4 +1,7 @@
 <style>
+    :host {
+        background-color: transparent;
+    }
     :not(:defined) {
         display: none;
     }
@@ -13,12 +16,14 @@
     }
 
     #svg_source_editor #svg_source_container {
-        background-color: #5a6162;
+        background-color: #222;
         color: #c5c5c5;
         opacity: 1.0;
-        text-align: center;
-        border: 1px outset #777;
+        border: 1px solid #777;
         z-index: 6;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius: 10px;
+        padding: 10px;
     }
 
     #save_output_btns {
@@ -39,20 +44,22 @@
         padding: 5px;
         font-size: 12px;
         min-height: 200px;
-        width: 95%;
         height: 95%;
+        background-color: #111;
+        color: #c5c5c5;
     }
 
     #svg_source_editor #tool_source_back {
-        text-align: left;
-        height: 30px;
+        text-align: right; 
+        padding-bottom: 10px;
     }
 
     #tool_source_save {
-        width: 20%;
-        background-color: #c79605;
-        margin-left: 30%;
-        margin-top: 5px;
+        background-color: #0583be;
+        margin-left: 20px;
+        padding: 5px 10px;
+        border: 1px #000 solid;
+        border-radius: 5px;
     }
     
     #tool_source_dynamic {
@@ -62,6 +69,7 @@
     .tool_label {
         cursor: pointer;
         margin: 5px 0;
+        font-size: 12px;
         display: inline-block;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -70,8 +78,10 @@
     }
 
     #tool_source_cancel {
-        width: 20%;
         background-color: #c8c8c8;
+        padding: 5px 10px;
+        border: 1px #000 solid;
+        border-radius: 5px;
     }
 </style>
 <elix-dialog id="svg_source_editor" aria-label="SVG Source Editor" closed>

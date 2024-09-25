@@ -1,15 +1,17 @@
 :root {
-  --main-bg-color: #72797A;
+  --main-bg-color: #333;
+  --toolbar-bg-color: #333;
   --text-color: #000000;
   --border-color: #808080;
-  --canvas-bg-color: #B2B2B2;
+  --canvas-bg-color: #333;
   --link-color: #19c;
-  --ruler-color: #B2B2B2;
-  --icon-bg-color: #72797A;
-  --icon-bg-color-hover: #2B3C45;
-  --input-color: #B2B2B2;
-  --orange-color: #f9bc01;
+  --ruler-color: #666;
+  --icon-bg-color: #333;
+  --icon-bg-color-hover: #666;
+  --input-color: #888;
+  --orange-color: #f98101;
   --global-se-spin-input-width: 82px;
+  --sidepanel-bg-color: #222;
 }
 
 .svg_editor * {
@@ -27,7 +29,7 @@
     "left bottom bottom bottom bottom";
   font-size: 8pt;
   background: var(--main-bg-color);
-  font-family: Verdana, Helvetica, Arial;
+  font-family: Helvetica, Arial;
   color: var(--text-color);
   user-select: text;
   width: 100%;
@@ -62,7 +64,7 @@
 
 #workarea {
   grid-area: workarea;
-  background-color: #A0A0A0;
+  background-color: #333;
   border: 1px solid var(--border-color);
   overflow: auto;
   text-align: center;
@@ -79,6 +81,7 @@
 
 #sidepanels {
   grid-area: side;
+  background-color: var(--sidepanel-bg-color);
 }
 
 #sidepanel_handle {
@@ -87,7 +90,7 @@
   color: white;
   position: absolute;
   cursor: pointer;
-  top: 50%;
+  top: 50px;
 }
 
 .svg_editor:not(.open) #sidepanel_content {
@@ -109,7 +112,9 @@ hr {
 }
 
 #layersLabel {
-  color: white;
+  color: #666;
+  font-size: 14px;
+  padding: 10px;
 }
 
 #layerpanel {
@@ -119,31 +124,39 @@ hr {
 
 #layerbuttons {
   margin: 0;
-  padding: 0;
-  padding-left: 2px;
-  padding-right: 2px;
-  width: 125px;
-  height: 20px;
+  width: 100%;
+  height: 24px;
   border: 0px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #333;
+}
+
+#layerbuttons se-button {
+  padding: 4px;
+}
+
+#layerbuttons se-button div{
+  padding: 10px;
 }
 
 #layerlist {
   margin: 1px;
   padding: 0;
-  width: 132px;
+  width: 100%;
   border-collapse: collapse;
-  border: 1px solid var(--border-color);
-  background-color: #FFFFFF;
+  background-color: #333;
 }
 
-#layerlist tr.layer {
-  background-color: #FFFFFF;
+#layerlist tr.layer { 
   margin: 0;
-  padding: 0;
+  color: #fff;
+}
+
+#layerlist tr td {
+  padding: 10px;
 }
 
 #layerlist tr.layersel {
@@ -195,11 +208,10 @@ hr {
 —————————————————————————————*/
 
 #main_button {
-  grid-area: main;
   color: #fff;
   border-radius: 3px;
-  padding-block: 2px;
-  padding-left: 3px;
+  border-color: #222;
+  padding: 10px;
   height: 34px;
 }
 
@@ -309,18 +321,41 @@ hr {
   grid-area: top;
   display: flex;
   flex-direction: row;
+  padding: 5px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: flex-start;
-  background-color: var(--main-bg-color);
+  background-color: var(--toolbar-bg-color);
+  border-bottom: 1px #444 solid;
+}
+
+#svg_source_editor  {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #tools_top>* {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  background-color: var(--main-bg-color);
+  gap: 10px;
+  background-color: var(--toolbar-bg-color);
 }
 
+#tools_top > .text_panel , 
+#tools_top > .rect_panel,  
+#tools_top > .selected_panel, 
+#tools_top > .xy_panel, 
+#star_panel,
+#marker_panel{
+  background-color: #99999922;
+  padding: 0px 10px;
+  border-radius: 4px;
+  border: 1px #555 solid;
+  color: #fff;
+}
+.selected_panel .tool_sep{
+  display: none;
+}
 /*—————————————————————————————*/
 
 #tools_bottom {
@@ -525,7 +560,7 @@ input[type=text] {
 }
 
 .tool_sep {
-  border-left: 1px outset #EEE;
+  border-left: 1px outset #111;
   margin: 5px 1px;
   height: 30px;
 }
