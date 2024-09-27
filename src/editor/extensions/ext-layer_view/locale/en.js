@@ -3,7 +3,7 @@ export default {
   buttons: [
     {
       title: 'Enable/Disable Layer View',
-      key:'Ctrl+Shift+L'
+      key: 'Ctrl+Shift+L'
     }
   ]
 }

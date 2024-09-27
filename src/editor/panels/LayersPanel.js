@@ -286,7 +286,7 @@ class LayersPanel {
         evt.currentTarget.parentNode.classList.add('layersel')
         self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent)
         // run extension when different layer is selected from listener
-        svgEditor.svgCanvas.runExtensions(
+        self.editor.svgCanvas.runExtensions(
           'layersChanged'
         )
         evt.preventDefault()
@@ -307,7 +307,7 @@ class LayersPanel {
         self.editor.svgCanvas.setLayerVisibility(name, vis)
         evt.currentTarget.classList.toggle('layerinvis')
         // run extension if layer visibility is changed from listener
-        svgEditor.svgCanvas.runExtensions(
+        self.editor.svgCanvas.runExtensions(
           'layerVisChanged'
         )
       })
@@ -321,8 +321,8 @@ class LayersPanel {
       tlayer.innerHTML = '<td style="color:white">_</td><td/>'
       layerlist.append(tlayer)
     }
-    //run extension when layer panel is populated
-    svgEditor.svgCanvas.runExtensions(
+    // run extension when layer panel is populated
+    self.editor.svgCanvas.runExtensions(
       'layersChanged'
     )
   }
