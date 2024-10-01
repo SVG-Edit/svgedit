@@ -161,7 +161,6 @@ export default {
     redo: 'Redo',
     tool_source: 'Edit Source',
     wireframe_mode: 'Wireframe Mode',
-    showAll_mode:'Layer View',
     clone: 'Duplicate Element(s)',
     del: 'Delete Element(s)',
     group_elements: 'Group Elements',

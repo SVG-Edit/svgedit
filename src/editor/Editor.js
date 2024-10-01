@@ -658,34 +658,6 @@ class Editor extends EditorStartup {
     }
   }
 
-    /**
-   *
-   * @returns {void}
-   */
-  /*
-    updateShowAll () {
-      let drawing= this.svgCanvas.getCurrentDrawing()
-      let curLayer= drawing.getCurrentLayerName()
-      let layer = drawing.getNumLayers()
-      let rule= `
-      #workarea.showAll `
-      while(layer--) {
-        const name = drawing.getLayerName(layer)
-        if (name!=curLayer)
-          rule+= `g[data-image-layer="`+name+`"], `
-      }
-      rule= rule.slice(0, rule.length - 2)
-      rule+= ` {
-        display: none;
-        `
-    if (document.querySelectorAll('#showAll_rules').length > 0) {
-      document.querySelector(
-        '#showAll_rules'
-      ).textContent = this.workarea.classList.contains('showAll') ? rule : ''
-    }
-    
-    }*/
-
   // called when we've selected a different element
   /**
    *
@@ -847,7 +819,6 @@ class Editor extends EditorStartup {
       this.svgCanvas.selectorManager.requestSelector(el).resize()
     }
     this.updateWireFrame()
-    this.topPanel.updateShowAll()
   }
 
   /**

@@ -98,7 +98,6 @@ export default class ConfigObj {
       * @property {boolean} [showRulers=true] Initial state of ruler display (v2.6). Set in Editor Options.
       * @property {string} [initTool="select"] The initially selected tool. Must be either the ID of the button for the tool, or the ID without `tool_` prefix (e.g., "select").
       * @property {boolean} [wireframe=false] Start in wireframe mode
-      * @property {boolean} [showAll=true] Show only current layer by default
       * @property {boolean} [showlayers=true] Open the layers side-panel by default.
       * @property {"new"|"same"} [exportWindowType="new"] Can be "new" or "same" to indicate whether new windows will be generated for each export;
       *   the `window.name` of the export window is namespaced based on the `canvasName` (and incremented if "new" is selected as the type). Introduced 2.8.
@@ -129,7 +128,6 @@ export default class ConfigObj {
       initTool: 'select',
       exportWindowType: 'new', // 'same' (todo: also support 'download')
       wireframe: false,
-      showAll:true,
       showlayers: true,
       no_save_warning: false,
       // PATH CONFIGURATION
