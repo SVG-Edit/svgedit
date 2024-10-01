@@ -106,7 +106,6 @@ class LayersPanel {
     this.editor.svgCanvas.createLayer(newName)
     this.updateContextPanel()
     this.populateLayers()
-    // this.editor.updateShowAll()
   }
 
   /**
@@ -233,7 +232,6 @@ class LayersPanel {
         this.editor.svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 1.0)
       })
     }
-    this.editor.topPanel.updateShowAll()
   }
 
   /**
@@ -287,11 +285,14 @@ class LayersPanel {
         })
         evt.currentTarget.parentNode.classList.add('layersel')
         self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent)
+        // run extension when different layer is selected from listener
+        self.editor.svgCanvas.runExtensions(
+          'layersChanged'
+        )
         evt.preventDefault()
       })
       element.addEventListener('mouseup', (evt) => {
         self.toggleHighlightLayer(evt.currentTarget.textContent)
-        // self.editor.updateShowAll ()
       })
       element.addEventListener('mouseout', (_evt) => {
         self.toggleHighlightLayer()
@@ -305,6 +306,10 @@ class LayersPanel {
         const vis = evt.currentTarget.classList.contains('layerinvis')
         self.editor.svgCanvas.setLayerVisibility(name, vis)
         evt.currentTarget.classList.toggle('layerinvis')
+        // run extension if layer visibility is changed from listener
+        self.editor.svgCanvas.runExtensions(
+          'layerVisChanged'
+        )
       })
     })
 
@@ -316,6 +321,10 @@ class LayersPanel {
       tlayer.innerHTML = '<td style="color:white">_</td><td/>'
       layerlist.append(tlayer)
     }
+    // run extension when layer panel is populated
+    self.editor.svgCanvas.runExtensions(
+      'layersChanged'
+    )
   }
 }
 

@@ -510,53 +510,6 @@ class TopPanel {
    *
    * @returns {void}
    */
-  clickShowAll () {
-    $id('tool_showAll').pressed = !$id('tool_showAll').pressed
-    this.editor.workarea.classList.toggle('showAll')
-    const saRules = $id('showAll_rules')
-    if (!saRules) {
-      const fcRules = document.createElement('style')
-      fcRules.setAttribute('id', 'showAll_rules')
-      document.getElementsByTagName('head')[0].appendChild(fcRules)
-    } else {
-      while (saRules.firstChild) {
-        saRules.removeChild(saRules.firstChild)
-      }
-    }
-    this.updateShowAll()
-  }
-
-  /**
-   *
-   * @returns {void}
-   */
-  updateShowAll () {
-      const { workarea } = this.editor
-      let drawing= this.editor.svgCanvas.getCurrentDrawing()
-      let curLayer= drawing.getCurrentLayerName()
-      let layer = drawing.getNumLayers()
-      let rule= `
-      #workarea.showAll `
-      while(layer--) {
-        const name = drawing.getLayerName(layer)
-        if (name!=curLayer)
-          rule+= `g[data-image-layer="`+name+`"], `
-      }
-      rule= rule.slice(0, rule.length - 2)
-      rule+= ` {
-        display: none;
-        `
-    if (document.querySelectorAll('#showAll_rules').length > 0) {
-      document.querySelector(
-        '#showAll_rules'
-      ).textContent = workarea.classList.contains('showAll') ? rule : ''
-    } 
-  }
-
-  /**
-   *
-   * @returns {void}
-   */
   clickUndo () {
     const { undoMgr, textActions } = this.editor.svgCanvas
     if (undoMgr.getUndoStackSize() > 0) {
@@ -997,7 +950,6 @@ class TopPanel {
     // register action to top panel buttons
     $click($id('tool_source'), this.showSourceEditor.bind(this))
     $click($id('tool_wireframe'), this.clickWireframe.bind(this))
-    $click($id('tool_showAll'), this.clickShowAll.bind(this))
     $click($id('tool_undo'), this.clickUndo.bind(this))
     $click($id('tool_redo'), this.clickRedo.bind(this))
     $click($id('tool_clone'), this.clickClone.bind(this))

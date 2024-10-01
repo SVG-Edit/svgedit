@@ -559,10 +559,6 @@ class EditorStartup {
         $id('tool_wireframe').click()
       }
 
-      if (this.configObj.curConfig.showAll) {
-        $id('tool_showAll').click()
-      }
-
       if (this.configObj.curConfig.showRulers) {
         this.rulers.display(true)
       } else {
