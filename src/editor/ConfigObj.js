@@ -444,8 +444,8 @@ export default class ConfigObj {
           extendOrAdd(this.curConfig, key, val)
         } else if (cfgCfg.allowInitialUserOverride === true) {
           extendOrAdd(this.defaultConfig, key, val)
-        } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
-          this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {}
+        } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object' && !Array.isArray(this.defaultConfig[key])) {
+          this.curConfig[key] = {}
           this.curConfig[key] = mergeDeep(this.curConfig[key], val)
         } else {
           this.curConfig[key] = val
