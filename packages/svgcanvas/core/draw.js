@@ -534,7 +534,8 @@ export class Drawing {
 
     // If orphans or no layers found, create a new layer and add all the orphans to it
     if (orphans.length > 0 || !childgroups) {
-      layer = new Layer(getNewLayerName(layernames), null, this.svgElem_)
+      const name = getNewLayerName(layernames)
+      layer = new Layer(name, null, this.svgElem_)
       layer.appendChildren(orphans)
       this.all_layers.push(layer)
       this.layer_map[name] = layer
