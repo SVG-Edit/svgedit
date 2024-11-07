@@ -161,7 +161,7 @@ connectedCallback () {
   const onSaveHandler = async function (){
     document.getElementById('se-tactile-render-dialog').setAttribute('dialog', 'close')
     let xhr = new XMLHttpRequest();
-    let svgString= svgCanvas.getSvgString().replaceAll("data-image-label", "aria-label").replaceAll("data-image-description", "aria-description");
+    let svgString= svgCanvas.getSvgString();
     let parser = new DOMParser();
     let svgDoc = parser.parseFromString(svgString, "text/xml");
     svgDoc.querySelectorAll('g[data-image-layer] title').forEach(e => e.remove())

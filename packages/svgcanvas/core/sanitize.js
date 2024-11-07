@@ -165,7 +165,7 @@ export const sanitizeSvg = (node) => {
         // Bypassing the whitelist to allow se: and oi: prefixes
         // We can add specific namepaces on demand for now.
         // Is there a more appropriate way to do this?
-        if (attrName.startsWith('se:') || attrName.startsWith('oi:') || attrName.startsWith('data-')) {
+        if (attrName.startsWith('se:') || attrName.startsWith('oi:') || attrName.startsWith('data-') || attrName.startsWith('aria-')) {
           // We should bypass the namespace aswell
           const seAttrNS = (attrName.startsWith('se:')) ? NS.SE : ((attrName.startsWith('oi:')) ? NS.OI : null)
           seAttrs.push([attrName, attr.value, seAttrNS])
