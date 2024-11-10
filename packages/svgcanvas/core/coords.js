@@ -18,9 +18,7 @@ import {
   transformBox,
   getTransformList
 } from './math.js'
-import {
-  convertToNum
-} from './units.js'
+import { convertToNum } from './units.js'
 
 let svgCanvas = null
 
@@ -187,24 +185,21 @@ export const remapElement = (selected, changes, m) => {
         const child = childNodes[i]
         if (child.nodeType === 1 && child.tagName === 'tspan') {
           const childChanges = {}
-          const childX = child.getAttribute('x')
-          const childY = child.getAttribute('y')
-          if (childX !== null) {
-            childChanges.x = convertToNum('x', childX)
-          } else {
-            // If 'x' is not set, inherit from parent
-            childChanges.x = changes.x
+          const hasX = child.hasAttribute('x')
+          const hasY = child.hasAttribute('y')
+          if (hasX) {
+            const childX = convertToNum('x', child.getAttribute('x'))
+            const childPtX = remap(childX, changes.y).x
+            childChanges.x = childPtX
           }
-          if (childY !== null) {
-            childChanges.y = convertToNum('y', childY)
-          } else {
-            // If 'y' is not set, inherit from parent
-            childChanges.y = changes.y
+          if (hasY) {
+            const childY = convertToNum('y', child.getAttribute('y'))
+            const childPtY = remap(changes.x, childY).y
+            childChanges.y = childPtY
           }
-          const childPt = remap(childChanges.x, childChanges.y)
-          childChanges.x = childPt.x
-          childChanges.y = childPt.y
-          assignAttributes(child, childChanges, 1000, true)
+          if (hasX || hasY) {
+            assignAttributes(child, childChanges, 1000, true)
+          }
         }
       }
       break
