@@ -43,19 +43,20 @@ function historyRecordingService (hrService) {
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
-  const sel = group.querySelector('title')
+  const sel = group.getAttribute('data-image-layer')
   // console.log(group.getAttribute('data-image-layer'))
-  return sel ? sel.textContent : ''
+  return sel ? group.getAttribute('data-image-layer') : ''
 }
 
 /**
- * Verify the classList of the given element : if the classList contains 'layer', return true, then return false
+ * Verify the attributes of the given element : if the element has attribute data-image-layer, return true, else return false
  *
  * @param {Element} element - The given element
- * @returns {boolean} Return true if the classList contains 'layer' then return false
+ * @returns {boolean} Return true if the element has attribute data-image-layer// else return false
  */
 function isLayerElement (element) {
-  return element.classList.contains('layer')
+  // return element.classList.contains('layer')
+  return element.hasAttribute('data-image-layer')
 }
 
 /**

@@ -164,7 +164,6 @@ connectedCallback () {
     let svgString= svgCanvas.getSvgString();
     let parser = new DOMParser();
     let svgDoc = parser.parseFromString(svgString, "text/xml");
-    svgDoc.querySelectorAll('g[data-image-layer] title').forEach(e => e.remove())
     svgString = new XMLSerializer().serializeToString(svgDoc)
     if (graphicId == ""){
       xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");

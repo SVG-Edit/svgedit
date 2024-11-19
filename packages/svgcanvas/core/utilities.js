@@ -1043,17 +1043,40 @@ export const getStrokedBBox = (elems, addSVGElementsFromJson, pathActions) => {
 export const getVisibleElements = parentElement => {
   if (!parentElement) {
     const svgContent = svgCanvas.getSvgContent()
-    for (let i = 0; i < svgContent.children.length; i++) {
-      if (svgContent.children[i].getBBox) {
-        const bbox = svgContent.children[i].getBBox()
-        if (
-          bbox.width !== 0 &&
-          bbox.height !== 0 &&
-          bbox.width !== 0 &&
-          bbox.height !== 0
-        ) {
-          parentElement = svgContent.children[i]
-          break
+    // console.warn(svgContent)
+    const bbox = svgContent.getBBox
+    if (
+      bbox.width !== 0 &&
+      bbox.height !== 0 &&
+      bbox.width !== 0 &&
+      bbox.height !== 0
+    ) {
+      parentElement = svgContent
+    } else {
+      for (let i = 0; i < svgContent.children.length; i++) {
+        if (svgContent.children[i].getBBox) {
+          // console.warn(svgContent.children[i])
+          const bbox = svgContent.children[i].getBBox()
+          if (
+            bbox.width !== 0 &&
+            bbox.height !== 0 &&
+            bbox.width !== 0 &&
+            bbox.height !== 0
+          ) {
+            parentElement = svgContent.children[i]
+            break
+          }
+          /* for (let i = 0; i < svgContent.children.length; i++) {
+            if (svgContent.children[i].getBBox) {
+              const bbox = svgContent.children[i].getBBox()
+              if (
+                bbox.width !== 0 &&
+                bbox.height !== 0 &&
+                bbox.width !== 0 &&
+                bbox.height !== 0
+              ) {
+                parentElement = svgContent.children[i]
+                break */
         }
       }
     }
