@@ -852,7 +852,7 @@ class SvgCanvas {
     // create new document
     this.current_drawing_ = new draw.Drawing(this.svgContent)
     // create empty first layer
-    this.createLayer('Layer 1')
+    this.createLayer()
     // clear the undo stack
     this.undoMgr.resetUndoStack()
     // reset the selector manager
