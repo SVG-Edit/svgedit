@@ -551,6 +551,9 @@ const setSvgString = (xmlString, preventUndo) => {
           elem.id = svgCanvas.getNextId()
         }
       })
+      if (visElems.length === 0 && svgCanvas.isLayer(chiElem)) {
+        chiElem.id = svgCanvas.getNextId()
+      }
     })
 
     // Percentage width/height, so let's base it on visible elements

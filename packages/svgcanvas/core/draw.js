@@ -515,7 +515,7 @@ export class Drawing {
       const child = this.svgElem_.childNodes.item(i)
       // for each g, find its layer name
       if (child?.nodeType === 1) {
-        if (child.tagName === 'g') {
+        if (child.tagName === 'g' || child.hasAttribute('data-image-layer')) {
           childgroups = true
           if (isLayerElement(child)) {
             const name = findLayerNameInGroup(child)
@@ -536,7 +536,7 @@ export class Drawing {
 
     // If orphans or no layers found, create a new layer and add all the orphans to it
     if (orphans.length > 0 || !childgroups) {
-      const name = getNewLayerName(layernames)
+      const name = orphans.length > 0 ? 'fullImage' : getNewLayerName(layernames)
       layer = new Layer(name, null, this.svgElem_)
       layer.appendChildren(orphans)
       this.all_layers.push(layer)

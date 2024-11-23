@@ -202,7 +202,7 @@ class Layer {
    * @returns {boolean} True if the element is a layer
    */
   static isLayer (elem) {
-    return elem && elem.tagName === 'g' && elem.hasAttribute('data-image-layer')
+    return elem && elem.hasAttribute('data-image-layer')
   }
 }
 /**

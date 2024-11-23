@@ -83,14 +83,12 @@ export class SeLabelDialog extends HTMLElement {
         } else {
           this.$dialog.close()
         }
-
-        if (document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).hasAttribute('aria-label'))
-            this.$shortLabel.value= document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).getAttribute('aria-label')
+        if (svgEditor.svgCanvas.getSelectedElements()[0].hasAttribute('aria-label'))
+            this.$shortLabel.value= svgEditor.svgCanvas.getSelectedElements()[0].getAttribute('aria-label')
         else
             this.$shortLabel.value = ''
-
-        if (document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).hasAttribute('aria-description'))
-            this.$longDesc.value= document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).getAttribute('aria-description')
+        if (svgEditor.svgCanvas.getSelectedElements()[0].hasAttribute('aria-description'))
+            this.$longDesc.value= svgEditor.svgCanvas.getSelectedElements()[0].getAttribute('aria-description')
         else
             this.$longDesc.value = ''
 
@@ -124,8 +122,8 @@ export class SeLabelDialog extends HTMLElement {
    */
 connectedCallback () {
   const onSaveHandler = () => {
-      document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).setAttribute('aria-label', this.$shortLabel.value)
-      document.getElementById(svgEditor.svgCanvas.getSelectedElements()[0].id).setAttribute('aria-description', this.$longDesc.value)
+      svgEditor.svgCanvas.getSelectedElements()[0].setAttribute('aria-label', this.$shortLabel.value)
+      svgEditor.svgCanvas.getSelectedElements()[0].setAttribute('aria-description', this.$longDesc.value)
       document.getElementById('se-label-dialog').setAttribute('dialog', 'close')
       svgEditor.svgCanvas.clearSelection()
     }
