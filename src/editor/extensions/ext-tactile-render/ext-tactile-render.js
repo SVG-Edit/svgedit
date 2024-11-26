@@ -15,6 +15,9 @@ import { fileOpen, fileSave } from 'browser-fs-access'
 const template = document.createElement('template')
 template.innerHTML = tactileRenderHTML
 var layerSelected = "None"
+var title = ""
+var graphicId = ""
+var secretKey = ""
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule
@@ -45,6 +48,7 @@ export class SeTactileRenderDialog extends HTMLElement {
     this.$cancelBtn = this._shadowRoot.querySelector('#cancel')
     this.$importBtn = this._shadowRoot.querySelector('#import')
     this.$exportBtn = this._shadowRoot.querySelector('#export')
+    this.$titleVal = this._shadowRoot.querySelector('#title_value')
     this.$idVal = this._shadowRoot.querySelector('#id_value')
     this.$secretVal = this._shadowRoot.querySelector('#secret_value')
     this.$lyrSelect = this._shadowRoot.querySelector('#layer_select_dd')
@@ -60,6 +64,7 @@ export class SeTactileRenderDialog extends HTMLElement {
     this.setAttribute('label-cancel', i18next.t(`common.cancel`))
     this.setAttribute('label-import', i18next.t(`${name}:render_id.import_lbl`))
     this.setAttribute('label-export', i18next.t(`${name}:render_id.export_lbl`))
+    this.setAttribute('label-title_val', i18next.t(`${name}:render_id.title_val`))
     this.setAttribute('label-id_val', i18next.t(`${name}:render_id.id_val`))
     this.setAttribute('label-secret_val', i18next.t(`${name}:render_id.secret_val`))
     this.setAttribute('label-layer_val', i18next.t(`${name}:render_id.layer_val`))
@@ -70,7 +75,7 @@ export class SeTactileRenderDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'label-ok', 'label-cancel', 'label-import', 'label-export', 'label-id_val', 'label-secret_val', 'id_val', 'secret_val', 'label-layer_val', 'layer_val', 'layer_num']
+    return ['dialog', 'label-ok', 'label-cancel', 'label-import', 'label-export', 'label-title_val', 'label-id_val', 'label-secret_val', 'title_val', 'id_val', 'secret_val', 'label-layer_val', 'layer_val', 'layer_num']
   }
 
   /**
@@ -85,12 +90,14 @@ export class SeTactileRenderDialog extends HTMLElement {
     switch (name) {
       case 'dialog':
         if (newValue === 'open') {
-          this._shadowRoot.querySelector('#id_value').value = svgEditor.graphicId
-          this._shadowRoot.querySelector('#secret_value').value = svgEditor.secretKey
+          this._shadowRoot.querySelector('#title_value').value = title
+          this._shadowRoot.querySelector('#id_value').value = graphicId
+          this._shadowRoot.querySelector('#secret_value').value = secretKey
           this.$dialog.open()
         } else {
-          svgEditor.graphicId = this._shadowRoot.querySelector('#id_value').value
-          svgEditor.secretKey = this._shadowRoot.querySelector('#secret_value').value
+          title = this._shadowRoot.querySelector('#title_value').value
+          graphicId = this._shadowRoot.querySelector('#id_value').value
+          secretKey = this._shadowRoot.querySelector('#secret_value').value
           layerSelected = this._shadowRoot.querySelector('#layer_select_dd').value
           this.$dialog.close()
         }
@@ -107,12 +114,20 @@ export class SeTactileRenderDialog extends HTMLElement {
       case 'label-export':
         this.$exportBtn.textContent = newValue
         break
+      case 'label-title_val':
+        node = this._shadowRoot.querySelector('#title_value_prompt')
+        node.textContent = newValue
+        break
       case 'label-id_val':
         node = this._shadowRoot.querySelector('#id_value_prompt')
         node.textContent = newValue
         break
       case 'label-secret_val':
         node = this._shadowRoot.querySelector('#secret_value_prompt')
+        node.textContent = newValue
+        break
+      case 'title_val':
+        node = this._shadowRoot.querySelector('#title_value')
         node.textContent = newValue
         break
       case 'id_val':
@@ -146,12 +161,20 @@ connectedCallback () {
   const onSaveHandler = async function (){
     document.getElementById('se-tactile-render-dialog').setAttribute('dialog', 'close')
     let xhr = new XMLHttpRequest();
-    let svgString= svgCanvas.getSvgString().replaceAll("data-image-label", "aria-label").replaceAll("data-image-description", "aria-description");
+    let svgString= svgCanvas.getSvgString();
     let parser = new DOMParser();
     let svgDoc = parser.parseFromString(svgString, "text/xml");
-    svgDoc.querySelectorAll('g[data-image-layer] title').forEach(e => e.remove())
+    let children = svgDoc.querySelector('g[data-image-layer="fullImage"]').childNodes
+    while (children.length>0) {
+      svgDoc.querySelector('svg').appendChild(children.item(0))
+    }
+    svgDoc.querySelector('g[data-image-layer="fullImage"]').remove()
     svgString = new XMLSerializer().serializeToString(svgDoc)
-    xhr.open("POST", "http://ven1998.pythonanywhere.com/render");
+    if (graphicId == ""){
+      xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");
+    } else {
+      xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/update/"+graphicId);
+    }
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Access-Control-Allow-Origin", '*');
     xhr.setRequestHeader("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
@@ -159,17 +182,31 @@ connectedCallback () {
     xhr.setRequestHeader('Access-Control-Allow-Credentials', 'true')
     xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      console.warn(xhr.responseText);
-      $id('se-prompt-dialog').title = xhr.responseText;
-      $id('se-prompt-dialog').setAttribute('close', false)
+      if (graphicId != ""){
+        $id('se-prompt-dialog').title = xhr.responseText;
+        $id('se-prompt-dialog').setAttribute('close', false)
+      }
+      else {
+        let keys = JSON.parse(xhr.responseText)
+        let container = document.getElementById('se-tactile-render-dialog').shadowRoot
+        graphicId = keys.id
+        secretKey = keys.secret
+        $id('se-prompt-dialog').title = "New channel created with code "+graphicId;
+        $id('se-prompt-dialog').setAttribute('close', false)
+      }
     }};
-    
-    xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
-      "id": svgEditor.graphicId,
-      "secret": svgEditor.secretKey,
-      "layer": layerSelected
-    }));
-    
+    if (graphicId != ""){
+      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
+        "secret": secretKey,
+        "layer": layerSelected,
+        "title": title
+      }));
+    } else {
+      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
+        "layer": layerSelected,
+        "title": title
+      }));
+    }
     }
 
     const onImportHandler = async function () {

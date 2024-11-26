@@ -166,6 +166,7 @@ export default {
           type: blob.type
         })
         svgEditor.layersPanel.populateLayers()
+        // svgEditor.svgCanvas.setResolution('fit', 'fit')
       } catch (err) {
         if (err.name !== 'AbortError') {
           return console.error(err)

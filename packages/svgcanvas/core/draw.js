@@ -9,15 +9,14 @@ import Layer from './layer.js'
 import HistoryRecordingService from './historyrecording.js'
 
 import { NS } from './namespaces.js'
-import {
-  toXml, getElement
-} from './utilities.js'
-import {
-  copyElem as utilCopyElem
-} from './copy-elem.js'
+import { toXml, getElement } from './utilities.js'
+import { copyElem as utilCopyElem } from './copy-elem.js'
 import { getParentsUntil } from '../common/util.js'
 
-const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',')
+const visElems =
+  'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(
+    ','
+  )
 
 const RandomizeModes = {
   LET_DOCUMENT_DECIDE: 0,
@@ -43,19 +42,20 @@ function historyRecordingService (hrService) {
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
-  const sel = group.querySelector('title')
+  const sel = group.getAttribute('data-image-layer')
   // console.log(group.getAttribute('data-image-layer'))
-  return sel ? sel.textContent : ''
+  return sel ? group.getAttribute('data-image-layer') : ''
 }
 
 /**
- * Verify the classList of the given element : if the classList contains 'layer', return true, then return false
+ * Verify the attributes of the given element : if the element has attribute data-image-layer, return true, else return false
  *
  * @param {Element} element - The given element
- * @returns {boolean} Return true if the classList contains 'layer' then return false
+ * @returns {boolean} Return true if the element has attribute data-image-layer// else return false
  */
 function isLayerElement (element) {
-  return element.classList.contains('layer')
+  // return element.classList.contains('layer')
+  return element.hasAttribute('data-image-layer')
 }
 
 /**
@@ -65,9 +65,10 @@ function isLayerElement (element) {
  */
 function getNewLayerName (existingLayerNames) {
   let i = 1
-  // TODO(codedread): What about internationalization of "Layer"?
-  while (existingLayerNames.includes(('Layer ' + i))) { i++ }
-  return 'Layer ' + i
+  while (existingLayerNames.includes(`Layer ${i}`)) {
+    i++
+  }
+  return `Layer ${i}`
 }
 
 /**
@@ -82,9 +83,16 @@ export class Drawing {
    * @throws {Error} If not initialized with an SVG element
    */
   constructor (svgElem, optIdPrefix) {
-    if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
-      svgElem.tagName !== 'svg' || svgElem.namespaceURI !== NS.SVG) {
-      throw new Error('Error: svgedit.draw.Drawing instance initialized without a <svg> element')
+    if (
+      !svgElem ||
+      !svgElem.tagName ||
+      !svgElem.namespaceURI ||
+      svgElem.tagName !== 'svg' ||
+      svgElem.namespaceURI !== NS.SVG
+    ) {
+      throw new Error(
+        'Error: svgedit.draw.Drawing instance initialized without a <svg> element'
+      )
     }
 
     /**
@@ -261,7 +269,11 @@ export class Drawing {
 
     // if we didn't get a positive number or we already released this number
     // then return false.
-    if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
+    if (
+      typeof num !== 'number' ||
+      num <= 0 ||
+      this.releasedNums.includes(num)
+    ) {
       return false
     }
 
@@ -354,7 +366,9 @@ export class Drawing {
     }
 
     const oldpos = this.indexCurrentLayer()
-    if ((oldpos === -1) || (oldpos === newpos)) { return null }
+    if (oldpos === -1 || oldpos === newpos) {
+      return null
+    }
 
     // if our new position is below us, we need to insert before the node after newpos
     const currentGroup = this.current_layer.getGroup()
@@ -387,7 +401,9 @@ export class Drawing {
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup()
     const prevGroup = currentGroup.previousElementSibling
-    if (!prevGroup) { return }
+    if (!prevGroup) {
+      return
+    }
 
     hrService.startBatchCommand('Merge Layer')
 
@@ -491,14 +507,15 @@ export class Drawing {
     this.layer_map = {}
     const numchildren = this.svgElem_.childNodes.length
     // loop through all children of SVG element
-    const orphans = []; const layernames = []
+    const orphans = []
+    const layernames = []
     let layer = null
     let childgroups = false
     for (let i = 0; i < numchildren; ++i) {
       const child = this.svgElem_.childNodes.item(i)
       // for each g, find its layer name
       if (child?.nodeType === 1) {
-        if (child.tagName === 'g') {
+        if (child.tagName === 'g' || child.hasAttribute('data-image-layer')) {
           childgroups = true
           if (isLayerElement(child)) {
             const name = findLayerNameInGroup(child)
@@ -519,7 +536,8 @@ export class Drawing {
 
     // If orphans or no layers found, create a new layer and add all the orphans to it
     if (orphans.length > 0 || !childgroups) {
-      layer = new Layer(getNewLayerName(layernames), null, this.svgElem_)
+      const name = orphans.length > 0 ? 'fullImage' : getNewLayerName(layernames)
+      layer = new Layer(name, null, this.svgElem_)
       layer.appendChildren(orphans)
       this.all_layers.push(layer)
       this.layer_map[name] = layer
@@ -542,7 +560,12 @@ export class Drawing {
       this.current_layer.deactivate()
     }
     // Check for duplicate name.
-    if (name === undefined || name === null || name === '' || this.layer_map[name]) {
+    if (
+      name === undefined ||
+      name === null ||
+      name === '' ||
+      this.layer_map[name]
+    ) {
       name = getNewLayerName(Object.keys(this.layer_map))
     }
 
@@ -569,10 +592,17 @@ export class Drawing {
    *     also the current layer of this drawing.
    */
   cloneLayer (name, hrService) {
-    if (!this.current_layer) { return null }
+    if (!this.current_layer) {
+      return null
+    }
     this.current_layer.deactivate()
     // Check for duplicate name.
-    if (name === undefined || name === null || name === '' || this.layer_map[name]) {
+    if (
+      name === undefined ||
+      name === null ||
+      name === '' ||
+      this.layer_map[name]
+    ) {
       name = getNewLayerName(Object.keys(this.layer_map))
     }
 
@@ -583,8 +613,10 @@ export class Drawing {
 
     // Clone children
     const children = [...currentGroup.childNodes]
-    children.forEach((child) => {
-      if (child.localName === 'title') { return }
+    children.forEach(child => {
+      if (child.localName === 'title') {
+        return
+      }
       group.append(this.copyElem(child))
     })
 
@@ -631,7 +663,9 @@ export class Drawing {
       return null
     }
     const layer = this.layer_map[layerName]
-    if (!layer) { return null }
+    if (!layer) {
+      return null
+    }
     layer.setVisible(bVisible)
     return layer.getGroup()
   }
@@ -644,7 +678,9 @@ export class Drawing {
    */
   getLayerOpacity (layerName) {
     const layer = this.layer_map[layerName]
-    if (!layer) { return null }
+    if (!layer) {
+      return null
+    }
     return layer.getOpacity()
   }
 
@@ -677,7 +713,9 @@ export class Drawing {
    */
   copyElem (el) {
     const that = this
-    const getNextIdClosure = function () { return that.getNextId() }
+    const getNextIdClosure = function () {
+      return that.getNextId()
+    }
     return utilCopyElem(el, getNextIdClosure)
   }
 }
@@ -691,13 +729,20 @@ export class Drawing {
  * @returns {void}
  */
 export const randomizeIds = function (enableRandomization, currentDrawing) {
-  randIds = enableRandomization === false
-    ? RandomizeModes.NEVER_RANDOMIZE
-    : RandomizeModes.ALWAYS_RANDOMIZE
+  randIds =
+    enableRandomization === false
+      ? RandomizeModes.NEVER_RANDOMIZE
+      : RandomizeModes.ALWAYS_RANDOMIZE
 
-  if (randIds === RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
+  if (
+    randIds === RandomizeModes.ALWAYS_RANDOMIZE &&
+    !currentDrawing.getNonce()
+  ) {
     currentDrawing.setNonce(Math.floor(Math.random() * 100001))
-  } else if (randIds === RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
+  } else if (
+    randIds === RandomizeModes.NEVER_RANDOMIZE &&
+    currentDrawing.getNonce()
+  ) {
     currentDrawing.clearNonce()
   }
 }
@@ -769,7 +814,7 @@ let svgCanvas
  * @param {module:draw.DrawCanvasInit} canvas
  * @returns {void}
  */
-export const init = (canvas) => {
+export const init = canvas => {
   svgCanvas = canvas
 }
 
@@ -803,10 +848,9 @@ export const indexCurrentLayer = () => {
  * @returns {void}
  */
 export const createLayer = (name, hrService) => {
-  const newLayer = svgCanvas.getCurrentDrawing().createLayer(
-    name,
-    historyRecordingService(hrService)
-  )
+  const newLayer = svgCanvas
+    .getCurrentDrawing()
+    .createLayer(name, historyRecordingService(hrService))
   svgCanvas.clearSelection()
   svgCanvas.call('changed', [newLayer])
 }
@@ -823,7 +867,9 @@ export const createLayer = (name, hrService) => {
  */
 export const cloneLayer = (name, hrService) => {
   // Clone the current layer and make the cloned layer the new current layer
-  const newLayer = svgCanvas.getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService))
+  const newLayer = svgCanvas
+    .getCurrentDrawing()
+    .cloneLayer(name, historyRecordingService(hrService))
 
   svgCanvas.clearSelection()
   leaveContext()
@@ -846,7 +892,9 @@ export const deleteCurrentLayer = () => {
   if (currentLayer) {
     const batchCmd = new BatchCommand('Delete Layer')
     // store in our Undo History
-    batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent))
+    batchCmd.addSubCommand(
+      new RemoveElementCommand(currentLayer, nextSibling, parent)
+    )
     svgCanvas.addCommandToHistory(batchCmd)
     svgCanvas.clearSelection()
     svgCanvas.call('changed', [parent])
@@ -862,7 +910,7 @@ export const deleteCurrentLayer = () => {
  * @param {string} name - The name of the layer you want to switch to.
  * @returns {boolean} true if the current layer was switched, otherwise false
  */
-export const setCurrentLayer = (name) => {
+export const setCurrentLayer = name => {
   const result = svgCanvas.getCurrentDrawing().setCurrentLayer(toXml(name))
   if (result) {
     svgCanvas.clearSelection()
@@ -879,11 +927,14 @@ export const setCurrentLayer = (name) => {
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {boolean} Whether the rename succeeded
  */
-export const renameCurrentLayer = (newName) => {
+export const renameCurrentLayer = newName => {
   const drawing = svgCanvas.getCurrentDrawing()
   const layer = drawing.getCurrentLayer()
   if (layer) {
-    const result = drawing.setCurrentLayerName(newName, historyRecordingService())
+    const result = drawing.setCurrentLayerName(
+      newName,
+      historyRecordingService()
+    )
     if (result) {
       svgCanvas.call('changed', [layer])
       return true
@@ -901,12 +952,18 @@ export const renameCurrentLayer = (newName) => {
  * 0 and (number of layers - 1)
  * @returns {boolean} `true` if the current layer position was changed, `false` otherwise.
  */
-export const setCurrentLayerPosition = (newPos) => {
+export const setCurrentLayerPosition = newPos => {
   const { MoveElementCommand } = svgCanvas.history
   const drawing = svgCanvas.getCurrentDrawing()
   const result = drawing.setCurrentLayerPosition(newPos)
   if (result) {
-    svgCanvas.addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, svgCanvas.getSvgContent()))
+    svgCanvas.addCommandToHistory(
+      new MoveElementCommand(
+        result.currentGroup,
+        result.oldNextSibling,
+        svgCanvas.getSvgContent()
+      )
+    )
     return true
   }
   return false
@@ -927,7 +984,13 @@ export const setLayerVisibility = (layerName, bVisible) => {
   const layer = drawing.setLayerVisibility(layerName, bVisible)
   if (layer) {
     const oldDisplay = prevVisibility ? 'inline' : 'none'
-    svgCanvas.addCommandToHistory(new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility'))
+    svgCanvas.addCommandToHistory(
+      new ChangeElementCommand(
+        layer,
+        { display: oldDisplay },
+        'Layer Visibility'
+      )
+    )
   } else {
     return false
   }
@@ -947,12 +1010,14 @@ export const setLayerVisibility = (layerName, bVisible) => {
  * @param {string} layerName - The name of the layer you want to which you want to move the selected elements
  * @returns {boolean} Whether the selected elements were moved to the layer.
  */
-export const moveSelectedToLayer = (layerName) => {
+export const moveSelectedToLayer = layerName => {
   const { BatchCommand, MoveElementCommand } = svgCanvas.history
   // find the layer
   const drawing = svgCanvas.getCurrentDrawing()
   const layer = drawing.getLayerByName(layerName)
-  if (!layer) { return false }
+  if (!layer) {
+    return false
+  }
 
   const batchCmd = new BatchCommand('Move Elements to Layer')
 
@@ -961,12 +1026,16 @@ export const moveSelectedToLayer = (layerName) => {
   let i = selElems.length
   while (i--) {
     const elem = selElems[i]
-    if (!elem) { continue }
+    if (!elem) {
+      continue
+    }
     const oldNextSibling = elem.nextSibling
     // TODO: this is pretty brittle!
     const oldLayer = elem.parentNode
     layer.append(elem)
-    batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer))
+    batchCmd.addSubCommand(
+      new MoveElementCommand(elem, oldNextSibling, oldLayer)
+    )
   }
 
   svgCanvas.addCommandToHistory(batchCmd)
@@ -979,7 +1048,7 @@ export const moveSelectedToLayer = (layerName) => {
  * @param {module:history.HistoryRecordingService} hrService
  * @returns {void}
  */
-export const mergeLayer = (hrService) => {
+export const mergeLayer = hrService => {
   svgCanvas.getCurrentDrawing().mergeLayer(historyRecordingService(hrService))
   svgCanvas.clearSelection()
   leaveContext()
@@ -991,8 +1060,10 @@ export const mergeLayer = (hrService) => {
  * @param {module:history.HistoryRecordingService} hrService
  * @returns {void}
  */
-export const mergeAllLayers = (hrService) => {
-  svgCanvas.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService))
+export const mergeAllLayers = hrService => {
+  svgCanvas
+    .getCurrentDrawing()
+    .mergeAllLayers(historyRecordingService(hrService))
   svgCanvas.clearSelection()
   leaveContext()
   svgCanvas.changeSvgContent()
@@ -1033,7 +1104,7 @@ export const leaveContext = () => {
  * @fires module:svgcanvas.SvgCanvas#event:contextset
  * @returns {void}
  */
-export const setContext = (elem) => {
+export const setContext = elem => {
   const dataStorage = svgCanvas.getDataStorage()
   leaveContext()
   if (typeof elem === 'string') {
@@ -1047,9 +1118,12 @@ export const setContext = (elem) => {
   const parentsUntil = getParentsUntil(elem, '#svgcontent')
   const siblings = []
   parentsUntil.forEach(function (parent) {
-    const elements = Array.prototype.filter.call(parent.parentNode.children, function (child) {
-      return child !== parent
-    })
+    const elements = Array.prototype.filter.call(
+      parent.parentNode.children,
+      function (child) {
+        return child !== parent
+      }
+    )
     elements.forEach(function (element) {
       siblings.push(element)
     })

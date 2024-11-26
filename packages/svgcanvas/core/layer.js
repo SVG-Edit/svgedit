@@ -37,9 +37,9 @@ class Layer {
       // Create a group element with title and add it to the DOM.
       const svgdoc = svgElem.ownerDocument
       this.group_ = svgdoc.createElementNS(NS.SVG, 'g')
-      const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
-      layerTitle.textContent = name
-      this.group_.append(layerTitle)
+      // const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
+      // layerTitle.textContent = name
+      // this.group_.append(layerTitle)
       if (group) {
         group.insertAdjacentElement('afterend', this.group_)
       } else {
@@ -147,12 +147,16 @@ class Layer {
   * @returns {SVGTitleElement|null}
   */
   getTitleElement () {
-    const len = this.group_.childNodes.length
+    /* const len = this.group_.childNodes.length
     for (let i = 0; i < len; ++i) {
       const child = this.group_.childNodes.item(i)
       if (child?.tagName === 'title') {
         return child
       }
+    } */
+    if (this.group_.hasAttribute('data-image-layer')) {
+      console.warn('Returning ' + this.group_.getAttribute('data-image-layer'))
+      return this.group_.getAttribute('data-image-layer')
     }
     return null
   }
@@ -169,8 +173,8 @@ class Layer {
     // now change the underlying title element contents
     const title = this.getTitleElement()
     if (title) {
-      while (title.firstChild) { title.removeChild(title.firstChild) }
-      title.textContent = name
+      // while (title.firstChild) { title.removeChild(title.firstChild) }
+      // title.textContent = name
       this.name_ = name
       this.group_.setAttribute('data-image-layer', name)
       if (hrService) {
@@ -198,7 +202,7 @@ class Layer {
    * @returns {boolean} True if the element is a layer
    */
   static isLayer (elem) {
-    return elem && elem.tagName === 'g' && Layer.CLASS_REGEX.test(elem.getAttribute('class'))
+    return elem && elem.hasAttribute('data-image-layer')
   }
 }
 /**
@@ -209,7 +213,7 @@ Layer.CLASS_NAME = 'layer'
 /**
  * @property {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
  */
-Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
+// Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
 
 /**
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
@@ -218,15 +222,23 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
  * @returns {void}
  */
 function addLayerClass (elem, name) {
-  const classes = elem.getAttribute('class')
+  /* const classes = elem.getAttribute('class')
   if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
     elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)
+  } */
+  const classes = elem.getAttribute('data-image-layer')
+  if (!classes || !classes.length) {
+    elem.setAttribute('data-image-layer', name)
   }
+  /* else if (!Layer.CLASS_REGEX.test(classes)) {
+    elem.setAttribute('data-image-layer', classes + ' ' + name)
+  } */
   // const dataImageLayer = elem.getAttribute('data-image-layer')
   // if (!dataImageLayer || !dataImageLayer.length) {
-  elem.setAttribute('data-image-layer', name)
+  // elem.setAttribute('data-image-layer', name)
+  // console.warn('Adding layer tag')
   // } else if (!Layer.CLASS_REGEX.test(dataImageLayer)) {
   //  elem.setAttribute('data-image-layer', dataImageLayer + ' ' + Layer.CLASS_NAME)
   // }

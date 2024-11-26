@@ -17,7 +17,7 @@ class MainMenu {
     /**
      * @type {Integer}
      */
-    this.exportWindowCt = 0
+    this.editor.exportWindowCt = 0
   }
 
   /**

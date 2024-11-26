@@ -176,6 +176,9 @@ const getMouseTargetMethod = (evt) => {
   const container = svgCanvas.getDOMContainer()
   const content = svgCanvas.getSvgContent()
   if ([svgRoot, container, content, currentLayer].includes(mouseTarget)) {
+    if (mouseTarget.isSameNode(currentLayer) && mouseTarget.childNodes.length === 0) {
+      return mouseTarget
+    }
     return svgCanvas.getSvgRoot()
   }
 

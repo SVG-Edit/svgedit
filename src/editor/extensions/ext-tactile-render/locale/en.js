@@ -7,6 +7,7 @@ export default {
     }
   ],
   render_id:{
+    title_val: 'Graphic Title',
     id_val: 'Graphic ID',
     secret_val:'Graphic Secret Key',
     layer_val:'Default layer',

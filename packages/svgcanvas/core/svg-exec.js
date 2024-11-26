@@ -7,8 +7,7 @@
 
 import { jsPDF as JsPDF } from 'jspdf'
 import 'svg2pdf.js'
-import html2canvas from 'html2canvas'
-import * as hstry from './history.js'
+import * as history from './history.js'
 import {
   text2xml,
   cleanupElement,
@@ -17,8 +16,6 @@ import {
   preventClickDefault,
   toXml,
   getStrokedBBoxDefaultVisible,
-  createObjectURL,
-  dataURLToObjectURL,
   walkTree,
   getBBox as utilsGetBBox,
   hashCode
@@ -41,7 +38,7 @@ const {
   RemoveElementCommand,
   ChangeElementCommand,
   BatchCommand
-} = hstry
+} = history
 
 let svgCanvas = null
 
@@ -554,6 +551,9 @@ const setSvgString = (xmlString, preventUndo) => {
           elem.id = svgCanvas.getNextId()
         }
       })
+      if (visElems.length === 0 && svgCanvas.isLayer(chiElem)) {
+        chiElem.id = svgCanvas.getNextId()
+      }
     })
 
     // Percentage width/height, so let's base it on visible elements
@@ -846,156 +846,182 @@ const getIssues = () => {
  */
 
 /**
- * Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image,
- * then calls "ed" with an object including the string, image
- * information, and any issues found.
- * @function module:svgcanvas.SvgCanvas#raster
- * @param {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} [imgType="PNG"]
- * @param {Float} [quality] Between 0 and 1
- * @param {string} [WindowName]
- * @param {PlainObject} [opts]
- * @param {boolean} [opts.avoidEvent]
- * @fires module:svgcanvas.SvgCanvas#event:ed
- * @todo Confirm/fix ICO type
- * @returns {Promise<module:svgcanvas.ImageedResults>} Resolves to {@link module:svgcanvas.ImageedResults}
+ * Utility function to convert all external image links in an SVG element to Base64 data URLs.
+ * @param {SVGElement} svgElement - The SVG element to process.
+ * @returns {Promise<void>}
  */
-const rasterExport = async (imgType, quality, WindowName, opts = {}) => {
-  const type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG'
-  const mimeType = 'image/' + type.toLowerCase()
-  const { issues, issueCodes } = getIssues()
-  const svg = svgCanvas.svgCanvasToString()
-
-  const iframe = document.createElement('iframe')
-  iframe.onload = () => {
-    const iframedoc = iframe.contentDocument || iframe.contentWindow.document
-    const ele = svgCanvas.getSvgContent()
-    const cln = ele.cloneNode(true)
-    iframedoc.body.appendChild(cln)
-    setTimeout(() => {
-      // eslint-disable-next-line promise/catch-or-return
-      html2canvas(iframedoc.body, { useCORS: true, allowTaint: true }).then(
-        canvas => {
-          return new Promise(resolve => {
-            const dataURLType = type.toLowerCase()
-            const datauri = quality
-              ? canvas.toDataURL('image/' + dataURLType, quality)
-              : canvas.toDataURL('image/' + dataURLType)
-            iframe.parentNode.removeChild(iframe)
-            let bloburl
-
-            const done = () => {
-              const obj = {
-                datauri,
-                bloburl,
-                svg,
-                issues,
-                issueCodes,
-                type: imgType,
-                mimeType,
-                quality,
-                WindowName
-              }
-              if (!opts.avoidEvent) {
-                svgCanvas.call('exported', obj)
-              }
-              resolve(obj)
-            }
-            if (canvas.toBlob) {
-              canvas.toBlob(
-                blob => {
-                  bloburl = createObjectURL(blob)
-                  done()
-                },
-                mimeType,
-                quality
-              )
-              return
-            }
-            bloburl = dataURLToObjectURL(datauri)
-            done()
-          })
-        }
-      )
-    }, 1000)
-  }
-  document.body.appendChild(iframe)
+const convertImagesToBase64 = async svgElement => {
+  const imageElements = svgElement.querySelectorAll('image')
+  const promises = Array.from(imageElements).map(async img => {
+    const href = img.getAttribute('xlink:href') || img.getAttribute('href')
+    if (href && !href.startsWith('data:')) {
+      try {
+        const response = await fetch(href)
+        const blob = await response.blob()
+        const reader = new FileReader()
+        return new Promise(resolve => {
+          reader.onload = () => {
+            img.setAttribute('xlink:href', reader.result)
+            resolve()
+          }
+          reader.readAsDataURL(blob)
+        })
+      } catch (error) {
+        console.error('Failed to fetch image:', error)
+      }
+    }
+  })
+  await Promise.all(promises)
 }
 
 /**
- * @typedef {void|"save"|"arraybuffer"|"blob"|"datauristring"|"dataurlstring"|"dataurlnewwindow"|"datauri"|"dataurl"} external:jsPDF.OutputType
- * @todo Newer version to add also allows these `outputType` values "bloburi"|"bloburl" which return strings, so document here and for `outputType` of `module:svgcanvas.PDFedResults` below if added
+ * Generates a raster image (PNG, JPEG, etc.) from the SVG content.
+ * @param {string} [imgType='PNG'] - The image type to generate.
+ * @param {number} [quality=1.0] - The image quality (for JPEG).
+ * @param {string} [windowName='Exported Image'] - The window name.
+ * @param {Object} [opts={}] - Additional options.
+ * @returns {Promise<Object>} Resolves to an object containing export data.
  */
-/**
- * @typedef {PlainObject} module:svgcanvas.PDFedResults
- * @property {string} svg The SVG PDF output
- * @property {string|ArrayBuffer|Blob|window} output The output based on the `outputType`;
- * if `undefined`, "datauristring", "dataurlstring", "datauri",
- * or "dataurl", will be a string (`undefined` gives a document, while the others
- * build as Data URLs; "datauri" and "dataurl" change the location of the current page); if
- * "arraybuffer", will return `ArrayBuffer`; if "blob", returns a `Blob`;
- * if "dataurlnewwindow", will change the current page's location and return a string
- * if in Safari and no window object is found; otherwise opens in, and returns, a new `window`
- * object; if "save", will have the same return as "dataurlnewwindow" if
- * `navigator.getUserMedia` support is found without `URL.createObjectURL` support; otherwise
- * returns `undefined` but attempts to save
- * @property {external:jsPDF.OutputType} outputType
- * @property {string[]} issues The human-readable localization messages of corresponding `issueCodes`
- * @property {module:svgcanvas.IssueCode[]} issueCodes
- * @property {string} WindowName
- */
+const rasterExport = (
+  imgType = 'PNG',
+  quality = 1.0,
+  windowName = 'Exported Image',
+  opts = {}
+) => {
+  return new Promise((resolve, reject) => {
+    const type = imgType === 'ICO' ? 'BMP' : imgType
+    const mimeType = `image/${type.toLowerCase()}`
+    const { issues, issueCodes } = getIssues()
+    const svgElement = svgCanvas.getSvgContent()
+
+    const svgClone = svgElement.cloneNode(true)
+
+    convertImagesToBase64(svgClone)
+      .then(() => {
+        const svgData = new XMLSerializer().serializeToString(svgClone)
+        const svgBlob = new Blob([svgData], {
+          type: 'image/svg+xml;charset=utf-8'
+        })
+        const url = URL.createObjectURL(svgBlob)
+
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const width = svgElement.clientWidth || svgElement.getAttribute('width')
+        const height =
+          svgElement.clientHeight || svgElement.getAttribute('height')
+        canvas.width = width
+        canvas.height = height
+
+        const img = new Image()
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, width, height)
+          URL.revokeObjectURL(url)
+
+          const datauri = canvas.toDataURL(mimeType, quality)
+          let blobUrl
+
+          const onExportComplete = blobUrl => {
+            const exportObj = {
+              datauri,
+              bloburl: blobUrl,
+              svg: svgData,
+              issues,
+              issueCodes,
+              type: imgType,
+              mimeType,
+              quality,
+              windowName
+            }
+            if (!opts.avoidEvent) {
+              svgCanvas.call('exported', exportObj)
+            }
+            resolve(exportObj)
+          }
+
+          canvas.toBlob(
+            blob => {
+              blobUrl = URL.createObjectURL(blob)
+              onExportComplete(blobUrl)
+            },
+            mimeType,
+            quality
+          )
+        }
+
+        img.onerror = err => {
+          console.error('Failed to load SVG into image element:', err)
+          reject(err)
+        }
+
+        img.src = url
+      })
+      .catch(reject)
+  })
+}
 
 /**
- * Generates a PDF based on the current image, then calls "edPDF" with
- * an object including the string, the data URL, and any issues found.
- * @function module:svgcanvas.SvgCanvas#PDF
- * @param {string} [WindowName] Will also be used for the download file name here
- * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
- * @fires module:svgcanvas.SvgCanvas#event:edPDF
- * @returns {Promise<module:svgcanvas.PDFedResults>} Resolves to {@link module:svgcanvas.PDFedResults}
+ * Exports the SVG content as a PDF.
+ * @param {string} [windowName='svg.pdf'] - The window name or file name.
+ * @param {string} [outputType='save'|'dataurlstring'] - The output type for jsPDF.
+ * @returns {Promise<Object>} Resolves to an object containing PDF export data.
  */
-const exportPDF = async (
-  WindowName,
-  outputType = isChrome() ? 'save' : undefined
+const exportPDF = (
+  windowName = 'svg.pdf',
+  outputType = isChrome() ? 'save' : 'dataurlstring'
 ) => {
-  const res = svgCanvas.getResolution()
-  const orientation = res.w > res.h ? 'landscape' : 'portrait'
-  const unit = 'pt' // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for  purposes
-  const iframe = document.createElement('iframe')
-  iframe.onload = () => {
-    const iframedoc = iframe.contentDocument || iframe.contentWindow.document
-    const ele = svgCanvas.getSvgContent()
-    const cln = ele.cloneNode(true)
-    iframedoc.body.appendChild(cln)
-    setTimeout(() => {
-      // eslint-disable-next-line promise/catch-or-return
-      html2canvas(iframedoc.body, { useCORS: true, allowTaint: true }).then(
-        canvas => {
+  return new Promise((resolve, reject) => {
+    const res = svgCanvas.getResolution()
+    const orientation = res.w > res.h ? 'landscape' : 'portrait'
+    const unit = 'pt'
+    const svgElement = svgCanvas.getSvgContent().cloneNode(true)
+
+    convertImagesToBase64(svgElement)
+      .then(() => {
+        const svgData = new XMLSerializer().serializeToString(svgElement)
+        const svgBlob = new Blob([svgData], {
+          type: 'image/svg+xml;charset=utf-8'
+        })
+        const url = URL.createObjectURL(svgBlob)
+
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        canvas.width = res.w
+        canvas.height = res.h
+
+        const img = new Image()
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, res.w, res.h)
+          URL.revokeObjectURL(url)
+
           const imgData = canvas.toDataURL('image/png')
-          const doc = new JsPDF({
-            orientation,
-            unit,
-            format: [res.w, res.h]
-          })
+          const doc = new JsPDF({ orientation, unit, format: [res.w, res.h] })
+
           const docTitle = svgCanvas.getDocumentTitle()
-          doc.setProperties({
-            title: docTitle
-          })
+          doc.setProperties({ title: docTitle })
           doc.addImage(imgData, 'PNG', 0, 0, res.w, res.h)
-          iframe.parentNode.removeChild(iframe)
+
           const { issues, issueCodes } = getIssues()
-          outputType = outputType || 'dataurlstring'
-          const obj = { issues, issueCodes, WindowName, outputType }
+          const obj = { issues, issueCodes, windowName, outputType }
+
           obj.output = doc.output(
             outputType,
-            outputType === 'save' ? WindowName || 'svg.pdf' : undefined
+            outputType === 'save' ? windowName : undefined
           )
-          svgCanvas.call('edPDF', obj)
-          return obj
+
+          svgCanvas.call('exportedPDF', obj)
+          resolve(obj)
         }
-      )
-    }, 1000)
-  }
-  document.body.appendChild(iframe)
+
+        img.onerror = err => {
+          console.error('Failed to load SVG into image element:', err)
+          reject(err)
+        }
+
+        img.src = url
+      })
+      .catch(reject)
+  })
 }
 /**
  * Ensure each element has a unique ID.
