@@ -164,11 +164,13 @@ connectedCallback () {
     let svgString= svgCanvas.getSvgString();
     let parser = new DOMParser();
     let svgDoc = parser.parseFromString(svgString, "text/xml");
-    let children = svgDoc.querySelector('g[data-image-layer="fullImage"]').childNodes
-    while (children.length>0) {
-      svgDoc.querySelector('svg').appendChild(children.item(0))
+    if (svgDoc.querySelector('g[data-image-layer="fullImage"]')){
+      let children = svgDoc.querySelector('g[data-image-layer="fullImage"]').childNodes
+      while (children.length>0) {
+        svgDoc.querySelector('svg').appendChild(children.item(0))
+      }
+      svgDoc.querySelector('g[data-image-layer="fullImage"]').remove()
     }
-    svgDoc.querySelector('g[data-image-layer="fullImage"]').remove()
     svgString = new XMLSerializer().serializeToString(svgDoc)
     if (graphicId == ""){
       xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");
