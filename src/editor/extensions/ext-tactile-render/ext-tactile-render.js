@@ -172,6 +172,57 @@ connectedCallback () {
       svgDoc.querySelector('g[data-image-layer="fullImage"]').remove()
     }
     svgString = new XMLSerializer().serializeToString(svgDoc)
+    
+    const password = "somepassword";
+
+    // Convert text and password to Uint8Array
+    const encoder = new TextEncoder();
+    const data = encoder.encode(svgString);
+    const passwordBuffer = encoder.encode(password);
+
+    // Derive a cryptographic key from the password using PBKDF2
+    const salt = crypto.getRandomValues(new Uint8Array(16)); // Use a salt for key derivation
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      passwordBuffer,
+      { name: "PBKDF2" },
+      false,
+      ["deriveKey"]
+    );
+
+    const aesKey = await crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: salt,
+        iterations: 100000,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      { name: "AES-CBC", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+
+    // Generate a random IV for encryption
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+
+    // Encrypt the data
+    const encryptedData = await crypto.subtle.encrypt(
+      { name: "AES-CBC", iv },
+      aesKey,
+      data
+    );
+
+    // console.warn("Encrypted Data (Uint8Array):", new Uint8Array(encryptedData));
+    // console.warn("IV (Uint8Array):", new Uint8Array(iv));
+
+    // Convert encrypted data to Base64 for transmission
+    svgString = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
+    const ivBase64 = btoa(String.fromCharCode(...iv));
+    const saltBase64 = btoa(String.fromCharCode(...salt));
+    
+    console.warn(ivBase64)
+    console.warn(saltBase64)
     if (graphicId == ""){
       xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");
     } else {
@@ -198,13 +249,13 @@ connectedCallback () {
       }
     }};
     if (graphicId != ""){
-      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
+      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+svgString,//+window.btoa(svgString), 
         "secret": secretKey,
         "layer": layerSelected,
         "title": title
       }));
     } else {
-      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+window.btoa(svgString), 
+      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+svgString,//+window.btoa(svgString), 
         "layer": layerSelected,
         "title": title
       }));
