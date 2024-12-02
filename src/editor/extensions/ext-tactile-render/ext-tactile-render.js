@@ -217,12 +217,20 @@ connectedCallback () {
     // console.warn("IV (Uint8Array):", new Uint8Array(iv));
 
     // Convert encrypted data to Base64 for transmission
-    svgString = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
-    const ivBase64 = btoa(String.fromCharCode(...iv));
-    const saltBase64 = btoa(String.fromCharCode(...salt));
+    //svgString = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
+    //const ivBase64 = btoa(String.fromCharCode(...iv));
+    //const saltBase64 = btoa(String.fromCharCode(...salt));
     
-    console.warn(ivBase64)
-    console.warn(saltBase64)
+    //console.warn(ivBase64)
+    //console.warn(saltBase64)
+    const encrypted = new Uint8Array(encryptedData)
+    const concatenatedArray = new Uint8Array(salt.length + iv.length + encrypted.length);
+    concatenatedArray.set(salt, 0);
+    concatenatedArray.set(iv, salt.length);
+    concatenatedArray.set(encrypted, (salt.length+ iv.length))
+    svgString = window.btoa(Uint8ToString(concatenatedArray));
+    
+
     if (graphicId == ""){
       xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");
     } else {
@@ -260,6 +268,15 @@ connectedCallback () {
         "title": title
       }));
     }
+    }
+
+    function Uint8ToString(u8a){
+      var CHUNK_SZ = 0x8000;
+      var c = [];
+      for (var i=0; i < u8a.length; i+=CHUNK_SZ) {
+        c.push(String.fromCharCode.apply(null, u8a.subarray(i, i+CHUNK_SZ)));
+      }
+      return c.join("");
     }
 
     const onImportHandler = async function () {
