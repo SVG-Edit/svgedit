@@ -15,7 +15,7 @@ import { fileOpen, fileSave } from 'browser-fs-access'
 const template = document.createElement('template')
 template.innerHTML = tactileRenderHTML
 var layerSelected = "None"
-var title = ""
+var graphicTitle = ""
 var graphicId = ""
 var secretKey = ""
 
@@ -90,12 +90,12 @@ export class SeTactileRenderDialog extends HTMLElement {
     switch (name) {
       case 'dialog':
         if (newValue === 'open') {
-          this._shadowRoot.querySelector('#title_value').value = title
+          this._shadowRoot.querySelector('#title_value').value = graphicTitle
           this._shadowRoot.querySelector('#id_value').value = graphicId
           this._shadowRoot.querySelector('#secret_value').value = secretKey
           this.$dialog.open()
         } else {
-          title = this._shadowRoot.querySelector('#title_value').value
+          graphicTitle = this._shadowRoot.querySelector('#title_value').value
           graphicId = this._shadowRoot.querySelector('#id_value').value
           secretKey = this._shadowRoot.querySelector('#secret_value').value
           layerSelected = this._shadowRoot.querySelector('#layer_select_dd').value
@@ -334,13 +334,19 @@ export default {
   name,
   async init () {
     const svgEditor = this
-    const { svgCanvas } = svgEditor
+    const { svgCanvas, storage } = svgEditor
     const svgroot = svgCanvas.getSvgRoot()
     await loadExtensionTranslation(svgEditor)
     // const { ChangeElementCommand } = svgCanvas.history
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     // const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const { $id, $click } = svgCanvas
+    let info = JSON.parse(storage.getItem('tat-storage-data'))
+    if (info){
+      graphicId = info.channelId ? info.channelId  : ""
+      graphicTitle = info.graphicTitle ? info.graphicTitle : ""
+      secretKey = info.secretKey ? info.secretKey : ""
+    }
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
@@ -383,6 +389,13 @@ export default {
               select.appendChild(opt);
             }
         })
+        window.addEventListener('storage', (evt)=>{
+          if (evt.key == 'tat-storage-data'){
+            let info = JSON.parse(evt.newValue)
+            graphicId = info.channelId ? info.channelId  : ""
+            graphicTitle = info.graphicTitle ? info.graphicTitle : ""
+            secretKey = info.secretKey ? info.secretKey : ""
+          }})
       }
     }
   }

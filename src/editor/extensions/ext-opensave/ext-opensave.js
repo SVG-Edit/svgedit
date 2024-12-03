@@ -245,6 +245,10 @@ export default {
       }
     }
 
+    const storageChange = async function (svgString) {
+      console.warn('Change graphic!')
+    }
+
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       // The callback should be used to load the DOM with the appropriate UI items
@@ -268,6 +272,10 @@ export default {
         $click($id('tool_save_as'), clickSave.bind(this, 'saveas'))
         // tool_import pressed with shiftKey will not scale the SVG
         $click($id('tool_import'), (ev) => { imgImport.shiftKey = ev.shiftKey; imgImport.click() })
+
+        window.addEventListener('storage', evt=>{
+          console.warn(evt.key)
+        })
       }
     }
   }

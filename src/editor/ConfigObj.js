@@ -156,7 +156,7 @@ export default class ConfigObj {
       showGrid: false, // Set by ext-grid.js
       // EXTENSION-RELATED (STORAGE)
       noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
-      forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
+      forceStorage: true, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
       emptyStorageOnDecline: false, // Used by ext-storage.js; empty any prior storage if the user declines to store
       // EXTENSION (CLIENT VS. SERVER SAVING/OPENING)
       avoidClientSide: false, // Deprecated in favor of `avoidClientSideDownload`
