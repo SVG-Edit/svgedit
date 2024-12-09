@@ -124,7 +124,7 @@ export const remapElement = (selected, changes, m) => {
     case 'image': {
       // Allow images to be inverted (give them matrix when flipped)
       if (elName === 'image' && (m.a < 0 || m.d < 0)) {
-        // Convert to matrix
+        // Convert to matrix if flipped
         const chlist = getTransformList(selected)
         const mt = svgCanvas.getSvgRoot().createSVGTransform()
         mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m))
@@ -177,6 +177,19 @@ export const remapElement = (selected, changes, m) => {
       const pt = remap(changes.x, changes.y)
       changes.x = pt.x
       changes.y = pt.y
+
+      // Scale font-size
+      let fontSize = selected.getAttribute('font-size')
+      if (!fontSize) {
+        // If not directly set, try computed style
+        fontSize = window.getComputedStyle(selected).fontSize
+      }
+      const fontSizeNum = parseFloat(fontSize)
+      if (!isNaN(fontSizeNum)) {
+        // Assume uniform scaling and use m.a
+        changes['font-size'] = fontSizeNum * Math.abs(m.a)
+      }
+
       finishUp()
 
       // Handle child 'tspan' elements
@@ -197,7 +210,17 @@ export const remapElement = (selected, changes, m) => {
             const childPtY = remap(changes.x, childY).y
             childChanges.y = childPtY
           }
-          if (hasX || hasY) {
+
+          let tspanFS = child.getAttribute('font-size')
+          if (!tspanFS) {
+            tspanFS = window.getComputedStyle(child).fontSize
+          }
+          const tspanFSNum = parseFloat(tspanFS)
+          if (!isNaN(tspanFSNum)) {
+            childChanges['font-size'] = tspanFSNum * Math.abs(m.a)
+          }
+
+          if (hasX || hasY || childChanges['font-size']) {
             assignAttributes(child, childChanges, 1000, true)
           }
         }
@@ -208,6 +231,17 @@ export const remapElement = (selected, changes, m) => {
       const pt = remap(changes.x, changes.y)
       changes.x = pt.x
       changes.y = pt.y
+
+      // Handle tspan font-size scaling
+      let tspanFS = selected.getAttribute('font-size')
+      if (!tspanFS) {
+        tspanFS = window.getComputedStyle(selected).fontSize
+      }
+      const tspanFSNum = parseFloat(tspanFS)
+      if (!isNaN(tspanFSNum)) {
+        changes['font-size'] = tspanFSNum * Math.abs(m.a)
+      }
+
       finishUp()
       break
     }
