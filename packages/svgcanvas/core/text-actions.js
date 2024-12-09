@@ -6,33 +6,31 @@
  */
 
 import { NS } from './namespaces.js'
+import { transformPoint, getMatrix } from './math.js'
 import {
-  transformPoint, getMatrix
-} from './math.js'
-import {
-  assignAttributes, getElement, getBBox as utilsGetBBox
+  assignAttributes,
+  getElement,
+  getBBox as utilsGetBBox
 } from './utilities.js'
-import {
-  supportsGoodTextCharPos
-} from '../common/browser.js'
+import { supportsGoodTextCharPos } from '../common/browser.js'
 
 let svgCanvas = null
 
 /**
-* @function module:text-actions.init
-* @param {module:text-actions.svgCanvas} textActionsContext
-* @returns {void}
-*/
-export const init = (canvas) => {
+ * @function module:text-actions.init
+ * @param {module:text-actions.svgCanvas} textActionsContext
+ * @returns {void}
+ */
+export const init = canvas => {
   svgCanvas = canvas
 }
 
 /**
-* Group: Text edit functions
-* Functions relating to editing text elements.
-* @namespace {PlainObject} textActions
-* @memberof module:svgcanvas.SvgCanvas#
-*/
+ * Group: Text edit functions
+ * Functions relating to editing text elements.
+ * @namespace {PlainObject} textActions
+ * @memberof module:svgcanvas.SvgCanvas#
+ */
 export const textActionsMethod = (function () {
   let curtext
   let textinput
@@ -42,23 +40,26 @@ export const textActionsMethod = (function () {
   let chardata = []
   let textbb // , transbb;
   let matrix
-  let lastX; let lastY
+  let lastX
+  let lastY
   let allowDbl
 
   /**
-*
-* @param {Integer} index
-* @returns {void}
-*/
+   *
+   * @param {Integer} index
+   * @returns {void}
+   */
   function setCursor (index) {
-    const empty = (textinput.value === '')
+    const empty = textinput.value === ''
     textinput.focus()
 
     if (!arguments.length) {
       if (empty) {
         index = 0
       } else {
-        if (textinput.selectionEnd !== textinput.selectionStart) { return }
+        if (textinput.selectionEnd !== textinput.selectionStart) {
+          return
+        }
         index = textinput.selectionEnd
       }
     }
@@ -80,13 +81,13 @@ export const textActionsMethod = (function () {
 
     if (!blinker) {
       blinker = setInterval(function () {
-        const show = (cursor.getAttribute('display') === 'none')
+        const show = cursor.getAttribute('display') === 'none'
         cursor.setAttribute('display', show ? 'inline' : 'none')
       }, 600)
     }
 
     const startPt = ptToScreen(charbb.x, textbb.y)
-    const endPt = ptToScreen(charbb.x, (textbb.y + textbb.height))
+    const endPt = ptToScreen(charbb.x, textbb.y + textbb.height)
 
     assignAttributes(cursor, {
       x1: startPt.x,
@@ -97,16 +98,18 @@ export const textActionsMethod = (function () {
       display: 'inline'
     })
 
-    if (selblock) { selblock.setAttribute('d', '') }
+    if (selblock) {
+      selblock.setAttribute('d', '')
+    }
   }
 
   /**
-*
-* @param {Integer} start
-* @param {Integer} end
-* @param {boolean} skipInput
-* @returns {void}
-*/
+   *
+   * @param {Integer} start
+   * @param {Integer} end
+   * @param {boolean} skipInput
+   * @returns {void}
+   */
   function setSelection (start, end, skipInput) {
     if (start === end) {
       setCursor(end)
@@ -137,12 +140,29 @@ export const textActionsMethod = (function () {
     const tl = ptToScreen(startbb.x, textbb.y)
     const tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y)
     const bl = ptToScreen(startbb.x, textbb.y + textbb.height)
-    const br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height)
+    const br = ptToScreen(
+      startbb.x + (endbb.x - startbb.x),
+      textbb.y + textbb.height
+    )
 
-    const dstr = 'M' + tl.x + ',' + tl.y +
-' L' + tr.x + ',' + tr.y +
-' ' + br.x + ',' + br.y +
-' ' + bl.x + ',' + bl.y + 'z'
+    const dstr =
+      'M' +
+      tl.x +
+      ',' +
+      tl.y +
+      ' L' +
+      tr.x +
+      ',' +
+      tr.y +
+      ' ' +
+      br.x +
+      ',' +
+      br.y +
+      ' ' +
+      bl.x +
+      ',' +
+      bl.y +
+      'z'
 
     assignAttributes(selblock, {
       d: dstr,
@@ -151,11 +171,11 @@ export const textActionsMethod = (function () {
   }
 
   /**
-*
-* @param {Float} mouseX
-* @param {Float} mouseY
-* @returns {Integer}
-*/
+   *
+   * @param {Float} mouseX
+   * @param {Float} mouseY
+   * @returns {Integer}
+   */
   function getIndexFromPoint (mouseX, mouseY) {
     // Position cursor here
     const pt = svgCanvas.getSvgRoot().createSVGPoint()
@@ -163,7 +183,9 @@ export const textActionsMethod = (function () {
     pt.y = mouseY
 
     // No content, so return 0
-    if (chardata.length === 1) { return 0 }
+    if (chardata.length === 1) {
+      return 0
+    }
     // Determine if cursor should be on left or right of character
     let charpos = curtext.getCharNumAtPosition(pt)
     if (charpos < 0) {
@@ -176,7 +198,7 @@ export const textActionsMethod = (function () {
       charpos = chardata.length - 2
     }
     const charbb = chardata[charpos]
-    const mid = charbb.x + (charbb.width / 2)
+    const mid = charbb.x + charbb.width / 2
     if (mouseX > mid) {
       charpos++
     }
@@ -184,22 +206,22 @@ export const textActionsMethod = (function () {
   }
 
   /**
-*
-* @param {Float} mouseX
-* @param {Float} mouseY
-* @returns {void}
-*/
+   *
+   * @param {Float} mouseX
+   * @param {Float} mouseY
+   * @returns {void}
+   */
   function setCursorFromPoint (mouseX, mouseY) {
     setCursor(getIndexFromPoint(mouseX, mouseY))
   }
 
   /**
-*
-* @param {Float} x
-* @param {Float} y
-* @param {boolean} apply
-* @returns {void}
-*/
+   *
+   * @param {Float} x
+   * @param {Float} y
+   * @param {boolean} apply
+   * @returns {void}
+   */
   function setEndSelectionFromPoint (x, y, apply) {
     const i1 = textinput.selectionStart
     const i2 = getIndexFromPoint(x, y)
@@ -210,11 +232,11 @@ export const textActionsMethod = (function () {
   }
 
   /**
-*
-* @param {Float} xIn
-* @param {Float} yIn
-* @returns {module:math.XYObject}
-*/
+   *
+   * @param {Float} xIn
+   * @param {Float} yIn
+   * @returns {module:math.XYObject}
+   */
   function screenToPt (xIn, yIn) {
     const out = {
       x: xIn,
@@ -234,11 +256,11 @@ export const textActionsMethod = (function () {
   }
 
   /**
-*
-* @param {Float} xIn
-* @param {Float} yIn
-* @returns {module:math.XYObject}
-*/
+   *
+   * @param {Float} xIn
+   * @param {Float} yIn
+   * @returns {module:math.XYObject}
+   */
   function ptToScreen (xIn, yIn) {
     const out = {
       x: xIn,
@@ -258,22 +280,24 @@ export const textActionsMethod = (function () {
   }
 
   /**
-*
-* @param {Event} evt
-* @returns {void}
-*/
+   *
+   * @param {Event} evt
+   * @returns {void}
+   */
   function selectAll (evt) {
     setSelection(0, curtext.textContent.length)
     evt.target.removeEventListener('click', selectAll)
   }
 
   /**
-*
-* @param {Event} evt
-* @returns {void}
-*/
+   *
+   * @param {Event} evt
+   * @returns {void}
+   */
   function selectWord (evt) {
-    if (!allowDbl || !curtext) { return }
+    if (!allowDbl || !curtext) {
+      return
+    }
     const zoom = svgCanvas.getZoom()
     const ept = transformPoint(evt.pageX, evt.pageY, svgCanvas.getrootSctm())
     const mouseX = ept.x * zoom
@@ -297,30 +321,30 @@ export const textActionsMethod = (function () {
 
   return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
     /**
-* @param {Element} target
-* @param {Float} x
-* @param {Float} y
-* @returns {void}
-*/
+     * @param {Element} target
+     * @param {Float} x
+     * @param {Float} y
+     * @returns {void}
+     */
     select (target, x, y) {
       curtext = target
       svgCanvas.textActions.toEditMode(x, y)
     },
     /**
-* @param {Element} elem
-* @returns {void}
-*/
+     * @param {Element} elem
+     * @returns {void}
+     */
     start (elem) {
       curtext = elem
       svgCanvas.textActions.toEditMode()
     },
     /**
-* @param {external:MouseEvent} evt
-* @param {Element} mouseTarget
-* @param {Float} startX
-* @param {Float} startY
-* @returns {void}
-*/
+     * @param {external:MouseEvent} evt
+     * @param {Element} mouseTarget
+     * @param {Float} startX
+     * @param {Float} startY
+     * @returns {void}
+     */
     mouseDown (evt, mouseTarget, startX, startY) {
       const pt = screenToPt(startX, startY)
 
@@ -332,20 +356,20 @@ export const textActionsMethod = (function () {
       // TODO: Find way to block native selection
     },
     /**
-* @param {Float} mouseX
-* @param {Float} mouseY
-* @returns {void}
-*/
+     * @param {Float} mouseX
+     * @param {Float} mouseY
+     * @returns {void}
+     */
     mouseMove (mouseX, mouseY) {
       const pt = screenToPt(mouseX, mouseY)
       setEndSelectionFromPoint(pt.x, pt.y)
     },
     /**
-* @param {external:MouseEvent} evt
-* @param {Float} mouseX
-* @param {Float} mouseY
-* @returns {void}
-*/
+     * @param {external:MouseEvent} evt
+     * @param {Float} mouseX
+     * @param {Float} mouseY
+     * @returns {void}
+     */
     mouseUp (evt, mouseX, mouseY) {
       const pt = screenToPt(mouseX, mouseY)
 
@@ -359,25 +383,25 @@ export const textActionsMethod = (function () {
 
       if (
         evt.target !== curtext &&
-  mouseX < lastX + 2 &&
-  mouseX > lastX - 2 &&
-  mouseY < lastY + 2 &&
-  mouseY > lastY - 2
+        mouseX < lastX + 2 &&
+        mouseX > lastX - 2 &&
+        mouseY < lastY + 2 &&
+        mouseY > lastY - 2
       ) {
         svgCanvas.textActions.toSelectMode(true)
       }
     },
     /**
-* @function
-* @param {Integer} index
-* @returns {void}
-*/
+     * @function
+     * @param {Integer} index
+     * @returns {void}
+     */
     setCursor,
     /**
-* @param {Float} x
-* @param {Float} y
-* @returns {void}
-*/
+     * @param {Float} x
+     * @param {Float} y
+     * @returns {void}
+     */
     toEditMode (x, y) {
       allowDbl = false
       svgCanvas.setCurrentMode('textedit')
@@ -407,16 +431,20 @@ export const textActionsMethod = (function () {
       }, 300)
     },
     /**
-* @param {boolean|Element} selectElem
-* @fires module:svgcanvas.SvgCanvas#event:selected
-* @returns {void}
-*/
+     * @param {boolean|Element} selectElem
+     * @fires module:svgcanvas.SvgCanvas#event:selected
+     * @returns {void}
+     */
     toSelectMode (selectElem) {
       svgCanvas.setCurrentMode('select')
       clearInterval(blinker)
       blinker = null
-      if (selblock) { selblock.setAttribute('display', 'none') }
-      if (cursor) { cursor.setAttribute('visibility', 'hidden') }
+      if (selblock) {
+        selblock.setAttribute('display', 'none')
+      }
+      if (cursor) {
+        cursor.setAttribute('visibility', 'hidden')
+      }
       curtext.style.cursor = 'move'
 
       if (selectElem) {
@@ -440,27 +468,30 @@ export const textActionsMethod = (function () {
       // }
     },
     /**
-* @param {Element} elem
-* @returns {void}
-*/
+     * @param {Element} elem
+     * @returns {void}
+     */
     setInputElem (elem) {
       textinput = elem
     },
     /**
-* @returns {void}
-*/
+     * @returns {void}
+     */
     clear () {
       if (svgCanvas.getCurrentMode() === 'textedit') {
         svgCanvas.textActions.toSelectMode()
       }
     },
     /**
-* @param {Element} _inputElem Not in use
-* @returns {void}
-*/
+     * @param {Element} _inputElem Not in use
+     * @returns {void}
+     */
     init (_inputElem) {
-      if (!curtext) { return }
-      let i; let end
+      if (!curtext) {
+        return
+      }
+      let i
+      let end
       // if (supportsEditableText()) {
       //   curtext.select();
       //   return;
@@ -490,7 +521,7 @@ export const textActionsMethod = (function () {
       curtext.addEventListener('dblclick', selectWord)
 
       if (!len) {
-        end = { x: textbb.x + (textbb.width / 2), width: 0 }
+        end = { x: textbb.x + textbb.width / 2, width: 0 }
       }
 
       for (i = 0; i < len; i++) {
@@ -527,4 +558,4 @@ export const textActionsMethod = (function () {
       setSelection(textinput.selectionStart, textinput.selectionEnd, true)
     }
   }
-}())
+})()
