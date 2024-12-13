@@ -85,7 +85,7 @@ export default {
       canvasName
     } = svgEditor.configObj.curConfig
 
-    // LOAD STORAGE CONTENT IF ANY
+    /*// LOAD STORAGE CONTENT IF ANY
     if (
       storage && // Cookies do not have enough available memory to hold large documents
       (forceStorage ||
@@ -93,14 +93,14 @@ export default {
           /(?:^|;\s*)svgeditstore=prefsAndContent/.test(document.cookie)))
     ) {
       const key = 'svgedit-' + canvasName
-      const cached = storage.getItem(key)
+      const cached = await svgEditor.svgCanvas.runExtensions('decryptData', {data: storage.getItem(key)})
       if (cached) {
         svgEditor.loadFromString(cached)
         const name = storage.getItem(`title-${key}`) ?? 'untitled.svg'
         svgEditor.topPanel.updateTitle(name)
         svgEditor.layersPanel.populateLayers()
       }
-    }
+    }*/
 
     // storageDialog added to DOM
     const storageBox = document.createElement('se-storage-dialog')
@@ -159,12 +159,13 @@ export default {
      * @param {string} svgString
      * @returns {void}
      */
-    const setSvgContentStorage = svgString => {
+    const setSvgContentStorage = async svgString => {
       const name = `svgedit-${svgEditor.configObj.curConfig.canvasName}`
       if (!svgString) {
         storage.removeItem(name)
         storage.removeItem(`${name}-title`)
       } else {
+        svgString = await runExtensions('encryptDataVal', {editor: svgEditor, svgString: svgString})
         storage.setItem(name, svgString)
         storage.setItem(`title-${name}`, svgEditor.title)
       }
@@ -222,6 +223,23 @@ export default {
     let loaded = false
     return {
       name: 'storage',
+      async readStorage(){
+        if (
+          storage && // Cookies do not have enough available memory to hold large documents
+          (forceStorage ||
+            (!noStorageOnLoad &&
+              /(?:^|;\s*)svgeditstore=prefsAndContent/.test(document.cookie)))
+        ) {
+          const key = 'svgedit-' + canvasName
+          const cached = storage.getItem(key) ? await svgEditor.svgCanvas.runExtensions('decryptData', storage.getItem(key)): null 
+          if (cached) {
+            svgEditor.loadFromString(cached)
+            const name = storage.getItem(`title-${key}`) ?? 'untitled.svg'
+            svgEditor.topPanel.updateTitle(name)
+            svgEditor.layersPanel.populateLayers()
+          }
+        }
+      },
       callback () {
         const storagePrompt = new URL(top.location).searchParams.get(
           'storagePrompt'
@@ -264,6 +282,13 @@ export default {
         } else if (!noStorageOnLoad || forceStorage) {
           setupBeforeUnloadListener()
         }
+
+        window.addEventListener('storage', evt=>{
+          if (evt.key == 'svgedit-default' && svgEditor.password!==null){
+            svgCanvas.runExtensions('readStorage')
+          }
+        })
+
       }
     }
   }

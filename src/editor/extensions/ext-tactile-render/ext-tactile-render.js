@@ -18,6 +18,7 @@ var layerSelected = "None"
 var graphicTitle = ""
 var graphicId = ""
 var secretKey = ""
+var graphic = ""
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule
@@ -29,6 +30,64 @@ const loadExtensionTranslation = async function (svgEditor) {
     translationModule = await import('../ext-tactile-render/locale/en.js')
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
+}
+
+const encryptData = async function (svgEditor, svgString) {
+  const password = svgEditor.password
+
+    // Convert text and password to Uint8Array
+    const encoder = new TextEncoder();
+    const data = encoder.encode(svgString);
+    const passwordBuffer = encoder.encode(password);
+
+    const Uint8ToString = function (u8a){
+      var CHUNK_SZ = 0x8000;
+      var c = [];
+      for (var i=0; i < u8a.length; i+=CHUNK_SZ) {
+        c.push(String.fromCharCode.apply(null, u8a.subarray(i, i+CHUNK_SZ)));
+      }
+      return c.join("");
+    }
+    // Derive a cryptographic key from the password using PBKDF2
+    const salt = crypto.getRandomValues(new Uint8Array(16)); // Use a salt for key derivation
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      passwordBuffer,
+      { name: "PBKDF2" },
+      false,
+      ["deriveKey"]
+    );
+
+    const aesKey = await crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: salt,
+        iterations: 100000,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      { name: "AES-CBC", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+
+    // Generate a random IV for encryption
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+
+    // Encrypt the data
+    const encryptedData = await crypto.subtle.encrypt(
+      { name: "AES-CBC", iv },
+      aesKey,
+      data
+    );
+
+    const encrypted = new Uint8Array(encryptedData)
+    const concatenatedArray = new Uint8Array(salt.length + iv.length + encrypted.length);
+    concatenatedArray.set(salt, 0);
+    concatenatedArray.set(iv, salt.length);
+    concatenatedArray.set(encrypted, (salt.length+ iv.length))
+    svgString = window.btoa(Uint8ToString(concatenatedArray));
+    return svgString
 }
 
 /**
@@ -173,7 +232,7 @@ connectedCallback () {
     }
     svgString = new XMLSerializer().serializeToString(svgDoc)
     
-    const password = "somepassword";
+    /*const password = svgEditor.password
 
     // Convert text and password to Uint8Array
     const encoder = new TextEncoder();
@@ -229,7 +288,8 @@ connectedCallback () {
     concatenatedArray.set(iv, salt.length);
     concatenatedArray.set(encrypted, (salt.length+ iv.length))
     svgString = window.btoa(Uint8ToString(concatenatedArray));
-    
+    */
+    svgString = await encryptData(svgEditor, svgString)
 
     if (graphicId == ""){
       xhr.open("POST", "https://monarch.unicorn.cim.mcgill.ca/create");
@@ -256,28 +316,19 @@ connectedCallback () {
         $id('se-prompt-dialog').setAttribute('close', false)
       }
     }};
-    if (graphicId != ""){
-      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+svgString,//+window.btoa(svgString), 
-        "secret": secretKey,
+    var resp = {data: svgString,//"data:image/svg+xml;base64,"+svgString,//+window.btoa(svgString), 
         "layer": layerSelected,
-        "title": title
-      }));
-    } else {
-      xhr.send(JSON.stringify({"data": "data:image/svg+xml;base64,"+svgString,//+window.btoa(svgString), 
-        "layer": layerSelected,
-        "title": title
-      }));
+        "title": graphicTitle}
+    if (graphic != ""){
+      resp.graphicBlob = graphic
     }
+    if (graphicId != ""){
+      resp.secret = secretKey
+    }
+    xhr.send(JSON.stringify(resp));
     }
 
-    function Uint8ToString(u8a){
-      var CHUNK_SZ = 0x8000;
-      var c = [];
-      for (var i=0; i < u8a.length; i+=CHUNK_SZ) {
-        c.push(String.fromCharCode.apply(null, u8a.subarray(i, i+CHUNK_SZ)));
-      }
-      return c.join("");
-    }
+    
 
     const onImportHandler = async function () {
       try {
@@ -341,15 +392,23 @@ export default {
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     // const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const { $id, $click } = svgCanvas
-    let info = JSON.parse(storage.getItem('tat-storage-data'))
-    if (info){
-      graphicId = info.channelId ? info.channelId  : ""
-      graphicTitle = info.graphicTitle ? info.graphicTitle : ""
-      secretKey = info.secretKey ? info.secretKey : ""
-    }
+    
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
+      async readStorage(){
+        let info = JSON.parse(storage.getItem('tat-storage-data'))
+        if (info){
+          graphicId = info.channelId ? await svgEditor.svgCanvas.runExtensions('decryptData', info.channelId)  : ""
+          graphicTitle = info.graphicTitle ? await svgEditor.svgCanvas.runExtensions('decryptData', info.graphicTitle)  : ""
+          secretKey = info.secretKey ? await svgEditor.svgCanvas.runExtensions('decryptData', info.secretKey) : ""
+          graphic = info.graphicBlob ? info.graphicBlob : ""
+        }
+      },
+      async encryptDataVal(data){
+        svgString = await encryptData(data.editor, data.svgString)
+        return svgString
+      },
       callback () {
         // Add the button and its handler(s)
         const title = `${name}:buttons.0.title`
@@ -389,12 +448,13 @@ export default {
               select.appendChild(opt);
             }
         })
-        window.addEventListener('storage', (evt)=>{
+        window.addEventListener('storage', async (evt)=>{
           if (evt.key == 'tat-storage-data'){
             let info = JSON.parse(evt.newValue)
-            graphicId = info.channelId ? info.channelId  : ""
-            graphicTitle = info.graphicTitle ? info.graphicTitle : ""
-            secretKey = info.secretKey ? info.secretKey : ""
+            graphicId = info.channelId ? await svgEditor.svgCanvas.runExtensions('decryptData', info.channelId)  : ""
+            graphicTitle = info.graphicTitle ? await svgEditor.svgCanvas.runExtensions('decryptData', info.graphicTitle)  : ""
+            secretKey = info.secretKey ? await svgEditor.svgCanvas.runExtensions('decryptData', info.secretKey): ""
+            graphic = info.graphicBlob ? info.graphicBlob : ""
           }})
       }
     }

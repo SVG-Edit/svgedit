@@ -177,6 +177,7 @@ export default class ConfigObj {
     this.defaultExtensions = [
       'ext-connector',
       'ext-eyedropper',
+      'ext-decrypt',
       'ext-tactile-render',
       'ext-tactile',
       'ext-guidance',

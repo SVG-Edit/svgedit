@@ -321,6 +321,9 @@ class Editor extends EditorStartup {
     this.layersPanel = new LayersPanel(this)
     this.mainMenu = new MainMenu(this)
 
+    // Add empty password
+    this.password = null
+
     // Add empty ID and secret key
     // this.graphicId = ""// Math.random().toString().replace('9', '').substring(2, 8)
     // this.secretKey = "" // crypto.randomUUID()
