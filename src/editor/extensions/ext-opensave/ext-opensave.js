@@ -268,6 +268,7 @@ export default {
         $click($id('tool_save_as'), clickSave.bind(this, 'saveas'))
         // tool_import pressed with shiftKey will not scale the SVG
         $click($id('tool_import'), (ev) => { imgImport.shiftKey = ev.shiftKey; imgImport.click() })
+        
       }
     }
   }
