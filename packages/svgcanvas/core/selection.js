@@ -427,7 +427,7 @@ const setRotationAngle = (val, preventUndo) => {
     // new transform is something like: 'rotate(5 1.39625e-8 -11)'
     // we round the x so it becomes 'rotate(5 0 -11)'
     if (newTransform) {
-      const newTransformArray = newTransform.split(' ')
+      const newTransformArray = newTransform.split(/[ ,]+/)
       const round = (num) => Math.round(Number(num) + Number.EPSILON)
       const x = round(newTransformArray[1])
       newTransform = `${newTransformArray[0]} ${x} ${newTransformArray[2]}`

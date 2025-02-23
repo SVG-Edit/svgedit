@@ -982,7 +982,7 @@ const convertToGroup = elem => {
     const vb = elem.getAttribute('viewBox')
 
     if (vb) {
-      const nums = vb.split(' ')
+      const nums = vb.split(/[ ,]+/)
       pos.x -= Number(nums[0])
       pos.y -= Number(nums[1])
     }

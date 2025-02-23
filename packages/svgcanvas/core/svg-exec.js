@@ -522,7 +522,7 @@ const setSvgString = (xmlString, preventUndo) => {
     // determine proper size
     if (content.getAttribute('viewBox')) {
       const viBox = content.getAttribute('viewBox')
-      const vb = viBox.split(' ')
+      const vb = viBox.split(/[ ,]+/)
       attrs.width = vb[2]
       attrs.height = vb[3]
       // handle content that doesn't have a viewBox
@@ -657,7 +657,7 @@ const importSvgString = (xmlString, preserveDimension) => {
       const innerh = convertToNum('height', svg.getAttribute('height'))
       const innervb = svg.getAttribute('viewBox')
       // if no explicit viewbox, create one out of the width and height
-      const vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh]
+      const vb = innervb ? innervb.split(/[ ,]+/) : [0, 0, innerw, innerh]
       for (j = 0; j < 4; ++j) {
         vb[j] = Number(vb[j])
       }
