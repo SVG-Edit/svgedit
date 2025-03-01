@@ -99,7 +99,7 @@ template.innerHTML = `
       <div id="arrow-down">▼</div>
     </div>
     <div id="down">
-      <img width="16" height="8" src="arrow_down.svg"/>
+      <img width="16" height="8" src="arrow_down.svg" alt="Zoom dropdown"/>
     </div>
   </div>
   <div id="options-container" style="display:none">

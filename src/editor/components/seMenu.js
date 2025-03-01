@@ -70,6 +70,7 @@ export class SeMenu extends HTMLElement {
         image.src = this.imgPath + '/' + newValue
         image.width = 24
         image.height = 24
+        image.alt="logo";
         this.$label.prepend(image)
         break
       case 'label':
