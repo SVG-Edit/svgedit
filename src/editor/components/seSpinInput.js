@@ -61,12 +61,12 @@ export class SESpinInput extends HTMLElement {
   constructor () {
     super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot = this.attachShadow({ mode: 'closed' })
     this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
     this.$div = this._shadowRoot.querySelector('div')
     this.$img = this._shadowRoot.querySelector('img')
-    this.$label = this.shadowRoot.getElementById('label')
+    this.$label = this._shadowRoot.getElementById('label')
     this.$event = new CustomEvent('change')
     this.$input = this._shadowRoot.querySelector('elix-number-spin-box')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
