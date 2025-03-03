@@ -763,6 +763,39 @@ export class SeColorPicker extends HTMLElement {
   }
 
   /**
+   * @function setJGraduateMethod
+   * @returns {void}
+   */
+  setJGraduateMethod() {
+    let { paint } = this.paintBox
+
+    jGraduateMethod(
+      this.$color_picker,
+      {
+        images: { clientPath: './components/jgraduate/images/' },
+        paint,
+        window: { pickerTitle: this.label },
+        newstop: 'inverse'
+      },
+      (p) => {
+        paint = new jGraduate.Paint(p)
+        this.setPaint(paint)
+        const changeEvent = new CustomEvent('change', {
+          detail: {
+            paint
+          }
+        })
+        this.dispatchEvent(changeEvent)
+        this.$color_picker.style.display = 'none'
+      },
+      () => {
+        this.$color_picker.style.display = 'none'
+      },
+      this.i18next
+    )
+  }
+
+  /**
    * @param {PlainObject} svgCanvas
    * @param {PlainObject} selectedElement
    * @param {bool} apply
@@ -770,7 +803,14 @@ export class SeColorPicker extends HTMLElement {
    */
   update (svgCanvas, selectedElement, apply) {
     const paint = this.paintBox.update(svgCanvas, selectedElement)
+    
+    // We check if the color picker popup is already open
+    if (this.$color_picker.style.display === 'block') {
+      this.setJGraduateMethod();
+    }
+    
     if (paint && apply) {
+      this.setPaint(paint);
       const changeEvent = new CustomEvent('change', {
         detail: {
           paint
@@ -795,31 +835,7 @@ export class SeColorPicker extends HTMLElement {
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type)
     svgEditor.$click(this.$picker, () => {
-      let { paint } = this.paintBox
-      jGraduateMethod(
-        this.$color_picker,
-        {
-          images: { clientPath: './components/jgraduate/images/' },
-          paint,
-          window: { pickerTitle: this.label },
-          newstop: 'inverse'
-        },
-        (p) => {
-          paint = new jGraduate.Paint(p)
-          this.setPaint(paint)
-          const changeEvent = new CustomEvent('change', {
-            detail: {
-              paint
-            }
-          })
-          this.dispatchEvent(changeEvent)
-          this.$color_picker.style.display = 'none'
-        },
-        () => {
-          this.$color_picker.style.display = 'none'
-        },
-        this.i18next
-      )
+      this.setJGraduateMethod();
     })
   }
 }
