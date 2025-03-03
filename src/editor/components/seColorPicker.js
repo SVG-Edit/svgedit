@@ -780,7 +780,6 @@ export class SeColorPicker extends HTMLElement {
     });
   }
 
-  // Then refactor setJGraduateMethod to an async function:
   async setJGraduateMethod() {
     try {
       const p = await this.jGraduateMethodAsync();
@@ -805,6 +804,7 @@ export class SeColorPicker extends HTMLElement {
 
     // We check if the color picker popup is already open
     if (this.$color_picker.style.display === 'block') {
+      // We recreate the color picker popup with the current color of the selected elements
       this.setJGraduateMethod()
     }
 
