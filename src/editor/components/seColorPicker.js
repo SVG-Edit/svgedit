@@ -766,7 +766,7 @@ export class SeColorPicker extends HTMLElement {
    * @function setJGraduateMethod
    * @returns {void}
    */
-  setJGraduateMethod() {
+  setJGraduateMethod () {
     let { paint } = this.paintBox
 
     jGraduateMethod(
@@ -803,14 +803,14 @@ export class SeColorPicker extends HTMLElement {
    */
   update (svgCanvas, selectedElement, apply) {
     const paint = this.paintBox.update(svgCanvas, selectedElement)
-    
+
     // We check if the color picker popup is already open
     if (this.$color_picker.style.display === 'block') {
-      this.setJGraduateMethod();
+      this.setJGraduateMethod()
     }
-    
+
     if (paint && apply) {
-      this.setPaint(paint);
+      this.setPaint(paint)
       const changeEvent = new CustomEvent('change', {
         detail: {
           paint
@@ -835,7 +835,7 @@ export class SeColorPicker extends HTMLElement {
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type)
     svgEditor.$click(this.$picker, () => {
-      this.setJGraduateMethod();
+      this.setJGraduateMethod()
     })
   }
 }
