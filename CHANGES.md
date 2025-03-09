@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## 7.3.5
+- update dependencies
+- minor fixes
+
 ## 7.3.4
 - update dependencies
 - package @rollup/rollup-linux-x64-gnu was added for a bug in the CI
