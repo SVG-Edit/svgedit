@@ -61,7 +61,7 @@ export class SESpinInput extends HTMLElement {
   constructor () {
     super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'closed' })
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
     this.$div = this._shadowRoot.querySelector('div')
