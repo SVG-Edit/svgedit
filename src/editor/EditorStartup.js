@@ -39,7 +39,7 @@ const readySignal = () => {
   }
 }
 
-const { $id, $qq, $click, convertUnit } = SvgCanvas
+const { $id, $click, convertUnit } = SvgCanvas
 
 /**
  *
