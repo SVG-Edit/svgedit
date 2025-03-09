@@ -763,7 +763,7 @@ export class SeColorPicker extends HTMLElement {
   }
 
   // Wrap jGraduateMethod in a Promise
-  jGraduateMethodAsync() {
+  jGraduateMethodAsync () {
     return new Promise((resolve, reject) => {
       jGraduateMethod(
         this.$color_picker,
@@ -777,19 +777,19 @@ export class SeColorPicker extends HTMLElement {
         () => reject(new Error('jGraduate cancelled')),
         this.i18next
       )
-    });
+    })
   }
 
-  async setJGraduateMethod() {
+  async setJGraduateMethod () {
     try {
-      const p = await this.jGraduateMethodAsync();
-      const paint = new jGraduate.Paint(p);
-      this.setPaint(paint);
-      this.dispatchEvent(new CustomEvent('change', { detail: { paint } }));
+      const p = await this.jGraduateMethodAsync()
+      const paint = new jGraduate.Paint(p)
+      this.setPaint(paint)
+      this.dispatchEvent(new CustomEvent('change', { detail: { paint } }))
     } catch (err) {
       // Handle rejection if needed
     } finally {
-      this.$color_picker.style.display = 'none';
+      this.$color_picker.style.display = 'none'
     }
   }
 
