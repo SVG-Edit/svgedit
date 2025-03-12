@@ -1327,6 +1327,16 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const all = color.active.val('all')
     if (win.alphaPrecision < 0) win.alphaPrecision = 0
     else if (win.alphaPrecision > 2) win.alphaPrecision = 2
+    
+    // Check if table with id 'fill_color' OR 'stroke_color' already exists, then remove it to avoid duplicate
+    const tableIds = ["fill_color", "stroke_color"]
+    tableIds.forEach((id) => {
+      const currTable = document.querySelector("se-colorpicker#" + id).shadowRoot.querySelector("table")
+      console.log(currTable)
+      if (currTable)
+        currTable.remove()
+    })
+    
     const controlHtml = `<table class="jPicker" id="jPicker-table" cellpadding="0" cellspacing="0">
       <tbody>
         ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
