@@ -1332,7 +1332,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const tableIds = ["fill_color", "stroke_color"]
     tableIds.forEach((id) => {
       const currTable = document.querySelector("se-colorpicker#" + id).shadowRoot.querySelector("table")
-      console.log(currTable)
       if (currTable)
         currTable.remove()
     })
