@@ -59,33 +59,32 @@ class BottomPanel {
         this.editor.zoomChanged(window, value)
         break
       default: {
-        const zoomlevel = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
+        const newZoom = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
         const zoom = this.editor.svgCanvas.getZoom()
-        const { workarea } = this.editor
-        this.editor.zoomChanged(
-          window,
-          {
-            width: 0,
-            height: 0,
-            // center pt of scroll position
-            x:
-              (workarea.scrollLeft +
-                parseFloat(
-                  getComputedStyle(workarea, null).width.replace('px', '')
-                ) /
-                  2) /
-              zoom,
-            y:
-              (workarea.scrollTop +
-                parseFloat(
-                  getComputedStyle(workarea, null).height.replace('px', '')
-                ) /
-                  2) /
-              zoom,
-            zoom: zoomlevel
-          },
-          true
-        )
+        if (this.editor.svgCanvas.getMode() === 'pathedit') {
+          // In pathedit mode, use zoomImage to update path points correctly.
+          this.editor.zoomImage(newZoom / zoom)
+        } else {
+          const { workarea } = this.editor
+          // Compute center based on workarea dimensions
+          this.editor.zoomChanged(
+            window,
+            {
+              width: 0,
+              height: 0,
+              x:
+                (workarea.scrollLeft +
+                  parseFloat(getComputedStyle(workarea).width.replace('px', '')) / 2) /
+                zoom,
+              y:
+                (workarea.scrollTop +
+                  parseFloat(getComputedStyle(workarea).height.replace('px', '')) / 2) /
+                zoom,
+              zoom: newZoom
+            },
+            true
+          )
+        }
       }
     }
   }
