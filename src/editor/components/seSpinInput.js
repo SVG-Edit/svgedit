@@ -66,7 +66,7 @@ export class SESpinInput extends HTMLElement {
     // locate the component
     this.$div = this._shadowRoot.querySelector('div')
     this.$img = this._shadowRoot.querySelector('img')
-    this.$label = this.shadowRoot.getElementById('label')
+    this.$label = this._shadowRoot.getElementById('label')
     this.$event = new CustomEvent('change')
     this.$input = this._shadowRoot.querySelector('elix-number-spin-box')
     this.imgPath = svgEditor.configObj.curConfig.imgPath
