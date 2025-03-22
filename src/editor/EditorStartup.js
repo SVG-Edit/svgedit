@@ -39,7 +39,7 @@ const readySignal = () => {
   }
 }
 
-const { $id, $qq, $click, convertUnit } = SvgCanvas
+const { $id, $click, convertUnit } = SvgCanvas
 
 /**
  *
@@ -73,7 +73,7 @@ class EditorStartup {
       const template = document.createElement('template')
       template.innerHTML = editorTemplate
       this.$container.append(template.content.cloneNode(true))
-      this.$svgEditor = $qq('.svg_editor')
+      this.$svgEditor = this.$container.querySelector('.svg_editor')
       // allow to prepare the dom without display
       this.$svgEditor.style.visibility = 'hidden'
       this.workarea = $id('workarea')

@@ -59,33 +59,27 @@ class BottomPanel {
         this.editor.zoomChanged(window, value)
         break
       default: {
-        const zoomlevel = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
+        const newZoom = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
         const zoom = this.editor.svgCanvas.getZoom()
-        const { workarea } = this.editor
-        this.editor.zoomChanged(
-          window,
-          {
-            width: 0,
-            height: 0,
-            // center pt of scroll position
-            x:
-              (workarea.scrollLeft +
-                parseFloat(
-                  getComputedStyle(workarea, null).width.replace('px', '')
-                ) /
-                  2) /
-              zoom,
-            y:
-              (workarea.scrollTop +
-                parseFloat(
-                  getComputedStyle(workarea, null).height.replace('px', '')
-                ) /
-                  2) /
-              zoom,
-            zoom: zoomlevel
-          },
-          true
-        )
+        if (this.editor.svgCanvas.getMode() === 'pathedit') {
+          // In pathedit mode, use zoomImage to update path points correctly.
+          this.editor.zoomImage(newZoom / zoom)
+        } else {
+          const { workarea } = this.editor
+          // Use helper function to compute center only once.
+          const center = getWorkareaCenter(workarea, zoom)
+          this.editor.zoomChanged(
+            window,
+            {
+              width: 0,
+              height: 0,
+              x: center.x,
+              y: center.y,
+              zoom: newZoom
+            },
+            true
+          )
+        }
       }
     }
   }
@@ -106,7 +100,7 @@ class BottomPanel {
     ]
 
     if (bNoStroke) {
-      buttonsNeedingStroke.forEach((btn) => {
+      buttonsNeedingStroke.forEach(btn => {
         // if btn is pressed, change to select button
         if ($id(btn).pressed) {
           this.editor.leftPanel.clickSelect()
@@ -114,12 +108,12 @@ class BottomPanel {
         $id(btn).disabled = true
       })
     } else {
-      buttonsNeedingStroke.forEach((btn) => {
+      buttonsNeedingStroke.forEach(btn => {
         $id(btn).disabled = false
       })
     }
     if (bNoStroke && bNoFill) {
-      buttonsNeedingFillAndStroke.forEach((btn) => {
+      buttonsNeedingFillAndStroke.forEach(btn => {
         // if btn is pressed, change to select button
         if ($id(btn).pressed) {
           this.editor.leftPanel.clickSelect()
@@ -127,7 +121,7 @@ class BottomPanel {
         $id(btn).disabled = true
       })
     } else {
-      buttonsNeedingFillAndStroke.forEach((btn) => {
+      buttonsNeedingFillAndStroke.forEach(btn => {
         $id(btn).disabled = false
       })
     }
@@ -213,26 +207,26 @@ class BottomPanel {
         solidColor: curConfig.initStroke.color
       })
     )
-    $id('zoom').addEventListener('change', (e) =>
+    $id('zoom').addEventListener('change', e =>
       this.changeZoom.bind(this)(e.detail.value)
     )
-    $id('stroke_color').addEventListener('change', (evt) =>
+    $id('stroke_color').addEventListener('change', evt =>
       this.handleColorPicker.bind(this)('stroke', evt)
     )
-    $id('fill_color').addEventListener('change', (evt) =>
+    $id('fill_color').addEventListener('change', evt =>
       this.handleColorPicker.bind(this)('fill', evt)
     )
     $id('stroke_width').addEventListener(
       'change',
       this.changeStrokeWidth.bind(this)
     )
-    $id('stroke_style').addEventListener('change', (evt) =>
+    $id('stroke_style').addEventListener('change', evt =>
       this.handleStrokeAttr.bind(this)('stroke-dasharray', evt)
     )
-    $id('stroke_linejoin').addEventListener('change', (evt) =>
+    $id('stroke_linejoin').addEventListener('change', evt =>
       this.handleStrokeAttr.bind(this)('stroke-linejoin', evt)
     )
-    $id('stroke_linecap').addEventListener('change', (evt) =>
+    $id('stroke_linecap').addEventListener('change', evt =>
       this.handleStrokeAttr.bind(this)('stroke-linecap', evt)
     )
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this))
@@ -254,6 +248,16 @@ class BottomPanel {
       this.editor.selectedElement,
       apply
     )
+  }
+}
+
+// Helper function to get the center of the workarea
+const getWorkareaCenter = (workarea, zoom) => {
+  const width = parseFloat(getComputedStyle(workarea).width.replace('px', ''))
+  const height = parseFloat(getComputedStyle(workarea).height.replace('px', ''))
+  return {
+    x: (workarea.scrollLeft + width / 2) / zoom,
+    y: (workarea.scrollTop + height / 2) / zoom
   }
 }
 

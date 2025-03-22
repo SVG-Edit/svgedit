@@ -570,6 +570,7 @@ const mouseOutEvent = () => {
 * @returns {void}
 */
 const mouseUpEvent = (evt) => {
+  evt.preventDefault()
   moveSelectionThresholdReached = false
   if (evt.button === 2) { return }
   if (!svgCanvas.getStarted()) { return }
