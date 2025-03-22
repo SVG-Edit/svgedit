@@ -53,11 +53,11 @@ export const getUndoManager = () => {
         const isApply = (eventType === EventTypes.AFTER_APPLY)
         if (cmdType === 'MoveElementCommand') {
           const parent = isApply ? cmd.newParent : cmd.oldParent
-          if (parent === svgCanvas.getSvgContent()) {
+          if (parent === svgCanvas.svgContent) {
             draw.identifyLayers()
           }
         } else if (cmdType === 'InsertElementCommand' || cmdType === 'RemoveElementCommand') {
-          if (cmd.parent === svgCanvas.getSvgContent()) {
+          if (cmd.parent === svgCanvas.svgContent) {
             draw.identifyLayers()
           }
           if (cmdType === 'InsertElementCommand') {
@@ -73,7 +73,7 @@ export const getUndoManager = () => {
         } else if (cmdType === 'ChangeElementCommand') {
           // if we are changing layer names, re-identify all layers
           if (cmd.elem.tagName === 'title' &&
-            cmd.elem.parentNode.parentNode === svgCanvas.getSvgContent()
+            cmd.elem.parentNode.parentNode === svgCanvas.svgContent
           ) {
             draw.identifyLayers()
           }
@@ -122,7 +122,7 @@ export const ffClone = function (elem) {
   elem.before(clone)
   elem.remove()
   svgCanvas.selectorManager.releaseSelector(elem)
-  svgCanvas.setSelectedElements(0, clone)
+  svgCanvas.selectedElements[0] = clone
   svgCanvas.selectorManager.requestSelector(clone).showGrips(true)
   return clone
 }
@@ -150,9 +150,9 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
     }
     return
   }
-  const selectedElements = svgCanvas.getSelectedElements()
-  const zoom = svgCanvas.getZoom()
-  if (svgCanvas.getCurrentMode() === 'pathedit') {
+  const selectedElements = svgCanvas.selectedElements
+  const zoom = svgCanvas.zoom
+  if (svgCanvas.currentMode === 'pathedit') {
     // Editing node
     svgCanvas.pathActions.moveNode(attr, newValue)
   }
@@ -200,7 +200,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       // NOTE: Important that this happens AFTER elem.setAttribute() or else attributes like
       // font-size can get reset to their old value, ultimately by svgEditor.updateContextPanel(),
       // after calling textActions.toSelectMode() below
-      if (svgCanvas.getCurrentMode() === 'textedit' && attr !== '#text' && elem.textContent.length) {
+      if (svgCanvas.currentMode === 'textedit' && attr !== '#text' && elem.textContent.length) {
         svgCanvas.textActions.toSelectMode(elem)
       }
 
@@ -242,7 +242,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
             )
             const cx = center.x
             const cy = center.y
-            const newrot = svgCanvas.getSvgRoot().createSVGTransform()
+            const newrot = svgCanvas.svgRoot.createSVGTransform()
             newrot.setRotate(angle, cx, cy)
             tlist.insertItemBefore(newrot, n)
             break
@@ -265,7 +265,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
 * @returns {void}
 */
 export const changeSelectedAttributeMethod = function (attr, val, elems) {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   elems = elems || selectedElements
   svgCanvas.undoMgr.beginUndoableChange(attr, elems)
 

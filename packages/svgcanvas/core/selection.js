@@ -6,10 +6,7 @@
  */
 
 import { NS } from './namespaces.js'
-import {
-  getBBox,
-  getStrokedBBoxDefaultVisible
-} from './utilities.js'
+import { getBBox, getStrokedBBoxDefaultVisible } from './utilities.js'
 import {
   transformPoint,
   transformListToTransform,
@@ -27,7 +24,7 @@ let svgCanvas = null
  * @param {module:selection.selectionContext} selectionContext
  * @returns {void}
  */
-export const init = (canvas) => {
+export const init = canvas => {
   svgCanvas = canvas
   svgCanvas.getMouseTarget = getMouseTargetMethod
   svgCanvas.clearSelection = clearSelectionMethod
@@ -47,19 +44,19 @@ export const init = (canvas) => {
  * @type {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
  * @fires module:selection.SvgCanvas#event:selected
  */
-const clearSelectionMethod = (noCall) => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  selectedElements.forEach((elem) => {
+const clearSelectionMethod = noCall => {
+  const selectedElements = svgCanvas.selectedElements
+  selectedElements.forEach(elem => {
     if (!elem) {
       return
     }
 
     svgCanvas.selectorManager.releaseSelector(elem)
   })
-  svgCanvas?.setEmptySelectedElements()
+  svgCanvas.selectedElements = []
 
   if (!noCall) {
-    svgCanvas.call('selected', svgCanvas.getSelectedElements())
+    svgCanvas.call('selected', svgCanvas.selectedElements)
   }
 }
 
@@ -70,7 +67,7 @@ const clearSelectionMethod = (noCall) => {
  * @fires module:selection.SvgCanvas#event:selected
  */
 const addToSelectionMethod = (elemsToAdd, showGrips) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   if (!elemsToAdd.length) {
     return
   }
@@ -144,7 +141,7 @@ const addToSelectionMethod = (elemsToAdd, showGrips) => {
  * @name module:svgcanvas.SvgCanvas#getMouseTarget
  * @type {module:path.EditorContext#getMouseTarget}
  */
-const getMouseTargetMethod = (evt) => {
+const getMouseTargetMethod = evt => {
   if (!evt) {
     return null
   }
@@ -164,7 +161,7 @@ const getMouseTargetMethod = (evt) => {
     while (mouseTarget.nodeName !== 'foreignObject') {
       mouseTarget = mouseTarget.parentNode
       if (!mouseTarget) {
-        return svgCanvas.getSvgRoot()
+        return svgCanvas.svgRoot
       }
     }
   }
@@ -172,11 +169,11 @@ const getMouseTargetMethod = (evt) => {
   // Get the desired mouseTarget with jQuery selector-fu
   // If it's root-like, select the root
   const currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer()
-  const svgRoot = svgCanvas.getSvgRoot()
-  const container = svgCanvas.getDOMContainer()
-  const content = svgCanvas.getSvgContent()
+  const svgRoot = svgCanvas.svgRoot
+  const container = svgCanvas.container
+  const content = svgCanvas.svgContent
   if ([svgRoot, container, content, currentLayer].includes(mouseTarget)) {
-    return svgCanvas.getSvgRoot()
+    return svgCanvas.svgRoot
   }
 
   // If it's a selection grip, return the grip parent
@@ -187,9 +184,7 @@ const getMouseTargetMethod = (evt) => {
   }
 
   while (
-    !mouseTarget?.parentNode?.isSameNode(
-      svgCanvas.getCurrentGroup() || currentLayer
-    )
+    !mouseTarget?.parentNode?.isSameNode(svgCanvas.currentGroup || currentLayer)
   ) {
     mouseTarget = mouseTarget.parentNode
   }
@@ -221,13 +216,9 @@ const getMouseTargetMethod = (evt) => {
  * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
  */
 /* eslint-enable max-len */
-const runExtensionsMethod = (
-  action,
-  vars,
-  returnArray
-) => {
+const runExtensionsMethod = (action, vars, returnArray) => {
   let result = returnArray ? [] : false
-  for (const [name, ext] of Object.entries(svgCanvas.getExtensions())) {
+  for (const [name, ext] of Object.entries(svgCanvas.extensions)) {
     if (typeof vars === 'function') {
       vars = vars(name) // ext, action
     }
@@ -258,14 +249,14 @@ const runExtensionsMethod = (
  * @param {Element} parent - The parent DOM element to search within
  * @returns {ElementAndBBox[]} An array with objects that include:
  */
-const getVisibleElementsAndBBoxes = (parent) => {
+const getVisibleElementsAndBBoxes = parent => {
   if (!parent) {
-    const svgContent = svgCanvas.getSvgContent()
+    const svgContent = svgCanvas.svgContent
     parent = svgContent.children // Prevent layers from being included
   }
   const contentElems = []
   const elements = parent.children
-  Array.from(elements).forEach((elem) => {
+  Array.from(elements).forEach(elem => {
     if (elem.getBBox) {
       contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([elem]) })
     }
@@ -285,29 +276,28 @@ const getVisibleElementsAndBBoxes = (parent) => {
  * @param {SVGRect} rect
  * @returns {Element[]|NodeList} Bbox elements
  */
-const getIntersectionListMethod = (rect) => {
-  const zoom = svgCanvas.getZoom()
-  if (!svgCanvas.getRubberBox()) {
+const getIntersectionListMethod = rect => {
+  const zoom = svgCanvas.zoom
+  if (!svgCanvas.rubberBox) {
     return null
   }
 
   const parent =
-    svgCanvas.getCurrentGroup() ||
-    svgCanvas.getCurrentDrawing().getCurrentLayer()
+    svgCanvas.currentGroup || svgCanvas.getCurrentDrawing().getCurrentLayer()
 
   let rubberBBox
   if (!rect) {
-    rubberBBox = getBBox(svgCanvas.getRubberBox())
-    const bb = svgCanvas.getSvgContent().createSVGRect();
+    rubberBBox = getBBox(svgCanvas.rubberBox)
+    const bb = svgCanvas.svgContent.createSVGRect()
 
-    ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach(
-      (o) => {
+    ;['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach(
+      o => {
         bb[o] = rubberBBox[o] / zoom
       }
     )
     rubberBBox = bb
   } else {
-    rubberBBox = svgCanvas.getSvgContent().createSVGRect()
+    rubberBBox = svgCanvas.svgContent.createSVGRect()
     rubberBBox.x = rect.x
     rubberBBox.y = rect.y
     rubberBBox.width = rect.width
@@ -315,13 +305,13 @@ const getIntersectionListMethod = (rect) => {
   }
 
   const resultList = []
-  if (svgCanvas.getCurBBoxes().length === 0) {
+  if (svgCanvas.curBBoxes.length === 0) {
     // Cache all bboxes
-    svgCanvas.setCurBBoxes(getVisibleElementsAndBBoxes(parent))
+    svgCanvas.curBBoxes = getVisibleElementsAndBBoxes(parent)
   }
-  let i = svgCanvas.getCurBBoxes().length
+  let i = svgCanvas.curBBoxes.length
   while (i--) {
-    const curBBoxes = svgCanvas.getCurBBoxes()
+    const curBBoxes = svgCanvas.curBBoxes
     if (!rubberBBox.width) {
       continue
     }
@@ -348,7 +338,7 @@ const getIntersectionListMethod = (rect) => {
  * @param {Element} elem - SVG element to wrap
  * @returns {void}
  */
-const groupSvgElem = (elem) => {
+const groupSvgElem = elem => {
   const dataStorage = svgCanvas.getDataStorage()
   const g = document.createElementNS(NS.SVG, 'g')
   elem.replaceWith(g)
@@ -363,12 +353,12 @@ const groupSvgElem = (elem) => {
  * @param {XMLDocument} newDoc - The SVG DOM document
  * @returns {void}
  */
-const prepareSvg = (newDoc) => {
+const prepareSvg = newDoc => {
   svgCanvas.sanitizeSvg(newDoc.documentElement)
 
   // convert paths into absolute commands
   const paths = [...newDoc.getElementsByTagNameNS(NS.SVG, 'path')]
-  paths.forEach((path) => {
+  paths.forEach(path => {
     const convertedPath = svgCanvas.pathActions.convertPath(path)
     path.setAttribute('d', convertedPath)
     svgCanvas.pathActions.fixEnd(path)
@@ -385,7 +375,7 @@ const prepareSvg = (newDoc) => {
  * @returns {void}
  */
 const setRotationAngle = (val, preventUndo) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   // ensure val is the proper type
   val = Number.parseFloat(val)
   const elem = selectedElements[0]
@@ -409,7 +399,7 @@ const setRotationAngle = (val, preventUndo) => {
       cy,
       transformListToTransform(tlist).matrix
     )
-    const Rnc = svgCanvas.getSvgRoot().createSVGTransform()
+    const Rnc = svgCanvas.svgRoot.createSVGTransform()
     Rnc.setRotate(val, center.x, center.y)
     if (tlist.numberOfItems) {
       tlist.insertItemBefore(Rnc, 0)
@@ -428,7 +418,7 @@ const setRotationAngle = (val, preventUndo) => {
     // we round the x so it becomes 'rotate(5 0 -11)'
     if (newTransform) {
       const newTransformArray = newTransform.split(/[ ,]+/)
-      const round = (num) => Math.round(Number(num) + Number.EPSILON)
+      const round = num => Math.round(Number(num) + Number.EPSILON)
       const x = round(newTransformArray[1])
       newTransform = `${newTransformArray[0]} ${x} ${newTransformArray[2]}`
     }
@@ -464,12 +454,11 @@ const setRotationAngle = (val, preventUndo) => {
  * @returns {void}
  */
 const recalculateAllSelectedDimensions = () => {
-  const text =
-    svgCanvas.getCurrentResizeMode() === 'none' ? 'position' : 'size'
+  const text = svgCanvas.currentResizeMode === 'none' ? 'position' : 'size'
   const batchCmd = new BatchCommand(text)
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
 
-  selectedElements.forEach((elem) => {
+  selectedElements.forEach(elem => {
     const cmd = svgCanvas.recalculateDimensions(elem)
     if (cmd) {
       batchCmd.addSubCommand(cmd)

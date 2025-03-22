@@ -129,7 +129,7 @@ export default {
       if (ok === 'Cancel') {
         return
       }
-      svgEditor.leftPanel.clickSelect()
+      svgEditor.leftPanel.clickTool('select')
       svgEditor.svgCanvas.clear()
       svgEditor.svgCanvas.setResolution(x, y)
       svgEditor.updateCanvas(true)
@@ -207,12 +207,12 @@ export default {
         svgCanvas.clearSelection()
         // Update save options if provided
         if (saveOpts) {
-          const saveOptions = svgCanvas.mergeDeep(svgCanvas.getSvgOption(), saveOpts)
+          const saveOptions = svgCanvas.mergeDeep(svgCanvas.saveOptions, saveOpts)
           for (const [key, value] of Object.entries(saveOptions)) {
-            svgCanvas.setSvgOption(key, value)
+            svgCanvas.saveOptions[key] = value
           }
         }
-        svgCanvas.setSvgOption('apply', true)
+        svgCanvas.saveOptions.apply = true
 
         // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
         const svg = '<?xml version="1.0"?>\n' + svgCanvas.svgCanvasToString()

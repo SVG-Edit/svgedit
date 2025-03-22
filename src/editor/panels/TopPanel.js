@@ -190,7 +190,7 @@ class TopPanel {
     const currentLayerName = this.editor.svgCanvas
       .getCurrentDrawing()
       .getCurrentLayerName()
-    const currentMode = this.editor.svgCanvas.getMode()
+    const currentMode = this.editor.svgCanvas.currentMode
     const unit =
       this.editor.configObj.curConfig.baseUnit !== 'px'
         ? this.editor.configObj.curConfig.baseUnit
@@ -223,7 +223,7 @@ class TopPanel {
       if (
         this.editor.svgCanvas.addedNew &&
         elname === 'image' &&
-        this.editor.svgCanvas.getMode() === 'image' &&
+        this.editor.svgCanvas.currentMode === 'image' &&
         !this.editor.svgCanvas.getHref(elem).startsWith('data:')
       ) {
         /* await */ this.promptImgURL({ cancelDeletes: true })
@@ -405,7 +405,7 @@ class TopPanel {
           // text
         } else if (
           tagName === 'image' &&
-          this.editor.svgCanvas.getMode() === 'image'
+          this.editor.svgCanvas.currentMode === 'image'
         ) {
           this.editor.svgCanvas.setImageURL(this.editor.svgCanvas.getHref(elem))
           // image
@@ -430,7 +430,7 @@ class TopPanel {
       // if (elem)
     } else if (this.multiselected) {
       // Check if all selected elements are 'text' nodes, if yes enable text panel
-      const selElems = this.editor.svgCanvas.getSelectedElements()
+      const selElems = this.editor.svgCanvas.selectedElements
       if (selElems.every(elem => elem.tagName === 'text')) {
         this.displayTool('text_panel')
       }
@@ -515,7 +515,7 @@ class TopPanel {
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo()
       this.editor.layersPanel.populateLayers()
-      if (this.editor.svgCanvas.getMode() === 'textedit') {
+      if (this.editor.svgCanvas.currentMode === 'textedit') {
         textActions.clear()
       }
     }
@@ -634,7 +634,7 @@ class TopPanel {
 
         if (
           this.editor.selectedElement[attr] ||
-          this.editor.svgCanvas.getMode() === 'pathedit' ||
+          this.editor.svgCanvas.currentMode === 'pathedit' ||
           attr === 'x' ||
           attr === 'y'
         ) {
@@ -769,7 +769,7 @@ class TopPanel {
    * @returns {boolean}
    */
   get anyTextSelected () {
-    const selected = this.editor.svgCanvas.getSelectedElements()
+    const selected = this.editor.svgCanvas.selectedElements
     return selected.filter(el => el.tagName === 'text').length > 0
   }
 
@@ -879,7 +879,7 @@ class TopPanel {
             // switch into "select" mode if we've clicked on an element
             editor.svgCanvas.setMode('select')
             editor.svgCanvas.selectOnly(
-              editor.svgCanvas.getSelectedElements(),
+              editor.svgCanvas.selectedElements,
               true
             )
           },

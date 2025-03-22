@@ -44,8 +44,8 @@ const touchHandler = (ev) => {
 }
 
 export const init = (svgCanvas) => {
-  svgCanvas.svgroot.addEventListener('touchstart', touchHandler)
-  svgCanvas.svgroot.addEventListener('touchmove', touchHandler)
-  svgCanvas.svgroot.addEventListener('touchend', touchHandler)
-  svgCanvas.svgroot.addEventListener('touchcancel', touchHandler)
+  svgCanvas.svgRoot.addEventListener('touchstart', touchHandler)
+  svgCanvas.svgRoot.addEventListener('touchmove', touchHandler)
+  svgCanvas.svgRoot.addEventListener('touchend', touchHandler)
+  svgCanvas.svgRoot.addEventListener('touchcancel', touchHandler)
 }

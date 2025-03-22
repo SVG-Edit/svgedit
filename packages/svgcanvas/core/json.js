@@ -9,32 +9,28 @@ import { getElement, assignAttributes, cleanupElement } from './utilities.js'
 import { NS } from './namespaces.js'
 
 let svgCanvas = null
-let svgdoc_ = null
+let svgDoc_ = null
 
 /**
  * @function module:json.jsonContext#getSelectedElements
  * @returns {Element[]} the array with selected DOM elements
-*/
-/**
- * @function module:json.jsonContext#getDOMDocument
- * @returns {HTMLDocument}
-*/
+ */
 
 /**
-* @function module:json.init
-* @param {module:json.jsonContext} jsonContext
-* @returns {void}
-*/
-export const init = (canvas) => {
+ * @function module:json.init
+ * @param {module:json.jsonContext} jsonContext
+ * @returns {void}
+ */
+export const init = canvas => {
   svgCanvas = canvas
-  svgdoc_ = canvas.getDOMDocument()
+  svgDoc_ = canvas.svgDoc
 }
 /**
-* @function module:json.getJsonFromSvgElements Iterate element and return json format
-* @param {ArgumentsArray} data - element
-* @returns {svgRootElement}
-*/
-export const getJsonFromSvgElements = (data) => {
+ * @function module:json.getJsonFromSvgElements Iterate element and return json format
+ * @param {ArgumentsArray} data - element
+ * @returns {svgRootElement}
+ */
+export const getJsonFromSvgElements = data => {
   // Text node
   if (data.nodeType === 3) return data.nodeValue
 
@@ -59,13 +55,13 @@ export const getJsonFromSvgElements = (data) => {
 }
 
 /**
-* This should really be an intersection implementing all rather than a union.
-* @name module:json.addSVGElementsFromJson
-* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementsFromJson}
-*/
+ * This should really be an intersection implementing all rather than a union.
+ * @name module:json.addSVGElementsFromJson
+ * @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementsFromJson}
+ */
 
-export const addSVGElementsFromJson = (data) => {
-  if (typeof data === 'string') return svgdoc_.createTextNode(data)
+export const addSVGElementsFromJson = data => {
+  if (typeof data === 'string') return svgDoc_.createTextNode(data)
 
   let shape = getElement(data.attr.id)
   // if shape is a path but we need to create a rect/ellipse, then remove the path
@@ -76,32 +72,36 @@ export const addSVGElementsFromJson = (data) => {
   }
   if (!shape) {
     const ns = data.namespace || NS.SVG
-    shape = svgdoc_.createElementNS(ns, data.element)
+    shape = svgDoc_.createElementNS(ns, data.element)
     if (currentLayer) {
-      (svgCanvas.getCurrentGroup() || currentLayer).append(shape)
+      ;(svgCanvas.currentGroup || currentLayer).append(shape)
     }
   }
-  const curShape = svgCanvas.getCurShape()
+  const curShape = svgCanvas.curShape
   if (data.curStyles) {
-    assignAttributes(shape, {
-      fill: curShape.fill,
-      stroke: curShape.stroke,
-      'stroke-width': curShape.stroke_width,
-      'stroke-dasharray': curShape.stroke_dasharray,
-      'stroke-linejoin': curShape.stroke_linejoin,
-      'stroke-linecap': curShape.stroke_linecap,
-      'stroke-opacity': curShape.stroke_opacity,
-      'fill-opacity': curShape.fill_opacity,
-      opacity: curShape.opacity / 2,
-      style: 'pointer-events:inherit'
-    }, 100)
+    assignAttributes(
+      shape,
+      {
+        fill: curShape.fill,
+        stroke: curShape.stroke,
+        'stroke-width': curShape.stroke_width,
+        'stroke-dasharray': curShape.stroke_dasharray,
+        'stroke-linejoin': curShape.stroke_linejoin,
+        'stroke-linecap': curShape.stroke_linecap,
+        'stroke-opacity': curShape.stroke_opacity,
+        'fill-opacity': curShape.fill_opacity,
+        opacity: curShape.opacity / 2,
+        style: 'pointer-events:inherit'
+      },
+      100
+    )
   }
   assignAttributes(shape, data.attr, 100)
   cleanupElement(shape)
 
   // Children
   if (data.children) {
-    data.children.forEach((child) => {
+    data.children.forEach(child => {
       shape.append(addSVGElementsFromJson(child))
     })
   }

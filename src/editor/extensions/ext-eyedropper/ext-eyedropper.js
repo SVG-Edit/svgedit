@@ -29,7 +29,7 @@ export default {
     const { svgCanvas } = svgEditor
     await loadExtensionTranslation(svgEditor)
     const { ChangeElementCommand } = svgCanvas.history
-    // svgdoc = S.svgroot.parentNode.ownerDocument,
+    // svgDoc = S.svgRoot.parentNode.ownerDocument,
     const addToHistory = (cmd) => { svgCanvas.undoMgr.addCommandToHistory(cmd) }
     const currentStyle = {}
     const { $id, $click } = svgCanvas
@@ -42,7 +42,7 @@ export default {
     svgEditor.workarea.appendChild(helperCursor)
 
     const styleHelper = () => {
-      const mode = svgCanvas.getMode()
+      const mode = svgCanvas.currentMode
 
       if (mode === name) {
         helperCursor.style.display = 'block'
@@ -67,7 +67,7 @@ export default {
         resetCurrentStyle()
         styleHelper()
       } else {
-        svgEditor.leftPanel.clickSelect()
+        svgEditor.leftPanel.clickTool('select')
       }
     }
 
@@ -114,12 +114,12 @@ export default {
 
         // enables helper, resets currently picked style if no element selected
         document.addEventListener('modeChange', e => {
-          if (svgCanvas.getMode() === name) {
+          if (svgCanvas.currentMode === name) {
             styleHelper()
           } else {
             helperCursor.style.display = 'none'
           }
-          if (svgCanvas.getSelectedElements().length === 0) {
+          if (svgCanvas.selectedElements.length === 0) {
             resetCurrentStyle()
           }
         })
@@ -129,7 +129,7 @@ export default {
           const x = e.clientX
           const y = e.clientY
 
-          if (svgCanvas.getMode() === name) {
+          if (svgCanvas.currentMode === name) {
             helperCursor.style.top = y + 'px'
             helperCursor.style.left = x + 12 + 'px'
             styleHelper()
@@ -142,7 +142,7 @@ export default {
 
         // Listens to Esc to reset currently picked style / set Select mode
         document.addEventListener('keydown', e => {
-          if (e.key === 'Escape' && svgCanvas.getMode() === name) {
+          if (e.key === 'Escape' && svgCanvas.currentMode === name) {
             cancelHandler()
           }
         })
@@ -150,7 +150,7 @@ export default {
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,
       mouseDown (opts) {
-        const mode = svgCanvas.getMode()
+        const mode = svgCanvas.currentMode
         if (mode === name) {
           const e = opts.event
           const { target } = e

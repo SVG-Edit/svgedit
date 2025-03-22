@@ -48,7 +48,7 @@ window.canvas = new SvgCanvas(container, config)
 canvas.updateCanvas(width, height)
 
 window.fill = function (colour) {
-  canvas.getSelectedElements().forEach((el) => {
+  canvas.selectedElements.forEach((el) => {
     el.setAttribute('fill', colour)
   })
 }

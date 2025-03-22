@@ -23,7 +23,7 @@ const visElemsArr = visElems.split(',')
 // const hidElems = 'defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
 let svgCanvas = null
-let svgroot_ = null
+let svgRoot_ = null
 
 /**
  * Object with the following keys/values.
@@ -42,10 +42,7 @@ let svgroot_ = null
  * @interface module:utilities.EditorContext
  * @property {module:path.pathActions} pathActions
  */
-/**
- * @function module:utilities.EditorContext#getSvgContent
- * @returns {SVGSVGElement}
- */
+
 /**
  * Create a new SVG element based on the given object keys/values and add it
  * to the current layer.
@@ -53,18 +50,6 @@ let svgroot_ = null
  * @function module:utilities.EditorContext#addSVGElementsFromJson
  * @param {module:utilities.SVGElementJSON} data
  * @returns {Element} The new element
- */
-/**
- * @function module:utilities.EditorContext#getSelectedElements
- * @returns {Element[]} the array with selected DOM elements
- */
-/**
- * @function module:utilities.EditorContext#getDOMDocument
- * @returns {HTMLDocument}
- */
-/**
- * @function module:utilities.EditorContext#getDOMContainer
- * @returns {HTMLElement}
  */
 /**
  * @function module:utilities.EditorContext#getSvgRoot
@@ -86,7 +71,7 @@ let svgroot_ = null
  */
 export const init = canvas => {
   svgCanvas = canvas
-  svgroot_ = canvas.getSvgRoot()
+  svgRoot_ = canvas.svgRoot
 }
 
 /**
@@ -398,7 +383,7 @@ export let setHref = function (elem, val) {
  * @returns {SVGDefsElement} The document's `<defs>` element, creating it first if necessary
  */
 export const findDefs = function () {
-  const svgElement = svgCanvas.getSvgContent()
+  const svgElement = svgCanvas.svgContent
   let defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs')
   if (defs.length > 0) {
     defs = defs[0]
@@ -518,7 +503,7 @@ export const getPathBBox = function (path) {
  * @returns {module:utilities.BBoxObject} Bounding box object
  */
 export const getBBox = function (elem) {
-  const selected = elem || svgCanvas.getSelectedElements()[0]
+  const selected = elem || svgCanvas.selectedElements[0]
   if (elem.nodeType !== 1) {
     return null
   }
@@ -1042,7 +1027,7 @@ export const getStrokedBBox = (elems, addSVGElementsFromJson, pathActions) => {
  */
 export const getVisibleElements = parentElement => {
   if (!parentElement) {
-    const svgContent = svgCanvas.getSvgContent()
+    const svgContent = svgCanvas.svgContent
     for (let i = 0; i < svgContent.children.length; i++) {
       if (svgContent.children[i].getBBox) {
         const bbox = svgContent.children[i].getBBox()
@@ -1117,7 +1102,7 @@ export const getRotationAngleFromTransformList = (tlist, toRad) => {
  * @returns {Float} The angle in degrees or radians
  */
 export let getRotationAngle = (elem, toRad) => {
-  const selected = elem || svgCanvas.getSelectedElements()[0]
+  const selected = elem || svgCanvas.selectedElements[0]
   // find the rotation transform (if any) and set it
   const tlist = getTransformList(selected)
   return getRotationAngleFromTransformList(tlist, toRad)
@@ -1161,7 +1146,7 @@ export const getFeGaussianBlur = ele => {
  */
 export const getElement = id => {
   // querySelector lookup
-  return svgroot_.querySelector('#' + id)
+  return svgRoot_.querySelector('#' + id)
 }
 
 /**

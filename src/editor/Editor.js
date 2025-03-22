@@ -548,7 +548,7 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   updateCanvas (center, newCtr) {
-    const zoom = this.svgCanvas.getZoom()
+    const zoom = this.svgCanvas.zoom
     const { workarea } = this
     const cnvs = $id('svgcanvas')
 
@@ -644,7 +644,7 @@ class Editor extends EditorStartup {
   updateWireFrame () {
     const rule = `
       #workarea.wireframe #svgcontent * {
-        stroke-width: ${1 / this.svgCanvas.getZoom()}px;
+        stroke-width: ${1 / this.svgCanvas.zoom}px;
       }
     `
     if (document.querySelectorAll('#wireframe_rules').length > 0) {
@@ -663,9 +663,9 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   selectedChanged (win, elems) {
-    const mode = this.svgCanvas.getMode()
+    const mode = this.svgCanvas.currentMode
     if (mode === 'select') {
-      this.leftPanel.clickSelect()
+      this.leftPanel.clickTool('select')
     }
     const isNode = mode === 'pathedit'
     // if this.elems[1] is present, then we have more than one element
@@ -698,7 +698,7 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   elementTransition (win, elems) {
-    const mode = this.svgCanvas.getMode()
+    const mode = this.svgCanvas.currentMode
     const elem = elems[0]
 
     if (!elem) {
@@ -736,9 +736,9 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   elementChanged (win, elems) {
-    const mode = this.svgCanvas.getMode()
+    const mode = this.svgCanvas.currentMode
     if (mode === 'select') {
-      this.leftPanel.clickSelect()
+      this.leftPanel.clickTool('select')
     }
 
     elems.forEach((elem) => {
@@ -858,7 +858,7 @@ class Editor extends EditorStartup {
       return
     }
 
-    $id('zoom').value = (this.svgCanvas.getZoom() * 100).toFixed(1)
+    $id('zoom').value = (this.svgCanvas.zoom * 100).toFixed(1)
 
     if (autoCenter) {
       this.updateCanvas()
@@ -869,16 +869,16 @@ class Editor extends EditorStartup {
       })
     }
 
-    if (this.svgCanvas.getMode() === 'zoom' && bb.width) {
+    if (this.svgCanvas.currentMode === 'zoom' && bb.width) {
       // Go to select if a zoom box was drawn
-      this.leftPanel.clickSelect()
+      this.leftPanel.clickTool('select')
     }
 
     this.zoomDone()
 
     this.svgCanvas.runExtensions(
       'zoomChanged',
-      /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ this.svgCanvas.getZoom()
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ this.svgCanvas.zoom
     )
   }
 
@@ -1006,7 +1006,7 @@ class Editor extends EditorStartup {
    */
   pasteInCenter () {
     const { workarea } = this
-    const zoom = this.svgCanvas.getZoom()
+    const zoom = this.svgCanvas.zoom
     const x =
       (workarea.scrollLeft +
         parseFloat(getComputedStyle(workarea, null).width.replace('px', '')) /
@@ -1042,7 +1042,7 @@ class Editor extends EditorStartup {
       if (this.configObj.curConfig.gridSnapping) {
         // Use grid snap value regardless of zoom level
         const multi =
-          this.svgCanvas.getZoom() * this.configObj.curConfig.snappingStep
+          this.svgCanvas.zoom * this.configObj.curConfig.snappingStep
         dx *= multi
         dy *= multi
       }
@@ -1117,7 +1117,7 @@ class Editor extends EditorStartup {
       return
     }
     saveChanges()
-    this.leftPanel.clickSelect()
+    this.leftPanel.clickTool('select')
   }
 
   /**

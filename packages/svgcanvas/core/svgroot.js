@@ -10,12 +10,12 @@ import { text2xml } from './utilities.js'
 
 /**
 * @function module:svgcanvas.svgRootElement svgRootElement the svg node and its children.
-* @param {Element} svgdoc - window.document
+* @param {Element} svgDoc - window.document
 * @param {ArgumentsArray} dimensions - dimensions of width and height
 * @returns {svgRootElement}
 */
-export const svgRootElement = function (svgdoc, dimensions) {
-  return svgdoc.importNode(
+export const svgRootElement = function (svgDoc, dimensions) {
+  return svgDoc.importNode(
     text2xml(
       `<svg id="svgroot" xmlns="${NS.SVG}" xlinkns="${NS.XLINK}" width="${dimensions[0]}" 
         height="${dimensions[1]}" x="${dimensions[0]}" y="${dimensions[1]}" overflow="visible">

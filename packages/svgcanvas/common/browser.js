@@ -18,11 +18,11 @@ const isMac_ = userAgent.includes('Macintosh')
 
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
-  const svgroot = document.createElementNS(NSSVG, 'svg')
+  const svgRoot = document.createElementNS(NSSVG, 'svg')
   const svgContent = document.createElementNS(NSSVG, 'svg')
-  document.documentElement.append(svgroot)
+  document.documentElement.append(svgRoot)
   svgContent.setAttribute('x', 5)
-  svgroot.append(svgContent)
+  svgRoot.append(svgContent)
   const text = document.createElementNS(NSSVG, 'text')
   text.textContent = 'a'
   svgContent.append(text)
@@ -32,7 +32,7 @@ const supportsGoodTextCharPos_ = (function () {
   } catch (err) {
     return false
   } finally {
-    svgroot.remove()
+    svgRoot.remove()
   }
 }())
 

@@ -23,8 +23,8 @@ export const init = (canvas) => {
 * @returns {void}
 */
 export const setBlurNoUndo = function (val) {
-  const selectedElements = svgCanvas.getSelectedElements()
-  if (!svgCanvas.getFilter()) {
+  const selectedElements = svgCanvas.selectedElements
+  if (!svgCanvas.filter) {
     svgCanvas.setBlur(val)
     return
   }
@@ -32,13 +32,13 @@ export const setBlurNoUndo = function (val) {
     // Don't change the StdDev, as that will hide the element.
     // Instead, just remove the value for "filter"
     svgCanvas.changeSelectedAttributeNoUndo('filter', '')
-    svgCanvas.setFilterHidden(true)
+    svgCanvas.filterHidden = true
   } else {
     const elem = selectedElements[0]
-    if (svgCanvas.getFilterHidden()) {
+    if (svgCanvas.filterHidden) {
       svgCanvas.changeSelectedAttributeNoUndo('filter', 'url(#' + elem.id + '_blur)')
     }
-    const filter = svgCanvas.getFilter()
+    const filter = svgCanvas.filter
     svgCanvas.changeSelectedAttributeNoUndo('stdDeviation', val, [filter.firstChild])
     svgCanvas.setBlurOffsets(filter, val)
   }
@@ -50,10 +50,10 @@ export const setBlurNoUndo = function (val) {
 */
 function finishChange () {
   const bCmd = svgCanvas.undoMgr.finishUndoableChange()
-  svgCanvas.getCurCommand().addSubCommand(bCmd)
-  svgCanvas.addCommandToHistory(svgCanvas.getCurCommand())
-  svgCanvas.setCurCommand(null)
-  svgCanvas.setFilter(null)
+  svgCanvas.curCommand.addSubCommand(bCmd)
+  svgCanvas.addCommandToHistory(svgCanvas.curCommand)
+  svgCanvas.curCommand = null
+  svgCanvas.filter = null
 }
 
 /**
@@ -93,8 +93,8 @@ export const setBlur = function (val, complete) {
     InsertElementCommand, ChangeElementCommand, BatchCommand
   } = svgCanvas.history
 
-  const selectedElements = svgCanvas.getSelectedElements()
-  if (svgCanvas.getCurCommand()) {
+  const selectedElements = svgCanvas.selectedElements
+  if (svgCanvas.curCommand) {
     finishChange()
     return
   }
@@ -102,16 +102,16 @@ export const setBlur = function (val, complete) {
   // Looks for associated blur, creates one if not found
   const elem = selectedElements[0]
   const elemId = elem.id
-  svgCanvas.setFilter(svgCanvas.getElement(elemId + '_blur'))
+  svgCanvas.filter = svgCanvas.getElement(elemId + '_blur')
 
   val -= 0
 
   const batchCmd = new BatchCommand()
 
   // Blur found!
-  if (svgCanvas.getFilter()) {
+  if (svgCanvas.filter) {
     if (val === 0) {
-      svgCanvas.setFilter(null)
+      svgCanvas.filter = null
     }
   } else {
     // Not found, so create
@@ -123,16 +123,16 @@ export const setBlur = function (val, complete) {
       }
     })
 
-    svgCanvas.setFilter(svgCanvas.addSVGElementsFromJson({
+    svgCanvas.filter = svgCanvas.addSVGElementsFromJson({
       element: 'filter',
       attr: {
         id: elemId + '_blur'
       }
-    }))
-    svgCanvas.getFilter().append(newblur)
-    svgCanvas.findDefs().append(svgCanvas.getFilter())
+    })
+    svgCanvas.filter.append(newblur)
+    svgCanvas.findDefs().append(svgCanvas.filter)
 
-    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.getFilter()))
+    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.filter))
   }
 
   const changes = { filter: elem.getAttribute('filter') }
@@ -145,9 +145,9 @@ export const setBlur = function (val, complete) {
 
   svgCanvas.changeSelectedAttribute('filter', 'url(#' + elemId + '_blur)')
   batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
-  svgCanvas.setBlurOffsets(svgCanvas.getFilter(), val)
-  const filter = svgCanvas.getFilter()
-  svgCanvas.setCurCommand(batchCmd)
+  svgCanvas.setBlurOffsets(svgCanvas.filter, val)
+  const filter = svgCanvas.filter
+  svgCanvas.curCommand = batchCmd
   svgCanvas.undoMgr.beginUndoableChange('stdDeviation', [filter ? filter.firstChild : null])
   if (complete) {
     svgCanvas.setBlurNoUndo(val)

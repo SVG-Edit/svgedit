@@ -69,7 +69,7 @@ export const remapElement = (selected, changes, m) => {
   const scalew = w => m.a * w
   const scaleh = h => m.d * h
   const doSnapping =
-    svgCanvas.getGridSnapping() &&
+    svgCanvas.gridSnapping &&
     selected.parentNode.parentNode.localName === 'svg'
   const finishUp = () => {
     if (doSnapping) {
@@ -126,7 +126,7 @@ export const remapElement = (selected, changes, m) => {
       if (elName === 'image' && (m.a < 0 || m.d < 0)) {
         // Convert to matrix if flipped
         const chlist = getTransformList(selected)
-        const mt = svgCanvas.getSvgRoot().createSVGTransform()
+        const mt = svgCanvas.svgRoot.createSVGTransform()
         mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m))
         chlist.clear()
         chlist.appendItem(mt)

@@ -10,11 +10,17 @@ import { NS } from './namespaces.js'
 import { shortFloat } from './units.js'
 import { ChangeElementCommand, BatchCommand } from './history.js'
 import {
-  transformPoint, snapToAngle, rectsIntersect,
-  transformListToTransform, getTransformList
+  transformPoint,
+  snapToAngle,
+  rectsIntersect,
+  transformListToTransform,
+  getTransformList
 } from './math.js'
 import {
-  assignAttributes, getElement, getRotationAngle, snapToGrid,
+  assignAttributes,
+  getElement,
+  getRotationAngle,
+  snapToGrid,
   getBBox
 } from './utilities.js'
 
@@ -22,11 +28,11 @@ let svgCanvas = null
 let path = null
 
 /**
-* @function module:path-actions.init
-* @param {module:path-actions.svgCanvas} pathActionsContext
-* @returns {void}
-*/
-export const init = (canvas) => {
+ * @function module:path-actions.init
+ * @param {module:path-actions.svgCanvas} pathActionsContext
+ * @returns {void}
+ */
+export const init = canvas => {
   svgCanvas = canvas
 }
 
@@ -41,7 +47,8 @@ export const init = (canvas) => {
 export const convertPath = function (pth, toRel) {
   const { pathSegList } = pth
   const len = pathSegList.numberOfItems
-  let curx = 0; let cury = 0
+  let curx = 0
+  let cury = 0
   let d = ''
   let lastM = null
 
@@ -123,13 +130,19 @@ export const convertPath = function (pth, toRel) {
           cury = y
           letter = letter.toUpperCase()
         }
-        if (letter === 'm' || letter === 'M') { lastM = [curx, cury] }
+        if (letter === 'm' || letter === 'M') {
+          lastM = [curx, cury]
+        }
 
         d += pathDSegment(letter, [[x, y]])
         break
       case 'C': // absolute cubic (C)
-        x -= curx; x1 -= curx; x2 -= curx
-        y -= cury; y1 -= cury; y2 -= cury
+        x -= curx
+        x1 -= curx
+        x2 -= curx
+        y -= cury
+        y1 -= cury
+        y2 -= cury
       // Fallthrough
       case 'c': // relative cubic (c)
         if (toRel) {
@@ -137,17 +150,27 @@ export const convertPath = function (pth, toRel) {
           cury += y
           letter = 'c'
         } else {
-          x += curx; x1 += curx; x2 += curx
-          y += cury; y1 += cury; y2 += cury
+          x += curx
+          x1 += curx
+          x2 += curx
+          y += cury
+          y1 += cury
+          y2 += cury
           curx = x
           cury = y
           letter = 'C'
         }
-        d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]])
+        d += pathDSegment(letter, [
+          [x1, y1],
+          [x2, y2],
+          [x, y]
+        ])
         break
       case 'Q': // absolute quad (Q)
-        x -= curx; x1 -= curx
-        y -= cury; y1 -= cury
+        x -= curx
+        x1 -= curx
+        y -= cury
+        y1 -= cury
       // Fallthrough
       case 'q': // relative quad (q)
         if (toRel) {
@@ -155,13 +178,18 @@ export const convertPath = function (pth, toRel) {
           cury += y
           letter = 'q'
         } else {
-          x += curx; x1 += curx
-          y += cury; y1 += cury
+          x += curx
+          x1 += curx
+          y += cury
+          y1 += cury
           curx = x
           cury = y
           letter = 'Q'
         }
-        d += pathDSegment(letter, [[x1, y1], [x, y]])
+        d += pathDSegment(letter, [
+          [x1, y1],
+          [x, y]
+        ])
         break
       case 'A':
         x -= curx
@@ -179,15 +207,18 @@ export const convertPath = function (pth, toRel) {
           cury = y
           letter = 'A'
         }
-        d += pathDSegment(letter, [[seg.r1, seg.r2]], [
-          seg.angle,
-          (seg.largeArcFlag ? 1 : 0),
-          (seg.sweepFlag ? 1 : 0)
-        ], [x, y])
+        d += pathDSegment(
+          letter,
+          [[seg.r1, seg.r2]],
+          [seg.angle, seg.largeArcFlag ? 1 : 0, seg.sweepFlag ? 1 : 0],
+          [x, y]
+        )
         break
       case 'S': // absolute smooth cubic (S)
-        x -= curx; x2 -= curx
-        y -= cury; y2 -= cury
+        x -= curx
+        x2 -= curx
+        y -= cury
+        y2 -= cury
       // Fallthrough
       case 's': // relative smooth cubic (s)
         if (toRel) {
@@ -195,13 +226,18 @@ export const convertPath = function (pth, toRel) {
           cury += y
           letter = 's'
         } else {
-          x += curx; x2 += curx
-          y += cury; y2 += cury
+          x += curx
+          x2 += curx
+          y += cury
+          y2 += cury
           curx = x
           cury = y
           letter = 'S'
         }
-        d += pathDSegment(letter, [[x2, y2], [x, y]])
+        d += pathDSegment(letter, [
+          [x2, y2],
+          [x, y]
+        ])
         break
     } // switch on path segment type
   } // for each segment
@@ -232,28 +268,28 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 }
 
 /**
-* Group: Path edit functions.
-* Functions relating to editing path elements.
-* @namespace {PlainObject} pathActions
-* @memberof module:path
-*/
+ * Group: Path edit functions.
+ * Functions relating to editing path elements.
+ * @namespace {PlainObject} pathActions
+ * @memberof module:path
+ */
 export const pathActionsMethod = (function () {
   let subpath = false
-  let newPoint; let firstCtrl
+  let newPoint
+  let firstCtrl
 
   let currentPath = null
   let hasMoved = false
   // No `svgCanvas` yet but should be ok as is `null` by default
-  // svgCanvas.setDrawnPath(null);
 
   /**
-  * This function converts a polyline (created by the fh_path tool) into
-  * a path element and coverts every three line segments into a single bezier
-  * curve in an attempt to smooth out the free-hand.
-  * @function smoothPolylineIntoPath
-  * @param {Element} element
-  * @returns {Element}
-  */
+   * This function converts a polyline (created by the fh_path tool) into
+   * a path element and coverts every three line segments into a single bezier
+   * curve in an attempt to smooth out the free-hand.
+   * @function smoothPolylineIntoPath
+   * @param {Element} element
+   * @returns {Element}
+   */
   const smoothPolylineIntoPath = function (element) {
     let i
     const { points } = element
@@ -272,10 +308,11 @@ export const pathActionsMethod = (function () {
       // - https://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
       // - https://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
       // - https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
-      let curpos = points.getItem(0); let prevCtlPt = null
+      let curpos = points.getItem(0)
+      let prevCtlPt = null
       let d = []
       d.push(['M', curpos.x, ',', curpos.y, ' C'].join(''))
-      for (i = 1; i <= (N - 4); i += 3) {
+      for (i = 1; i <= N - 4; i += 3) {
         let ct1 = points.getItem(i)
         const ct2 = points.getItem(i + 1)
         const end = points.getItem(i + 2)
@@ -311,7 +348,7 @@ export const pathActionsMethod = (function () {
         element: 'path',
         curStyles: true,
         attr: {
-          id: svgCanvas.getId(),
+          id: svgCanvas.id,
           d,
           fill: 'none'
         }
@@ -321,27 +358,27 @@ export const pathActionsMethod = (function () {
     return element
   }
 
-  return (/** @lends module:path.pathActions */ {
+  return /** @lends module:path.pathActions */ {
     /**
-    * @param {MouseEvent} evt
-    * @param {Element} mouseTarget
-    * @param {Float} startX
-    * @param {Float} startY
-    * @returns {boolean|void}
-    */
+     * @param {MouseEvent} evt
+     * @param {Element} mouseTarget
+     * @param {Float} startX
+     * @param {Float} startY
+     * @returns {boolean|void}
+     */
     mouseDown (evt, mouseTarget, startX, startY) {
       let id
-      if (svgCanvas.getCurrentMode() === 'path') {
+      if (svgCanvas.currentMode === 'path') {
         let mouseX = startX // Was this meant to work with the other `mouseX`? (was defined globally so adding `let` to at least avoid a global)
         let mouseY = startY // Was this meant to work with the other `mouseY`? (was defined globally so adding `let` to at least avoid a global)
 
-        const zoom = svgCanvas.getZoom()
+        const zoom = svgCanvas.zoom
         let x = mouseX / zoom
         let y = mouseY / zoom
         let stretchy = getElement('path_stretch_line')
         newPoint = [x, y]
 
-        if (svgCanvas.getGridSnapping()) {
+        if (svgCanvas.curConfig.gridSnapping) {
           x = snapToGrid(x)
           y = snapToGrid(y)
           mouseX = snapToGrid(mouseX)
@@ -363,10 +400,10 @@ export const pathActionsMethod = (function () {
         let keep = null
         let index
         // if pts array is empty, create path element with M at current point
-        const drawnPath = svgCanvas.getDrawnPath()
+        const drawnPath = svgCanvas.drawnPath
         if (!drawnPath) {
           const dAttr = 'M' + x + ',' + y + ' ' // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-          /* drawnPath = */ svgCanvas.setDrawnPath(svgCanvas.addSVGElementsFromJson({
+          svgCanvas.drawnPath = svgCanvas.addSVGElementsFromJson({
             element: 'path',
             curStyles: true,
             attr: {
@@ -374,9 +411,13 @@ export const pathActionsMethod = (function () {
               id: svgCanvas.getNextId(),
               opacity: svgCanvas.getOpacity() / 2
             }
-          }))
+          })
+
           // set stretchy line to first point
-          stretchy.setAttribute('d', ['M', mouseX, mouseY, mouseX, mouseY].join(' '))
+          stretchy.setAttribute(
+            'd',
+            ['M', mouseX, mouseY, mouseX, mouseY].join(' ')
+          )
           index = subpath ? path.segs.length : 0
           svgCanvas.addPointGrip(index, mouseX, mouseY)
         } else {
@@ -388,10 +429,14 @@ export const pathActionsMethod = (function () {
           while (i) {
             i--
             const item = seglist.getItem(i)
-            const px = item.x; const py = item.y
+            const px = item.x
+            const py = item.y
             // found a matching point
-            if (x >= (px - FUZZ) && x <= (px + FUZZ) &&
-              y >= (py - FUZZ) && y <= (py + FUZZ)
+            if (
+              x >= px - FUZZ &&
+              x <= px + FUZZ &&
+              y >= py - FUZZ &&
+              y <= py + FUZZ
             ) {
               clickOnPoint = true
               break
@@ -399,7 +444,7 @@ export const pathActionsMethod = (function () {
           }
 
           // get path element that we are in the process of creating
-          id = svgCanvas.getId()
+          id = svgCanvas.id
 
           // Remove previous path object if previously created
           svgCanvas.removePath_(id)
@@ -421,9 +466,17 @@ export const pathActionsMethod = (function () {
               const absY = seglist.getItem(0).y
 
               sSeg = stretchy.pathSegList.getItem(1)
-              newseg = sSeg.pathSegType === 4
-                ? drawnPath.createSVGPathSegLinetoAbs(absX, absY)
-                : drawnPath.createSVGPathSegCurvetoCubicAbs(absX, absY, sSeg.x1 / zoom, sSeg.y1 / zoom, absX, absY)
+              newseg =
+                sSeg.pathSegType === 4
+                  ? drawnPath.createSVGPathSegLinetoAbs(absX, absY)
+                  : drawnPath.createSVGPathSegCurvetoCubicAbs(
+                    absX,
+                    absY,
+                    sSeg.x1 / zoom,
+                    sSeg.y1 / zoom,
+                    absX,
+                    absY
+                  )
 
               const endseg = drawnPath.createSVGPathSegClosePath()
               seglist.appendItem(newseg)
@@ -436,8 +489,8 @@ export const pathActionsMethod = (function () {
 
             // This will signal to commit the path
             // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
-            /* drawnPath = */ svgCanvas.setDrawnPath(null)
-            svgCanvas.setStarted(false)
+            svgCanvas.drawnPath = null
+            svgCanvas.started = false
 
             if (subpath) {
               if (path.matrix) {
@@ -455,37 +508,45 @@ export const pathActionsMethod = (function () {
               path.selectPt()
               return false
             }
-          // else, create a new point, update path element
+            // else, create a new point, update path element
           } else {
             // Checks if current target or parents are #svgcontent
-            if (!(svgCanvas.getContainer() !== svgCanvas.getMouseTarget(evt) && svgCanvas.getContainer().contains(
-              svgCanvas.getMouseTarget(evt)
-            ))) {
+            if (
+              !(
+                svgCanvas.container !== svgCanvas.getMouseTarget(evt) &&
+                svgCanvas.container.contains(svgCanvas.getMouseTarget(evt))
+              )
+            ) {
               // Clicked outside canvas, so don't make point
               return false
             }
 
             const num = drawnPath.pathSegList.numberOfItems
             const last = drawnPath.pathSegList.getItem(num - 1)
-            const lastx = last.x; const lasty = last.y
+            const lastx = last.x
+            const lasty = last.y
 
             if (evt.shiftKey) {
-              const xya = snapToAngle(lastx, lasty, x, y);
-              ({ x, y } = xya)
+              const xya = snapToAngle(lastx, lasty, x, y)
+              ;({ x, y } = xya)
             }
 
             // Use the segment defined by stretchy
             sSeg = stretchy.pathSegList.getItem(1)
-            newseg = sSeg.pathSegType === 4
-              ? drawnPath.createSVGPathSegLinetoAbs(svgCanvas.round(x), svgCanvas.round(y))
-              : drawnPath.createSVGPathSegCurvetoCubicAbs(
-                svgCanvas.round(x),
-                svgCanvas.round(y),
-                sSeg.x1 / zoom,
-                sSeg.y1 / zoom,
-                sSeg.x2 / zoom,
-                sSeg.y2 / zoom
-              )
+            newseg =
+              sSeg.pathSegType === 4
+                ? drawnPath.createSVGPathSegLinetoAbs(
+                  svgCanvas.round(x),
+                  svgCanvas.round(y)
+                )
+                : drawnPath.createSVGPathSegCurvetoCubicAbs(
+                  svgCanvas.round(x),
+                  svgCanvas.round(y),
+                  sSeg.x1 / zoom,
+                  sSeg.y1 / zoom,
+                  sSeg.x2 / zoom,
+                  sSeg.y2 / zoom
+                )
 
             drawnPath.pathSegList.appendItem(newseg)
 
@@ -495,7 +556,9 @@ export const pathActionsMethod = (function () {
             // set stretchy line to latest point
             stretchy.setAttribute('d', ['M', x, y, x, y].join(' '))
             index = num
-            if (subpath) { index += path.segs.length }
+            if (subpath) {
+              index += path.segs.length
+            }
             svgCanvas.addPointGrip(index, x, y)
           }
           // keep = true;
@@ -505,11 +568,12 @@ export const pathActionsMethod = (function () {
       }
 
       // TODO: Make sure currentPath isn't null at this point
-      if (!path) { return undefined }
+      if (!path) {
+        return undefined
+      }
 
-      path.storeD();
-
-      ({ id } = evt.target)
+      path.storeD()
+      ;({ id } = evt.target)
       let curPt
       if (id.substr(0, 14) === 'pathpointgrip_') {
         // Select this point
@@ -540,34 +604,39 @@ export const pathActionsMethod = (function () {
 
       // Start selection box
       if (!path.dragging) {
-        let rubberBox = svgCanvas.getRubberBox()
+        let rubberBox = svgCanvas.rubberBox
         if (!rubberBox) {
-          rubberBox = svgCanvas.setRubberBox(
+          rubberBox = svgCanvas.rubberBox =
             svgCanvas.selectorManager.getRubberBandBox()
-          )
         }
-        const zoom = svgCanvas.getZoom()
-        assignAttributes(rubberBox, {
-          x: startX * zoom,
-          y: startY * zoom,
-          width: 0,
-          height: 0,
-          display: 'inline'
-        }, 100)
+        const zoom = svgCanvas.zoom
+        assignAttributes(
+          rubberBox,
+          {
+            x: startX * zoom,
+            y: startY * zoom,
+            width: 0,
+            height: 0,
+            display: 'inline'
+          },
+          100
+        )
       }
       return undefined
     },
     /**
-    * @param {Float} mouseX
-    * @param {Float} mouseY
-    * @returns {void}
-    */
+     * @param {Float} mouseX
+     * @param {Float} mouseY
+     * @returns {void}
+     */
     mouseMove (mouseX, mouseY) {
-      const zoom = svgCanvas.getZoom()
+      const zoom = svgCanvas.zoom
       hasMoved = true
-      const drawnPath = svgCanvas.getDrawnPath()
-      if (svgCanvas.getCurrentMode() === 'path') {
-        if (!drawnPath) { return }
+      const drawnPath = svgCanvas.drawnPath
+      if (svgCanvas.currentMode === 'path') {
+        if (!drawnPath) {
+          return
+        }
         const seglist = drawnPath.pathSegList
         const index = seglist.numberOfItems - 1
 
@@ -591,8 +660,8 @@ export const pathActionsMethod = (function () {
           // const seg = seglist.getItem(index);
           const curX = mouseX / zoom
           const curY = mouseY / zoom
-          const altX = (ptX + (ptX - curX))
-          const altY = (ptY + (ptY - curY))
+          const altX = ptX + (ptX - curX)
+          const altY = ptY + (ptY - curY)
 
           pointGrip2.setAttribute('cx', altX * zoom)
           pointGrip2.setAttribute('cy', altY * zoom)
@@ -615,13 +684,18 @@ export const pathActionsMethod = (function () {
             let lastY = last.y
 
             if (last.pathSegType === 6) {
-              lastX += (lastX - last.x2)
-              lastY += (lastY - last.y2)
+              lastX += lastX - last.x2
+              lastY += lastY - last.y2
             } else if (firstCtrl) {
               lastX = firstCtrl[0] / zoom
               lastY = firstCtrl[1] / zoom
             }
-            svgCanvas.replacePathSeg(6, index, [ptX, ptY, lastX, lastY, altX, altY], drawnPath)
+            svgCanvas.replacePathSeg(
+              6,
+              index,
+              [ptX, ptY, lastX, lastY, altX, altY],
+              drawnPath
+            )
           }
         } else {
           const stretchy = getElement('path_stretch_line')
@@ -637,7 +711,12 @@ export const pathActionsMethod = (function () {
                 stretchy
               )
             } else if (firstCtrl) {
-              svgCanvas.replacePathSeg(6, 1, [mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY], stretchy)
+              svgCanvas.replacePathSeg(
+                6,
+                1,
+                [mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY],
+                stretchy
+              )
             } else {
               svgCanvas.replacePathSeg(4, 1, [mouseX, mouseY], stretchy)
             }
@@ -647,14 +726,20 @@ export const pathActionsMethod = (function () {
       }
       // if we are dragging a point, let's move it
       if (path.dragging) {
-        const pt = svgCanvas.getPointFromGrip({
-          x: path.dragging[0],
-          y: path.dragging[1]
-        }, path)
-        const mpt = svgCanvas.getPointFromGrip({
-          x: mouseX,
-          y: mouseY
-        }, path)
+        const pt = svgCanvas.getPointFromGrip(
+          {
+            x: path.dragging[0],
+            y: path.dragging[1]
+          },
+          path
+        )
+        const mpt = svgCanvas.getPointFromGrip(
+          {
+            x: mouseX,
+            y: mouseY
+          },
+          path
+        )
         const diffX = mpt.x - pt.x
         const diffY = mpt.y - pt.y
         path.dragging = [mouseX, mouseY]
@@ -668,10 +753,12 @@ export const pathActionsMethod = (function () {
         path.selected_pts = []
         path.eachSeg(function (_i) {
           const seg = this
-          if (!seg.next && !seg.prev) { return }
+          if (!seg.next && !seg.prev) {
+            return
+          }
 
           // const {item} = seg;
-          const rubberBox = svgCanvas.getRubberBox()
+          const rubberBox = svgCanvas.rubberBox
           const rbb = getBBox(rubberBox)
 
           const pt = svgCanvas.getGripPt(seg)
@@ -686,7 +773,9 @@ export const pathActionsMethod = (function () {
 
           this.select(sel)
           // Note that addPtsToSelection is not being run
-          if (sel) { path.selected_pts.push(seg.index) }
+          if (sel) {
+            path.selected_pts.push(seg.index)
+          }
         })
       }
     },
@@ -697,20 +786,20 @@ export const pathActionsMethod = (function () {
      * @property {Element} element
      */
     /**
-    * @param {Event} evt
-    * @param {Element} element
-    * @param {Float} _mouseX
-    * @param {Float} _mouseY
-    * @returns {module:path.keepElement|void}
-    */
+     * @param {Event} evt
+     * @param {Element} element
+     * @param {Float} _mouseX
+     * @param {Float} _mouseY
+     * @returns {module:path.keepElement|void}
+     */
     mouseUp (evt, element, _mouseX, _mouseY) {
-      const drawnPath = svgCanvas.getDrawnPath()
+      const drawnPath = svgCanvas.drawnPath
       // Create mode
-      if (svgCanvas.getCurrentMode() === 'path') {
+      if (svgCanvas.currentMode === 'path') {
         newPoint = null
         if (!drawnPath) {
-          element = getElement(svgCanvas.getId())
-          svgCanvas.setStarted(false)
+          element = getElement(svgCanvas.id)
+          svgCanvas.started = false
           firstCtrl = null
         }
 
@@ -721,7 +810,7 @@ export const pathActionsMethod = (function () {
       }
 
       // Edit mode
-      const rubberBox = svgCanvas.getRubberBox()
+      const rubberBox = svgCanvas.rubberBox
       if (path.dragging) {
         const lastPt = path.cur_pt
 
@@ -740,11 +829,14 @@ export const pathActionsMethod = (function () {
         // Done with multi-node-select
         rubberBox.setAttribute('display', 'none')
 
-        if (rubberBox.getAttribute('width') <= 2 && rubberBox.getAttribute('height') <= 2) {
+        if (
+          rubberBox.getAttribute('width') <= 2 &&
+          rubberBox.getAttribute('height') <= 2
+        ) {
           pathActionsMethod.toSelectMode(evt.target)
         }
 
-      // else, move back to select mode
+        // else, move back to select mode
       } else {
         pathActionsMethod.toSelectMode(evt.target)
       }
@@ -752,12 +844,12 @@ export const pathActionsMethod = (function () {
       return undefined
     },
     /**
-    * @param {Element} element
-    * @returns {void}
-    */
+     * @param {Element} element
+     * @returns {void}
+     */
     toEditMode (element) {
       path = svgCanvas.getPath_(element)
-      svgCanvas.setCurrentMode('pathedit')
+      svgCanvas.currentMode = 'pathedit'
       svgCanvas.clearSelection()
       path.setPathContext()
       path.show(true).update()
@@ -765,13 +857,13 @@ export const pathActionsMethod = (function () {
       subpath = false
     },
     /**
-    * @param {Element} elem
-    * @fires module:svgcanvas.SvgCanvas#event:selected
-    * @returns {void}
-    */
+     * @param {Element} elem
+     * @fires module:svgcanvas.SvgCanvas#event:selected
+     * @returns {void}
+     */
     toSelectMode (elem) {
-      const selPath = (elem === path.elem)
-      svgCanvas.setCurrentMode('select')
+      const selPath = elem === path.elem
+      svgCanvas.currentMode = 'select'
       path.setPathContext()
       path.show(false)
       currentPath = false
@@ -788,14 +880,14 @@ export const pathActionsMethod = (function () {
       }
     },
     /**
-    * @param {boolean} on
-    * @returns {void}
-    */
+     * @param {boolean} on
+     * @returns {void}
+     */
     addSubPath (on) {
       if (on) {
         // Internally we go into "path" mode, but in the UI it will
         // still appear as if in "pathedit" mode.
-        svgCanvas.setCurrentMode('path')
+        svgCanvas.currentMode = 'path'
         subpath = true
       } else {
         pathActionsMethod.clear(true)
@@ -803,27 +895,31 @@ export const pathActionsMethod = (function () {
       }
     },
     /**
-    * @param {Element} target
-    * @returns {void}
-    */
+     * @param {Element} target
+     * @returns {void}
+     */
     select (target) {
       if (currentPath === target) {
         pathActionsMethod.toEditMode(target)
-        svgCanvas.setCurrentMode('pathedit')
-      // going into pathedit mode
+        svgCanvas.currentMode = 'pathedit'
+        // going into pathedit mode
       } else {
         currentPath = target
       }
     },
     /**
-    * @fires module:svgcanvas.SvgCanvas#event:changed
-    * @returns {void}
-    */
+     * @fires module:svgcanvas.SvgCanvas#event:changed
+     * @returns {void}
+     */
     reorient () {
-      const elem = svgCanvas.getSelectedElements()[0]
-      if (!elem) { return }
+      const elem = svgCanvas.selectedElements[0]
+      if (!elem) {
+        return
+      }
       const angl = getRotationAngle(elem)
-      if (angl === 0) { return }
+      if (angl === 0) {
+        return
+      }
 
       const batchCmd = new BatchCommand('Reorient path')
       const changes = {
@@ -842,18 +938,18 @@ export const pathActionsMethod = (function () {
       this.clear()
 
       svgCanvas.addToSelection([elem], true)
-      svgCanvas.call('changed', svgCanvas.getSelectedElements())
+      svgCanvas.call('changed', svgCanvas.selectedElements)
     },
 
     /**
-    * @param {boolean} remove Not in use
-    * @returns {void}
-    */
+     * @param {boolean} remove Not in use
+     * @returns {void}
+     */
     clear () {
-      const drawnPath = svgCanvas.getDrawnPath()
+      const drawnPath = svgCanvas.drawnPath
       currentPath = null
       if (drawnPath) {
-        const elem = getElement(svgCanvas.getId())
+        const elem = getElement(svgCanvas.id)
         const psl = getElement('path_stretch_line')
         psl.parentNode.removeChild(psl)
         elem.parentNode.removeChild(elem)
@@ -863,19 +959,23 @@ export const pathActionsMethod = (function () {
           el.setAttribute('display', 'none')
         })
         firstCtrl = null
-        svgCanvas.setDrawnPath(null)
-        svgCanvas.setStarted(false)
-      } else if (svgCanvas.getCurrentMode() === 'pathedit') {
+        svgCanvas.drawnPath = null
+        svgCanvas.started = false
+      } else if (svgCanvas.currentMode === 'pathedit') {
         this.toSelectMode()
       }
-      if (path) { path.init().show(false) }
+      if (path) {
+        path.init().show(false)
+      }
     },
     /**
-    * @param {?(Element|SVGPathElement)} pth
-    * @returns {false|void}
-    */
+     * @param {?(Element|SVGPathElement)} pth
+     * @returns {false|void}
+     */
     resetOrientation (pth) {
-      if (pth?.nodeName !== 'path') { return false }
+      if (pth?.nodeName !== 'path') {
+        return false
+      }
       const tlist = getTransformList(pth)
       const m = transformListToTransform(tlist).matrix
       tlist.clear()
@@ -898,10 +998,13 @@ export const pathActionsMethod = (function () {
       for (let i = 0; i < len; ++i) {
         const seg = segList.getItem(i)
         const type = seg.pathSegType
-        if (type === 1) { continue }
-        const pts = [];
-        ['', 1, 2].forEach(function (n) {
-          const x = seg['x' + n]; const y = seg['y' + n]
+        if (type === 1) {
+          continue
+        }
+        const pts = []
+        ;['', 1, 2].forEach(function (n) {
+          const x = seg['x' + n]
+          const y = seg['y' + n]
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m)
             pts.splice(pts.length, 0, pt.x, pt.y)
@@ -914,22 +1017,22 @@ export const pathActionsMethod = (function () {
       return undefined
     },
     /**
-    * @returns {void}
-    */
+     * @returns {void}
+     */
     zoomChange () {
-      if (svgCanvas.getCurrentMode() === 'pathedit') {
+      if (svgCanvas.currentMode === 'pathedit') {
         path.update()
       }
     },
     /**
-    * @typedef {PlainObject} module:path.NodePoint
-    * @property {Float} x
-    * @property {Float} y
-    * @property {Integer} type
-    */
+     * @typedef {PlainObject} module:path.NodePoint
+     * @property {Float} x
+     * @property {Float} y
+     * @property {Integer} type
+     */
     /**
-    * @returns {module:path.NodePoint}
-    */
+     * @returns {module:path.NodePoint}
+     */
     getNodePoint () {
       const selPt = path.selected_pts.length ? path.selected_pts[0] : 1
 
@@ -941,15 +1044,15 @@ export const pathActionsMethod = (function () {
       }
     },
     /**
-    * @param {boolean} linkPoints
-    * @returns {void}
-    */
+     * @param {boolean} linkPoints
+     * @returns {void}
+     */
     linkControlPoints (linkPoints) {
       svgCanvas.setLinkControlPoints(linkPoints)
     },
     /**
-    * @returns {void}
-    */
+     * @returns {void}
+     */
     clonePathNode () {
       path.storeD()
 
@@ -971,12 +1074,14 @@ export const pathActionsMethod = (function () {
       path.endChanges('Clone path node(s)')
     },
     /**
-    * @returns {void}
-    */
+     * @returns {void}
+     */
     opencloseSubPath () {
       const selPts = path.selected_pts
       // Only allow one selected node for now
-      if (selPts.length !== 1) { return }
+      if (selPts.length !== 1) {
+        return
+      }
 
       const { elem } = path
       const list = elem.pathSegList
@@ -993,7 +1098,9 @@ export const pathActionsMethod = (function () {
         if (this.type === 2 && i <= index) {
           startItem = this.item
         }
-        if (i <= index) { return true }
+        if (i <= index) {
+          return true
+        }
         if (this.type === 2) {
           // Found M first, so open
           openPt = i
@@ -1046,7 +1153,8 @@ export const pathActionsMethod = (function () {
         return
       }
 
-      let lastM; let zSeg
+      let lastM
+      let zSeg
 
       // Find this sub-path's closing point and remove
       for (let i = 0; i < list.numberOfItems; i++) {
@@ -1067,7 +1175,7 @@ export const pathActionsMethod = (function () {
         }
       }
 
-      let num = (index - lastM) - 1
+      let num = index - lastM - 1
 
       while (num--) {
         list.insertItemBefore(list.getItem(lastM), zSeg)
@@ -1083,10 +1191,12 @@ export const pathActionsMethod = (function () {
       path.init().selectPt(0)
     },
     /**
-    * @returns {void}
-    */
+     * @returns {void}
+     */
     deletePathNode () {
-      if (!pathActionsMethod.canDeleteNodes) { return }
+      if (!pathActionsMethod.canDeleteNodes) {
+        return
+      }
       path.storeD()
 
       const selPts = path.selected_pts
@@ -1108,7 +1218,9 @@ export const pathActionsMethod = (function () {
           }
         }
 
-        if (len <= 1) { return true }
+        if (len <= 1) {
+          return true
+        }
 
         while (len--) {
           const item = segList.getItem(len)
@@ -1156,34 +1268,37 @@ export const pathActionsMethod = (function () {
 
       // TODO: Find right way to select point now
       // path.selectPt(selPt);
-      if (window.opera) { // Opera repaints incorrectly
+      if (window.opera) {
+        // Opera repaints incorrectly
         path.elem.setAttribute('d', path.elem.getAttribute('d'))
       }
       path.endChanges('Delete path node(s)')
     },
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Smooth polyline into path.
-    * @function module:path.pathActions.smoothPolylineIntoPath
-    * @see module:path~smoothPolylineIntoPath
-    */
+     * Smooth polyline into path.
+     * @function module:path.pathActions.smoothPolylineIntoPath
+     * @see module:path~smoothPolylineIntoPath
+     */
     smoothPolylineIntoPath,
     /* eslint-enable  */
     /**
-    * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
-    * @returns {void}
-    */
+     * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
+     * @returns {void}
+     */
     setSegType (v) {
       path?.setSegType(v)
     },
     /**
-    * @param {string} attr
-    * @param {Float} newValue
-    * @returns {void}
-    */
+     * @param {string} attr
+     * @param {Float} newValue
+     * @returns {void}
+     */
     moveNode (attr, newValue) {
       const selPts = path.selected_pts
-      if (!selPts.length) { return }
+      if (!selPts.length) {
+        return
+      }
 
       path.storeD()
 
@@ -1196,9 +1311,9 @@ export const pathActionsMethod = (function () {
       path.endChanges('Move path point')
     },
     /**
-    * @param {Element} elem
-    * @returns {void}
-    */
+     * @param {Element} elem
+     * @returns {void}
+     */
     fixEnd (elem) {
       // Adds an extra segment if the last seg before a Z doesn't end
       // at its M point
@@ -1208,11 +1323,13 @@ export const pathActionsMethod = (function () {
       let lastM
       for (let i = 0; i < len; ++i) {
         const item = segList.getItem(i)
-        if (item.pathSegType === 2) { // 2 => M segment type (move to)
+        if (item.pathSegType === 2) {
+          // 2 => M segment type (move to)
           lastM = item
         }
 
-        if (item.pathSegType === 1) { // 1 => Z segment type (close path)
+        if (item.pathSegType === 1) {
+          // 1 => Z segment type (close path)
           const prev = segList.getItem(i - 1)
           if (prev.x !== lastM.x || prev.y !== lastM.y) {
             // Add an L segment here
@@ -1227,11 +1344,11 @@ export const pathActionsMethod = (function () {
     },
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Convert a path to one with only absolute or relative values.
-    * @function module:path.pathActions.convertPath
-    * @see module:path.convertPath
-    */
+     * Convert a path to one with only absolute or relative values.
+     * @function module:path.pathActions.convertPath
+     * @see module:path.convertPath
+     */
     convertPath
-  })
+  }
 })()
 // end pathActions

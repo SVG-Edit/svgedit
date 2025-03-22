@@ -60,8 +60,8 @@ class BottomPanel {
         break
       default: {
         const newZoom = Number(value) > 0.1 ? Number(value) * 0.01 : 0.1
-        const zoom = this.editor.svgCanvas.getZoom()
-        if (this.editor.svgCanvas.getMode() === 'pathedit') {
+        const zoom = this.editor.svgCanvas.zoom
+        if (this.editor.svgCanvas.currentMode === 'pathedit') {
           // In pathedit mode, use zoomImage to update path points correctly.
           this.editor.zoomImage(newZoom / zoom)
         } else {
@@ -103,7 +103,7 @@ class BottomPanel {
       buttonsNeedingStroke.forEach(btn => {
         // if btn is pressed, change to select button
         if ($id(btn).pressed) {
-          this.editor.leftPanel.clickSelect()
+          this.editor.leftPanel.clickTool('select')
         }
         $id(btn).disabled = true
       })
@@ -116,7 +116,7 @@ class BottomPanel {
       buttonsNeedingFillAndStroke.forEach(btn => {
         // if btn is pressed, change to select button
         if ($id(btn).pressed) {
-          this.editor.leftPanel.clickSelect()
+          this.editor.leftPanel.clickTool('select')
         }
         $id(btn).disabled = true
       })

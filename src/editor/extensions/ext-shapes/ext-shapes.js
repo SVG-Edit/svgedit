@@ -26,7 +26,7 @@ export default {
     const svgEditor = this
     const canv = svgEditor.svgCanvas
     const { $id, $click } = canv
-    const svgroot = canv.getSvgRoot()
+    const svgRoot = canv.svgRoot
     let lastBBox = {}
     await loadExtensionTranslation(svgEditor)
 
@@ -47,14 +47,14 @@ export default {
           `
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 9)
           $click($id('tool_shapelib'), () => {
-            if (this.leftPanel.updateLeftPanel('tool_shapelib')) {
+            if (this.leftPanel.updateLeftPanel('shapelib')) {
               canv.setMode(modeId)
             }
           })
         }
       },
       mouseDown (opts) {
-        const mode = canv.getMode()
+        const mode = canv.currentMode
         if (mode !== modeId) { return undefined }
 
         const currentD = document.getElementById('tool_shapelib').dataset.draw
@@ -62,7 +62,7 @@ export default {
         const x = startX
         startY = opts.start_y
         const y = startY
-        const curStyle = canv.getStyle()
+        const curStyle = canv.curShape
 
         startClientPos.x = opts.event.clientX
         startClientPos.y = opts.event.clientY
@@ -89,10 +89,10 @@ export default {
         }
       },
       mouseMove (opts) {
-        const mode = canv.getMode()
+        const mode = canv.currentMode
         if (mode !== modeId) { return }
 
-        const zoom = canv.getZoom()
+        const zoom = canv.zoom
         const evt = opts.event
 
         const x = opts.mouse_x / zoom
@@ -123,9 +123,9 @@ export default {
         }
 
         // update the transform list with translate,scale,translate
-        const translateOrigin = svgroot.createSVGTransform()
-        const scale = svgroot.createSVGTransform()
-        const translateBack = svgroot.createSVGTransform()
+        const translateOrigin = svgRoot.createSVGTransform()
+        const scale = svgRoot.createSVGTransform()
+        const translateBack = svgRoot.createSVGTransform()
 
         translateOrigin.setTranslate(-(left + tx), -(top + ty))
         if (!evt.shiftKey) {
@@ -146,7 +146,7 @@ export default {
         lastBBox = curShape.getBBox()
       },
       mouseUp (opts) {
-        const mode = canv.getMode()
+        const mode = canv.currentMode
         if (mode !== modeId) { return undefined }
 
         const keepObject = (opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y)

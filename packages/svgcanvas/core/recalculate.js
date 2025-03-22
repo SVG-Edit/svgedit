@@ -43,7 +43,7 @@ export const updateClipPath = (attr, tx, ty) => {
   if (!clipPath) return
   const path = clipPath.firstChild
   const cpXform = getTransformList(path)
-  const newTranslate = svgCanvas.getSvgRoot().createSVGTransform()
+  const newTranslate = svgCanvas.svgRoot.createSVGTransform()
   newTranslate.setTranslate(tx, ty)
 
   cpXform.appendItem(newTranslate)
@@ -60,7 +60,7 @@ export const updateClipPath = (attr, tx, ty) => {
  */
 export const recalculateDimensions = selected => {
   if (!selected) return null
-  const svgroot = svgCanvas.getSvgRoot()
+  const svgRoot = svgCanvas.svgRoot
   const dataStorage = svgCanvas.getDataStorage()
   const tlist = getTransformList(selected)
 
@@ -200,7 +200,7 @@ export const recalculateDimensions = selected => {
     }
   }
   // Save the start transform value
-  initial.transform = svgCanvas.getStartTransform() || ''
+  initial.transform = svgCanvas.startTransform || ''
 
   let oldcenter, newcenter
 
@@ -282,7 +282,7 @@ export const recalculateDimensions = selected => {
 
         // Clear the transform list and set the new transform
         tlist.clear()
-        const newTransform = svgroot.createSVGTransform()
+        const newTransform = svgRoot.createSVGTransform()
         newTransform.setMatrix(mNew)
         tlist.appendItem(newTransform)
       } else {
@@ -293,10 +293,10 @@ export const recalculateDimensions = selected => {
       // Restore rotation if needed
       if (angle) {
         const matrix = transformListToTransform(tlist).matrix
-        const oldRotation = svgroot.createSVGTransform()
+        const oldRotation = svgRoot.createSVGTransform()
         oldRotation.setRotate(angle, oldcenter.x, oldcenter.y)
         const oldRotMatrix = oldRotation.matrix
-        const newRotation = svgroot.createSVGTransform()
+        const newRotation = svgRoot.createSVGTransform()
         newRotation.setRotate(angle, newcenter.x, newcenter.y)
         const newRotInvMatrix = newRotation.matrix.inverse()
         const matrixInv = matrix.inverse()
@@ -343,7 +343,7 @@ export const recalculateDimensions = selected => {
 
         // Clear the transform list and set the new transform
         tlist.clear()
-        const newTransform = svgroot.createSVGTransform()
+        const newTransform = svgRoot.createSVGTransform()
         newTransform.setMatrix(mNew)
         tlist.appendItem(newTransform)
       } else {
@@ -359,7 +359,7 @@ export const recalculateDimensions = selected => {
             y: oldcenter.y + m.f
           }
         }
-        const newRot = svgroot.createSVGTransform()
+        const newRot = svgRoot.createSVGTransform()
         newRot.setRotate(angle, newcenter.x, newcenter.y)
         if (tlist.numberOfItems) {
           tlist.insertItemBefore(newRot, 0)
@@ -386,7 +386,7 @@ export const recalculateDimensions = selected => {
 
         // Clear the transform list and set the new transform
         tlist.clear()
-        const newTransform = svgroot.createSVGTransform()
+        const newTransform = svgRoot.createSVGTransform()
         newTransform.setMatrix(mNew)
         tlist.appendItem(newTransform)
       } else {
@@ -396,7 +396,7 @@ export const recalculateDimensions = selected => {
     } else {
       // Rotation or other transformations
       if (angle) {
-        const newRot = svgroot.createSVGTransform()
+        const newRot = svgRoot.createSVGTransform()
         newRot.setRotate(angle, newcenter.x, newcenter.y)
 
         if (tlist.numberOfItems) {

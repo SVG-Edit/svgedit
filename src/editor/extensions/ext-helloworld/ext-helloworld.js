@@ -52,7 +52,7 @@ export default {
       // on the editor canvas (not the tool panels)
       mouseDown () {
         // Check the mode on mousedown
-        if (svgCanvas.getMode() === 'hello_world') {
+        if (svgCanvas.currentMode === 'hello_world') {
           // The returned object must include "started" with
           // a value of true in order for mouseUp to be triggered
           return { started: true }
@@ -64,8 +64,8 @@ export default {
       // to true (see above). Note that "opts" is an object with event info
       mouseUp (opts) {
         // Check the mode on mouseup
-        if (svgCanvas.getMode() === 'hello_world') {
-          const zoom = svgCanvas.getZoom()
+        if (svgCanvas.currentMode === 'hello_world') {
+          const zoom = svgCanvas.zoom
 
           // Get the actual coordinate by dividing by the zoom value
           const x = opts.mouse_x / zoom

@@ -111,7 +111,7 @@ export class Selector {
     const mgr = selectorManager_
     const selectedGrips = mgr.selectorGrips
     const selected = this.selectedElement
-    const zoom = svgCanvas.getZoom()
+    const zoom = svgCanvas.zoom
     let offset = 1 / zoom
     const sw = selected.getAttribute('stroke-width')
     if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
@@ -185,7 +185,7 @@ export class Selector {
 
       const angle = getRotationAngle(selected)
       if (angle) {
-        const rot = svgCanvas.getSvgRoot().createSVGTransform()
+        const rot = svgCanvas.svgRoot.createSVGTransform()
         rot.setRotate(-angle, cx, cy)
         const rotm = rot.matrix
         nbox.tl = transformPoint(nbox.tl.x, nbox.tl.y, rotm)
@@ -330,7 +330,7 @@ export class SelectorManager {
       attr: { display: 'none' }
     })
     this.selectorParentGroup.append(this.selectorGripsGroup)
-    svgCanvas.getSvgRoot().append(this.selectorParentGroup)
+    svgCanvas.svgRoot.append(this.selectorParentGroup)
 
     this.selectorMap = {}
     this.selectors = []
@@ -417,7 +417,7 @@ export class SelectorManager {
       }
     })
     canvasbg.append(rect)
-    svgCanvas.getSvgRoot().insertBefore(canvasbg, svgCanvas.getSvgContent())
+    svgCanvas.svgRoot.insertBefore(canvasbg, svgCanvas.svgContent)
   }
 
   /**
@@ -524,11 +524,6 @@ export class SelectorManager {
  * @function module:select.SVGFactory#svgContent
  * @returns {SVGSVGElement}
  */
-/**
- * @function module:select.SVGFactory#getZoom
- * @returns {Float} The current zoom level
- */
-
 /**
  * @typedef {GenericArray} module:select.Dimensions
  * @property {Integer} length 2

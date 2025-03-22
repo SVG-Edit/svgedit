@@ -9,7 +9,7 @@ class PaintBox {
      */
   constructor (container, type) {
     // set up gradients to be used for the buttons
-    const svgdocbox = new DOMParser().parseFromString(
+    const svgDocBox = new DOMParser().parseFromString(
       `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
           <rect
             fill="#000000" opacity="1" width="14" height="14"/>
@@ -18,7 +18,7 @@ class PaintBox {
       'text/xml'
     )
 
-    let docElem = svgdocbox.documentElement
+    let docElem = svgDocBox.documentElement
     docElem = document.importNode(docElem, true)
     container.appendChild(docElem)
 

@@ -1,41 +1,18 @@
 import * as select from '../../../packages/svgcanvas/core/select.js'
 import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
+import dataStorage from '../../../packages/svgcanvas/core/dataStorage.js'
 
 describe('select', function () {
   const sandbox = document.createElement('div')
   sandbox.id = 'sandbox'
 
-  let svgroot
-  let svgContent
   const mockConfig = {
     dimensions: [640, 480]
   }
-  const dataStorage = {
-    _storage: new WeakMap(),
-    put: function (element, key, obj) {
-      if (!this._storage.has(element)) {
-        this._storage.set(element, new Map())
-      }
-      this._storage.get(element).set(key, obj)
-    },
-    get: function (element, key) {
-      return this._storage.get(element).get(key)
-    },
-    has: function (element, key) {
-      return this._storage.has(element) && this._storage.get(element).has(key)
-    },
-    remove: function (element, key) {
-      const ret = this._storage.get(element).delete(key)
-      if (!this._storage.get(element).size === 0) {
-        this._storage.delete(element)
-      }
-      return ret
-    }
-  }
 
   /**
-  * @implements {module:select.SVGFactory}
-  */
+   * @implements {module:select.SVGFactory}
+   */
   const mockSvgCanvas = {
     curConfig: mockConfig,
     createSVGElement (jsonMap) {
@@ -45,9 +22,9 @@ describe('select', function () {
       })
       return elem
     },
-    getSvgRoot () { return svgroot },
-    getSvgContent () { return svgContent },
-    getDataStorage () { return dataStorage }
+    getDataStorage () {
+      return dataStorage
+    }
   }
 
   /**
@@ -55,17 +32,17 @@ describe('select', function () {
    * @returns {void}
    */
   beforeEach(() => {
-    svgroot = mockSvgCanvas.createSVGElement({
+    mockSvgCanvas.svgRoot = mockSvgCanvas.createSVGElement({
       element: 'svg',
       attr: { id: 'svgroot' }
     })
-    svgContent = mockSvgCanvas.createSVGElement({
+    mockSvgCanvas.svgContent = mockSvgCanvas.createSVGElement({
       element: 'svg',
       attr: { id: 'svgcontent' }
     })
 
-    svgroot.append(svgContent)
-    /* const rect = */ svgContent.append(
+    mockSvgCanvas.svgRoot.append(mockSvgCanvas.svgContent)
+    mockSvgCanvas.svgContent.append(
       mockSvgCanvas.createSVGElement({
         element: 'rect',
         attr: {
@@ -77,14 +54,8 @@ describe('select', function () {
         }
       })
     )
-    sandbox.append(svgroot)
+    sandbox.append(mockSvgCanvas.svgRoot)
   })
-
-  /*
-  function setUpWithInit () {
-    select.init(mockConfig, mockFactory);
-  }
-  */
 
   /**
    * Tear down the test by emptying our sandbox area.
@@ -103,37 +74,57 @@ describe('select', function () {
     assert.ok(select.init)
     assert.ok(select.getSelectorManager)
     assert.equal(typeof select, typeof {})
-    assert.equal(typeof select.Selector, typeof function () { /* empty fn */ })
-    assert.equal(typeof select.SelectorManager, typeof function () { /* empty fn */ })
-    assert.equal(typeof select.init, typeof function () { /* empty fn */ })
-    assert.equal(typeof select.getSelectorManager, typeof function () { /* empty fn */ })
+    assert.equal(
+      typeof select.Selector,
+      typeof function () {
+        /* empty fn */
+      }
+    )
+    assert.equal(
+      typeof select.SelectorManager,
+      typeof function () {
+        /* empty fn */
+      }
+    )
+    assert.equal(
+      typeof select.init,
+      typeof function () {
+        /* empty fn */
+      }
+    )
+    assert.equal(
+      typeof select.getSelectorManager,
+      typeof function () {
+        /* empty fn */
+      }
+    )
   })
 
   it('Test Selector DOM structure', function () {
-    assert.ok(svgroot)
-    assert.ok(svgroot.hasChildNodes())
+    assert.ok(mockSvgCanvas.svgRoot)
+    assert.ok(mockSvgCanvas.svgRoot.hasChildNodes())
 
     // Verify non-existence of Selector DOM nodes
-    assert.equal(svgroot.childNodes.length, 1)
-    assert.equal(svgroot.childNodes.item(0), svgContent)
-    assert.ok(!svgroot.querySelector('#selectorParentGroup'))
+    assert.equal(mockSvgCanvas.svgRoot.childNodes.length, 1)
+    assert.equal(mockSvgCanvas.svgRoot.childNodes.item(0), mockSvgCanvas.svgContent)
+    assert.ok(!mockSvgCanvas.svgRoot.querySelector('#selectorParentGroup'))
 
     select.init(mockSvgCanvas)
 
-    assert.equal(svgroot.childNodes.length, 3)
+    assert.equal(mockSvgCanvas.svgRoot.childNodes.length, 3)
 
     // Verify existence of canvas background.
-    const cb = svgroot.childNodes.item(0)
+    const cb = mockSvgCanvas.svgRoot.childNodes.item(0)
     assert.ok(cb)
     assert.equal(cb.id, 'canvasBackground')
 
-    assert.ok(svgroot.childNodes.item(1))
-    assert.equal(svgroot.childNodes.item(1), svgContent)
+    assert.ok(mockSvgCanvas.svgRoot.childNodes.item(1))
+    assert.equal(mockSvgCanvas.svgRoot.childNodes.item(1), mockSvgCanvas.svgContent)
 
     // Verify existence of selectorParentGroup.
-    const spg = svgroot.childNodes.item(2)
+    const spg = mockSvgCanvas.svgRoot.childNodes.item(2)
     assert.ok(spg)
-    assert.equal(svgroot.querySelector('#selectorParentGroup'), spg)
+    assert.equal(mockSvgCanvas.svgRoot.querySelector('#selectorParentGroup'), spg)
     assert.equal(spg.id, 'selectorParentGroup')
     assert.equal(spg.tagName, 'g')
 

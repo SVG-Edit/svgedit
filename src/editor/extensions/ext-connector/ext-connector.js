@@ -29,7 +29,7 @@ export default {
     const svgEditor = this
     const { svgCanvas } = svgEditor
     const { getElement, $id, $click, addSVGElementsFromJson } = svgCanvas
-    const { svgroot, selectorManager } = S
+    const { svgRoot, selectorManager } = S
     const seNs = svgCanvas.getEditorNS()
     await loadExtensionTranslation(svgEditor)
 
@@ -63,7 +63,7 @@ export default {
       const cmd = originalMoveSelectedElements.apply(this, args)
 
       // Update connectors
-      updateConnectors(svgCanvas.getSelectedElements())
+      updateConnectors(svgCanvas.selectedElements)
 
       // Return the result of the original method
       return cmd
@@ -168,7 +168,7 @@ export default {
     const setPoint = (elem, pos, x, y, setMid) => {
       // Create a new SVG point
       const pts = elem.points
-      const pt = svgroot.createSVGPoint()
+      const pt = svgRoot.createSVGPoint()
       pt.x = x
       pt.y = y
 
@@ -372,7 +372,7 @@ export default {
     const reset = () => {
       const dataStorage = svgCanvas.getDataStorage()
       // Make sure all connectors have data set
-      const svgContent = svgCanvas.getSvgContent()
+      const svgContent = svgCanvas.svgContent
       const elements = svgContent.querySelectorAll('*')
       elements.forEach(element => {
         const conn = element.getAttributeNS(seNs, 'connector')
@@ -410,9 +410,9 @@ export default {
       mouseDown (opts) {
         // Retrieve necessary data from the SVG canvas and the event object
         const dataStorage = svgCanvas.getDataStorage()
-        const svgContent = svgCanvas.getSvgContent()
+        const svgContent = svgCanvas.svgContent
         const { event: e, start_x: startX, start_y: startY } = opts
-        const mode = svgCanvas.getMode()
+        const mode = svgCanvas.currentMode
         const {
           curConfig: { initStroke }
         } = svgEditor.configObj
@@ -479,7 +479,7 @@ export default {
         if (connections.length === 0) return
 
         const dataStorage = svgCanvas.getDataStorage()
-        const zoom = svgCanvas.getZoom()
+        const zoom = svgCanvas.zoom
         // const e = opts.event;
         const x = opts.mouse_x / zoom
         const y = opts.mouse_y / zoom
@@ -489,7 +489,7 @@ export default {
         const diffX = x - startX
         const diffY = y - startY
 
-        const mode = svgCanvas.getMode()
+        const mode = svgCanvas.currentMode
         if (mode === 'connector' && started) {
           // const sw = curLine.getAttribute('stroke-width') * 3;
           // Set start point (adjusts based on bb)
@@ -507,7 +507,7 @@ export default {
           // Set end point
           setPoint(curLine, 'end', x, y, true)
         } else if (mode === 'select') {
-          for (const elem of svgCanvas.getSelectedElements()) {
+          for (const elem of svgCanvas.selectedElements) {
             if (elem && dataStorage.has(elem, 'c_start')) {
               svgCanvas.removeFromSelection([elem])
               elem.transform.baseVal.clear()
@@ -521,12 +521,12 @@ export default {
       mouseUp (opts) {
         // Get necessary data and initial setups
         const dataStorage = svgCanvas.getDataStorage()
-        const svgContent = svgCanvas.getSvgContent()
+        const svgContent = svgCanvas.svgContent
         const { event: e } = opts
         let mouseTarget = e.target
 
         // Early exit if not in connector mode
-        if (svgCanvas.getMode() !== 'connector') return undefined
+        if (svgCanvas.currentMode !== 'connector') return undefined
 
         // Check for a foreignObject parent and update mouseTarget if found
         const fo = svgCanvas.getClosest(mouseTarget.parentNode, 'foreignObject')
@@ -615,13 +615,13 @@ export default {
       selectedChanged (opts) {
         // Get necessary data storage and SVG content
         const dataStorage = svgCanvas.getDataStorage()
-        const svgContent = svgCanvas.getSvgContent()
+        const svgContent = svgCanvas.svgContent
 
         // Exit early if there are no connectors
         if (!svgContent.querySelectorAll('[id^="conn_"]').length) return
 
         // If the current mode is 'connector', switch to 'select'
-        if (svgCanvas.getMode() === 'connector') {
+        if (svgCanvas.currentMode === 'connector') {
           svgCanvas.setMode('select')
         }
 
@@ -643,7 +643,7 @@ export default {
         }
 
         // Update connectors based on selected elements
-        updateConnectors(svgCanvas.getSelectedElements())
+        updateConnectors(svgCanvas.selectedElements)
       },
       elementChanged (opts) {
         // Get the necessary data storage
@@ -698,7 +698,7 @@ export default {
           const start = getElement(dataStorage.get(elem, 'c_start'))
           updateConnectors([start])
         } else {
-          updateConnectors(svgCanvas.getSelectedElements())
+          updateConnectors(svgCanvas.selectedElements)
         }
       },
       IDsUpdated (input) {
@@ -724,7 +724,7 @@ export default {
       toolButtonStateUpdate (opts) {
         const button = document.getElementById('tool_connect')
         if (opts.nostroke && button.pressed === true) {
-          svgEditor.clickSelect()
+          svgEditor.clickTool('select')
         }
         button.disabled = opts.nostroke
       }

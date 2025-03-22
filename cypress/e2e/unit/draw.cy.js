@@ -43,14 +43,12 @@ describe('draw.Drawing', function () {
   const getCurrentDrawing = function () {
     return currentDrawing_
   }
-  const setCurrentGroup = () => { /* empty fn */ }
   draw.init(
     /**
      * @implements {module:draw.DrawCanvasInit}
      */
     {
-      getCurrentDrawing,
-      setCurrentGroup
+      getCurrentDrawing
     }
   )
 

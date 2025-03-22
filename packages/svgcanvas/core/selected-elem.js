@@ -73,7 +73,7 @@ export const init = canvas => {
  * @returns {void}
  */
 const moveToTopSelectedElem = () => {
-  const [selected] = svgCanvas.getSelectedElements()
+  const [selected] = svgCanvas.selectedElements
   if (selected) {
     const t = selected
     const oldParent = t.parentNode
@@ -98,7 +98,7 @@ const moveToTopSelectedElem = () => {
  * @returns {void}
  */
 const moveToBottomSelectedElem = () => {
-  const [selected] = svgCanvas.getSelectedElements()
+  const [selected] = svgCanvas.selectedElements
   if (selected) {
     let t = selected
     const oldParent = t.parentNode
@@ -133,13 +133,13 @@ const moveToBottomSelectedElem = () => {
  * @returns {void}
  */
 const moveUpDownSelected = dir => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const selected = selectedElements[0]
   if (!selected) {
     return
   }
 
-  svgCanvas.setCurBBoxes([])
+  svgCanvas.curBBoxes = []
   let closest
   let foundCur
   // jQuery sorts this list
@@ -195,8 +195,8 @@ const moveUpDownSelected = dir => {
  */
 
 const moveSelectedElements = (dx, dy, undoable = true) => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  const zoom = svgCanvas.getZoom()
+  const selectedElements = svgCanvas.selectedElements
+  const zoom = svgCanvas.zoom
   // if undoable is not sent, default to true
   // if single values, scale them to the zoom
   if (!Array.isArray(dx)) {
@@ -207,7 +207,7 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
   const batchCmd = new BatchCommand('position')
   selectedElements.forEach((selected, i) => {
     if (selected) {
-      const xform = svgCanvas.getSvgRoot().createSVGTransform()
+      const xform = svgCanvas.svgRoot.createSVGTransform()
       const tlist = getTransformList(selected)
 
       // dx and dy could be arrays
@@ -229,7 +229,7 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
       }
 
       svgCanvas
-        .gettingSelectorManager()
+        .selectorManager
         .requestSelector(selected)
         .resize()
     }
@@ -253,8 +253,8 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
  * @returns {void}
  */
 const cloneSelectedElements = (x, y) => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  const currentGroup = svgCanvas.getCurrentGroup()
+  const selectedElements = svgCanvas.selectedElements
+  const currentGroup = svgCanvas.currentGroup
   let i
   let elem
   const batchCmd = new BatchCommand('Clone Elements')
@@ -314,7 +314,7 @@ const cloneSelectedElements = (x, y) => {
  * @returns {void}
  */
 const alignSelectedElements = (type, relativeTo) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const bboxes = [] // angles = [];
   const len = selectedElements.length
   if (!len) {
@@ -365,8 +365,8 @@ const alignSelectedElements = (type, relativeTo) => {
     case 'page':
       minx = 0
       miny = 0
-      maxx = svgCanvas.getContentW()
-      maxy = svgCanvas.getContentH()
+      maxx = svgCanvas.contentW
+      maxy = svgCanvas.contentH
       break
     default:
       // 'selected'
@@ -588,7 +588,7 @@ const _getNormalDistances = (type, selectedElements, bboxes, minx, maxx, miny, m
  * @returns {void}
  */
 const deleteSelectedElements = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const batchCmd = new BatchCommand('Delete Elements')
   const selectedCopy = [] // selectedElements is being deleted
 
@@ -597,7 +597,7 @@ const deleteSelectedElements = () => {
       let parent = selected.parentNode
       let t = selected
       // this will unselect the element and remove the selectedOutline
-      svgCanvas.gettingSelectorManager().releaseSelector(t)
+      svgCanvas.selectorManager.releaseSelector(t)
       // Remove the path if present.
       pathModule.removePath_(t.id)
       // Get the parent if it's a single-child anchor
@@ -612,7 +612,7 @@ const deleteSelectedElements = () => {
       batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent))
     }
   })
-  svgCanvas.setEmptySelectedElements()
+  svgCanvas.selectedElements = []
 
   if (!batchCmd.isEmpty()) {
     svgCanvas.addCommandToHistory(batchCmd)
@@ -627,12 +627,12 @@ const deleteSelectedElements = () => {
  * @returns {void}
  */
 const copySelectedElements = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const data = JSON.stringify(
     selectedElements.map(x => svgCanvas.getJsonFromSvgElements(x))
   )
   // Use sessionStorage for the clipboard data.
-  sessionStorage.setItem(svgCanvas.getClipboardID(), data)
+  sessionStorage.setItem(svgCanvas.clipboardId, data)
   svgCanvas.flashStorage()
 
   // Context menu might not exist (it is provided by editor.js).
@@ -648,7 +648,7 @@ const copySelectedElements = () => {
  * @returns {void}
  */
 const groupSelectedElements = (type, urlArg) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   if (!type) {
     type = 'g'
   }
@@ -846,7 +846,7 @@ const pushGroupProperty = (g, undoable) => {
         const rgm = glist.getItem(0).matrix
 
         // get child's rotation matrix (Rc)
-        let rcm = svgCanvas.getSvgRoot().createSVGMatrix()
+        let rcm = svgCanvas.svgRoot.createSVGMatrix()
         const cangle = getRotationAngle(elem)
         if (cangle) {
           rcm = chtlist.getItem(0).matrix
@@ -865,7 +865,7 @@ const pushGroupProperty = (g, undoable) => {
         const sangle = gangle + cangle
 
         // get child's rotation at the old center (Rc2_inv)
-        const r2 = svgCanvas.getSvgRoot().createSVGTransform()
+        const r2 = svgCanvas.svgRoot.createSVGTransform()
         r2.setRotate(sangle, coldc.x, coldc.y)
 
         // calculate equivalent translate
@@ -885,7 +885,7 @@ const pushGroupProperty = (g, undoable) => {
         }
 
         if (trm.e || trm.f) {
-          const tr = svgCanvas.getSvgRoot().createSVGTransform()
+          const tr = svgCanvas.svgRoot.createSVGTransform()
           tr.setTranslate(trm.e, trm.f)
           if (chtlist.numberOfItems) {
             chtlist.insertItemBefore(tr, 0)
@@ -901,7 +901,7 @@ const pushGroupProperty = (g, undoable) => {
         changes = {}
         changes.transform = oldxform || ''
 
-        const newxform = svgCanvas.getSvgRoot().createSVGTransform()
+        const newxform = svgCanvas.svgRoot.createSVGTransform()
 
         // [ gm ] [ chm ] = [ chm ] [ gm' ]
         // [ gm' ] = [ chmInv ] [ gm ] [ chm ]
@@ -941,7 +941,7 @@ const pushGroupProperty = (g, undoable) => {
  * @returns {void}
  */
 const convertToGroup = elem => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   if (!elem) {
     elem = selectedElements[0]
   }
@@ -965,7 +965,7 @@ const convertToGroup = elem => {
     dataStorage.remove(elem, 'gsvg')
 
     const tlist = getTransformList(elem)
-    const xform = svgCanvas.getSvgRoot().createSVGTransform()
+    const xform = svgCanvas.svgRoot.createSVGTransform()
     xform.setTranslate(pt.x, pt.y)
     tlist.appendItem(xform)
     recalculateDimensions(elem)
@@ -1003,12 +1003,12 @@ const convertToGroup = elem => {
     $elem.remove()
 
     // See if other elements reference this symbol
-    const svgContent = svgCanvas.getSvgContent()
+    const svgContent = svgCanvas.svgContent
     // const hasMore = svgContent.querySelectorAll('use:data(symbol)').length;
     // @todo review this logic
     const hasMore = svgContent.querySelectorAll('use').length
 
-    const g = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'g')
+    const g = svgCanvas.svgDoc.createElementNS(NS.SVG, 'g')
     const childs = elem.childNodes
 
     let i
@@ -1109,7 +1109,7 @@ const convertToGroup = elem => {
  * @returns {void}
  */
 const ungroupSelectedElement = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const dataStorage = svgCanvas.getDataStorage()
   let g = selectedElements[0]
   if (!g) {
@@ -1192,16 +1192,16 @@ const ungroupSelectedElement = () => {
  * @returns {module:svgcanvas.CanvasInfo}
  */
 const updateCanvas = (w, h) => {
-  svgCanvas.getSvgRoot().setAttribute('width', w)
-  svgCanvas.getSvgRoot().setAttribute('height', h)
-  const zoom = svgCanvas.getZoom()
+  svgCanvas.svgRoot.setAttribute('width', w)
+  svgCanvas.svgRoot.setAttribute('height', h)
+  const zoom = svgCanvas.zoom
   const bg = document.getElementById('canvasBackground')
-  const oldX = Number(svgCanvas.getSvgContent().getAttribute('x'))
-  const oldY = Number(svgCanvas.getSvgContent().getAttribute('y'))
+  const oldX = Number(svgCanvas.svgContent.getAttribute('x'))
+  const oldY = Number(svgCanvas.svgContent.getAttribute('y'))
   const x = (w - svgCanvas.contentW * zoom) / 2
   const y = (h - svgCanvas.contentH * zoom) / 2
 
-  assignAttributes(svgCanvas.getSvgContent(), {
+  assignAttributes(svgCanvas.svgContent, {
     width: svgCanvas.contentW * zoom,
     height: svgCanvas.contentH * zoom,
     x,
@@ -1210,8 +1210,8 @@ const updateCanvas = (w, h) => {
   })
 
   assignAttributes(bg, {
-    width: svgCanvas.getSvgContent().getAttribute('width'),
-    height: svgCanvas.getSvgContent().getAttribute('height'),
+    width: svgCanvas.svgContent.getAttribute('width'),
+    height: svgCanvas.svgContent.getAttribute('height'),
     x,
     y
   })
@@ -1264,8 +1264,8 @@ const updateCanvas = (w, h) => {
  * @returns {void}
  */
 const cycleElement = next => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  const currentGroup = svgCanvas.getCurrentGroup()
+  const selectedElements = svgCanvas.selectedElements
+  const currentGroup = svgCanvas.currentGroup
   let num
   const curElem = selectedElements[0]
   let elem = false

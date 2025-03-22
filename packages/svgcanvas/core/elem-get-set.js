@@ -71,9 +71,9 @@ export const init = (canvas) => {
 * @returns {DimensionsAndZoom} The current dimensions and zoom level in an object
 */
 const getResolutionMethod = () => {
-  const zoom = svgCanvas.getZoom()
-  const w = svgCanvas.getSvgContent().getAttribute('width') / zoom
-  const h = svgCanvas.getSvgContent().getAttribute('height') / zoom
+  const zoom = svgCanvas.zoom
+  const w = svgCanvas.svgContent.getAttribute('width') / zoom
+  const h = svgCanvas.svgContent.getAttribute('height') / zoom
 
   return {
     w,
@@ -89,7 +89,7 @@ const getResolutionMethod = () => {
 * `undefined` if no element is passed nd there are no selected elements.
 */
 const getTitleMethod = (elem) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const dataStorage = svgCanvas.getDataStorage()
   elem = elem || selectedElements[0]
   if (!elem) { return undefined }
@@ -119,7 +119,7 @@ const setGroupTitleMethod = (val) => {
     InsertElementCommand, RemoveElementCommand,
     ChangeElementCommand, BatchCommand
   } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const dataStorage = svgCanvas.getDataStorage()
   let elem = selectedElements[0]
   if (dataStorage.has(elem, 'gsvg')) {
@@ -143,7 +143,7 @@ const setGroupTitleMethod = (val) => {
     title.textContent = val
   } else {
     // Add title element
-    title = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title')
+    title = svgCanvas.svgDoc.createElementNS(NS.SVG, 'title')
     title.textContent = val
     elem.insertBefore(title, elem.firstChild)
     batchCmd.addSubCommand(new InsertElementCommand(title))
@@ -161,7 +161,7 @@ const setGroupTitleMethod = (val) => {
 */
 const setDocumentTitleMethod = (newTitle) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const childs = svgCanvas.getSvgContent().childNodes
+  const childs = svgCanvas.svgContent.childNodes
   let docTitle = false; let oldTitle = ''
 
   const batchCmd = new BatchCommand('Change Image Title')
@@ -174,8 +174,8 @@ const setDocumentTitleMethod = (newTitle) => {
     }
   }
   if (!docTitle) {
-    docTitle = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title')
-    svgCanvas.getSvgContent().insertBefore(docTitle, svgCanvas.getSvgContent().firstChild)
+    docTitle = svgCanvas.svgDoc.createElementNS(NS.SVG, 'title')
+    svgCanvas.svgContent.insertBefore(docTitle, svgCanvas.svgContent.firstChild)
     // svgContent.firstChild.before(docTitle); // Ok to replace above with this?
   }
 
@@ -201,7 +201,7 @@ const setDocumentTitleMethod = (newTitle) => {
 */
 const setResolutionMethod = (x, y) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const zoom = svgCanvas.getZoom()
+  const zoom = svgCanvas.zoom
   const res = svgCanvas.getResolution()
   const { w, h } = res
   let batchCmd
@@ -238,18 +238,18 @@ const setResolutionMethod = (x, y) => {
     x = convertToNum('width', x)
     y = convertToNum('height', y)
 
-    svgCanvas.getSvgContent().setAttribute('width', x)
-    svgCanvas.getSvgContent().setAttribute('height', y)
+    svgCanvas.svgContent.setAttribute('width', x)
+    svgCanvas.svgContent.setAttribute('height', y)
 
     svgCanvas.contentW = x
     svgCanvas.contentH = y
-    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { width: w, height: h }))
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.svgContent, { width: w, height: h }))
 
-    svgCanvas.getSvgContent().setAttribute('viewBox', [0, 0, x / zoom, y / zoom].join(' '))
-    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { viewBox: ['0 0', w, h].join(' ') }))
+    svgCanvas.svgContent.setAttribute('viewBox', [0, 0, x / zoom, y / zoom].join(' '))
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.svgContent, { viewBox: ['0 0', w, h].join(' ') }))
 
     svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [svgCanvas.getSvgContent()])
+    svgCanvas.call('changed', [svgCanvas.svgContent])
   }
   return true
 }
@@ -262,7 +262,7 @@ const setResolutionMethod = (x, y) => {
 */
 const getEditorNSMethod = (add) => {
   if (add) {
-    svgCanvas.getSvgContent().setAttribute('xmlns:se', NS.SE)
+    svgCanvas.svgContent.setAttribute('xmlns:se', NS.SE)
   }
   return NS.SE
 }
@@ -281,8 +281,8 @@ const getEditorNSMethod = (add) => {
 * @returns {module:elem-get-set.ZoomAndBBox|void}
 */
 const setBBoxZoomMethod = (val, editorW, editorH) => {
-  const zoom = svgCanvas.getZoom()
-  const selectedElements = svgCanvas.getSelectedElements()
+  const zoom = svgCanvas.zoom
+  const selectedElements = svgCanvas.selectedElements
   let spacer = 0.85
   let bb
   const calcZoom = (bb) => {
@@ -290,7 +290,7 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100
     const zoom = Math.min(wZoom, hZoom)
-    svgCanvas.setZoom(zoom)
+    svgCanvas.zoom = zoom
     return { zoom, bbox: bb }
   }
 
@@ -298,7 +298,7 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
     bb = val
     if (bb.width === 0 || bb.height === 0) {
       const newzoom = bb.zoom ? bb.zoom : zoom * bb.factor
-      svgCanvas.setZoom(newzoom)
+      svgCanvas.zoom = newzoom
       return { zoom, bbox: bb }
     }
     return calcZoom(bb)
@@ -340,10 +340,10 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
 * @returns {void}
 */
 const setZoomMethod = (zoomLevel) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const res = svgCanvas.getResolution()
-  svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel)
-  svgCanvas.setZoom(zoomLevel)
+  svgCanvas.svgContent.setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel)
+  svgCanvas.zoom = zoomLevel
   selectedElements.forEach((elem) => {
     if (!elem) { return }
     svgCanvas.selectorManager.requestSelector(elem).resize()
@@ -362,9 +362,9 @@ const setZoomMethod = (zoomLevel) => {
 * @returns {void}
 */
 const setColorMethod = (type, val, preventUndo) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   svgCanvas.setCurShape(type, val)
-  svgCanvas.setCurProperties(type + '_paint', { type: 'solidColor' })
+  svgCanvas.curProperties[type + '_paint'] = { type: 'solidColor' }
   const elems = []
   /**
 *
@@ -408,8 +408,8 @@ const setColorMethod = (type, val, preventUndo) => {
 * @returns {void}
 */
 const setGradientMethod = (type) => {
-  if (!svgCanvas.getCurProperties(type + '_paint') ||
-    svgCanvas.getCurProperties(type + '_paint').type === 'solidColor') { return }
+  if (!svgCanvas.curProperties[type + '_paint'] ||
+    svgCanvas.curProperties[type + '_paint'].type === 'solidColor') { return }
   const canvas = svgCanvas
   let grad = canvas[type + 'Grad']
   // find out if there is a duplicate gradient already in the defs
@@ -418,7 +418,7 @@ const setGradientMethod = (type) => {
   // no duplicate found, so import gradient into defs
   if (!duplicateGrad) {
     // const origGrad = grad;
-    grad = svgCanvas.getDOMDocument().importNode(grad, true)
+    grad = svgCanvas.svgDoc.importNode(grad, true)
     defs.append(grad)
     // get next id and set it on the grad
     grad.id = svgCanvas.getNextId()
@@ -514,7 +514,7 @@ const setPaintMethod = (type, paint) => {
   svgCanvas.setPaintOpacity(type, p.alpha / 100, true)
 
   // now set the current paint object
-  svgCanvas.setCurProperties(type + '_paint', p)
+  svgCanvas.curProperties[type + '_paint'] = p
   switch (p.type) {
     case 'solidColor':
       svgCanvas.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none')
@@ -536,12 +536,12 @@ const setPaintMethod = (type, paint) => {
 * @returns {void}
 */
 const setStrokeWidthMethod = (val) => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  if (val === 0 && ['line', 'path'].includes(svgCanvas.getMode())) {
+  const selectedElements = svgCanvas.selectedElements
+  if (val === 0 && ['line', 'path'].includes(svgCanvas.mode)) {
     svgCanvas.setStrokeWidth(1)
     return
   }
-  svgCanvas.setCurProperties('stroke_width', val)
+  svgCanvas.curProperties.stroke_width = val
 
   const elems = []
   /**
@@ -580,7 +580,7 @@ const setStrokeWidthMethod = (val) => {
 * @returns {void}
 */
 const setStrokeAttrMethod = (attr, val) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   svgCanvas.setCurShape(attr.replace('-', '_'), val)
   const elems = []
 
@@ -607,7 +607,7 @@ const setStrokeAttrMethod = (attr, val) => {
  * @returns {boolean} `true` if all selected elements are bold, `false` otherwise.
  */
 const getBoldMethod = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   return textElements.every(el => el.getAttribute('font-weight') === 'bold')
 }
@@ -619,7 +619,7 @@ const getBoldMethod = () => {
  * @returns {void}
  */
 const setBoldMethod = (b) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('font-weight', b ? 'bold' : 'normal', textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -632,7 +632,7 @@ const setBoldMethod = (b) => {
  * @returns {boolean} Indicates whether or not elements have the text decoration value
  */
 const hasTextDecorationMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   return textElements.every(el => (el.getAttribute('text-decoration') || '').includes(value))
 }
@@ -644,7 +644,7 @@ const hasTextDecorationMethod = (value) => {
  */
 const addTextDecorationMethod = (value) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
 
   const batchCmd = new BatchCommand()
@@ -672,7 +672,7 @@ const addTextDecorationMethod = (value) => {
  */
 const removeTextDecorationMethod = (value) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
 
   const batchCmd = new BatchCommand()
@@ -696,7 +696,7 @@ const removeTextDecorationMethod = (value) => {
  * @returns {boolean} `true` if all selected elements are in italics, `false` otherwise.
  */
 const getItalicMethod = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   return textElements.every(el => el.getAttribute('font-style') === 'italic')
 }
@@ -708,7 +708,7 @@ const getItalicMethod = () => {
  * @returns {void}
  */
 const setItalicMethod = (i) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('font-style', i ? 'italic' : 'normal', textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -722,7 +722,7 @@ const setItalicMethod = (i) => {
  * @returns {void}
  */
 const setTextAnchorMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('text-anchor', value, textElements)
 }
@@ -733,7 +733,7 @@ const setTextAnchorMethod = (value) => {
  * @returns {void}
  */
 const setLetterSpacingMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('letter-spacing', value, textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -747,7 +747,7 @@ const setLetterSpacingMethod = (value) => {
  * @returns {void}
  */
 const setWordSpacingMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('word-spacing', value, textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -761,7 +761,7 @@ const setWordSpacingMethod = (value) => {
  * @returns {void}
  */
 const setTextLengthMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('textLength', value, textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -775,7 +775,7 @@ const setTextLengthMethod = (value) => {
  * @returns {void}
  */
 const setLengthAdjustMethod = (value) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
   svgCanvas.changeSelectedAttribute('lengthAdjust', value, textElements)
   if (!textElements.some(el => el.textContent)) {
@@ -788,7 +788,7 @@ const setLengthAdjustMethod = (value) => {
 * @returns {string} The current font family
 */
 const getFontFamilyMethod = () => {
-  return svgCanvas.getCurText('font_family')
+  return svgCanvas.curText.font_family
 }
 
 /**
@@ -798,9 +798,9 @@ const getFontFamilyMethod = () => {
 * @returns {void}
 */
 const setFontFamilyMethod = (val) => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const textElements = selectedElements.filter(el => el?.tagName === 'text')
-  svgCanvas.setCurText('font_family', val)
+  svgCanvas.curText.font_family = val
   svgCanvas.changeSelectedAttribute('font-family', val, textElements)
   if (!textElements.some(el => el.textContent)) {
     svgCanvas.textActions.setCursor()
@@ -814,7 +814,7 @@ const setFontFamilyMethod = (val) => {
 * @returns {void}
 */
 const setFontColorMethod = (val) => {
-  svgCanvas.setCurText('fill', val)
+  svgCanvas.curText.fill = val
   svgCanvas.changeSelectedAttribute('fill', val)
 }
 
@@ -823,7 +823,7 @@ const setFontColorMethod = (val) => {
 * @returns {string} The current font color
 */
 const getFontColorMethod = () => {
-  return svgCanvas.getCurText('fill')
+  return svgCanvas.curText.fill
 }
 
 /**
@@ -831,7 +831,7 @@ const getFontColorMethod = () => {
 * @returns {Float} The current font size
 */
 const getFontSizeMethod = () => {
-  return svgCanvas.getCurText('font_size')
+  return svgCanvas.curText.font_size
 }
 
 /**
@@ -841,8 +841,8 @@ const getFontSizeMethod = () => {
 * @returns {void}
 */
 const setFontSizeMethod = (val) => {
-  const selectedElements = svgCanvas.getSelectedElements()
-  svgCanvas.setCurText('font_size', val)
+  const selectedElements = svgCanvas.selectedElements
+  svgCanvas.curText.font_size = val
   svgCanvas.changeSelectedAttribute('font-size', val)
   if (!selectedElements[0]?.textContent) {
     svgCanvas.textActions.setCursor()
@@ -854,7 +854,7 @@ const setFontSizeMethod = (val) => {
 * @returns {string} The current text (`textContent`) of the selected element
 */
 const getTextMethod = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const selected = selectedElements[0]
   return (selected) ? selected.textContent : ''
 }
@@ -881,7 +881,7 @@ const setTextContentMethod = (val) => {
 */
 const setImageURLMethod = (val) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const elem = selectedElements[0]
   if (!elem) { return }
 
@@ -930,7 +930,7 @@ const setImageURLMethod = (val) => {
 */
 const setLinkURLMethod = (val) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   let elem = selectedElements[0]
   if (!elem) { return }
   if (elem.tagName !== 'a') {
@@ -967,7 +967,7 @@ const setLinkURLMethod = (val) => {
 */
 const setRectRadiusMethod = (val) => {
   const { ChangeElementCommand } = svgCanvas.history
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.selectedElements
   const selected = selectedElements[0]
   if (selected?.tagName === 'rect') {
     const r = Number(selected.getAttribute('rx'))
@@ -1027,7 +1027,7 @@ const setBackgroundMethod = (color, url) => {
   border.setAttribute('fill', color === 'chessboard' ? '#fff' : color)
   if (color === 'chessboard') {
     if (!bgPattern) {
-      bgPattern = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'foreignObject')
+      bgPattern = svgCanvas.svgDoc.createElementNS(NS.SVG, 'foreignObject')
       svgCanvas.assignAttributes(bgPattern, {
         id: 'background_pattern',
         width: '100%',
@@ -1050,7 +1050,7 @@ const setBackgroundMethod = (color, url) => {
   }
   if (url) {
     if (!bgImg) {
-      bgImg = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'image')
+      bgImg = svgCanvas.svgDoc.createElementNS(NS.SVG, 'image')
       svgCanvas.assignAttributes(bgImg, {
         id: 'background_image',
         width: '100%',

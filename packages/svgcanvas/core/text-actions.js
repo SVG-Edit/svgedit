@@ -178,7 +178,7 @@ export const textActionsMethod = (function () {
    */
   function getIndexFromPoint (mouseX, mouseY) {
     // Position cursor here
-    const pt = svgCanvas.getSvgRoot().createSVGPoint()
+    const pt = svgCanvas.svgRoot.createSVGPoint()
     pt.x = mouseX
     pt.y = mouseY
 
@@ -242,7 +242,7 @@ export const textActionsMethod = (function () {
       x: xIn,
       y: yIn
     }
-    const zoom = svgCanvas.getZoom()
+    const zoom = svgCanvas.zoom
     out.x /= zoom
     out.y /= zoom
 
@@ -272,7 +272,7 @@ export const textActionsMethod = (function () {
       out.x = pt.x
       out.y = pt.y
     }
-    const zoom = svgCanvas.getZoom()
+    const zoom = svgCanvas.zoom
     out.x *= zoom
     out.y *= zoom
 
@@ -298,8 +298,8 @@ export const textActionsMethod = (function () {
     if (!allowDbl || !curtext) {
       return
     }
-    const zoom = svgCanvas.getZoom()
-    const ept = transformPoint(evt.pageX, evt.pageY, svgCanvas.getrootSctm())
+    const zoom = svgCanvas.zoom
+    const ept = transformPoint(evt.pageX, evt.pageY, svgCanvas.rootSctm)
     const mouseX = ept.x * zoom
     const mouseY = ept.y * zoom
     const pt = screenToPt(mouseX, mouseY)
@@ -404,7 +404,7 @@ export const textActionsMethod = (function () {
      */
     toEditMode (x, y) {
       allowDbl = false
-      svgCanvas.setCurrentMode('textedit')
+      svgCanvas.currentMode = 'textedit'
       svgCanvas.selectorManager.requestSelector(curtext).showGrips(false)
       // Make selector group accept clicks
       /* const selector = */ svgCanvas.selectorManager.requestSelector(curtext) // Do we need this? Has side effect of setting lock, so keeping for now, but next line wasn't being used
@@ -436,7 +436,7 @@ export const textActionsMethod = (function () {
      * @returns {void}
      */
     toSelectMode (selectElem) {
-      svgCanvas.setCurrentMode('select')
+      svgCanvas.currentMode = 'select'
       clearInterval(blinker)
       blinker = null
       if (selblock) {
@@ -478,7 +478,7 @@ export const textActionsMethod = (function () {
      * @returns {void}
      */
     clear () {
-      if (svgCanvas.getCurrentMode() === 'textedit') {
+      if (svgCanvas.currentMode === 'textedit') {
         svgCanvas.textActions.toSelectMode()
       }
     },
@@ -499,7 +499,7 @@ export const textActionsMethod = (function () {
 
       if (!curtext.parentNode) {
         // Result of the ffClone, need to get correct element
-        const selectedElements = svgCanvas.getSelectedElements()
+        const selectedElements = svgCanvas.selectedElements
         curtext = selectedElements[0]
         svgCanvas.selectorManager.requestSelector(curtext).showGrips(false)
       }
@@ -529,7 +529,7 @@ export const textActionsMethod = (function () {
         end = curtext.getEndPositionOfChar(i)
 
         if (!supportsGoodTextCharPos()) {
-          const zoom = svgCanvas.getZoom()
+          const zoom = svgCanvas.zoom
           const offset = svgCanvas.contentW * zoom
           start.x -= offset
           end.x -= offset

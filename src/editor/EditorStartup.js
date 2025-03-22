@@ -119,7 +119,6 @@ class EditorStartup {
     )
 
     // once svgCanvas is init - adding listener to the changes of the current mode
-    this.modeEvent = this.svgCanvas.modeEvent
     document.addEventListener('modeChange', (evt) => this.modeListener(evt))
 
     /** if true - selected tool can be cancelled with Esc key
@@ -319,7 +318,7 @@ class EditorStartup {
         // prDefault to avoid firing of browser's panning on mousewheel
         evt.preventDefault()
         panning = true
-        previousMode = this.svgCanvas.getMode()
+        previousMode = this.svgCanvas.currentMode
         this.svgCanvas.setMode('ext-panning')
         this.workarea.style.cursor = 'grab'
         lastX = evt.clientX
@@ -346,8 +345,8 @@ class EditorStartup {
 
     // Allows quick change to the select mode while panning mode is active
     this.workarea.addEventListener('dblclick', (evt) => {
-      if (this.svgCanvas.getMode() === 'ext-panning') {
-        this.leftPanel.clickSelect()
+      if (this.svgCanvas.currentMode === 'ext-panning') {
+        this.leftPanel.clickTool('select')
       }
     })
 
@@ -356,7 +355,7 @@ class EditorStartup {
       if (e.code.toLowerCase() === 'space') {
         this.svgCanvas.spaceKey = keypan = true
         e.preventDefault()
-      } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')) {
+      } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.currentMode === 'zoom')) {
         this.workarea.style.cursor = zoomOutIcon
         e.preventDefault()
       }
@@ -368,7 +367,7 @@ class EditorStartup {
         this.svgCanvas.spaceKey = keypan = false
         this.svgCanvas.setMode(previousMode === 'ext-panning' ? 'select' : previousMode ?? 'select')
         e.preventDefault()
-      } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')) {
+      } else if ((e.key.toLowerCase() === 'shift') && (this.svgCanvas.currentMode === 'zoom')) {
         this.workarea.style.cursor = zoomInIcon
         e.preventDefault()
       }
@@ -403,7 +402,7 @@ class EditorStartup {
         self.uiContext = 'canvas'
         self.workarea.removeEventListener('mousedown', unfocus)
         // Go back to selecting text if in textedit mode
-        if (self.svgCanvas.getMode() === 'textedit') {
+        if (self.svgCanvas.currentMode === 'textedit') {
           $id('text').focus()
         }
       })
@@ -591,7 +590,7 @@ class EditorStartup {
     }.bind(this))
 
     // zoom
-    $id('zoom').value = (this.svgCanvas.getZoom() * 100).toFixed(1)
+    $id('zoom').value = (this.svgCanvas.zoom * 100).toFixed(1)
     this.canvMenu.setAttribute('disableallmenu', true)
     this.canvMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy')
 
@@ -736,8 +735,7 @@ class EditorStartup {
 * @param {Event} evt custom modeChange event
 */
   modeListener (evt) {
-    const mode = this.svgCanvas.getMode()
-
+    const mode = this.svgCanvas.currentMode
     this.setCursorStyle(mode)
   }
 
@@ -778,11 +776,11 @@ class EditorStartup {
    * Listens for Esc key to be pressed to cancel active mode, sets mode to Select
    */
   cancelTool () {
-    const mode = this.svgCanvas.getMode()
+    const mode = this.svgCanvas.currentMode
     // list of modes that are currently save to cancel
     const modesToCancel = ['zoom', 'rect', 'square', 'circle', 'ellipse', 'line', 'text', 'star', 'polygon', 'shapelib', 'image']
     if (modesToCancel.includes(mode)) {
-      this.leftPanel.clickSelect()
+      this.leftPanel.clickTool('select')
     }
   }
 }

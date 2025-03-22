@@ -91,14 +91,14 @@ export default {
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 10)
         // handler
         $click($id('tool_star'), () => {
-          if (this.leftPanel.updateLeftPanel('tool_star')) {
+          if (this.leftPanel.updateLeftPanel('star')) {
             svgCanvas.setMode('star')
             showPanel(true, 'star')
             showPanel(false, 'polygon')
           }
         })
         $click($id('tool_polygon'), () => {
-          if (this.leftPanel.updateLeftPanel('tool_polygon')) {
+          if (this.leftPanel.updateLeftPanel('polygon')) {
             svgCanvas.setMode('polygon')
             showPanel(true, 'polygon')
             showPanel(false, 'star')
@@ -239,7 +239,7 @@ export default {
         })
       },
       mouseDown (opts) {
-        if (svgCanvas.getMode() === 'star') {
+        if (svgCanvas.currentMode === 'star') {
           const fill = svgCanvas.getColor('fill')
           const stroke = svgCanvas.getColor('stroke')
           const strokeWidth = svgCanvas.getStrokeWidth()
@@ -265,7 +265,7 @@ export default {
             started: true
           }
         }
-        if (svgCanvas.getMode() === 'polygon') {
+        if (svgCanvas.currentMode === 'polygon') {
           const fill = svgCanvas.getColor('fill')
           const stroke = svgCanvas.getColor('stroke')
           const strokeWidth = svgCanvas.getStrokeWidth()
@@ -296,7 +296,7 @@ export default {
         if (!started) {
           return undefined
         }
-        if (svgCanvas.getMode() === 'star') {
+        if (svgCanvas.currentMode === 'star') {
           const cx = Number(newFO.getAttribute('cx'))
           const cy = Number(newFO.getAttribute('cy'))
           const point = Number(newFO.getAttribute('point'))
@@ -357,7 +357,7 @@ export default {
             started: true
           }
         }
-        if (svgCanvas.getMode() === 'polygon') {
+        if (svgCanvas.currentMode === 'polygon') {
           const cx = Number(newFO.getAttribute('cx'))
           const cy = Number(newFO.getAttribute('cy'))
           const sides = Number(newFO.getAttribute('sides'))
@@ -396,14 +396,14 @@ export default {
         return undefined
       },
       mouseUp () {
-        if (svgCanvas.getMode() === 'star') {
+        if (svgCanvas.currentMode === 'star') {
           const r = newFO.getAttribute('r')
           return {
             keep: r !== '0',
             element: newFO
           }
         }
-        if (svgCanvas.getMode() === 'polygon') {
+        if (svgCanvas.currentMode === 'polygon') {
           const edge = newFO.getAttribute('edge')
           const keep = edge !== '0'
           // svgCanvas.addToSelection([newFO], true);

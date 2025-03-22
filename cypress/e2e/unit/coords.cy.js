@@ -24,23 +24,30 @@ describe('coords', function () {
     // Mock out editor context.
     utilities.init(
       /**
-      * @implements {module:utilities.EditorContext}
-      */
+       * @implements {module:utilities.EditorContext}
+       */
       {
-        getSvgRoot: () => { return this.svg },
-        getDOMDocument () { return null },
-        getDOMContainer () { return null }
+        getSvgRoot: () => {
+          return this.svg
+        },
+        getDOMContainer () {
+          return null
+        }
       }
     )
     coords.init(
       /**
-      * @implements {module:coords.EditorContext}
-      */
+       * @implements {module:coords.EditorContext}
+       */
       {
-        getGridSnapping () { return false },
+        getGridSnapping () {
+          return false
+        },
         getDrawing () {
           return {
-            getNextId () { return String(elemId++) }
+            getNextId () {
+              return String(elemId++)
+            }
           }
         }
       }
@@ -74,9 +81,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 1; m.b = 0
-    m.c = 0; m.d = 1
-    m.e = 100; m.f = -50
+    m.a = 1
+    m.b = 0
+    m.c = 0
+    m.d = 1
+    m.e = 100
+    m.f = -50
 
     coords.remapElement(rect, attrs, m)
 
@@ -101,9 +111,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 2; m.b = 0
-    m.c = 0; m.d = 0.5
-    m.e = 0; m.f = 0
+    m.a = 2
+    m.b = 0
+    m.c = 0
+    m.d = 0.5
+    m.e = 0
+    m.f = 0
 
     coords.remapElement(rect, attrs, m)
 
@@ -128,9 +141,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 1; m.b = 0
-    m.c = 0; m.d = 1
-    m.e = 100; m.f = -50
+    m.a = 1
+    m.b = 0
+    m.c = 0
+    m.d = 1
+    m.e = 100
+    m.f = -50
 
     coords.remapElement(circle, attrs, m)
 
@@ -154,9 +170,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 2; m.b = 0
-    m.c = 0; m.d = 0.5
-    m.e = 0; m.f = 0
+    m.a = 2
+    m.b = 0
+    m.c = 0
+    m.d = 0.5
+    m.e = 0
+    m.f = 0
 
     coords.remapElement(circle, attrs, m)
 
@@ -183,9 +202,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 1; m.b = 0
-    m.c = 0; m.d = 1
-    m.e = 100; m.f = -50
+    m.a = 1
+    m.b = 0
+    m.c = 0
+    m.d = 1
+    m.e = 100
+    m.f = -50
 
     coords.remapElement(ellipse, attrs, m)
 
@@ -212,9 +234,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 2; m.b = 0
-    m.c = 0; m.d = 0.5
-    m.e = 0; m.f = 0
+    m.a = 2
+    m.b = 0
+    m.c = 0
+    m.d = 0.5
+    m.e = 0
+    m.f = 0
 
     coords.remapElement(ellipse, attrs, m)
 
@@ -241,9 +266,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 1; m.b = 0
-    m.c = 0; m.d = 1
-    m.e = 100; m.f = -50
+    m.a = 1
+    m.b = 0
+    m.c = 0
+    m.d = 1
+    m.e = 100
+    m.f = -50
 
     coords.remapElement(line, attrs, m)
 
@@ -270,9 +298,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 2; m.b = 0
-    m.c = 0; m.d = 0.5
-    m.e = 0; m.f = 0
+    m.a = 2
+    m.b = 0
+    m.c = 0
+    m.d = 0.5
+    m.e = 0
+    m.f = 0
 
     coords.remapElement(line, attrs, m)
 
@@ -295,9 +326,12 @@ describe('coords', function () {
 
     // Create a translate.
     const m = this.svg.createSVGMatrix()
-    m.a = 1; m.b = 0
-    m.c = 0; m.d = 1
-    m.e = 100; m.f = -50
+    m.a = 1
+    m.b = 0
+    m.c = 0
+    m.d = 1
+    m.e = 100
+    m.f = -50
 
     coords.remapElement(text, attrs, m)
 

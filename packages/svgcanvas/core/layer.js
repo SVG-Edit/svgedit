@@ -35,9 +35,9 @@ class Layer {
 
     if (svgElem) {
       // Create a group element with title and add it to the DOM.
-      const svgdoc = svgElem.ownerDocument
-      this.group_ = svgdoc.createElementNS(NS.SVG, 'g')
-      const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
+      const svgDoc = svgElem.ownerDocument
+      this.group_ = svgDoc.createElementNS(NS.SVG, 'g')
+      const layerTitle = svgDoc.createElementNS(NS.SVG, 'title')
       layerTitle.textContent = name
       this.group_.append(layerTitle)
       if (group) {

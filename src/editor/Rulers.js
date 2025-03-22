@@ -57,12 +57,12 @@ class Rulers {
    * @returns {void}
    */
   updateRulers (scanvas, zoom) {
-    if (!zoom) { zoom = this.svgCanvas.getZoom() }
+    if (!zoom) { zoom = this.svgCanvas.zoom }
     if (!scanvas) { scanvas = document.getElementById('svgcanvas') }
 
     let d; let i
     const limit = 30000
-    const contentElem = this.svgCanvas.getSvgContent()
+    const contentElem = this.svgCanvas.svgContent
     const units = getTypeMap()
     const unit = units[this.editor.configObj.curConfig.baseUnit] // 1 = 1px
 

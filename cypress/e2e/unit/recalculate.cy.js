@@ -2,6 +2,7 @@ import { NS } from '../../../packages/svgcanvas/core/namespaces.js'
 import * as utilities from '../../../packages/svgcanvas/core/utilities.js'
 import * as coords from '../../../packages/svgcanvas/core/coords.js'
 import * as recalculate from '../../../packages/svgcanvas/core/recalculate.js'
+import dataStorage from '../../../packages/svgcanvas/core/dataStorage.js'
 
 describe('recalculate', function () {
   const root = document.createElement('div')
@@ -14,29 +15,6 @@ describe('recalculate', function () {
   const svg = document.createElementNS(NS.SVG, 'svg')
   svgroot.append(svg)
 
-  const dataStorage = {
-    _storage: new WeakMap(),
-    put: function (element, key, obj) {
-      if (!this._storage.has(element)) {
-        this._storage.set(element, new Map())
-      }
-      this._storage.get(element).set(key, obj)
-    },
-    get: function (element, key) {
-      return this._storage.get(element).get(key)
-    },
-    has: function (element, key) {
-      return this._storage.has(element) && this._storage.get(element).has(key)
-    },
-    remove: function (element, key) {
-      const ret = this._storage.get(element).delete(key)
-      if (!this._storage.get(element).size === 0) {
-        this._storage.delete(element)
-      }
-      return ret
-    }
-  }
-
   let elemId = 1
 
   /**
@@ -46,38 +24,52 @@ describe('recalculate', function () {
   function setUp () {
     utilities.init(
       /**
-      * @implements {module:utilities.EditorContext}
-      */
+       * @implements {module:utilities.EditorContext}
+       */
       {
-        getSvgRoot () { return svg },
-        getDOMDocument () { return null },
-        getDOMContainer () { return null },
-        getDataStorage () { return dataStorage }
+        getSvgRoot () {
+          return svg
+        },
+        getDOMContainer () {
+          return null
+        },
+        getDataStorage () {
+          return dataStorage
+        }
       }
     )
     coords.init(
       /**
-      * @implements {module:coords.EditorContext}
-      */
+       * @implements {module:coords.EditorContext}
+       */
       {
-        getGridSnapping () { return false },
+        getGridSnapping () {
+          return false
+        },
         getDrawing () {
           return {
-            getNextId () { return String(elemId++) }
+            getNextId () {
+              return String(elemId++)
+            }
           }
         },
-        getDataStorage () { return dataStorage }
+        getDataStorage () {
+          return dataStorage
+        }
       }
     )
     recalculate.init(
       /**
-      * @implements {module:recalculate.EditorContext}
-      */
+       * @implements {module:recalculate.EditorContext}
+       */
       {
-        getSvgRoot () { return svg },
-        getStartTransform () { return '' },
-        setStartTransform () { /* empty fn */ },
-        getDataStorage () { return dataStorage }
+        getSvgRoot () {
+          return svg
+        },
+
+        getDataStorage () {
+          return dataStorage
+        }
       }
     )
   }

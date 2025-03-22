@@ -761,22 +761,10 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @property {module:path.pathActions} pathActions
  * @property {module:history.UndoManager} undoMgr
  */
-/**
- * @function module:draw.DrawCanvasInit#getCurrentGroup
- * @returns {Element}
- */
-/**
- * @function module:draw.DrawCanvasInit#setCurrentGroup
- * @param {Element} cg
- * @returns {void}
- */
+
 /**
  * @function module:draw.DrawCanvasInit#getSelectedElements
  * @returns {Element[]} the array with selected DOM elements
- */
-/**
- * @function module:draw.DrawCanvasInit#getSvgContent
- * @returns {SVGSVGElement}
  */
 /**
  * @function module:draw.DrawCanvasInit#getCurrentDrawing
@@ -959,7 +947,7 @@ export const setCurrentLayerPosition = newPos => {
       new MoveElementCommand(
         result.currentGroup,
         result.oldNextSibling,
-        svgCanvas.getSvgContent()
+        svgCanvas.svgContent
       )
     )
     return true
@@ -1020,7 +1008,7 @@ export const moveSelectedToLayer = layerName => {
   const batchCmd = new BatchCommand('Move Elements to Layer')
 
   // loop for each selected element and move it
-  const selElems = svgCanvas.getSelectedElements()
+  const selElems = svgCanvas.selectedElements
   let i = selElems.length
   while (i--) {
     const elem = selElems[i]
@@ -1092,7 +1080,7 @@ export const leaveContext = () => {
     svgCanvas.clearSelection(true)
     svgCanvas.call('contextset', null)
   }
-  svgCanvas.setCurrentGroup(null)
+  svgCanvas.currentGroup = null
 }
 
 /**
@@ -1110,7 +1098,7 @@ export const setContext = elem => {
   }
 
   // Edit inside this group
-  svgCanvas.setCurrentGroup(elem)
+  svgCanvas.currentGroup = elem
 
   // Disable other elements
   const parentsUntil = getParentsUntil(elem, '#svgcontent')
@@ -1136,7 +1124,7 @@ export const setContext = elem => {
     disabledElems.push(curthis)
   })
   svgCanvas.clearSelection()
-  svgCanvas.call('contextset', svgCanvas.getCurrentGroup())
+  svgCanvas.call('contextset', svgCanvas.currentGroup)
 }
 
 /**

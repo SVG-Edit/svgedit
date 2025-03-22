@@ -74,23 +74,23 @@ const svgCanvasToString = () => {
   svgCanvas.pathActions.clear(true)
 
   // Keep SVG-Edit comment on top
-  const childNodesElems = svgCanvas.getSvgContent().childNodes
+  const childNodesElems = svgCanvas.svgContent.childNodes
   childNodesElems.forEach((node, i) => {
     if (i && node.nodeType === 8 && node.data.includes('Created with')) {
-      svgCanvas.getSvgContent().firstChild.before(node)
+      svgCanvas.svgContent.firstChild.before(node)
     }
   })
 
   // Move out of in-group editing mode
-  if (svgCanvas.getCurrentGroup()) {
+  if (svgCanvas.currentGroup) {
     draw.leaveContext()
-    svgCanvas.selectOnly([svgCanvas.getCurrentGroup()])
+    svgCanvas.selectOnly([svgCanvas.currentGroup])
   }
 
   const nakedSvgs = []
 
   // Unwrap gsvg if it has no special attributes (only id and style)
-  const gsvgElems = svgCanvas.getSvgContent().querySelectorAll('g[data-gsvg]')
+  const gsvgElems = svgCanvas.svgContent.querySelectorAll('g[data-gsvg]')
   Array.prototype.forEach.call(gsvgElems, element => {
     const attrs = element.attributes
     let len = attrs.length
@@ -106,7 +106,7 @@ const svgCanvasToString = () => {
       element.replaceWith(svg)
     }
   })
-  const output = svgCanvas.svgToString(svgCanvas.getSvgContent(), 0)
+  const output = svgCanvas.svgToString(svgCanvas.svgContent, 0)
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
@@ -126,8 +126,8 @@ const svgCanvasToString = () => {
  * @returns {string} The given element as an SVG tag
  */
 const svgToString = (elem, indent) => {
-  const curConfig = svgCanvas.getCurConfig()
-  const nsMap = svgCanvas.getNsMap()
+  const curConfig = svgCanvas.curConfig
+  const nsMap = svgCanvas.nsMap
   const out = []
   const unit = curConfig.baseUnit
   const unitRe = new RegExp('^-?[\\d\\.]+' + unit + '$')
@@ -279,11 +279,11 @@ const svgToString = (elem, indent) => {
 
           // Embed images when saving
           if (
-            svgCanvas.getSvgOptionApply() &&
+            svgCanvas.saveOptions.apply &&
             elem.nodeName === 'image' &&
             attr.localName === 'href' &&
-            svgCanvas.getSvgOptionImages() &&
-            svgCanvas.getSvgOptionImages() === 'embed'
+            svgCanvas.saveOptions.images &&
+            svgCanvas.saveOptions.images === 'embed'
           ) {
             const img = svgCanvas.getEncodableImages(attrVal)
             if (img) {
@@ -375,7 +375,7 @@ const svgToString = (elem, indent) => {
  *     unsuccessful, `true` otherwise.
  */
 const setSvgString = (xmlString, preventUndo) => {
-  const curConfig = svgCanvas.getCurConfig()
+  const curConfig = svgCanvas.curConfig
   const dataStorage = svgCanvas.getDataStorage()
   try {
     // convert string into XML document
@@ -392,32 +392,31 @@ const setSvgString = (xmlString, preventUndo) => {
     const batchCmd = new BatchCommand('Change Source')
 
     // remove old svg document
-    const { nextSibling } = svgCanvas.getSvgContent()
+    const { nextSibling } = svgCanvas.svgContent
 
-    svgCanvas.getSvgContent().remove()
-    const oldzoom = svgCanvas.getSvgContent()
+    svgCanvas.svgContent.remove()
+    const oldzoom = svgCanvas.svgContent
     batchCmd.addSubCommand(
-      new RemoveElementCommand(oldzoom, nextSibling, svgCanvas.getSvgRoot())
+      new RemoveElementCommand(oldzoom, nextSibling, svgCanvas.svgRoot)
     )
 
     // set new svg document
     // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-    if (svgCanvas.getDOMDocument().adoptNode) {
-      svgCanvas.setSvgContent(
-        svgCanvas.getDOMDocument().adoptNode(newDoc.documentElement)
-      )
+    if (svgCanvas.svgDoc.adoptNode) {
+      svgCanvas.svgContent = svgCanvas.svgDoc.adoptNode(newDoc.documentElement)
     } else {
-      svgCanvas.setSvgContent(
-        svgCanvas.getDOMDocument().importNode(newDoc.documentElement, true)
+      svgCanvas.svgContent = svgCanvas.svgDoc.importNode(
+        newDoc.documentElement,
+        true
       )
     }
 
-    svgCanvas.getSvgRoot().append(svgCanvas.getSvgContent())
-    const content = svgCanvas.getSvgContent()
+    svgCanvas.svgRoot.append(svgCanvas.svgContent)
+    const content = svgCanvas.svgContent
 
     svgCanvas.current_drawing_ = new draw.Drawing(
-      svgCanvas.getSvgContent(),
-      svgCanvas.getIdPrefix()
+      svgCanvas.svgContent,
+      svgCanvas.idPrefix
     )
 
     // retrieve or set the nonce
@@ -575,24 +574,22 @@ const setSvgString = (xmlString, preventUndo) => {
     svgCanvas.contentW = attrs.width
     svgCanvas.contentH = attrs.height
 
-    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.getSvgContent()))
+    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.svgContent))
     // update root to the correct size
     const width = content.getAttribute('width')
     const height = content.getAttribute('height')
     const changes = { width, height }
-    batchCmd.addSubCommand(
-      new ChangeElementCommand(svgCanvas.getSvgRoot(), changes)
-    )
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.svgRoot, changes))
 
     // reset zoom
-    svgCanvas.setZoom(1)
+    svgCanvas.zoom = 1
 
     svgCanvas.clearSelection()
     pathModule.clearData()
-    svgCanvas.getSvgRoot().append(svgCanvas.selectorManager.selectorParentGroup)
+    svgCanvas.svgRoot.append(svgCanvas.selectorManager.selectorParentGroup)
 
     if (!preventUndo) svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('sourcechanged', [svgCanvas.getSvgContent()])
+    svgCanvas.call('sourcechanged', [svgCanvas.svgContent])
   } catch (e) {
     console.error(e)
     return false
@@ -647,9 +644,9 @@ const importSvgString = (xmlString, preserveDimension) => {
 
       // import new svg document into our document
       // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-      const svg = svgCanvas.getDOMDocument().adoptNode
-        ? svgCanvas.getDOMDocument().adoptNode(newDoc.documentElement)
-        : svgCanvas.getDOMDocument().importNode(newDoc.documentElement, true)
+      const svg = svgCanvas.svgDoc.adoptNode
+        ? svgCanvas.svgDoc.adoptNode(newDoc.documentElement)
+        : svgCanvas.svgDoc.importNode(newDoc.documentElement, true)
 
       svgCanvas.uniquifyElems(svg)
 
@@ -664,7 +661,7 @@ const importSvgString = (xmlString, preserveDimension) => {
 
       // TODO: properly handle preserveAspectRatio
       const // canvasw = +svgContent.getAttribute('width'),
-        canvash = Number(svgCanvas.getSvgContent().getAttribute('height'))
+        canvash = Number(svgCanvas.svgContent.getAttribute('height'))
       // imported content should be 1/3 of the canvas on its largest dimension
 
       ts =
@@ -675,7 +672,7 @@ const importSvgString = (xmlString, preserveDimension) => {
       // Hack to make recalculateDimensions understand how to scale
       ts = 'translate(0) ' + ts + ' translate(0)'
 
-      symbol = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'symbol')
+      symbol = svgCanvas.svgDoc.createElementNS(NS.SVG, 'symbol')
       const defs = findDefs()
 
       if (isGecko()) {
@@ -711,12 +708,11 @@ const importSvgString = (xmlString, preserveDimension) => {
       batchCmd.addSubCommand(new InsertElementCommand(symbol))
     }
 
-    useEl = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'use')
+    useEl = svgCanvas.svgDoc.createElementNS(NS.SVG, 'use')
     useEl.id = svgCanvas.getNextId()
     svgCanvas.setHref(useEl, '#' + symbol.id)
     ;(
-      svgCanvas.getCurrentGroup() ||
-      svgCanvas.getCurrentDrawing().getCurrentLayer()
+      svgCanvas.currentGroup || svgCanvas.getCurrentDrawing().getCurrentLayer()
     ).append(useEl)
     batchCmd.addSubCommand(new InsertElementCommand(useEl))
     svgCanvas.clearSelection()
@@ -734,7 +730,7 @@ const importSvgString = (xmlString, preserveDimension) => {
     //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
     // }
     svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [svgCanvas.getSvgContent()])
+    svgCanvas.call('changed', [svgCanvas.svgContent])
   } catch (e) {
     console.error(e)
     return null
@@ -775,7 +771,7 @@ const embedImage = src => {
       } catch (e) {
         svgCanvas.setEncodableImages(src, false)
       }
-      svgCanvas.setGoodImage(src)
+      svgCanvas.lastGoodImgUrl = src
       resolve(svgCanvas.getEncodableImages(src))
     })
     imgI.addEventListener('error', e => {
@@ -800,7 +796,7 @@ const embedImage = src => {
  * @returns {module:svgcanvas.IssuesAndCodes}
  */
 const getIssues = () => {
-  const uiStrings = svgCanvas.getUIStrings()
+  const uiStrings = svgCanvas.uiStrings
   // remove the selected outline before serializing
   svgCanvas.clearSelection()
 
@@ -814,7 +810,7 @@ const getIssues = () => {
     foreignObject: uiStrings.NoforeignObject,
     '[stroke-dasharray]': uiStrings.NoDashArray
   }
-  const content = svgCanvas.getSvgContent()
+  const content = svgCanvas.svgContent
 
   // Add font/text check if Canvas Text API is not implemented
   if (!('font' in document.querySelector('CANVAS').getContext('2d'))) {
@@ -889,7 +885,7 @@ const rasterExport = (
     const type = imgType === 'ICO' ? 'BMP' : imgType
     const mimeType = `image/${type.toLowerCase()}`
     const { issues, issueCodes } = getIssues()
-    const svgElement = svgCanvas.getSvgContent()
+    const svgElement = svgCanvas.svgContent
 
     const svgClone = svgElement.cloneNode(true)
 
@@ -971,7 +967,7 @@ const exportPDF = (
     const res = svgCanvas.getResolution()
     const orientation = res.w > res.h ? 'landscape' : 'portrait'
     const unit = 'pt'
-    const svgElement = svgCanvas.getSvgContent().cloneNode(true)
+    const svgElement = svgCanvas.svgContent.cloneNode(true)
 
     convertImagesToBase64(svgElement)
       .then(() => {
@@ -1160,7 +1156,7 @@ const setUseDataMethod = parent => {
  * @returns {Integer} The number of elements that were removed
  */
 const removeUnusedDefElemsMethod = () => {
-  const defs = svgCanvas.getSvgContent().getElementsByTagNameNS(NS.SVG, 'defs')
+  const defs = svgCanvas.svgContent.getElementsByTagNameNS(NS.SVG, 'defs')
   if (!defs || !defs.length) {
     return 0
   }
@@ -1179,7 +1175,7 @@ const removeUnusedDefElemsMethod = () => {
   ]
   const alen = attrs.length
 
-  const allEls = svgCanvas.getSvgContent().getElementsByTagNameNS(NS.SVG, '*')
+  const allEls = svgCanvas.svgContent.getElementsByTagNameNS(NS.SVG, '*')
   const allLen = allEls.length
 
   let i
@@ -1235,7 +1231,7 @@ const convertGradientsMethod = elem => {
   }
   Array.prototype.forEach.call(elems, grad => {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
-      const svgContent = svgCanvas.getSvgContent()
+      const svgContent = svgCanvas.svgContent
       // TODO: Support more than one element with this ref by duplicating parent grad
       let fillStrokeElems = svgContent.querySelectorAll(
         '[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]'

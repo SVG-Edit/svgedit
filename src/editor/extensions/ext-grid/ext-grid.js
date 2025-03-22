@@ -28,7 +28,7 @@ export default {
     await loadExtensionTranslation(svgEditor)
     const { svgCanvas } = svgEditor
     const { $id, $click, NS } = svgCanvas
-    const svgdoc = $id('svgcanvas').ownerDocument
+    const svgDoc = $id('svgcanvas').ownerDocument
     const { assignAttributes } = svgCanvas
     const hcanvas = document.createElement('canvas')
     const canvBG = $id('canvasBackground')
@@ -39,7 +39,7 @@ export default {
     hcanvas.style.display = 'none'
     svgEditor.$svgEditor.appendChild(hcanvas)
 
-    const canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg')
+    const canvasGrid = svgDoc.createElementNS(NS.SVG, 'svg')
     assignAttributes(canvasGrid, {
       id: 'canvasGrid',
       width: '100%',
@@ -50,9 +50,9 @@ export default {
       display: 'none'
     })
     canvBG.appendChild(canvasGrid)
-    const gridDefs = svgdoc.createElementNS(NS.SVG, 'defs')
+    const gridDefs = svgDoc.createElementNS(NS.SVG, 'defs')
     // grid-pattern
-    const gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern')
+    const gridPattern = svgDoc.createElementNS(NS.SVG, 'pattern')
     assignAttributes(gridPattern, {
       id: 'gridpattern',
       patternUnits: 'userSpaceOnUse',
@@ -62,7 +62,7 @@ export default {
       height: 100
     })
 
-    const gridimg = svgdoc.createElementNS(NS.SVG, 'image')
+    const gridimg = svgDoc.createElementNS(NS.SVG, 'image')
     assignAttributes(gridimg, {
       x: 0,
       y: 0,
@@ -74,7 +74,7 @@ export default {
     $id('canvasGrid').appendChild(gridDefs)
 
     // grid-box
-    const gridBox = svgdoc.createElementNS(NS.SVG, 'rect')
+    const gridBox = svgDoc.createElementNS(NS.SVG, 'rect')
     assignAttributes(gridBox, {
       width: '100%',
       height: '100%',
@@ -147,7 +147,7 @@ export default {
      */
     const gridUpdate = () => {
       if (showGrid) {
-        updateGrid(svgCanvas.getZoom())
+        updateGrid(svgCanvas.zoom)
       }
       $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none'
       $id('view_grid').pressed = showGrid

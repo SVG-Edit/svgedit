@@ -27,16 +27,17 @@ describe('path', function () {
       * @implements {module:path.EditorContext}
       */
       {
-        getSvgRoot () { return svg },
-        getZoom () { return 1 }
+        svgRoot: svg,
+        zoom: 1,
+        uiStrings: {}
       },
       /**
       * @implements {module:utilities.EditorContext}
       */
       {
-        getDOMDocument () { return svg },
-        getDOMContainer () { return svg },
-        getSvgRoot () { return svg }
+        container: svg,
+        svgRoot: svg,
+        svgDoc: svg
       }
     ]
   }

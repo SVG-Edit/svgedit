@@ -53,7 +53,7 @@ export default {
         })
       },
       mouseDown () {
-        if (svgCanvas.getMode() === 'ext-panning') {
+        if (svgCanvas.currentMode === 'ext-panning') {
           svgEditor.setPanning(true)
           return {
             started: true
@@ -62,7 +62,7 @@ export default {
         return undefined
       },
       mouseUp () {
-        if (svgCanvas.getMode() === 'ext-panning') {
+        if (svgCanvas.currentMode === 'ext-panning') {
           svgEditor.setPanning(false)
           return {
             keep: false,

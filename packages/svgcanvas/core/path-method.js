@@ -61,7 +61,7 @@ export const getGripPtMethod = function (seg, altPt) {
     const pt = transformPoint(out.x, out.y, pth.matrix)
     out = pt
   }
-  const zoom = svgCanvas.getZoom()
+  const zoom = svgCanvas.zoom
   out.x *= zoom
   out.y *= zoom
 
@@ -84,7 +84,7 @@ export const getPointFromGripMethod = function (pt, pth) {
     out.x = pt.x
     out.y = pt.y
   }
-  const zoom = svgCanvas.getZoom()
+  const zoom = svgCanvas.zoom
   out.x /= zoom
   out.y /= zoom
 
@@ -131,7 +131,7 @@ export const addPointGripMethod = function (index, x, y) {
       cursor: 'move',
       style: 'pointer-events:all'
     }
-    const uiStrings = svgCanvas.getUIStrings()
+    const uiStrings = svgCanvas.uiStrings
     if ('pathNodeTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
       atts['xlink:title'] = uiStrings.pathNodeTooltip
     }
@@ -178,7 +178,7 @@ export const addCtrlGripMethod = function (id) {
     cursor: 'move',
     style: 'pointer-events:all'
   }
-  const uiStrings = svgCanvas.getUIStrings()
+  const uiStrings = svgCanvas.uiStrings
   if ('pathCtrlPtTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
     atts['xlink:title'] = uiStrings.pathCtrlPtTooltip
   }

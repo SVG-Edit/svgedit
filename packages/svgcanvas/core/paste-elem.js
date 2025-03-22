@@ -28,7 +28,7 @@ export const init = (canvas) => {
 * @returns {void}
 */
 export const pasteElementsMethod = function (type, x, y) {
-  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipboardID()))
+  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.clipboardId))
   if (!clipb) return
   let len = clipb.length
   if (!len) return
@@ -100,8 +100,8 @@ export const pasteElementsMethod = function (type, x, y) {
     let ctrX; let ctrY
 
     if (!type) {
-      ctrX = svgCanvas.getLastClickPoint('x')
-      ctrY = svgCanvas.getLastClickPoint('y')
+      ctrX = svgCanvas.lastClickPoint.x
+      ctrY = svgCanvas.lastClickPoint.y
     } else if (type === 'point') {
       ctrX = x
       ctrY = y

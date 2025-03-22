@@ -100,7 +100,7 @@ export default {
     * @returns {SVGMarkerElement}
     */
     const addMarker = (id, seType) => {
-      const selElems = svgCanvas.getSelectedElements()
+      const selElems = svgCanvas.selectedElements
       let marker = svgCanvas.getElement(id)
       if (marker) { return undefined }
       if (seType === '' || seType === 'nomarker') { return undefined }
@@ -201,7 +201,7 @@ export default {
     * @returns {void}
     */
     const setMarker = (pos, markerType) => {
-      const selElems = svgCanvas.getSelectedElements()
+      const selElems = svgCanvas.selectedElements
       if (selElems.length === 0) return
       const markerName = 'marker-' + pos
       const el = selElems[0]
@@ -253,7 +253,7 @@ export default {
     * @returns {void}
     */
     const updateReferences = (el) => {
-      const selElems = svgCanvas.getSelectedElements()
+      const selElems = svgCanvas.selectedElements
       mtypes.forEach((pos) => {
         const markerName = 'marker-' + pos
         const marker = getLinked(el, markerName)
