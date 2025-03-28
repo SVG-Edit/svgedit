@@ -96,18 +96,21 @@ const svgWhiteList_ = {
   semantics: [],
 
   // HTML Elements for use in a foreignObject
-  DIV: [],
   div: [],
-  P: [],
   p: [],
-  LI: [],
   li: [],
-  PRE: [],
   pre: [],
-  OL: [],
   ol: [],
-  UL: [],
-  ul: []
+  ul: [],
+  span: [],
+  hr: [],
+  br: [],
+  h1: [],
+  h2: [],
+  h3: [],
+  h4: [],
+  h5: [],
+  h6: []
 }
 /* eslint-enable max-len */
 
