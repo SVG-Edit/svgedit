@@ -93,7 +93,24 @@ const svgWhiteList_ = {
   munder: [],
   munderover: [],
   none: [],
-  semantics: []
+  semantics: [],
+
+  // HTML Elements for use in a foreignObject
+  div: [],
+  p: [],
+  li: [],
+  pre: [],
+  ol: [],
+  ul: [],
+  span: [],
+  hr: [],
+  br: [],
+  h1: [],
+  h2: [],
+  h3: [],
+  h4: [],
+  h5: [],
+  h6: []
 }
 /* eslint-enable max-len */
 
