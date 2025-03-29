@@ -90,6 +90,17 @@ const encryptData = async function (svgEditor, svgString) {
     return svgString
 }
 
+const updateStorage = async function (channelTitle, channelId, secret) {
+  channelTitle = await encryptData(svgEditor, channelTitle);
+  channelId = await encryptData(svgEditor, channelId);
+  secret = await encryptData(svgEditor, secret);
+  const store = {"channelId": channelId, "graphicTitle": channelTitle, 
+    "secretKey": secret, "graphicBlob": graphic}
+  svgEditor.storage.setItem('tat-storage-data', JSON.stringify(store));
+  let messageObj = { "messageFrom": "AuthoringTool", "storageData": JSON.stringify(store) };
+  window.postMessage(messageObj, "*");
+}
+
 /**
  * @class SeLabelDialog
  */
@@ -158,6 +169,7 @@ export class SeTactileRenderDialog extends HTMLElement {
           graphicId = this._shadowRoot.querySelector('#id_value').value
           secretKey = this._shadowRoot.querySelector('#secret_value').value
           layerSelected = this._shadowRoot.querySelector('#layer_select_dd').value
+          updateStorage(graphicTitle, graphicId, secretKey);
           this.$dialog.close()
         }
         break
