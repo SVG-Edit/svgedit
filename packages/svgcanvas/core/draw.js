@@ -400,9 +400,16 @@ export class Drawing {
    */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup()
-    const prevGroup = currentGroup.previousElementSibling
+    /*const prevGroup = currentGroup.previousElementSibling
     if (!prevGroup) {
       return
+    }*/
+    let prevGroup = currentGroup.previousElementSibling
+    while (!isLayerElement(prevGroup)){
+      prevGroup = prevGroup.previousElementSibling
+      if (!prevGroup) {
+        return
+      }
     }
 
     hrService.startBatchCommand('Merge Layer')
@@ -520,7 +527,17 @@ export class Drawing {
           if (isLayerElement(child)) {
             const name = findLayerNameInGroup(child)
             layernames.push(name)
-            layer = new Layer(name, child)
+            if (child.tagName === 'g') {
+              layer = new Layer(name, child)
+            } else {
+              child.removeAttribute('data-image-layer')
+              layer = new Layer(name, child, this.svgElem_)
+              layer.appendChildren([child])
+              if (child.hasAttribute('aria-label')) {
+                let el = document.querySelector("[data-image-layer='"+name+"']")
+                el.setAttribute('aria-label', child.getAttribute('aria-label'))
+              }
+            }
             this.all_layers.push(layer)
             this.layer_map[name] = layer
           } else {
