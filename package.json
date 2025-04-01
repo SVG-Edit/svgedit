@@ -129,7 +129,7 @@
     "remark-cli": "12.0.1",
     "remark-lint-ordered-list-marker-value": "4.0.1",
     "rimraf": "6.0.1",
-    "rollup": "4.37.0",
+    "rollup": "4.38.0",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-filesize": "10.0.0",
     "rollup-plugin-html": "0.2.1",
@@ -139,6 +139,6 @@
     "start-server-and-test": "2.0.11"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.37.0"
+    "@rollup/rollup-linux-x64-gnu": "4.38.0"
   }
 }
