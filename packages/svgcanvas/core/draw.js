@@ -400,9 +400,16 @@ export class Drawing {
    */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup()
-    const prevGroup = currentGroup.previousElementSibling
+    /*const prevGroup = currentGroup.previousElementSibling
     if (!prevGroup) {
       return
+    }*/
+    let prevGroup = currentGroup.previousElementSibling
+    while (!isLayerElement(prevGroup)){
+      prevGroup = prevGroup.previousElementSibling
+      if (!prevGroup) {
+        return
+      }
     }
 
     hrService.startBatchCommand('Merge Layer')
