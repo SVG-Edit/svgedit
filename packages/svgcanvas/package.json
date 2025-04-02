@@ -1,5 +1,5 @@
 {
-    "name": "@svgedit/svgcanvas",
+    "name": "@dessixio/svgcanvas",
     "version": "7.2.5",
     "description": "SVG Canvas",
     "main": "dist/svgcanvas.js",

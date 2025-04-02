@@ -44,7 +44,7 @@ If you want to host a local version of SVGEdit, please follow these instructions
 
 1. clone or copy the repository contents from github
 1. run `npm i` to install dependencies
-1. run `npm run build --workspace @svgedit/svgcanvas` to build the svgcanvas dependency locally
+1. run `npm run build --workspace @dessixio/svgcanvas` to build the svgcanvas dependency locally
 1. to test, you can run `npm run start` to start a local server
 1. and access `http://localhost:8000/src/editor/index.html` with a supported browser
 1. run `npm run build` to build a bundle that you can serve from your own web server
@@ -104,13 +104,13 @@ V7 is changing significantly the way to integrate and customize SVGEdit. You can
 
 ## I want to build my own svg editor
 You can just use the underlying canvas and use it in your application with your favorite framework.
-See example in the demos folder or the svg-edit-react repository. 
+See example in the demos folder or the svg-edit-react repository.
 
 To install the canvas:
 
 `npm i -s '@svgedit/svgcanvas'`
 
-you can then import it in your application: 
+you can then import it in your application:
 
 `import svgCanvas from '@svgedit/svgcanvas'`
 

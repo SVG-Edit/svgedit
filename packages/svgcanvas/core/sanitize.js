@@ -27,11 +27,23 @@ const svgWhiteList_ = {
   defs: [],
   desc: [],
   ellipse: ['clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage'],
-  feBlend: ['in', 'in2'],
+  feBlend: ['in', 'in2', 'mode'], // mark: dessix add
   feColorMatrix: ['in', 'type', 'value', 'result', 'values'],
-  feComposite: ['in', 'operator', 'result', 'in2'],
+  feComposite: ['in', 'operator', 'result', 'in2', 'k1', 'k2', 'k3', 'k4'], // mark: dessix add
+  feDistantLight: ['azimuth', 'elevation'], // mark: dessix add
   feFlood: ['flood-color', 'in', 'result', 'flood-opacity'],
-  feGaussianBlur: ['color-interpolation-filters', 'in', 'requiredFeatures', 'stdDeviation', 'result'],
+  feGaussianBlur: [
+    'color-interpolation-filters',
+    'in',
+    'requiredFeatures',
+    'stdDeviation',
+    'edgeMode', // mark: dessix add
+    'result'
+  ],
+  feDropShadow: ['dx', 'dy', 'stdDeviation', 'flood-opacity'], // mark: dessix add
+  feImage: ['crossorigin', 'preserveAspectRatio'], // mark: dessix add
+  fePointLight: ['x', 'y', 'z'], // mark: dessix add
+  feSpotLight: ['x', 'y', 'z', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'specularExponent', 'limitingConeAngle'], // mark: dessix add
   feMerge: [],
   feMergeNode: ['in'],
   feMorphology: ['in', 'operator', 'radius'],
