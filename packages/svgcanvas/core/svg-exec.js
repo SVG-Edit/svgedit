@@ -165,6 +165,10 @@ const svgToString = (elem, indent) => {
         vb = elem.getAttribute('viewBox')
         out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
       } else {
+        // dessix add
+        vb = elem.getAttribute('viewBox')
+        out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
+
         if (unit !== 'px') {
           res.w = convertUnit(res.w, unit) + unit
           res.h = convertUnit(res.h, unit) + unit
