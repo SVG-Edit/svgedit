@@ -109,20 +109,35 @@ const svgWhiteList_ = {
 
   // HTML Elements for use in a foreignObject
   div: [],
+  DIV: [],
   p: [],
+  P: [],
   li: [],
+  LI: [],
   pre: [],
+  PRE: [],
   ol: [],
+  OL: [],
   ul: [],
+  UL: [],
   span: [],
+  SPAN: [],
   hr: [],
+  HR: [],
   br: [],
+  BR: [],
   h1: [],
+  H1: [],
   h2: [],
+  H2: [],
   h3: [],
+  H3: [],
   h4: [],
+  H4: [],
   h5: [],
-  h6: []
+  H5: [],
+  h6: [],
+  H6: []
 }
 
 // add generic attributes to all elements of the whitelist
