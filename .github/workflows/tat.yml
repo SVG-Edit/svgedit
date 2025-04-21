@@ -1,0 +1,65 @@
+name: Tactile Authoring Tool Service
+on:
+  push:
+    branches: [ main ]
+    tags: [ "service-tat-[0-9]+.[0-9]+.[0-9]+" ]
+    paths: [ "**" ]
+  pull_request:
+    branches: [ main ]
+    paths: [ "**" ]
+  workflow_dispatch:
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: shared-reality-lab/tat-service
+jobs:
+  build-and-push-image:
+    name: Build and Push to Registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Log into GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Correct Tags
+        run: |
+          if [[ ${{ github.ref }} =~ ^refs/tags/service-tat-[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "TAGGED=true" >> $GITHUB_ENV
+          else
+            echo "TAGGED=false" >> $GITHUB_ENV
+          fi
+      - name: Get timestamp
+        run: echo "timestamp=$(date -u +'%Y-%m-%dT%H.%M')" >> $GITHUB_ENV
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=${{ env.TAGGED }}
+          tags: |
+            type=match,enable=${{ env.TAGGED }},priority=300,pattern=service-tat-(\d+.\d+.\d+),group=1
+            type=raw,priority=200,value=unstable
+            type=raw,priority=100,value=${{ env.timestamp }}
+          labels: |
+            org.opencontainers.image.title=IMAGE Service Monarch Link App
+            org.opencontainers.image.description=Service to link Monarch client with tactile authoring tool.
+            org.opencontainers.image.authors=IMAGE Project <image@cim.mcgill.ca>
+            org.opencontainers.image.licenses=AGPL-3.0-or-later
+            maintainer=IMAGE Project <image@cim.mcgill.ca>
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
