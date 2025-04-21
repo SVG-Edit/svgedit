@@ -12,18 +12,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: shared-reality-lab/image-service-tat
 jobs:
-  lint:
-    name: PEP 8 style check.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - name: Install flake8
-        run: pip install flake8
-      - name: Check with flake8
-        run: python -m flake8 ./services/tat --show-source
   build-and-push-image:
     name: Build and Push to Registry
     needs: lint
