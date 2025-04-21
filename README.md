@@ -89,8 +89,6 @@ V7 is changing significantly the way to integrate and customize SVGEdit. You can
   import Editor from './Editor.js'
   /* for available options see the file `docs/tutorials/ConfigOptions.md` */
   const svgEditor = new Editor(document.getElementById('container'))
-  /* initialize the Editor */
-  svgEditor.init()
   /* set the configuration */
   svgEditor.setConfig({
           allowInitialUserOverride: true,
@@ -98,19 +96,21 @@ V7 is changing significantly the way to integrate and customize SVGEdit. You can
           noDefaultExtensions: false,
           userExtensions: []
   })
+  /* initialize the Editor */
+  svgEditor.init()
 </script>
 </html>
 ```
 
 ## I want to build my own svg editor
 You can just use the underlying canvas and use it in your application with your favorite framework.
-See example in the demos folder or the svg-edit-react repository. 
+See example in the demos folder or the svg-edit-react repository.
 
 To install the canvas:
 
 `npm i -s '@svgedit/svgcanvas'`
 
-you can then import it in your application: 
+you can then import it in your application:
 
 `import svgCanvas from '@svgedit/svgcanvas'`
 
