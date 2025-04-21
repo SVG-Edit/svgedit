@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: shared-reality-lab/image-service-tat
+  IMAGE_NAME: shared-reality-lab/tat-service
 jobs:
   build-and-push-image:
     name: Build and Push to Registry
