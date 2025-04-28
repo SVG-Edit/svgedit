@@ -19,6 +19,8 @@ var graphicTitle = ""
 var graphicId = ""
 var secretKey = ""
 var graphic = ""
+var coords = ""
+var placeId = ""
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule
@@ -95,7 +97,16 @@ const updateStorage = async function (channelTitle, channelId, secret) {
   channelId = await encryptData(svgEditor, channelId);
   secret = await encryptData(svgEditor, secret);
   const store = {"channelId": channelId, "graphicTitle": channelTitle, 
-    "secretKey": secret, "graphicBlob": graphic}
+    "secretKey": secret} 
+  if (graphic != ""){
+    store.graphicBlob = graphic
+  }
+  if (placeId != ""){
+    store.placeID = placeId
+  }
+  if (coords != ""){
+    store.coordinates = coords
+  }
   svgEditor.storage.setItem('tat-storage-data', JSON.stringify(store));
   let messageObj = { "messageFrom": "AuthoringTool", "storageData": JSON.stringify(store) };
   window.postMessage(messageObj, "*");
@@ -334,6 +345,12 @@ connectedCallback () {
     if (graphic != ""){
       resp.graphicBlob = graphic
     }
+    if (placeId != ""){
+      resp.placeID = placeId
+    }
+    if (coords != ""){
+      resp.coordinates = coords
+    }
     if (graphicId != ""){
       resp.secret = secretKey
     }
@@ -415,6 +432,8 @@ export default {
           graphicTitle = info.graphicTitle ? await svgEditor.svgCanvas.runExtensions('decryptData', info.graphicTitle)  : ""
           secretKey = info.secretKey ? await svgEditor.svgCanvas.runExtensions('decryptData', info.secretKey) : ""
           graphic = info.graphicBlob ? info.graphicBlob : ""
+          placeId = info.placeID ? info.placeID : ""
+          coords = info.coordinates ? info.coordinates : ""
         }
       },
       async encryptDataVal(data){
@@ -467,6 +486,8 @@ export default {
             graphicTitle = info.graphicTitle ? await svgEditor.svgCanvas.runExtensions('decryptData', info.graphicTitle)  : ""
             secretKey = info.secretKey ? await svgEditor.svgCanvas.runExtensions('decryptData', info.secretKey): ""
             graphic = info.graphicBlob ? info.graphicBlob : ""
+            placeId = info.placeID ? info.placeID : ""
+            coords = info.coordinates ? info.coordinates : ""
           }})
       }
     }
