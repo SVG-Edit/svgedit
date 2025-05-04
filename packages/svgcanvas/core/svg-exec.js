@@ -144,7 +144,7 @@ const svgToString = (elem, indent) => {
       out.push(' ')
     }
     out.push('<')
-    out.push(elem.nodeName)
+    out.push(elem.localName)
     if (elem.id === 'svgcontent') {
       // Process root element separately
       const res = svgCanvas.getResolution()
@@ -352,7 +352,7 @@ const svgToString = (elem, indent) => {
         }
       }
       out.push('</')
-      out.push(elem.nodeName)
+      out.push(elem.localName)
       out.push('>')
     } else {
       out.push('/>')

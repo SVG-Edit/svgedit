@@ -44,6 +44,9 @@ export default {
     * @returns {void}
     */
     const importImage = (e) => {
+      // only import files
+      if (!e.dataTransfer.types.includes('Files')) return
+
       $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage')
       $id('se-prompt-dialog').setAttribute('close', false)
       e.stopPropagation()
