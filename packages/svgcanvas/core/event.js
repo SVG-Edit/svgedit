@@ -662,9 +662,18 @@ const mouseUpEvent = (evt) => {
         const elem = selectedElements[0]
         if (elem) {
           elem.removeAttribute('style')
-          walkTree(elem, (el) => {
-            el.removeAttribute('style')
-          })
+
+          // we don't remove the style elements for contents of foreignObjects
+          // because that is a valid way to style them
+          if (elem.localName === 'foreignObject') {
+            walkTree(elem, (el) => {
+              el.style.removeProperty('pointer-events')
+            })
+          } else {
+            walkTree(elem, (el) => {
+              el.removeAttribute('style')
+            })
+          }
         }
       }
       return
