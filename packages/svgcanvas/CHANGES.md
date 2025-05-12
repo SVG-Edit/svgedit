@@ -1,5 +1,8 @@
 # svgcanvas CHANGES
 
+## 7.2.5
+- update dependencies
+
 ## 7.2.4
 - bug fixes 
 - update dependencies

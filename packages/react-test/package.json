@@ -1,6 +1,6 @@
 {
   "name": "@svgedit/react-test",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -31,10 +31,10 @@
   "author": "OptimistikSAS",
   "license": "MIT",
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.26.3"
+    "@babel/preset-react": "^7.27.1"
   }
 }

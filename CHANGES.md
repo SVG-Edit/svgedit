@@ -1,5 +1,20 @@
 # SVG-Edit CHANGES
 
+## 7.3.7
+- Fixed issue where foreignObject styles were removed during object moves (#1053)
+- Fixed svgToString converting HTML elements to uppercase (#1051)
+- Updated README to correct config() and init() order (#1049) for proper initialization sequence.
+- Fixed rendering issue with SVG filters (#1042)
+- Added custom SVG cursors (commit)
+- update dependencies
+
+## 7.3.6
+- #1040: Fixed bug in Editor.loadFromURL where the promise was not resolving
+- #1038: Fixed bug in ext-opensave.js when dropping text
+- #1035: Consider pathedit mode when zooming
+- #1033: Fix gradient
+- update dependencies
+
 ## 7.3.5
 - update dependencies
 - minor fixes
