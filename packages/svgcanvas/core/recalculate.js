@@ -247,11 +247,11 @@ export const recalculateDimensions = selected => {
         oldcenter = { x: cx, y: cy }
         newcenter = transformPoint(cx, cy, transformListToTransform(tlist).matrix)
       } else if (['text'].includes(selected.tagName)) {
-        // Use the x/y attribute as the rotation center for text
-        const xAttr = convertToNum('x', selected.getAttribute('x') || '0')
-        const yAttr = convertToNum('y', selected.getAttribute('y') || '0')
-        oldcenter = { x: xAttr, y: yAttr }
-        newcenter = transformPoint(xAttr, yAttr, transformListToTransform(tlist).matrix)
+        // Use the center of the bounding box as the rotation center for text
+        const cx = box.x + box.width / 2
+        const cy = box.y + box.height / 2
+        oldcenter = { x: cx, y: cy }
+        newcenter = transformPoint(cx, cy, transformListToTransform(tlist).matrix)
       } else {
         // Include x and y in the rotation center calculation for other elements
         oldcenter = {
