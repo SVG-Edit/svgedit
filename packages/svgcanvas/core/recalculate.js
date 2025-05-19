@@ -245,8 +245,9 @@ export const recalculateDimensions = selected => {
         const cx = xAttr + width / 2
         const cy = yAttr + height / 2
         oldcenter = { x: cx, y: cy }
-        newcenter = transformPoint(cx, cy, transformListToTransform(tlist).matrix)
-      } else if (selected.localName=='text') {
+        const transform = transformListToTransform(tlist).matrix
+        newcenter = transformPoint(cx, cy, transform)
+      } else if (selected.localName === 'text') {
         // Use the center of the bounding box as the rotation center for text
         const cx = box.x + box.width / 2
         const cy = box.y + box.height / 2
