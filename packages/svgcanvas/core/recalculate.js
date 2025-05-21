@@ -236,16 +236,35 @@ export const recalculateDimensions = selected => {
     // Handle rotation transformations
     const angle = getRotationAngle(selected)
     if (angle) {
-      // Include x and y in the rotation center calculation
-      oldcenter = {
-        x: box.x + box.width / 2 + x,
-        y: box.y + box.height / 2 + y
+      if (selected.localName === 'image') {
+        // Use the center of the image as the rotation center
+        const xAttr = convertToNum('x', selected.getAttribute('x') || '0')
+        const yAttr = convertToNum('y', selected.getAttribute('y') || '0')
+        const width = convertToNum('width', selected.getAttribute('width') || '0')
+        const height = convertToNum('height', selected.getAttribute('height') || '0')
+        const cx = xAttr + width / 2
+        const cy = yAttr + height / 2
+        oldcenter = { x: cx, y: cy }
+        const transform = transformListToTransform(tlist).matrix
+        newcenter = transformPoint(cx, cy, transform)
+      } else if (selected.localName === 'text') {
+        // Use the center of the bounding box as the rotation center for text
+        const cx = box.x + box.width / 2
+        const cy = box.y + box.height / 2
+        oldcenter = { x: cx, y: cy }
+        newcenter = transformPoint(cx, cy, transformListToTransform(tlist).matrix)
+      } else {
+        // Include x and y in the rotation center calculation for other elements
+        oldcenter = {
+          x: box.x + box.width / 2 + x,
+          y: box.y + box.height / 2 + y
+        }
+        newcenter = transformPoint(
+          box.x + box.width / 2 + x,
+          box.y + box.height / 2 + y,
+          transformListToTransform(tlist).matrix
+        )
       }
-      newcenter = transformPoint(
-        box.x + box.width / 2 + x,
-        box.y + box.height / 2 + y,
-        transformListToTransform(tlist).matrix
-      )
 
       // Remove the rotation transform from the list
       for (let i = 0; i < tlist.numberOfItems; ++i) {
