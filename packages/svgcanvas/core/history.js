@@ -423,14 +423,14 @@ export class BatchCommand extends Command {
   * @fires module:history~Command#event:history
   * @returns {void}
   */
-  unapply (handler) {
-    super.unapply(handler, () => {
-      this.stack.reverse().forEach((stackItem) => {
-        console.assert(stackItem, 'stack item should not be null')
-        stackItem && stackItem.unapply(handler)
-      })
+  unapply(handler) {
+  super.unapply(handler, () => {
+    [...this.stack].reverse().forEach((stackItem) => {
+      console.assert(stackItem, 'stack item should not be null')
+      stackItem && stackItem.unapply(handler)
     })
-  }
+  })
+}
 
   /**
   * Iterate through all our subcommands.
