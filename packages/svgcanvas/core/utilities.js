@@ -667,38 +667,37 @@ export const getPathDFromElement = function (elem) {
       num = 4 - num // Why? Because!
 
       d =
-        !rx && !ry
-          ? // Regular rect
-            getPathDFromSegments([
-              ['M', [x, y]],
-              ['L', [x + w, y]],
-              ['L', [x + w, y + h]],
-              ['L', [x, y + h]],
-              ['L', [x, y]],
-              ['Z', []]
-            ])
+        !rx && !ry // Regular rect
+          ? getPathDFromSegments([
+            ['M', [x, y]],
+            ['L', [x + w, y]],
+            ['L', [x + w, y + h]],
+            ['L', [x, y + h]],
+            ['L', [x, y]],
+            ['Z', []]
+          ])
           : getPathDFromSegments([
-              ['M', [x, y + ry]],
-              ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
-              ['L', [x + w - rx, y]],
-              ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
-              ['L', [x + w, y + h - ry]],
+            ['M', [x, y + ry]],
+            ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
+            ['L', [x + w - rx, y]],
+            ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
+            ['L', [x + w, y + h - ry]],
+            [
+              'C',
               [
-                'C',
-                [
-                  x + w,
-                  y + h - ry / num,
-                  x + w - rx / num,
-                  y + h,
-                  x + w - rx,
-                  y + h
-                ]
-              ],
-              ['L', [x + rx, y + h]],
-              ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
-              ['L', [x, y + ry]],
-              ['Z', []]
-            ])
+                x + w,
+                y + h - ry / num,
+                x + w - rx / num,
+                y + h,
+                x + w - rx,
+                y + h
+              ]
+            ],
+            ['L', [x + rx, y + h]],
+            ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
+            ['L', [x, y + ry]],
+            ['Z', []]
+          ])
       break
     }
     default:
@@ -1181,8 +1180,8 @@ export const assignAttributes = (elem, attrs, suspendLength, unitCheck) => {
       key.substr(0, 4) === 'xml:'
         ? NS.XML
         : key.substr(0, 6) === 'xlink:'
-        ? NS.XLINK
-        : null
+          ? NS.XLINK
+          : null
     if (value === undefined) {
       if (ns) {
         elem.removeAttributeNS(ns, key)

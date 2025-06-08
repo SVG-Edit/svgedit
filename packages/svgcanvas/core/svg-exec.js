@@ -858,7 +858,7 @@ const convertImagesToBase64 = async svgElement => {
         const reader = new FileReader()
         return new Promise(resolve => {
           reader.onload = () => {
-            img.setAttribute('href', reader.result);
+            img.setAttribute('href', reader.result)
             resolve()
           }
           reader.readAsDataURL(blob)
