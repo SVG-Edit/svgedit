@@ -443,7 +443,7 @@ const setSvgString = (xmlString, preventUndo) => {
             // const url = decodeURIComponent(m.groups.url);
             const iimg = new Image()
             iimg.addEventListener('load', () => {
-              image.setAttributeNS(NS.XLINK, 'xlink:href', url)
+              image.setAttribute(NS.XLINK, 'href', url)
             })
             iimg.src = url
           }
