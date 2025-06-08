@@ -4,7 +4,7 @@
 export default class Paint {
   /**
    * @param {module:jGraduate.jGraduatePaintOptions} [opt]
-  */
+   */
   constructor (opt) {
     const options = opt || {}
     this.alpha = isNaN(options.alpha) ? 100 : options.alpha
@@ -51,33 +51,39 @@ export default class Paint {
           this.radialGradient = options.copy.radialGradient.cloneNode(true)
           break
       }
-    // create linear gradient paint
+      // create linear gradient paint
     } else if (options.linearGradient) {
       this.type = 'linearGradient'
       this.solidColor = null
       this.radialGradient = null
-      if (options.linearGradient.hasAttribute('xlink:href')) {
-        const xhref = document.getElementById(options.linearGradient.getAttribute('xlink:href').substr(1))
+      const hrefAttr =
+        options.linearGradient.getAttribute('href') ||
+        options.linearGradient.getAttribute('xlink:href')
+      if (hrefAttr) {
+        const xhref = document.getElementById(hrefAttr.replace(/^#/, ''))
         this.linearGradient = xhref.cloneNode(true)
       } else {
         this.linearGradient = options.linearGradient.cloneNode(true)
       }
-    // create linear gradient paint
+      // create linear gradient paint
     } else if (options.radialGradient) {
       this.type = 'radialGradient'
       this.solidColor = null
       this.linearGradient = null
-      if (options.radialGradient.hasAttribute('xlink:href')) {
-        const xhref = document.getElementById(options.radialGradient.getAttribute('xlink:href').substr(1))
+      const hrefAttr =
+        options.radialGradient.getAttribute('href') ||
+        options.radialGradient.getAttribute('xlink:href')
+      if (hrefAttr) {
+        const xhref = document.getElementById(hrefAttr.replace(/^#/, ''))
         this.radialGradient = xhref.cloneNode(true)
       } else {
         this.radialGradient = options.radialGradient.cloneNode(true)
       }
-    // create solid color paint
+      // create solid color paint
     } else if (options.solidColor) {
       this.type = 'solidColor'
       this.solidColor = options.solidColor
-    // create empty paint
+      // create empty paint
     } else {
       this.type = 'none'
       this.solidColor = null

@@ -787,7 +787,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
 
   const bgImage = $settings.images.clientPath + 'map-opacity.png'
 
-  transImg.setAttributeNS(ns.xlink, 'xlink:href', bgImage)
+  transImg.setAttribute('href', bgImage)
 
   svgEditor.$click(stopMakerSVG, function (evt) {
     stopOffset = findPos(stopMakerDiv)
