@@ -114,8 +114,8 @@ describe('Basic Module', function () {
       svgCanvas.setSvgString(
         "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
           "<rect id='the-rect' width='200' height='200'/>" +
-          "<use id='the-use' xlink:href='#the-rect'/>" +
-          "<use id='foreign-use' xlink:href='somefile.svg#the-rect'/>" +
+          "<use id='the-use' href='#the-rect'/>" +
+          "<use id='foreign-use' href='somefile.svg#the-rect'/>" +
           "<use id='no-use'/>" +
         '</svg>'
       )
@@ -148,7 +148,7 @@ describe('Basic Module', function () {
     it('Test importing/exporting namespaced attributes', function () {
       /* const setStr = */ svgCanvas.setSvgString(
         '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">' +
-          '<image xlink:href="/src/editor/images/logo.svg"/>' +
+          '<image href="/src/editor/images/logo.svg"/>' +
           '<polyline id="se_test_elem" se:foo="bar" foo:bar="baz"/>' +
         '</svg>'
       )
