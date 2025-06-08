@@ -425,7 +425,7 @@ export class BatchCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      this.stack.reverse().forEach((stackItem) => {
+      [...this.stack].reverse().forEach((stackItem) => {
         console.assert(stackItem, 'stack item should not be null')
         stackItem && stackItem.unapply(handler)
       })
