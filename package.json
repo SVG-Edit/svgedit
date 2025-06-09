@@ -87,7 +87,7 @@
   "dependencies": {
     "@svgedit/svgcanvas": "7.2.6",
     "browser-fs-access": "0.37.0",
-    "core-js": "3.42.0",
+    "core-js": "3.43.0",
     "elix": "15.0.1",
     "i18next": "25.2.1",
     "jspdf": "3.0.1",
@@ -113,7 +113,7 @@
     "@web/dev-server-rollup": "0.6.4",
     "babel-plugin-istanbul": "7.0.0",
     "babel-plugin-transform-object-rest-spread": "7.0.0-beta.3",
-    "core-js-bundle": "3.42.0",
+    "core-js-bundle": "3.43.0",
     "cp-cli": "2.0.0",
     "cypress": "14.4.1",
     "cypress-multi-reporters": "2.0.5",
