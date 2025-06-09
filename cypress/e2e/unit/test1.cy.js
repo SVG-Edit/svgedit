@@ -148,7 +148,7 @@ describe('Basic Module', function () {
     it('Test importing/exporting namespaced attributes', function () {
       /* const setStr = */ svgCanvas.setSvgString(
         '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">' +
-          '<image href="/src/editor/images/logo.svg"/>' +
+          '<image xlink:href="/src/editor/images/logo.svg"/>' +
           '<polyline id="se_test_elem" se:foo="bar" foo:bar="baz"/>' +
         '</svg>'
       )
