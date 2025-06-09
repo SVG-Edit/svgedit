@@ -85,11 +85,11 @@
     ]
   },
   "dependencies": {
-    "@svgedit/svgcanvas": "7.2.4",
+    "@svgedit/svgcanvas": "7.2.6",
     "browser-fs-access": "0.37.0",
-    "core-js": "3.42.0",
+    "core-js": "3.43.0",
     "elix": "15.0.1",
-    "i18next": "25.1.2",
+    "i18next": "25.2.1",
     "jspdf": "3.0.1",
     "pathseg": "1.2.1",
     "regenerator-runtime": "0.14.1",
@@ -97,11 +97,11 @@
     "svg2pdf.js": "2.5.0"
   },
   "devDependencies": {
-    "@babel/core": "7.27.1",
+    "@babel/core": "7.27.4",
     "@babel/preset-env": "7.27.2",
     "@babel/register": "7.27.1",
-    "@babel/runtime-corejs3": "7.27.1",
-    "@cypress/code-coverage": "3.14.1",
+    "@babel/runtime-corejs3": "7.27.6",
+    "@cypress/code-coverage": "3.14.4",
     "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-commonjs": "28.0.3",
     "@rollup/plugin-dynamic-import-vars": "2.1.5",
@@ -113,9 +113,9 @@
     "@web/dev-server-rollup": "0.6.4",
     "babel-plugin-istanbul": "7.0.0",
     "babel-plugin-transform-object-rest-spread": "7.0.0-beta.3",
-    "core-js-bundle": "3.42.0",
+    "core-js-bundle": "3.43.0",
     "cp-cli": "2.0.0",
-    "cypress": "14.3.3",
+    "cypress": "14.4.1",
     "cypress-multi-reporters": "2.0.5",
     "jamilih": "0.60.0",
     "jsdoc": "4.0.4",
@@ -129,16 +129,16 @@
     "remark-cli": "12.0.1",
     "remark-lint-ordered-list-marker-value": "4.0.1",
     "rimraf": "6.0.1",
-    "rollup": "4.40.2",
+    "rollup": "4.42.0",
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-filesize": "10.0.0",
     "rollup-plugin-html": "0.2.1",
     "rollup-plugin-progress": "1.1.2",
     "rollup-plugin-re": "1.0.7",
     "standard": "17.1.2",
-    "start-server-and-test": "2.0.11"
+    "start-server-and-test": "2.0.12"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.40.2"
+    "@rollup/rollup-linux-x64-gnu": "4.42.0"
   }
 }

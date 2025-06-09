@@ -114,8 +114,8 @@ describe('Basic Module', function () {
       svgCanvas.setSvgString(
         "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
           "<rect id='the-rect' width='200' height='200'/>" +
-          "<use id='the-use' xlink:href='#the-rect'/>" +
-          "<use id='foreign-use' xlink:href='somefile.svg#the-rect'/>" +
+          "<use id='the-use' href='#the-rect'/>" +
+          "<use id='foreign-use' href='somefile.svg#the-rect'/>" +
           "<use id='no-use'/>" +
         '</svg>'
       )

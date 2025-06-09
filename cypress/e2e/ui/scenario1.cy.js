@@ -55,6 +55,6 @@ describe('check tool shape and image of svg-edit', { testIsolation: false }, fun
     // issue with snapshot not being consistent on CI/Interactive
     // cy.svgSnapshot()
     // so we use typical DOM tests to validate
-    cy.get('#svg_2').should('have.attr', 'xlink:href').and('equal', './images/logo.svg')
+    cy.get('#svg_2').should('have.attr', 'href').and('equal', './images/logo.svg')
   })
 })

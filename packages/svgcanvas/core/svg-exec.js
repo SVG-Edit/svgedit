@@ -12,6 +12,7 @@ import {
   text2xml,
   cleanupElement,
   findDefs,
+  setHref,
   getHref,
   preventClickDefault,
   toXml,
@@ -443,7 +444,8 @@ const setSvgString = (xmlString, preventUndo) => {
             // const url = decodeURIComponent(m.groups.url);
             const iimg = new Image()
             iimg.addEventListener('load', () => {
-              image.setAttributeNS(NS.XLINK, 'xlink:href', url)
+              // Set the href attribute to the data URL
+              setHref(image, val)
             })
             iimg.src = url
           }
@@ -858,7 +860,7 @@ const convertImagesToBase64 = async svgElement => {
         const reader = new FileReader()
         return new Promise(resolve => {
           reader.onload = () => {
-            img.setAttribute('xlink:href', reader.result)
+            setHref(img, reader.result)
             resolve()
           }
           reader.readAsDataURL(blob)

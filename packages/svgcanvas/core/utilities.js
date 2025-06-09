@@ -376,21 +376,22 @@ export const getUrlFromAttr = function (attrVal) {
 /**
  * @function module:utilities.getHref
  * @param {Element} elem
- * @returns {string} The given element's `xlink:href` value
+ * @returns {string} The given element's `href` value
  */
 export let getHref = function (elem) {
-  return elem.getAttributeNS(NS.XLINK, 'href')
+  // Prefer 'href', fallback to 'xlink:href'
+  return elem.getAttribute('href') || elem.getAttributeNS(NS.XLINK, 'href')
 }
 
 /**
- * Sets the given element's `xlink:href` value.
+ * Sets the given element's `href` value.
  * @function module:utilities.setHref
  * @param {Element} elem
  * @param {string} val
  * @returns {void}
  */
 export let setHref = function (elem, val) {
-  elem.setAttributeNS(NS.XLINK, 'xlink:href', val)
+  elem.setAttribute('href', val)
 }
 
 /**
@@ -665,38 +666,38 @@ export const getPathDFromElement = function (elem) {
       const h = b.height
       num = 4 - num // Why? Because!
 
-      d = (!rx && !ry)
-      // Regular rect
-        ? getPathDFromSegments([
-          ['M', [x, y]],
-          ['L', [x + w, y]],
-          ['L', [x + w, y + h]],
-          ['L', [x, y + h]],
-          ['L', [x, y]],
-          ['Z', []]
-        ])
-        : getPathDFromSegments([
-          ['M', [x, y + ry]],
-          ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
-          ['L', [x + w - rx, y]],
-          ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
-          ['L', [x + w, y + h - ry]],
-          [
-            'C',
+      d =
+        !rx && !ry // Regular rect
+          ? getPathDFromSegments([
+            ['M', [x, y]],
+            ['L', [x + w, y]],
+            ['L', [x + w, y + h]],
+            ['L', [x, y + h]],
+            ['L', [x, y]],
+            ['Z', []]
+          ])
+          : getPathDFromSegments([
+            ['M', [x, y + ry]],
+            ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
+            ['L', [x + w - rx, y]],
+            ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
+            ['L', [x + w, y + h - ry]],
             [
-              x + w,
-              y + h - ry / num,
-              x + w - rx / num,
-              y + h,
-              x + w - rx,
-              y + h
-            ]
-          ],
-          ['L', [x + rx, y + h]],
-          ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
-          ['L', [x, y + ry]],
-          ['Z', []]
-        ])
+              'C',
+              [
+                x + w,
+                y + h - ry / num,
+                x + w - rx / num,
+                y + h,
+                x + w - rx,
+                y + h
+              ]
+            ],
+            ['L', [x + rx, y + h]],
+            ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
+            ['L', [x, y + ry]],
+            ['Z', []]
+          ])
       break
     }
     default:

@@ -23,7 +23,7 @@ export default {
             '<svg id="overviewMiniView" width="132" height="100" x="0" y="0" viewBox="0 0 4800 3600" ' +
                 'xmlns="http://www.w3.org/2000/svg" ' +
                 'xmlns:xlink="http://www.w3.org/1999/xlink">' +
-              '<use x="0" y="0" xlink:href="#svgroot"> </use>' +
+              '<use x="0" y="0" href="#svgroot"> </use>' +
             '</svg>' +
             '<div id="overview_window_view_box" style="min-width:50px; min-height:50px; position:absolute; top:30px; left:30px; z-index:5; background-color:rgba(255,0,102,0.3);">' +
             '</div>' +

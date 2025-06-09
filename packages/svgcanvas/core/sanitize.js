@@ -21,7 +21,7 @@ const REVERSE_NS = getReverseNS()
 const svgGenericWhiteList = ['class', 'id', 'display', 'transform', 'style']
 const svgWhiteList_ = {
   // SVG Elements
-  a: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'xlink:href', 'xlink:title'],
+  a: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'href', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'xlink:href', 'xlink:title'],
   circle: ['clip-path', 'clip-rule', 'cx', 'cy', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'r', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage'],
   clipPath: ['clipPathUnits'],
   defs: [],
@@ -36,20 +36,20 @@ const svgWhiteList_ = {
   feMergeNode: ['in'],
   feMorphology: ['in', 'operator', 'radius'],
   feOffset: ['dx', 'in', 'dy', 'result'],
-  filter: ['color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
+  filter: ['color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'href', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
   foreignObject: ['font-size', 'height', 'opacity', 'requiredFeatures', 'width', 'x', 'y'],
   g: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor'],
-  image: ['clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'xlink:href', 'xlink:title', 'y'],
+  image: ['clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'href', 'xlink:href', 'xlink:title', 'y'],
   line: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'x1', 'x2', 'y1', 'y2'],
-  linearGradient: ['gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'xlink:href', 'y1', 'y2'],
+  linearGradient: ['gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'href', 'xlink:href', 'y1', 'y2'],
   marker: ['markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'se_type', 'systemLanguage', 'viewBox'],
   mask: ['height', 'maskContentUnits', 'maskUnits', 'width', 'x', 'y'],
   metadata: [],
   path: ['clip-path', 'clip-rule', 'd', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage'],
-  pattern: ['height', 'patternContentUnits', 'patternTransform', 'patternUnits', 'requiredFeatures', 'systemLanguage', 'viewBox', 'width', 'x', 'xlink:href', 'y'],
+  pattern: ['height', 'patternContentUnits', 'patternTransform', 'patternUnits', 'requiredFeatures', 'systemLanguage', 'viewBox', 'width', 'x', 'href', 'xlink:href', 'y'],
   polygon: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'sides', 'shape', 'edge', 'point', 'starRadiusMultiplier', 'r', 'radialshift', 'r2', 'orient', 'cx', 'cy'],
   polyline: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'se:connector'],
-  radialGradient: ['cx', 'cy', 'fx', 'fy', 'gradientTransform', 'gradientUnits', 'r', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'xlink:href'],
+  radialGradient: ['cx', 'cy', 'fx', 'fy', 'gradientTransform', 'gradientUnits', 'r', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'href', 'xlink:href'],
   rect: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'width', 'x', 'y'],
   stop: ['offset', 'requiredFeatures', 'stop-opacity', 'systemLanguage', 'stop-color', 'gradientUnits', 'gradientTransform'],
   style: ['type'],
@@ -57,10 +57,10 @@ const svgWhiteList_ = {
   switch: ['requiredFeatures', 'systemLanguage'],
   symbol: ['fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'opacity', 'overflow', 'preserveAspectRatio', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'viewBox', 'width', 'height'],
   text: ['clip-path', 'clip-rule', 'dominant-baseline', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'text-anchor', 'letter-spacing', 'word-spacing', 'text-decoration', 'textLength', 'lengthAdjust', 'x', 'xml:space', 'y'],
-  textPath: ['dominant-baseline', 'method', 'requiredFeatures', 'spacing', 'startOffset', 'systemLanguage', 'xlink:href'],
+  textPath: ['dominant-baseline', 'href', 'method', 'requiredFeatures', 'spacing', 'startOffset', 'systemLanguage', 'xlink:href'],
   title: [],
   tspan: ['clip-path', 'clip-rule', 'dx', 'dy', 'dominant-baseline', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'mask', 'opacity', 'requiredFeatures', 'rotate', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'text-anchor', 'textLength', 'x', 'xml:space', 'y'],
-  use: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height', 'mask', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'width', 'x', 'xlink:href', 'y', 'overflow'],
+  use: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height', 'href', 'mask', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'width', 'x', 'xlink:href', 'y', 'overflow'],
   // Filter Primitives
   feComponentTransfer: ['in', 'result'],
   feFuncR: ['type', 'tableValues', 'slope', 'intercept', 'amplitude', 'exponent', 'offset'],
@@ -91,7 +91,7 @@ const svgWhiteList_ = {
   mphantom: [],
   mprescripts: [],
   mroot: [],
-  mrow: ['xlink:href', 'xlink:type', 'xmlns:xlink'],
+  mrow: ['href', 'xlink:href', 'xlink:type', 'xmlns:xlink'],
   mspace: ['depth', 'height', 'width'],
   msqrt: [],
   mstyle: ['displaystyle', 'mathbackground', 'mathcolor', 'mathvariant', 'scriptlevel'],
@@ -190,16 +190,20 @@ export const sanitizeSvg = (node) => {
       // our whitelist or is a namespace declaration for one of our allowed namespaces
       if (attrNsURI !== allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS &&
        !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
-        // Bypassing the whitelist to allow se: and oi: prefixes
-        // We can add specific namepaces on demand for now.
-        // Is there a more appropriate way to do this?
-        if (attrName.startsWith('se:') || attrName.startsWith('oi:') || attrName.startsWith('data-')) {
-          // We should bypass the namespace aswell
-          const seAttrNS = (attrName.startsWith('se:')) ? NS.SE : ((attrName.startsWith('oi:')) ? NS.OI : null)
-          seAttrs.push([attrName, attr.value, seAttrNS])
-        } else {
-          console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed`)
-          node.removeAttributeNS(attrNsURI, attrLocalName)
+        // Special case: allow href attribute even without namespace if it's in the whitelist
+        const isHrefAttribute = (attrLocalName === 'href' && allowedAttrs.includes('href'))
+        if (!isHrefAttribute) {
+          // Bypassing the whitelist to allow se: and oi: prefixes
+          // We can add specific namepaces on demand for now.
+          // Is there a more appropriate way to do this?
+          if (attrName.startsWith('se:') || attrName.startsWith('oi:') || attrName.startsWith('data-')) {
+            // We should bypass the namespace aswell
+            const seAttrNS = (attrName.startsWith('se:')) ? NS.SE : ((attrName.startsWith('oi:')) ? NS.OI : null)
+            seAttrs.push([attrName, attr.value, seAttrNS])
+          } else {
+            console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed: ${node.outerHTML}`)
+            node.removeAttributeNS(attrNsURI, attrLocalName)
+          }
         }
       }
 
@@ -224,34 +228,35 @@ export const sanitizeSvg = (node) => {
       node.setAttributeNS(ns, att, val)
     })
 
-    // for some elements that have a xlink:href, ensure the URI refers to a local element
-    // (but not for links)
+    // for some elements that have a xlink:href or href, ensure the URI refers to a local element
+    // (but not for links and other elements where external hrefs are allowed)
     const href = getHref(node)
     if (href &&
       ['filter', 'linearGradient', 'pattern',
         'radialGradient', 'textPath', 'use'].includes(node.nodeName) && href[0] !== '#') {
       // remove the attribute (but keep the element)
       setHref(node, '')
-      console.warn(`sanitizeSvg: attribute href in element ${node.nodeName} pointing to a non-local reference (${href}) is removed`)
+      console.warn(`sanitizeSvg: attribute href in element ${node.nodeName} pointing to a non-local reference (${href}) is removed: ${node.outerHTML}`)
       node.removeAttributeNS(NS.XLINK, 'href')
+      node.removeAttribute('href')
     }
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
     if (node.nodeName === 'use' && !getHref(node)) {
-      console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href is removed`)
+      console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href or href is removed: ${node.outerHTML}`)
       node.remove()
       return
     }
     // if the element has attributes pointing to a non-local reference,
     // need to remove the attribute
-    Object.values(['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'], (attr) => {
+    ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'].forEach((attr) => {
       let val = node.getAttribute(attr)
       if (val) {
         val = getUrlFromAttr(val)
         // simply check for first character being a '#'
         if (val && val[0] !== '#') {
           node.setAttribute(attr, '')
-          console.warn(`sanitizeSvg: attribute ${attr} in element ${node.nodeName} pointing to a non-local reference (${val}) is removed`)
+          console.warn(`sanitizeSvg: attribute ${attr} in element ${node.nodeName} pointing to a non-local reference (${val}) is removed: ${node.outerHTML}`)
           node.removeAttribute(attr)
         }
       }
@@ -264,7 +269,7 @@ export const sanitizeSvg = (node) => {
   } else {
     // remove all children from this node and insert them before this node
     // TODO: in the case of animation elements this will hardly ever be correct
-    console.warn(`sanitizeSvg: element ${node.nodeName} not supported is removed`)
+    console.warn(`sanitizeSvg: element ${node.nodeName} not supported is removed: ${node.outerHTML}`)
     const children = []
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node))
