@@ -1,5 +1,8 @@
 # SVG-Edit CHANGES
 
+## 7.3.8
+- Update svgcanvas to 7.2.7
+
 ## 7.3.7
 - Fixed issue where foreignObject styles were removed during object moves (#1053)
 - Fixed svgToString converting HTML elements to uppercase (#1051)
