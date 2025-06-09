@@ -1,5 +1,11 @@
 # svgcanvas CHANGES
 
+
+## 7.2.7
+- Prefer href to xlink href (#1059)
+- Fix group rotation (#1058)
+- Fixed a bug where a rotated text or image did not translate correctly. (#1055) 
+
 ## 7.2.5
 - update dependencies
 

@@ -1,6 +1,6 @@
 {
     "name": "@svgedit/svgcanvas",
-    "version": "7.2.6",
+    "version": "7.2.7",
     "description": "SVG Canvas",
     "main": "dist/svgcanvas.js",
     "author": "Narendra Sisodiya",
