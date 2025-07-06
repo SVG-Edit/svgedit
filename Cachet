@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  
+  <!-- FOND TRANSPARENT -->
+  <rect width="100%" height="100%" fill="none"/>
+  
+  <!-- DOUBLE CERCLES -->
+  <circle cx="250" cy="250" r="230" fill="none" stroke="#00008B" stroke-width="8"/>
+  <circle cx="250" cy="250" r="210" fill="none" stroke="#D4AF37" stroke-width="2"/>
+  
+  <!-- 7 ÉTOILES (7 JOURS) -->
+  <g fill="#D4AF37" stroke="#00008B" stroke-width="0.5">
+    <!-- Positions radiales calculées -->
+    <path d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(51.42 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(102.85 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(154.28 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(205.71 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(257.14 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+    <path transform="rotate(308.57 250 250)" d="M250,40 l-10,30 h-32 l26,18 -10,30 26-18 26,18 -10-30 26-18 h-32z"/>
+  </g>
+  
+  <!-- MICRO-TEXTE CIRCULAIRE -->
+  <path id="innerCircle" d="M250,250 m-180,0 a180,180 0 1,1 360,0 a180,180 0 1,1 -360,0" fill="none"/>
+  <text font-family="Garamond" font-size="9" fill="#00008B" letter-spacing="1.5">
+    <textPath xlink:href="#innerCircle" startOffset="50%" text-anchor="middle">
+      7H30 • 00H00 | DISCIPLINE • EXCELLENCE • RIGUEUR
+    </textPath>
+  </text>
+  
+  <!-- NOM -->
+  <text x="250" y="120" text-anchor="middle" font-family="Garamond" font-size="22" fill="#00008B" font-weight="bold">
+    NANA NDJANKOU MIGREL CHANCEL
+  </text>
+  
+  <!-- SYMBOLES CENTRAUX -->
+  <!-- Livre -->
+  <path d="M200,200 L300,200 L290,300 L210,300 Z" fill="none" stroke="#00008B" stroke-width="3"/>
+  <line x1="250" y1="200" x2="250" y2="300" stroke="#00008B" stroke-width="2"/>
+  <!-- Éclair (Physique) -->
+  <path d="M220,220 L250,250 L230,270 L270,230 L240,260 L260,280" 
+        fill="none" stroke="#D4AF37" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Compas (Maths) -->
+  <path d="M280,280 L260,240 M280,280 L300,240" stroke="#00008B" stroke-width="3"/>
+  <circle cx="280" cy="280" r="3" fill="#00008B"/>
+  
+  <!-- DEVISE -->
+  <text x="250" y="380" text-anchor="middle" font-family="Garamond" font-size="24" fill="#00008B" font-style="italic">
+    LABOR OMNIA VINCIT
+  </text>
+  
+  <!-- SIGNATURE -->
+  <g transform="translate(250 420)">
+    <rect x="-60" y="-15" width="120" height="30" fill="#00008B" rx="5"/>
+    <text text-anchor="middle" font-family="Garamond" font-size="18" fill="#D4AF37" font-weight="bold">
+      NNMC • 2024
+    </text>
+  </g>
+</svg>
