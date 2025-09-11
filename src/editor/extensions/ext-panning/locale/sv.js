@@ -2,7 +2,8 @@ export default {
   name: 'Panorering av tillägg',
   buttons: [
     {
-      title: 'Panorering'
+      title: 'Panorering',
+      key: '[Blanksteg / mushjul + dra]'
     }
   ]
 }

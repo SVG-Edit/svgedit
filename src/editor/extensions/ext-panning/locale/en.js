@@ -2,7 +2,8 @@ export default {
   name: 'Extension Panning',
   buttons: [
     {
-      title: 'Panning'
+      title: 'Panning',
+      key: '[Space / mouse wheel + drag]'
     }
   ]
 }

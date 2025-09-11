@@ -1,6 +1,6 @@
 export default {
   name: '星形',
-  title: 'Polygone/Star Tool',
+  title: '多边形/星形工具',
   buttons: [
     {
       title: '星形工具'
