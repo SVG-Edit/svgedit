@@ -362,6 +362,16 @@ class EditorStartup {
       }
     })
 
+    // Add a new shortcut for zoom in/out : Alt + Wheels
+    this.workarea.addEventListener('wheel', (e) => {
+      if (e.altKey) {
+        e.preventDefault()
+        this.svgCanvas.setZoom(e.deltaY > 0 ? this.svgCanvas.getZoom() * 0.9 : this.svgCanvas.getZoom() * 1.1, true)
+        this.updateCanvas(true)
+        $id('zoom').value = (this.svgCanvas.getZoom() * 100).toFixed(1)
+      }
+    })
+
     document.addEventListener('keyup', (e) => {
       if (e.target.nodeName !== 'BODY') return
       if (e.code.toLowerCase() === 'space') {
