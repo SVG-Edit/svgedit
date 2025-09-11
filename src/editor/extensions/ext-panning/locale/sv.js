@@ -3,7 +3,7 @@ export default {
   buttons: [
     {
       title: 'Panorering',
-      key:'[Blanksteg / mushjul + dra]',
+      key: '[Blanksteg / mushjul + dra]'
     }
   ]
 }

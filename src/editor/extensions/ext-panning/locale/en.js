@@ -3,7 +3,7 @@ export default {
   buttons: [
     {
       title: 'Panning',
-      key:'[Space / mouse wheel + drag]',
+      key: '[Space / mouse wheel + drag]'
     }
   ]
 }

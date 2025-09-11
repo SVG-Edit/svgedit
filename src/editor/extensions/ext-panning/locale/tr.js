@@ -3,7 +3,7 @@ export default {
   buttons: [
     {
       title: 'Kaydırma',
-      key:'[Boşluk / fare tekerleği + sürükle]',
+      key: '[Boşluk / fare tekerleği + sürükle]'
     }
   ]
 }
