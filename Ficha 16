@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200mm" height="200mm" viewBox="0 0 200 200">
+  <style>
+    .title  { font-family:sans-serif; font-size:12px; fill:#000; font-weight:bold; text-anchor:middle }
+    .sub    { font-family:sans-serif; font-size:6px; fill:#000; text-anchor:middle }
+    .icon   { fill:none; stroke:#E74C3C; stroke-width:0.5 }
+    .lbl    { font-family:sans-serif; font-size:5px; fill:#000; text-anchor:middle }
+  </style>
+  <!-- Fondo portada -->
+  <rect x="0" y="0" width="200" height="200" fill="#FFF"/>
+  <!-- Título -->
+  <text x="100" y="80" class="title">Análisis urbano</text>
+  <text x="100" y="95" class="sub">Barrio Paraíso – Cl. 84 # 64-126</text>
+  <!-- Icono manzana -->
+  <rect class="icon" x="85" y="110" width="30" height="30"/>
+  <!-- Contraportada -->
+  <text x="100" y="150" class="lbl">Universidad del Atlántico</text>
+  <text x="100" y="160" class="lbl">Proyecto II – CIA 2025-2</text>
+</svg>
