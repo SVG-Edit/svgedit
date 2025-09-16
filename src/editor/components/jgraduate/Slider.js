@@ -1,4 +1,4 @@
-import { findPos } from '@svgedit/svgcanvas/common/util.js'
+import { findPos } from '@dessixio/svgcanvas/common/util.js'
 /**
  * Whether a value is `null` or `undefined`.
  * @param {any} val

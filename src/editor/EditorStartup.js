@@ -6,7 +6,7 @@ import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js'
 import editorTemplate from './templates/editorTemplate.html'
-import SvgCanvas from '@svgedit/svgcanvas'
+import SvgCanvas from '@dessixio/svgcanvas'
 import Rulers from './Rulers.js'
 
 /**

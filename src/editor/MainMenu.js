@@ -1,6 +1,6 @@
 /* globals seAlert */
-import SvgCanvas from '@svgedit/svgcanvas'
-import { isChrome } from '@svgedit/svgcanvas/common/browser.js'
+import SvgCanvas from '@dessixio/svgcanvas'
+import { isChrome } from '@dessixio/svgcanvas/common/browser.js'
 
 const { $id, $click, convertUnit, isValidUnit } = SvgCanvas
 const homePage = 'https://github.com/SVG-Edit/svgedit'

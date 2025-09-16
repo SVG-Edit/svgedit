@@ -1,4 +1,4 @@
-import SvgCanvas from '@svgedit/svgcanvas'
+import SvgCanvas from '@dessixio/svgcanvas'
 /* globals svgEditor */
 import imagePropertiesDialogHTML from './imagePropertiesDialog.html'
 

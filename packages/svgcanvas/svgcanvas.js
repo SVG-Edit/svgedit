@@ -85,6 +85,7 @@ import {
   getParents,
   mergeDeep
 } from './common/util.js'
+import * as browser from './common/browser.js'
 
 import dataStorage from './core/dataStorage.js'
 
@@ -1364,5 +1365,8 @@ SvgCanvas.getTypeMap = getTypeMap
 SvgCanvas.convertToNum = convertToNum
 SvgCanvas.isValidUnit = isValidUnit
 SvgCanvas.convertUnit = convertUnit
+
+// Export browser module
+export { browser }
 
 export default SvgCanvas

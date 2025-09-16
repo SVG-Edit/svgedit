@@ -16,9 +16,9 @@
 import './components/index.js'
 import './dialogs/index.js'
 
-import { isMac } from '@svgedit/svgcanvas/common/browser'
+import { isMac } from '@dessixio/svgcanvas/common/browser'
 
-import SvgCanvas from '@svgedit/svgcanvas'
+import SvgCanvas from '@dessixio/svgcanvas'
 import ConfigObj from './ConfigObj.js'
 import EditorStartup from './EditorStartup.js'
 import LeftPanel from './panels/LeftPanel.js'
@@ -26,7 +26,7 @@ import TopPanel from './panels/TopPanel.js'
 import BottomPanel from './panels/BottomPanel.js'
 import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
-import { getParentsUntil } from '@svgedit/svgcanvas/common/util.js'
+import { getParentsUntil } from '@dessixio/svgcanvas/common/util.js'
 
 const { $id, $click, decode64 } = SvgCanvas
 

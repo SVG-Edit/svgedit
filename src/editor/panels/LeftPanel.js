@@ -1,4 +1,4 @@
-import SvgCanvas from '@svgedit/svgcanvas'
+import SvgCanvas from '@dessixio/svgcanvas'
 import leftPanelHTML from './LeftPanel.html'
 
 const { $id, $qa, $click } = SvgCanvas

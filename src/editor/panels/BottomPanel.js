@@ -1,4 +1,4 @@
-import SvgCanvas from '@svgedit/svgcanvas'
+import SvgCanvas from '@dessixio/svgcanvas'
 import { jGraduate } from '../components/jgraduate/jQuery.jGraduate.js'
 import BottomPanelHtml from './BottomPanel.html'
 
