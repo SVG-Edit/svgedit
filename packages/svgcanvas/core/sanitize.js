@@ -39,7 +39,11 @@ const svgWhiteList_ = {
   filter: ['color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'href', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
   foreignObject: ['font-size', 'height', 'opacity', 'requiredFeatures', 'width', 'x', 'y'],
   g: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor'],
-  image: ['clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'href', 'xlink:href', 'xlink:title', 'y'],
+  image: [
+    'clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity',
+    'preserveAspectRatio', 'requiredFeatures', 'systemLanguage', 'viewBox',
+    'width', 'x', 'href', 'xlink:href', 'xlink:title', 'y'
+  ],
   line: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'x1', 'x2', 'y1', 'y2'],
   linearGradient: ['gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'href', 'xlink:href', 'y1', 'y2'],
   marker: ['markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'se_type', 'systemLanguage', 'viewBox'],
@@ -222,6 +226,13 @@ export const sanitizeSvg = (node) => {
         }
         node.removeAttribute('style')
       }
+    }
+
+    // If legacy xlink:href is present but href is missing, mirror it to href for modern browsers
+    const xlinkHref = node.getAttributeNS(NS.XLINK, 'href')
+    if (xlinkHref) {
+      node.setAttribute('href', xlinkHref)
+      node.removeAttributeNS(NS.XLINK, 'href')
     }
 
     Object.values(seAttrs).forEach(([att, val, ns]) => {
