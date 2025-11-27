@@ -105,6 +105,11 @@ export const recalculateDimensions = selected => {
     return null
   }
 
+  // Avoid remapping transforms on <use> to preserve referenced positioning/rotation
+  if (selected.tagName === 'use') {
+    return null
+  }
+
   // Set up undo command
   const batchCmd = new BatchCommand('Transform')
 

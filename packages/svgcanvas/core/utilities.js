@@ -1131,7 +1131,11 @@ export let getRotationAngle = (elem, toRad) => {
  * @returns {Element} Reference element
  */
 export const getRefElem = attrVal => {
-  return getElement(getUrlFromAttr(attrVal).substr(1))
+  if (!attrVal) return null
+  const url = getUrlFromAttr(attrVal)
+  if (!url) return null
+  const id = url[0] === '#' ? url.substr(1) : url
+  return getElement(id)
 }
 /**
  * Get the reference element associated with the given attribute value.

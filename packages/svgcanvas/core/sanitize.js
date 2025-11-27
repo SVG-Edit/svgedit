@@ -7,7 +7,7 @@
  */
 
 import { getReverseNS, NS } from './namespaces.js'
-import { getHref, setHref, getUrlFromAttr } from './utilities.js'
+import { getHref, getRefElem, setHref, getUrlFromAttr } from './utilities.js'
 
 const REVERSE_NS = getReverseNS()
 
@@ -257,6 +257,24 @@ export const sanitizeSvg = (node) => {
       console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href or href is removed: ${node.outerHTML}`)
       node.remove()
       return
+    }
+    // For <use> elements with missing width/height, derive defaults from referenced viewBox/size for proper sizing/selection
+    if (node.nodeName === 'use') {
+      const ref = getRefElem(getHref(node))
+      if (ref) {
+        const refViewBox = ref.getAttribute('viewBox')
+        const viewBoxParts = refViewBox ? refViewBox.split(/[\s,]+/).map(Number) : null
+        const refWidth = Number(ref.getAttribute('width'))
+        const refHeight = Number(ref.getAttribute('height'))
+        if (!node.hasAttribute('width')) {
+          const width = viewBoxParts?.[2] || refWidth
+          if (width) node.setAttribute('width', width)
+        }
+        if (!node.hasAttribute('height')) {
+          const height = viewBoxParts?.[3] || refHeight
+          if (height) node.setAttribute('height', height)
+        }
+      }
     }
     // if the element has attributes pointing to a non-local reference,
     // need to remove the attribute
