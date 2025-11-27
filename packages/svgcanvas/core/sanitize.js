@@ -7,7 +7,7 @@
  */
 
 import { getReverseNS, NS } from './namespaces.js'
-import { getHref, setHref, getUrlFromAttr } from './utilities.js'
+import { getHref, getRefElem, setHref, getUrlFromAttr } from './utilities.js'
 
 const REVERSE_NS = getReverseNS()
 
@@ -39,7 +39,11 @@ const svgWhiteList_ = {
   filter: ['color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'href', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
   foreignObject: ['font-size', 'height', 'opacity', 'requiredFeatures', 'width', 'x', 'y'],
   g: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor'],
-  image: ['clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'href', 'xlink:href', 'xlink:title', 'y'],
+  image: [
+    'clip-path', 'clip-rule', 'filter', 'height', 'mask', 'opacity',
+    'preserveAspectRatio', 'requiredFeatures', 'systemLanguage', 'viewBox',
+    'width', 'x', 'href', 'xlink:href', 'xlink:title', 'y'
+  ],
   line: ['clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'x1', 'x2', 'y1', 'y2'],
   linearGradient: ['gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'href', 'xlink:href', 'y1', 'y2'],
   marker: ['markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'se_type', 'systemLanguage', 'viewBox'],
@@ -224,6 +228,13 @@ export const sanitizeSvg = (node) => {
       }
     }
 
+    // If legacy xlink:href is present but href is missing, mirror it to href for modern browsers
+    const xlinkHref = node.getAttributeNS(NS.XLINK, 'href')
+    if (xlinkHref) {
+      node.setAttribute('href', xlinkHref)
+      node.removeAttributeNS(NS.XLINK, 'href')
+    }
+
     Object.values(seAttrs).forEach(([att, val, ns]) => {
       node.setAttributeNS(ns, att, val)
     })
@@ -246,6 +257,24 @@ export const sanitizeSvg = (node) => {
       console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href or href is removed: ${node.outerHTML}`)
       node.remove()
       return
+    }
+    // For <use> elements with missing width/height, derive defaults from referenced viewBox/size for proper sizing/selection
+    if (node.nodeName === 'use') {
+      const ref = getRefElem(getHref(node))
+      if (ref) {
+        const refViewBox = ref.getAttribute('viewBox')
+        const viewBoxParts = refViewBox ? refViewBox.split(/[\s,]+/).map(Number) : null
+        const refWidth = Number(ref.getAttribute('width'))
+        const refHeight = Number(ref.getAttribute('height'))
+        if (!node.hasAttribute('width')) {
+          const width = viewBoxParts?.[2] || refWidth
+          if (width) node.setAttribute('width', width)
+        }
+        if (!node.hasAttribute('height')) {
+          const height = viewBoxParts?.[3] || refHeight
+          if (height) node.setAttribute('height', height)
+        }
+      }
     }
     // if the element has attributes pointing to a non-local reference,
     // need to remove the attribute

@@ -44,8 +44,14 @@ export default {
     * @returns {void}
     */
     const importImage = (e) => {
+      const fileInput = (e.target && e.target.type === 'file') ? e.target : null
+      const resetFileInput = () => {
+        if (fileInput) {
+          fileInput.value = ''
+        }
+      }
       // only import files
-      if (!e.dataTransfer.types.includes('Files')) return
+      if (e.dataTransfer && !e.dataTransfer.types?.includes('Files')) return
 
       $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage')
       $id('se-prompt-dialog').setAttribute('close', false)
@@ -54,10 +60,12 @@ export default {
       const file = (e.type === 'drop') ? e.dataTransfer.files[0] : e.currentTarget.files[0]
       if (!file) {
         $id('se-prompt-dialog').setAttribute('close', true)
+        resetFileInput()
         return
       }
 
       if (!file.type.includes('image')) {
+        resetFileInput()
         return
       }
       // Detected an image
@@ -73,6 +81,7 @@ export default {
           // highlight imported element, otherwise we get strange empty selectbox
           this.svgCanvas.selectOnly([newElement])
           $id('se-prompt-dialog').setAttribute('close', true)
+          resetFileInput()
         }
         reader.readAsText(file)
       } else {
@@ -103,6 +112,7 @@ export default {
             this.svgCanvas.alignSelectedElements('c', 'page')
             this.topPanel.updateContextPanel()
             $id('se-prompt-dialog').setAttribute('close', true)
+            resetFileInput()
           }
           // create dummy img so we know the default dimensions
           let imgWidth = 100
