@@ -24,7 +24,7 @@
     "test:watch": "vitest",
     "prebuild": "npm run build --workspace=packages/svgcanvas --workspace=packages/react-test",
     "build": "vite build",
-    "postbuild": "node scripts/copy-static.mjs",
+    "postbuild": "node scripts/copy-static.mjs && node scripts/build-extensions.mjs",
     "build:watch": "vite build --watch",
     "start": "vite dev --host --port 8000 --strictPort",
     "prestart": "echo svgedit is available at http://localhost:8000/src/editor/index.html",

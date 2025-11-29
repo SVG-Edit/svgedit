@@ -15,7 +15,6 @@ const targets = [
   ['src/editor/svgedit.css', 'svgedit.css'],
   ['src/editor/images', 'images'],
   ['src/editor/components/jgraduate/images', 'components/jgraduate/images'],
-  // Copy all extensions so dynamic imports work in the built preview (Netlify).
   ['src/editor/extensions', 'extensions']
 ]
 
