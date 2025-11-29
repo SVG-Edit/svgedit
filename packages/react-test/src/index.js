@@ -16,7 +16,7 @@ export default {
       callback () {
         // position the div used by React in the left bar
         document.getElementById('tools_left').append(div)
-        root.render(<ReactTest svgEdit={this} trigger='callback' />)
+        root.render(React.createElement(ReactTest, { svgEdit: this, trigger: 'callback' }))
       }
     }
   }
