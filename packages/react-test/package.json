@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "vite build",
     "prebuild": "standard . && npm i",
     "prepublishOnly": "npm run build"
   },

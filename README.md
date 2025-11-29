@@ -63,7 +63,7 @@ You should fork SVGEdit in your github environment and install SVGEdit locally a
 Before you submit your PR, please make sure you run locally:
 
 1. `npm run lint` to check that you follow the standardjs rules (https://standardjs.com/rules) for the linter
-1. `npm run test` to run a suite of Cypress tests (https://www.cypress.io/)
+1. `npm run test` to run the Vitest suite (unit/locale checks)
 
 If you intend to contribute on a regular basis, let us know so we can add you to the maintainer team.
 

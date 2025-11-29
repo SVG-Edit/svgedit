@@ -43,6 +43,11 @@ const ReactTest = ({ svgEdit }) => {
     svgCanvas.setMode('hello_world')
   }
 
-  return <se-button id='hello_world' title='Hello World' src='hello_world.svg' onClick={onClick} />
+  return React.createElement('se-button', {
+    id: 'hello_world',
+    title: 'Hello World',
+    src: 'hello_world.svg',
+    onClick
+  })
 }
 export default ReactTest
