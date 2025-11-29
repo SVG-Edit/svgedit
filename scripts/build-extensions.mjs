@@ -69,8 +69,9 @@ await build({
     outDir: resolve(root, 'dist/editor'),
     emptyOutDir: false,
     sourcemap: true,
-    treeshake: false,
+    minify: false,
     rollupOptions: {
+      treeshake: false,
       input,
       output: {
         format: 'es',
