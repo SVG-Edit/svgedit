@@ -9,7 +9,7 @@
   # the build. This is relative to the base directory if one has been set, or the
   # root directory if a base has not been set. This sample publishes the
   # directory located at the absolute path "root/project/build-output"
-  publish = "dist/"
+  publish = "dist/editor"
 
   # Default build command.
   # Download Playwright's Chromium into node_modules/.cache (PLAYWRIGHT_BROWSERS_PATH=0) so tests can find it without sudo/system paths.
