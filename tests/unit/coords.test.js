@@ -4,7 +4,7 @@ import * as coords from '../../packages/svgcanvas/core/coords.js'
 
 describe('coords', function () {
   let elemId = 1
-
+  let svg
   const root = document.createElement('div')
   root.id = 'root'
   root.style.visibility = 'hidden'
@@ -18,8 +18,8 @@ describe('coords', function () {
     const svgroot = document.createElementNS(NS.SVG, 'svg')
     svgroot.id = 'svgroot'
     root.append(svgroot)
-    this.svg = document.createElementNS(NS.SVG, 'svg')
-    svgroot.append(this.svg)
+    svg = document.createElementNS(NS.SVG, 'svg')
+    svgroot.append(svg)
 
     // Mock out editor context.
     utilities.init(
@@ -27,7 +27,7 @@ describe('coords', function () {
       * @implements {module:utilities.EditorContext}
       */
       {
-        getSvgRoot: () => { return this.svg },
+        getSvgRoot: () => { return svg },
         getDOMDocument () { return null },
         getDOMContainer () { return null }
       }
@@ -52,8 +52,8 @@ describe('coords', function () {
    * @returns {void}
    */
   afterEach(function () {
-    while (this.svg.hasChildNodes()) {
-      this.svg.firstChild.remove()
+    while (svg?.hasChildNodes()) {
+      svg.firstChild.remove()
     }
   })
 
@@ -63,7 +63,7 @@ describe('coords', function () {
     rect.setAttribute('y', '150')
     rect.setAttribute('width', '250')
     rect.setAttribute('height', '120')
-    this.svg.append(rect)
+    svg.append(rect)
 
     const attrs = {
       x: '200',
@@ -73,7 +73,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 1; m.b = 0
     m.c = 0; m.d = 1
     m.e = 100; m.f = -50
@@ -90,7 +90,7 @@ describe('coords', function () {
     const rect = document.createElementNS(NS.SVG, 'rect')
     rect.setAttribute('width', '250')
     rect.setAttribute('height', '120')
-    this.svg.append(rect)
+    svg.append(rect)
 
     const attrs = {
       x: '0',
@@ -100,7 +100,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 2; m.b = 0
     m.c = 0; m.d = 0.5
     m.e = 0; m.f = 0
@@ -118,7 +118,7 @@ describe('coords', function () {
     circle.setAttribute('cx', '200')
     circle.setAttribute('cy', '150')
     circle.setAttribute('r', '125')
-    this.svg.append(circle)
+    svg.append(circle)
 
     const attrs = {
       cx: '200',
@@ -127,7 +127,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 1; m.b = 0
     m.c = 0; m.d = 1
     m.e = 100; m.f = -50
@@ -144,7 +144,7 @@ describe('coords', function () {
     circle.setAttribute('cx', '200')
     circle.setAttribute('cy', '150')
     circle.setAttribute('r', '250')
-    this.svg.append(circle)
+    svg.append(circle)
 
     const attrs = {
       cx: '200',
@@ -153,7 +153,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 2; m.b = 0
     m.c = 0; m.d = 0.5
     m.e = 0; m.f = 0
@@ -172,7 +172,7 @@ describe('coords', function () {
     ellipse.setAttribute('cy', '150')
     ellipse.setAttribute('rx', '125')
     ellipse.setAttribute('ry', '75')
-    this.svg.append(ellipse)
+    svg.append(ellipse)
 
     const attrs = {
       cx: '200',
@@ -182,7 +182,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 1; m.b = 0
     m.c = 0; m.d = 1
     m.e = 100; m.f = -50
@@ -201,7 +201,7 @@ describe('coords', function () {
     ellipse.setAttribute('cy', '150')
     ellipse.setAttribute('rx', '250')
     ellipse.setAttribute('ry', '120')
-    this.svg.append(ellipse)
+    svg.append(ellipse)
 
     const attrs = {
       cx: '200',
@@ -211,7 +211,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 2; m.b = 0
     m.c = 0; m.d = 0.5
     m.e = 0; m.f = 0
@@ -230,7 +230,7 @@ describe('coords', function () {
     line.setAttribute('y1', '100')
     line.setAttribute('x2', '120')
     line.setAttribute('y2', '200')
-    this.svg.append(line)
+    svg.append(line)
 
     const attrs = {
       x1: '50',
@@ -240,7 +240,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 1; m.b = 0
     m.c = 0; m.d = 1
     m.e = 100; m.f = -50
@@ -259,7 +259,7 @@ describe('coords', function () {
     line.setAttribute('y1', '100')
     line.setAttribute('x2', '120')
     line.setAttribute('y2', '200')
-    this.svg.append(line)
+    svg.append(line)
 
     const attrs = {
       x1: '50',
@@ -269,7 +269,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 2; m.b = 0
     m.c = 0; m.d = 0.5
     m.e = 0; m.f = 0
@@ -286,7 +286,7 @@ describe('coords', function () {
     const text = document.createElementNS(NS.SVG, 'text')
     text.setAttribute('x', '50')
     text.setAttribute('y', '100')
-    this.svg.append(text)
+    svg.append(text)
 
     const attrs = {
       x: '50',
@@ -294,7 +294,7 @@ describe('coords', function () {
     }
 
     // Create a translate.
-    const m = this.svg.createSVGMatrix()
+    const m = svg.createSVGMatrix()
     m.a = 1; m.b = 0
     m.c = 0; m.d = 1
     m.e = 100; m.f = -50

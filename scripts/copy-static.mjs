@@ -15,7 +15,11 @@ const targets = [
   ['src/editor/svgedit.css', 'svgedit.css'],
   ['src/editor/images', 'images'],
   ['src/editor/components/jgraduate/images', 'components/jgraduate/images'],
-  ['src/editor/extensions', 'extensions']
+  ['src/editor/extensions', 'extensions'],
+  // Test harness assets for Playwright (unit-style tests in browser)
+  ['src/editor/tests', 'tests'],
+  ['packages/svgcanvas', 'tests/vendor/svgcanvas'],
+  ['node_modules/pathseg/pathseg.js', 'tests/vendor/pathseg/pathseg.js']
 ]
 
 for (const [src, dest] of targets) {

@@ -6,7 +6,7 @@ import string from 'vite-plugin-string'
 
 const root = process.cwd()
 const extensionsRoot = resolve(root, 'src/editor/extensions')
-const outDir = resolve(root, 'dist/editor')
+const outDir = resolve(root, 'dist/editor/extensions')
 
 const htmlStringPlugin = string({
   include: [

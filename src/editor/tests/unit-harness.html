@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG-Edit Unit Harness</title>
+  <script type="module">
+    import './vendor/pathseg/pathseg.js'
+    import * as namespaces from './vendor/svgcanvas/core/namespaces.js'
+    import * as utilities from './vendor/svgcanvas/core/utilities.js'
+    import * as math from './vendor/svgcanvas/core/math.js'
+    import * as pathModule from './vendor/svgcanvas/core/path.js'
+    import * as coords from './vendor/svgcanvas/core/coords.js'
+    import * as units from './vendor/svgcanvas/core/units.js'
+    import * as draw from './vendor/svgcanvas/core/draw.js'
+    import * as history from './vendor/svgcanvas/core/history.js'
+    import * as recalculate from './vendor/svgcanvas/core/recalculate.js'
+
+    // Expose modules for Playwright specs.
+    window.svgHarness = {
+      namespaces,
+      utilities,
+      math,
+      pathModule,
+      coords,
+      units,
+      draw,
+      history,
+      recalculate
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>

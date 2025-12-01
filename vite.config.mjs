@@ -93,8 +93,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['tests/unit/setup-vitest.js'],
     include: ['tests/**/*.test.{js,ts}'],
-    exclude: ['tests/e2e/**', 'tests/unit/**'],
+    exclude: ['tests/e2e/**'],
     coverage: {
       provider: 'v8',
       include: ['src/editor/locale.js']

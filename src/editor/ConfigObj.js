@@ -107,6 +107,12 @@ export default class ConfigObj {
       * @property {boolean} [layerView=false] Set for 'ext-layer_view.js'; determines whether or not only current layer is shown by default
       *   Set and used in `svgcanvas.js` (`mouseUp`).
      */
+    const defaultExtPath = (() => {
+      if (typeof document === 'undefined' || !document.baseURI) return './extensions'
+      const url = new URL('./extensions/', document.baseURI).toString()
+      return url.endsWith('/') ? url.slice(0, -1) : url
+    })()
+
     this.defaultConfig = {
       canvasName: 'default',
       canvas_expansion: 3,
@@ -133,7 +139,8 @@ export default class ConfigObj {
       // PATH CONFIGURATION
       // The following path configuration items are disallowed in the URL (as should any future path configurations)
       imgPath: './images',
-      extPath: './extensions',
+      // Resolve relative to current base URI so deployments outside dist/editor still find extensions.
+      extPath: defaultExtPath,
       // DOCUMENT PROPERTIES
       // Change the following to a preference (already in the Document Properties dialog)?
       dimensions: [640, 480],
