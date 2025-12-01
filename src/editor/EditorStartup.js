@@ -647,6 +647,8 @@ class EditorStartup {
     })
     // run callbacks stored by this.ready
     await this.runCallbacks()
+    // Signal readiness to same-document listeners (tests/debugging hooks)
+    document.dispatchEvent(new CustomEvent('svgedit:ready', { detail: this }))
   }
 
   /**

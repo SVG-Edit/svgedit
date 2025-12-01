@@ -93,11 +93,25 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['tests/unit/setup-vitest.js'],
     include: ['tests/**/*.test.{js,ts}'],
-    exclude: ['tests/e2e/**', 'tests/unit/**'],
+    exclude: ['tests/e2e/**'],
     coverage: {
       provider: 'v8',
-      include: ['src/editor/locale.js']
+      include: [
+        'src/editor/locale.js',
+        'src/editor/MainMenu.js',
+        'src/editor/contextmenu.js',
+        'packages/svgcanvas/core/paint.js',
+        'packages/svgcanvas/core/dataStorage.js',
+        'packages/svgcanvas/core/clear.js',
+        'packages/svgcanvas/core/path.js',
+        'packages/svgcanvas/core/coords.js',
+        'packages/svgcanvas/core/recalculate.js',
+        'packages/svgcanvas/core/utilities.js',
+        'packages/svgcanvas/common/util.js',
+        'packages/svgcanvas/core/touch.js'
+      ]
     }
   }
 })

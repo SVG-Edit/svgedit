@@ -13,6 +13,13 @@ describe('history', function () {
 
   // const svg = document.createElementNS(NS.SVG, 'svg');
   let undoMgr = null
+  let divparent
+  let div1
+  let div2
+  let div3
+  let div4
+  let div5
+  let div
 
   class MockCommand extends history.Command {
     constructor (optText) {
@@ -45,23 +52,23 @@ describe('history', function () {
     undoMgr = new history.UndoManager()
 
     document.body.textContent = ''
-    this.divparent = document.createElement('div')
-    this.divparent.id = 'divparent'
-    this.divparent.style.visibility = 'hidden'
+    divparent = document.createElement('div')
+    divparent.id = 'divparent'
+    divparent.style.visibility = 'hidden'
 
-    for (let i = 1; i <= 5; i++) {
-      const div = document.createElement('div')
-      const id = `div${i}`
-      div.id = id
-      this[id] = div
-    }
+    div1 = document.createElement('div'); div1.id = 'div1'
+    div2 = document.createElement('div'); div2.id = 'div2'
+    div3 = document.createElement('div'); div3.id = 'div3'
+    div4 = document.createElement('div'); div4.id = 'div4'
+    div5 = document.createElement('div'); div5.id = 'div5'
+    div = document.createElement('div'); div.id = 'div'
 
-    this.divparent.append(this.div1, this.div2, this.div3)
+    divparent.append(div1, div2, div3)
 
-    this.div4.style.visibility = 'hidden'
-    this.div4.append(this.div5)
+    div4.style.visibility = 'hidden'
+    div4.append(div5)
 
-    document.body.append(this.divparent, this.div)
+    document.body.append(divparent, div)
   })
   /**
    * Tear down tests, destroying undo manager.
@@ -278,127 +285,127 @@ describe('history', function () {
   })
 
   it('Test MoveElementCommand', function () {
-    let move = new history.MoveElementCommand(this.div3, this.div1, this.divparent)
+    let move = new history.MoveElementCommand(div3, div1, divparent)
     assert.ok(move.unapply)
     assert.ok(move.apply)
     assert.equal(typeof move.unapply, typeof function () { /* empty fn */ })
     assert.equal(typeof move.apply, typeof function () { /* empty fn */ })
 
     move.unapply()
-    assert.equal(this.divparent.firstElementChild, this.div3)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div1)
-    assert.equal(this.divparent.lastElementChild, this.div2)
+    assert.equal(divparent.firstElementChild, div3)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div1)
+    assert.equal(divparent.lastElementChild, div2)
 
     move.apply()
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div2)
-    assert.equal(this.divparent.lastElementChild, this.div3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div2)
+    assert.equal(divparent.lastElementChild, div3)
 
-    move = new history.MoveElementCommand(this.div1, null, this.divparent)
+    move = new history.MoveElementCommand(div1, null, divparent)
 
     move.unapply()
-    assert.equal(this.divparent.firstElementChild, this.div2)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div3)
-    assert.equal(this.divparent.lastElementChild, this.div1)
+    assert.equal(divparent.firstElementChild, div2)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div3)
+    assert.equal(divparent.lastElementChild, div1)
 
     move.apply()
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div2)
-    assert.equal(this.divparent.lastElementChild, this.div3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div2)
+    assert.equal(divparent.lastElementChild, div3)
 
-    move = new history.MoveElementCommand(this.div2, this.div5, this.div4)
+    move = new history.MoveElementCommand(div2, div5, div4)
 
     move.unapply()
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div3)
-    assert.equal(this.divparent.lastElementChild, this.div3)
-    assert.equal(this.div4.firstElementChild, this.div2)
-    assert.equal(this.div4.firstElementChild.nextElementSibling, this.div5)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div3)
+    assert.equal(divparent.lastElementChild, div3)
+    assert.equal(div4.firstElementChild, div2)
+    assert.equal(div4.firstElementChild.nextElementSibling, div5)
 
     move.apply()
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div2)
-    assert.equal(this.divparent.lastElementChild, this.div3)
-    assert.equal(this.div4.firstElementChild, this.div5)
-    assert.equal(this.div4.lastElementChild, this.div5)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(divparent.firstElementChild.nextElementSibling, div2)
+    assert.equal(divparent.lastElementChild, div3)
+    assert.equal(div4.firstElementChild, div5)
+    assert.equal(div4.lastElementChild, div5)
   })
 
   it('Test InsertElementCommand', function () {
-    let insert = new history.InsertElementCommand(this.div3)
+    let insert = new history.InsertElementCommand(div3)
     assert.ok(insert.unapply)
     assert.ok(insert.apply)
     assert.equal(typeof insert.unapply, typeof function () { /* empty fn */ })
     assert.equal(typeof insert.apply, typeof function () { /* empty fn */ })
 
     insert.unapply()
-    assert.equal(this.divparent.childElementCount, 2)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.divparent.lastElementChild, this.div2)
+    assert.equal(divparent.childElementCount, 2)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(divparent.lastElementChild, div2)
 
     insert.apply()
-    assert.equal(this.divparent.childElementCount, 3)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
+    assert.equal(divparent.childElementCount, 3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
 
-    insert = new history.InsertElementCommand(this.div2)
+    insert = new history.InsertElementCommand(div2)
 
     insert.unapply()
-    assert.equal(this.divparent.childElementCount, 2)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div3)
-    assert.equal(this.divparent.lastElementChild, this.div3)
+    assert.equal(divparent.childElementCount, 2)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div3)
+    assert.equal(divparent.lastElementChild, div3)
 
     insert.apply()
-    assert.equal(this.divparent.childElementCount, 3)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
+    assert.equal(divparent.childElementCount, 3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
   })
 
   it('Test RemoveElementCommand', function () {
     const div6 = document.createElement('div')
     div6.id = 'div6'
 
-    let remove = new history.RemoveElementCommand(div6, null, this.divparent)
+    let remove = new history.RemoveElementCommand(div6, null, divparent)
     assert.ok(remove.unapply)
     assert.ok(remove.apply)
     assert.equal(typeof remove.unapply, typeof function () { /* empty fn */ })
     assert.equal(typeof remove.apply, typeof function () { /* empty fn */ })
 
     remove.unapply()
-    assert.equal(this.divparent.childElementCount, 4)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
-    assert.equal(this.div3.nextElementSibling, div6)
+    assert.equal(divparent.childElementCount, 4)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
+    assert.equal(div3.nextElementSibling, div6)
 
     remove.apply()
-    assert.equal(this.divparent.childElementCount, 3)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
+    assert.equal(divparent.childElementCount, 3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
 
-    remove = new history.RemoveElementCommand(div6, this.div2, this.divparent)
+    remove = new history.RemoveElementCommand(div6, div2, divparent)
 
     remove.unapply()
-    assert.equal(this.divparent.childElementCount, 4)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, div6)
-    assert.equal(div6.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
+    assert.equal(divparent.childElementCount, 4)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div6)
+    assert.equal(div6.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
 
     remove.apply()
-    assert.equal(this.divparent.childElementCount, 3)
-    assert.equal(this.divparent.firstElementChild, this.div1)
-    assert.equal(this.div1.nextElementSibling, this.div2)
-    assert.equal(this.div2.nextElementSibling, this.div3)
+    assert.equal(divparent.childElementCount, 3)
+    assert.equal(divparent.firstElementChild, div1)
+    assert.equal(div1.nextElementSibling, div2)
+    assert.equal(div2.nextElementSibling, div3)
   })
 
   it('Test ChangeElementCommand', function () {
-    this.div1.setAttribute('title', 'new title')
-    let change = new history.ChangeElementCommand(this.div1,
+    div1.setAttribute('title', 'new title')
+    let change = new history.ChangeElementCommand(div1,
       { title: 'old title', class: 'foo' })
     assert.ok(change.unapply)
     assert.ok(change.apply)
@@ -406,32 +413,32 @@ describe('history', function () {
     assert.equal(typeof change.apply, typeof function () { /* empty fn */ })
 
     change.unapply()
-    assert.equal(this.div1.getAttribute('title'), 'old title')
-    assert.equal(this.div1.getAttribute('class'), 'foo')
+    assert.equal(div1.getAttribute('title'), 'old title')
+    assert.equal(div1.getAttribute('class'), 'foo')
 
     change.apply()
-    assert.equal(this.div1.getAttribute('title'), 'new title')
-    assert.ok(!this.div1.getAttribute('class'))
+    assert.equal(div1.getAttribute('title'), 'new title')
+    assert.ok(!div1.getAttribute('class'))
 
-    this.div1.textContent = 'inner text'
-    change = new history.ChangeElementCommand(this.div1,
+    div1.textContent = 'inner text'
+    change = new history.ChangeElementCommand(div1,
       { '#text': null })
 
     change.unapply()
-    assert.ok(!this.div1.textContent)
+    assert.ok(!div1.textContent)
 
     change.apply()
-    assert.equal(this.div1.textContent, 'inner text')
+    assert.equal(div1.textContent, 'inner text')
 
-    this.div1.textContent = ''
-    change = new history.ChangeElementCommand(this.div1,
+    div1.textContent = ''
+    change = new history.ChangeElementCommand(div1,
       { '#text': 'old text' })
 
     change.unapply()
-    assert.equal(this.div1.textContent, 'old text')
+    assert.equal(div1.textContent, 'old text')
 
     change.apply()
-    assert.ok(!this.div1.textContent)
+    assert.ok(!div1.textContent)
 
     // TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
     const rect = document.createElementNS(NS.SVG, 'rect')

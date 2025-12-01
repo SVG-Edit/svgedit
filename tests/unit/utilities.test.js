@@ -12,6 +12,39 @@ describe('utilities', function () {
     Object.entries(jsonMap.attr).forEach(([attr, value]) => {
       elem.setAttribute(attr, value)
     })
+    const numFromAttr = (attr, fallback = 0) => Number(jsonMap.attr[attr] ?? fallback)
+    const calcBBox = () => {
+      const tag = (jsonMap.element || '').toLowerCase()
+      switch (tag) {
+        case 'path': {
+          const d = jsonMap.attr.d || ''
+          const nums = (d.match(/-?\\d*\\.?\\d+/g) || []).map(Number)
+          if (nums.length >= 4) {
+            const xs = nums.filter((_, i) => i % 2 === 0)
+            const ys = nums.filter((_, i) => i % 2 === 1)
+            return {
+              x: Math.min(...xs),
+              y: Math.min(...ys),
+              width: Math.max(...xs) - Math.min(...xs),
+              height: Math.max(...ys) - Math.min(...ys)
+            }
+          }
+          return { x: 0, y: 0, width: 0, height: 0 }
+        }
+        case 'rect':
+          return { x: numFromAttr('x'), y: numFromAttr('y'), width: numFromAttr('width'), height: numFromAttr('height') }
+        case 'line': {
+          const x1 = numFromAttr('x1'); const x2 = numFromAttr('x2'); const y1 = numFromAttr('y1'); const y2 = numFromAttr('y2')
+          return { x: Math.min(x1, x2), y: Math.min(y1, y2), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1) }
+        }
+        default:
+          return { x: 0, y: 0, width: 0, height: 0 }
+      }
+    }
+    const bbox = calcBBox()
+    elem.getBBox = () => {
+      return { ...bbox }
+    }
     return elem
   }
   /**

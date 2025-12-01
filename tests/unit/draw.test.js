@@ -9,7 +9,10 @@ describe('draw.Drawing', function () {
   const addOwnSpies = (obj) => {
     const methods = Object.keys(obj)
     methods.forEach((method) => {
-      vi.spyOn(obj, method)
+      const spy = vi.spyOn(obj, method)
+      spy.getCall = (idx = 0) => ({ args: spy.mock.calls[idx] || [] })
+      Object.defineProperty(spy, 'calledOnce', { get: () => spy.mock.calls.length === 1 })
+      Object.defineProperty(spy, 'callCount', { get: () => spy.mock.calls.length })
     })
   }
 

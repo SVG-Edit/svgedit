@@ -1,8 +1,12 @@
 import { test, expect } from './fixtures.js'
+import { visitAndApproveStorage } from './helpers.js'
 
 test.describe('Editor web components', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitAndApproveStorage(page)
+  })
+
   test('se-button clicks', async ({ page }) => {
-    await page.goto('/index.html')
     await page.exposeFunction('onSeButton', () => {})
     await page.evaluate(() => {
       const el = document.createElement('se-button')
@@ -17,7 +21,6 @@ test.describe('Editor web components', () => {
   })
 
   test('se-flying-button clicks', async ({ page }) => {
-    await page.goto('/index.html')
     await page.exposeFunction('onSeFlying', () => {})
     await page.evaluate(() => {
       const el = document.createElement('se-flying-button')
@@ -32,7 +35,6 @@ test.describe('Editor web components', () => {
   })
 
   test('se-explorer-button clicks', async ({ page }) => {
-    await page.goto('/index.html')
     await page.exposeFunction('onSeExplorer', () => {})
     await page.evaluate(() => {
       const el = document.createElement('se-explorer-button')

@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { copyFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { existsSync } from 'node:fs'
 
@@ -36,9 +37,19 @@ const ensureBrowser = async () => {
   }
 }
 
+const seedNycFromVitest = async () => {
+  const vitestCoverage = join(process.cwd(), 'coverage', 'coverage-final.json')
+  if (existsSync(vitestCoverage)) {
+    const nycOutputDir = join(process.cwd(), '.nyc_output')
+    await mkdir(nycOutputDir, { recursive: true })
+    await copyFile(vitestCoverage, join(nycOutputDir, 'vitest.json'))
+  }
+}
+
 if (await hasPlaywright()) {
   await ensureBrowser()
   await run('rimraf', ['.nyc_output/*'], { shell: true })
+  await seedNycFromVitest()
   await run('npx', ['playwright', 'test'])
   await run('npx', ['nyc', 'report', '--reporter', 'text-summary', '--reporter', 'json-summary'])
 }
