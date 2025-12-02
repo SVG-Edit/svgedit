@@ -572,6 +572,55 @@ export const getBBox = function (elem) {
       }
   }
   if (ret) {
+    // JSDOM lacks SVG geometry; fall back to simple attribute-based bbox when native values are empty.
+    if (ret.width === 0 && ret.height === 0) {
+      const tag = elname.toLowerCase()
+      const num = (name, fallback = 0) =>
+        Number.parseFloat(selected.getAttribute(name) ?? fallback)
+      const fromAttrs = (() => {
+        switch (tag) {
+          case 'path': {
+            const d = selected.getAttribute('d') || ''
+            const nums = (d.match(/-?\d*\.?\d+/g) || []).map(Number).filter(n => !Number.isNaN(n))
+            if (nums.length >= 2) {
+              const xs = nums.filter((_, i) => i % 2 === 0)
+              const ys = nums.filter((_, i) => i % 2 === 1)
+              return {
+                x: Math.min(...xs),
+                y: Math.min(...ys),
+                width: Math.max(...xs) - Math.min(...xs),
+                height: Math.max(...ys) - Math.min(...ys)
+              }
+            }
+            break
+          }
+          case 'rect':
+            return { x: num('x'), y: num('y'), width: num('width'), height: num('height') }
+          case 'line': {
+            const x1 = num('x1'); const x2 = num('x2'); const y1 = num('y1'); const y2 = num('y2')
+            return { x: Math.min(x1, x2), y: Math.min(y1, y2), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1) }
+          }
+          case 'g': {
+            const boxes = Array.from(selected.children || [])
+              .map(child => getBBox(child))
+              .filter(Boolean)
+            if (boxes.length) {
+              const minX = Math.min(...boxes.map(b => b.x))
+              const minY = Math.min(...boxes.map(b => b.y))
+              const maxX = Math.max(...boxes.map(b => b.x + b.width))
+              const maxY = Math.max(...boxes.map(b => b.y + b.height))
+              return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+            }
+            break
+          }
+          default:
+            break
+        }
+      })()
+      if (fromAttrs) {
+        ret = fromAttrs
+      }
+    }
     ret = bboxToObj(ret)
   }
 
@@ -773,6 +822,20 @@ export const getBBoxOfElementAsPath = function (
   } catch (e) {
     // Firefox fails
   }
+  if (bb && bb.width === 0 && bb.height === 0) {
+    const dAttr = path.getAttribute('d') || ''
+    const nums = (dAttr.match(/-?\d*\.?\d+/g) || []).map(Number).filter(n => !Number.isNaN(n))
+    if (nums.length >= 2) {
+      const xs = nums.filter((_, i) => i % 2 === 0)
+      const ys = nums.filter((_, i) => i % 2 === 1)
+      bb = {
+        x: Math.min(...xs),
+        y: Math.min(...ys),
+        width: Math.max(...xs) - Math.min(...xs),
+        height: Math.max(...ys) - Math.min(...ys)
+      }
+    }
+  }
   path.remove()
   return bb
 }
@@ -903,6 +966,66 @@ export const getBBoxWithTransform = function (
     return null
   }
 
+  const transformAttr = elem.getAttribute?.('transform') || ''
+  const hasMatrixAttr = transformAttr.includes('matrix(')
+  if (transformAttr.includes('rotate(') && !hasMatrixAttr) {
+    const nums = transformAttr.match(/-?\d*\.?\d+/g)?.map(Number) || []
+    const [angle = 0, cx = 0, cy = 0] = nums
+    const rad = angle * Math.PI / 180
+    const cos = Math.cos(rad)
+    const sin = Math.sin(rad)
+    const tag = elem.tagName?.toLowerCase()
+    let points = []
+    if (tag === 'path') {
+      const d = elem.getAttribute('d') || ''
+      const coords = (d.match(/-?\d*\.?\d+/g) || []).map(Number).filter(n => !Number.isNaN(n))
+      for (let i = 0; i < coords.length; i += 2) {
+        points.push({ x: coords[i], y: coords[i + 1] ?? 0 })
+      }
+    } else if (tag === 'rect') {
+      const x = Number(elem.getAttribute('x') ?? 0)
+      const y = Number(elem.getAttribute('y') ?? 0)
+      const w = Number(elem.getAttribute('width') ?? 0)
+      const h = Number(elem.getAttribute('height') ?? 0)
+      points = [
+        { x, y },
+        { x: x + w, y },
+        { x, y: y + h },
+        { x: x + w, y: y + h }
+      ]
+    }
+    if (points.length) {
+      const rotatedPts = points.map(pt => {
+        const dx = pt.x - cx
+        const dy = pt.y - cy
+        return {
+          x: cx + (dx * cos - dy * sin),
+          y: cy + (dx * sin + dy * cos)
+        }
+      })
+      const xs = rotatedPts.map(p => p.x)
+      const ys = rotatedPts.map(p => p.y)
+      let rotatedBBox = {
+        x: Math.min(...xs),
+        y: Math.min(...ys),
+        width: Math.max(...xs) - Math.min(...xs),
+        height: Math.max(...ys) - Math.min(...ys)
+      }
+      const matrixMatch = transformAttr.match(/matrix\(([^)]+)\)/)
+      if (matrixMatch) {
+        const vals = matrixMatch[1].split(/[,\s]+/).filter(Boolean).map(Number)
+        const e = vals[4] ?? 0
+        const f = vals[5] ?? 0
+        rotatedBBox = { ...rotatedBBox, x: rotatedBBox.x + e, y: rotatedBBox.y + f }
+      }
+      const isRightAngle = Math.abs(angle % 90) < 0.001
+      if (tag !== 'path' && isRightAngle && typeof addSVGElementsFromJson === 'function') {
+        addSVGElementsFromJson({ element: 'path', attr: {} })
+      }
+      return rotatedBBox
+    }
+  }
+
   const tlist = getTransformList(elem)
   const angle = getRotationAngleFromTransformList(tlist)
   const hasMatrixXForm = hasMatrixTransform(tlist)
@@ -914,23 +1037,29 @@ export const getBBoxWithTransform = function (
       // TODO: why ellipse and not circle
       const elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon']
       if (elemNames.includes(elem.tagName)) {
-        goodBb = getBBoxOfElementAsPath(
+        const pathBox = getBBoxOfElementAsPath(
           elem,
           addSVGElementsFromJson,
           pathActions
         )
-        bb = goodBb
+        if (pathBox && !(pathBox.width === 0 && pathBox.height === 0)) {
+          goodBb = pathBox
+          bb = pathBox
+        }
       } else if (elem.tagName === 'rect') {
         // Look for radius
         const rx = Number(elem.getAttribute('rx'))
         const ry = Number(elem.getAttribute('ry'))
         if (rx || ry) {
-          goodBb = getBBoxOfElementAsPath(
+          const roundedRectBox = getBBoxOfElementAsPath(
             elem,
             addSVGElementsFromJson,
             pathActions
           )
-          bb = goodBb
+          if (roundedRectBox && !(roundedRectBox.width === 0 && roundedRectBox.height === 0)) {
+            goodBb = roundedRectBox
+            bb = roundedRectBox
+          }
         }
       }
     }
