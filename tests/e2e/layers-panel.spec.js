@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures.js'
+import { visitAndApproveStorage } from './helpers.js'
 
 const layerNames = async (page) => {
   return page.$$eval('#layerlist tbody tr.layer td.layername', (nodes) =>
@@ -15,11 +16,7 @@ const toggleVisibilityFor = async (page, name) => {
 
 test.describe('Layers panel', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/index.html')
-    await page.evaluate(() => {
-      const dlg = document.getElementById('se-storage-dialog')
-      if (dlg) dlg.remove()
-    })
+    await visitAndApproveStorage(page)
     const panelHandle = page.locator('div#sidepanel_handle').first()
     await panelHandle.waitFor({ state: 'visible' })
     await panelHandle.click()
