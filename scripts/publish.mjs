@@ -71,6 +71,16 @@ function run (command) {
   execSync(command, { stdio: 'inherit', cwd: rootDir })
 }
 
+function hasStagedChanges () {
+  try {
+    execSync('git diff --cached --quiet', { cwd: rootDir, stdio: 'ignore' })
+    return false
+  } catch (error) {
+    if (error.status === 1) return true
+    throw error
+  }
+}
+
 async function main () {
   const rootPackage = readJson(rootPackagePath)
   const workspacePackages = loadWorkspacePackagePaths()
@@ -121,7 +131,11 @@ async function main () {
     ...workspacePackages
   ]
   run(`git add ${filesToStage.map(quoteArg).join(' ')}`)
-  run(`git commit -m ${quoteArg(releaseName)}`)
+  if (hasStagedChanges()) {
+    run(`git commit -m ${quoteArg(releaseName)}`)
+  } else {
+    console.log('No changes to commit; skipping git commit.')
+  }
   run(`git tag ${quoteArg(releaseName)}`)
 
   console.log('\nPublishing packages to npm...')
