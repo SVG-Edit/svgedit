@@ -24,7 +24,7 @@ Please let us know by creating an issue or a discussion if you wish to contribut
 
 Thanks to **Netlify**, you can access the following builds from your favorite browser:
 
-- [Try SVGEdit V7 (master branch on github)](https://svgedit.netlify.app/editor/index.html)
+- [Try SVGEdit V7 (master branch on github)](https://svgedit.netlify.app/index.html)
 - [Try SVGEdit V7 (latest published version on npm)](https://unpkg.com/svgedit@latest/dist/editor/index.html)
 
 ### Prior to V7:
