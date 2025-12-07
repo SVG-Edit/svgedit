@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "7.3.8",
+  "version": "7.4.0",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/editor/Editor.js",
   "module": "dist/editor/Editor.js",
@@ -19,16 +19,13 @@
   "scripts": {
     "lint": "standard .",
     "pretest": "npm run lint",
-    "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "vitest run --coverage",
-    "prebuild": "npm run build --workspace=packages/svgcanvas --workspace=packages/react-test",
-    "build": "vite build",
+    "test": "vitest run --coverage && node scripts/run-e2e.mjs",
+    "build": "vite build packages/svgcanvas && vite build packages/react-test && vite build",
     "postbuild": "node scripts/copy-static.mjs && node scripts/build-extensions.mjs",
     "start": "vite dev --host --port 8000 --strictPort",
     "prestart": "echo svgedit is available at http://localhost:8000/src/editor/index.html",
     "start:iife": "npm run build && vite preview --host --port 8000 --strictPort --outDir dist/editor --open /iife-index.html",
-    "start:e2e": "npm run build && vite preview --host --port 8000 --strictPort --outDir dist/editor",
-    "test:e2e": "node scripts/run-e2e.mjs",
+    "start:e2e": "vite preview --host --port 8000 --strictPort --outDir dist/editor",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
     "build-docs-remove": "rimraf \"docs/jsdoc/\"",
@@ -37,7 +34,9 @@
     "build-and-open-docs-no-start": "run-s build-docs open-docs-no-start",
     "build-and-open-docs": "run-s build-docs open-docs",
     "remark": "remark -q -f .",
-    "prepublishOnly": "run-s build-docs build"
+    "version-bump": "node scripts/version-bump.mjs",
+    "publish": "node scripts/publish.mjs",
+    "test-build": "run-s test build-docs build"
   },
   "repository": {
     "type": "git",

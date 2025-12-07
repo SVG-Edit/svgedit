@@ -16,7 +16,7 @@ works in any modern browser. **SVGEdit** is based on a powerful SVG canvas **@sv
 
 ## Contributions
 
-SVGEdit is the most popular open source SVG editor. It was started more than 13 years ago by a fantastic team of developers. Unfortunately, the product was not maintained for quite a long time. We decided to give this tool a new life by refreshing many aspects.
+SVGEdit is the most popular open source SVG editor. It was started more than 15 years ago by a fantastic team of developers. Unfortunately, the product was not maintained for quite a long time. We decided to give this tool a new life by refreshing many aspects.
 
 Please let us know by creating an issue or a discussion if you wish to contribute.
 

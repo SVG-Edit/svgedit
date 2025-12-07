@@ -37,6 +37,14 @@ const ensureBrowser = async () => {
   }
 }
 
+const ensureBuild = async () => {
+  const distIndex = join(process.cwd(), 'dist', 'editor', 'index.html')
+  if (existsSync(distIndex)) return
+
+  console.log('Building dist/editor for Playwright preview (missing build output)...')
+  await run('npm', ['run', 'build'])
+}
+
 const seedNycFromVitest = async () => {
   const vitestCoverage = join(process.cwd(), 'coverage', 'coverage-final.json')
   if (existsSync(vitestCoverage)) {
@@ -48,6 +56,7 @@ const seedNycFromVitest = async () => {
 
 if (await hasPlaywright()) {
   await ensureBrowser()
+  await ensureBuild()
   await run('rimraf', ['.nyc_output/*'], { shell: true })
   await seedNycFromVitest()
   await run('npx', ['playwright', 'test'])
