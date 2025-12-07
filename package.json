@@ -83,10 +83,10 @@
     ]
   },
   "dependencies": {
-    "@svgedit/svgcanvas": "7.2.7",
+    "@svgedit/svgcanvas": "workspace:*",
     "browser-fs-access": "0.38.0",
     "elix": "15.0.1",
-    "i18next": "25.6.3",
+    "i18next": "25.7.1",
     "jspdf": "3.0.4",
     "pathseg": "1.2.1",
     "svg2pdf.js": "2.6.0"
@@ -94,7 +94,7 @@
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@rollup/plugin-dynamic-import-vars": "2.1.5",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/coverage-v8": "^4.0.15",
     "jamilih": "0.63.1",
     "jsdoc": "4.0.5",
     "jsdom": "^27.2.0",
@@ -105,10 +105,10 @@
     "remark-lint-ordered-list-marker-value": "4.0.1",
     "rimraf": "6.1.2",
     "standard": "17.1.2",
-    "vite": "^7.2.4",
+    "vite": "^7.2.6",
     "vite-plugin-istanbul": "^7.2.1",
     "vite-plugin-string": "^1.2.3",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.15"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.53.3"
