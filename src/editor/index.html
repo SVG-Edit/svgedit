@@ -11,7 +11,6 @@
   <!-- STYLESHEETS (others loaded dynamically) -->
   <style id="styleoverrides" media="screen"></style>
   <link href="./svgedit.css" rel="stylesheet" media="all">
-  </link>
   <!-- Lacking browser support -->
   <script type="module" src="./browser-not-supported.js"></script>
   <title>SVG-edit</title>
@@ -40,17 +39,13 @@
     userExtensions: [/* { pathName: '/packages/react-test/dist/react-test.js' } */]
   })
   svgEditor.init()
-  // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
-  /* globals XDOMAIN */
-  try { // try clause to avoid js to complain if XDOMAIN undefined
-    if (XDOMAIN) {
-      svgEditor.setConfig({
-        canvasName: 'xdomain', // Namespace this
-        allowedOrigins: ['*']
-      })
-      console.info('xdomain config activated')
-    }
-  } catch (error) { /* empty fn */ }
+  if (typeof XDOMAIN !== 'undefined' && XDOMAIN) {
+    svgEditor.setConfig({
+      canvasName: 'xdomain', // Namespace this
+      allowedOrigins: ['*']
+    })
+    console.info('xdomain config activated')
+  }
 </script>
 
 </html>

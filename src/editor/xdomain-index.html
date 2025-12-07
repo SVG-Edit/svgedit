@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" href="images/logo.svg">
+  <style id="styleoverrides" media="screen"></style>
+  <link href="./svgedit.css" rel="stylesheet" media="all">
+  <script type="module" src="./browser-not-supported.js"></script>
+  <title>SVG-edit (xdomain)</title>
+</head>
+
+<body style="margin:0">
+  <div id="container" style="width:100%;height:100vh"></div>
+</body>
+<script type="module">
+  import Editor from './Editor.js'
+  const XDOMAIN = true
+  const svgEditor = new Editor(document.getElementById('container'))
+  svgEditor.setConfig({
+    allowInitialUserOverride: true,
+    extensions: [],
+    noDefaultExtensions: false,
+    userExtensions: []
+  })
+  svgEditor.init()
+  if (typeof XDOMAIN !== 'undefined' && XDOMAIN) {
+    svgEditor.setConfig({
+      canvasName: 'xdomain',
+      allowedOrigins: ['*']
+    })
+    console.info('xdomain config activated')
+  }
+</script>
+
+</html>

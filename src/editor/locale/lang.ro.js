@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Panou'
   },
   properties: {
     id: 'Identificare element',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Drept',
     curve_segments: 'Curb',
     text_contents: 'Schimbarea conţinutului textului',
-    font_family_label: 'Font:',
+    font_family_label: 'Familia de fonturi:',
     font_family: 'Modificare familie de fonturi',
     font_size: 'Schimbă dimensiunea fontului',
     bold: 'Text Îngroşat',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'Identificator',
+    class_label: 'clasă',
+    label: 'etichetă'
   },
   tools: {
     main_menu: 'Menu Principal',
@@ -179,7 +196,9 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Întoarceți pe orizontală',
+    flip_vertical: 'Întoarceți pe verticală'
   },
   layers: {
     layer: 'Strat',
@@ -277,7 +296,8 @@ export default {
     enterNewLayerName: 'Rog introduceţi un nume pentru strat',
     layerHasThatName: 'Statul deja are acest nume',
     QmoveElemsToLayer: "Mutaţi elementele selectate pe stratul '%s'?",
-    QwantToClear: 'Doriti să ştergeţi desenul?\nAceasta va sterge si posibilitatea de anulare!',
+    QwantToClear: 'Doriti să ştergeţi desenul?\n' +
+      'Aceasta va sterge si posibilitatea de anulare!',
     QwantToOpen: 'Doriti sa deschideţi un nou fişier?\nAceasta va şterge istoricul!',
     QerrorsRevertToSource: 'Sunt erori de parsing in sursa SVG.\nRevenire la sursa SVG orginală?',
     QignoreSourceChanges: 'Ignoraţi schimbarile la sursa SVG?',
@@ -291,7 +311,7 @@ export default {
     enterNewLinkURL: 'IntroduAliniere în raport cu ...sceţi noul URL',
     errorLoadingSVG: 'Eroare: Nu se pot încărca datele SVG',
     URLLoadFail: 'Nu se poate încărca de la URL',
-    retrieving: 'Retrieving \'%s\' ...',
+    retrieving: "Retrieving '%s' ...",
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',

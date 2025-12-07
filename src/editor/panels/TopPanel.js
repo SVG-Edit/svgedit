@@ -668,6 +668,26 @@ class TopPanel {
   }
 
   /**
+   * Flip selected element(s) horizontally.
+   * @returns {void}
+   */
+  clickFlipHorizontal () {
+    if (this.editor.selectedElement || this.multiselected) {
+      this.editor.svgCanvas.flipSelectedElements(-1, 1)
+    }
+  }
+
+  /**
+   * Flip selected element(s) vertically.
+   * @returns {void}
+   */
+  clickFlipVertical () {
+    if (this.editor.selectedElement || this.multiselected) {
+      this.editor.svgCanvas.flipSelectedElements(1, -1)
+    }
+  }
+
+  /**
    *
    * @returns {void} Resolves to `undefined`
    */
@@ -962,6 +982,8 @@ class TopPanel {
     $click($id('tool_make_link'), this.makeHyperlink.bind(this))
     $click($id('tool_make_link_multi'), this.makeHyperlink.bind(this))
     $click($id('tool_reorient'), this.reorientPath.bind(this))
+    $click($id('tool_flip_h'), this.clickFlipHorizontal.bind(this))
+    $click($id('tool_flip_v'), this.clickFlipVertical.bind(this))
     $click($id('tool_group_elements'), this.clickGroup.bind(this))
     $id('tool_position').addEventListener('change', evt =>
       this.clickAlignEle.bind(this)(evt)

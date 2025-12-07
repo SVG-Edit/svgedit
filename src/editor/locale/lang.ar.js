@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'اختر لون stroke وشفافيتها',
     pick_fill_paint_opacity: 'اختر Fill Paint وشفافيتها',
     group_identify_label: 'تسمية تحديد المجموعة',
-    export_type_label: 'حدد نوع الصورة للاستخراج:'
+    export_type_label: 'حدد نوع الصورة للاستخراج:',
+    panel: 'لوحة'
   },
   properties: {
     id: 'تحديد العنصر',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'مستقيمة',
     curve_segments: 'منحنية',
     text_contents: 'تغيير محتويات النص',
-    font_family_label: 'Font:',
+    font_family_label: 'الخط:',
     font_family: 'تغيير الخط الأسرة',
     font_size: 'تغيير حجم الخط',
     bold: 'نص جريء',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'عدم حفظ تفضيلاتي أو محتوى SVG محلياً',
     jgraduate_pad: 'تعبئة',
     jgraduate_reflect: 'انعكاس',
-    jgraduate_repeat: 'تكرار'
+    jgraduate_repeat: 'تكرار',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'معرّف',
+    class_label: 'فئة',
+    label: 'تسمية'
   },
   tools: {
     main_menu: 'القائمة الرئيسية',
@@ -176,7 +193,9 @@ export default {
     ellipse_circle_tool: 'أداة القطع الناقص / الدائرة',
     square_rect_tool: 'أداة المربع / المستطيل',
     remember_this_choice: 'تذكر هذا الخيار؟',
-    remember_this_choice_title: 'إذا اخترت الخروج من التخزين أثناء تذكر هذا الخيار ، فسيتغير عنوان URL لتجنب السؤال مرة أخرى.'
+    remember_this_choice_title: 'إذا اخترت الخروج من التخزين أثناء تذكر هذا الخيار ، فسيتغير عنوان URL لتجنب السؤال مرة أخرى.',
+    flip_horizontal: 'قلب أفقيًا',
+    flip_vertical: 'قلب عموديًا'
   },
   layers: {
     layer: 'طبقة',
@@ -276,7 +295,8 @@ export default {
     QmoveElemsToLayer: "هل تريد نقل العناصر المحددة إلى الطبقة '%s'؟",
     QwantToClear: 'هل تريد مسح الرسم؟\nسيتم مسح سجل التراجع الخاص بك أيضًا!',
     QwantToOpen: 'هل تريد فتح ملف جديد؟\nسيتم مسح سجل التراجع الخاص بك أيضًا!',
-    QerrorsRevertToSource: 'حدثت أخطاء في تحليل مصدر SVG الخاص بك.\nهل تريد العودة إلى مصدر SVG الأصلي؟',
+    QerrorsRevertToSource: 'حدثت أخطاء في تحليل مصدر SVG الخاص بك.\n' +
+      'هل تريد العودة إلى مصدر SVG الأصلي؟',
     QignoreSourceChanges: 'تجاهل التغييرات التي تم إجراؤها على مصدر SVG؟',
     featNotSupported: 'الميزة غير مدعومة',
     enterNewImgURL: 'أدخل عنوان URL الجديد للصورة',

@@ -63,6 +63,7 @@ export const init = canvas => {
   svgCanvas.updateCanvas = updateCanvas // Updates the editor canvas width/height/position after a zoom has occurred.
   svgCanvas.cycleElement = cycleElement // Select the next/previous element within the current layer.
   svgCanvas.deleteSelectedElements = deleteSelectedElements // Removes all selected elements from the DOM and adds the change to the history
+  svgCanvas.flipSelectedElements = flipSelectedElements // Flips selected elements horizontally or vertically
 }
 
 /**
@@ -619,6 +620,80 @@ const deleteSelectedElements = () => {
   }
   svgCanvas.call('changed', selectedCopy)
   svgCanvas.clearSelection()
+}
+
+/**
+ * Flips selected elements horizontally or vertically by transforming actual coordinates.
+ * @function module:selected-elem.SvgCanvas#flipSelectedElements
+ * @param {number} scaleX - Scale factor for X axis (-1 for horizontal flip, 1 for no flip)
+ * @param {number} scaleY - Scale factor for Y axis (1 for no flip, -1 for vertical flip)
+ * @fires module:selected-elem.SvgCanvas#event:changed
+ * @returns {void}
+ */
+const flipSelectedElements = (scaleX, scaleY) => {
+  const selectedElements = svgCanvas.getSelectedElements()
+  const batchCmd = new BatchCommand('Flip Elements')
+  const svgRoot = svgCanvas.getSvgRoot()
+
+  selectedElements.forEach(selected => {
+    if (!selected) return
+
+    const bbox = getStrokedBBoxDefaultVisible([selected])
+    if (!bbox) return
+
+    const cx = bbox.x + bbox.width / 2
+    const cy = bbox.y + bbox.height / 2
+    const existingTransform = selected.getAttribute('transform') || ''
+
+    const flipMatrix = svgRoot
+      .createSVGMatrix()
+      .translate(cx, cy)
+      .scaleNonUniform(scaleX, scaleY)
+      .translate(-cx, -cy)
+
+    const tlist = getTransformList(selected)
+    const combinedMatrix = matrixMultiply(
+      transformListToTransform(tlist).matrix,
+      flipMatrix
+    )
+
+    const flipTransform = svgRoot.createSVGTransform()
+    flipTransform.setMatrix(combinedMatrix)
+
+    tlist.clear()
+    tlist.appendItem(flipTransform)
+
+    const prevStartTransform = svgCanvas.getStartTransform
+      ? svgCanvas.getStartTransform()
+      : null
+    if (svgCanvas.setStartTransform) {
+      svgCanvas.setStartTransform(existingTransform)
+    }
+
+    const cmd = recalculateDimensions(selected)
+
+    if (svgCanvas.setStartTransform) {
+      svgCanvas.setStartTransform(prevStartTransform)
+    }
+
+    if (cmd) {
+      batchCmd.addSubCommand(cmd)
+    } else if ((selected.getAttribute('transform') || '') !== existingTransform) {
+      batchCmd.addSubCommand(
+        new ChangeElementCommand(selected, { transform: existingTransform })
+      )
+    }
+
+    svgCanvas
+      .gettingSelectorManager()
+      .requestSelector(selected)
+      .resize()
+  })
+
+  if (!batchCmd.isEmpty()) {
+    svgCanvas.addCommandToHistory(batchCmd)
+    svgCanvas.call('changed', selectedElements.filter(Boolean))
+  }
 }
 
 /**

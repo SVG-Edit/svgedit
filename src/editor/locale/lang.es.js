@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Panel lateral'
   },
   properties: {
     id: 'Identify the element',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Recta',
     curve_segments: 'Curva',
     text_contents: 'Modificar el texto',
-    font_family_label: 'Font:',
+    font_family_label: 'Fuente:',
     font_family: 'Tipo de fuente',
     font_size: 'Tamaño de la fuente',
     bold: 'Texto en negrita',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'identificador',
+    class_label: 'clase',
+    label: 'etiqueta'
   },
   tools: {
     main_menu: 'Menú principal',
@@ -169,7 +186,7 @@ export default {
     copy: 'Copy',
     paste: 'Paste',
     paste_in_place: 'Paste in Place',
-    delete: 'Delete',
+    delete: 'Borrar',
     group: 'Group',
     move_front: 'Bring to Front',
     move_up: 'Bring Forward',
@@ -179,7 +196,9 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Voltear horizontalmente',
+    flip_vertical: 'Voltear verticalmente'
   },
   layers: {
     layer: 'Capa',
@@ -279,7 +298,8 @@ export default {
     QmoveElemsToLayer: "¿Desplazar los elementos seleccionados a la capa '%s'?",
     QwantToClear: '¿Desea borrar el dibujo?\n¡El historial de acciones también se borrará!',
     QwantToOpen: 'Do you want to open a new file?\nThis will also erase your undo history!',
-    QerrorsRevertToSource: 'Existen errores sintácticos en su código fuente SVG.\n¿Desea volver al código fuente SVG original?',
+    QerrorsRevertToSource: 'Existen errores sintácticos en su código fuente SVG.\n' +
+      '¿Desea volver al código fuente SVG original?',
     QignoreSourceChanges: '¿Desea ignorar los cambios realizados sobre el código fuente SVG?',
     featNotSupported: 'Función no compatible.',
     enterNewImgURL: 'Introduzca la nueva URL de la imagen.',

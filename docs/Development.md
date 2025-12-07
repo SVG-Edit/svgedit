@@ -149,14 +149,9 @@ routines along with `npm run test-only`, but the other components are explained
 here for reference. The most useful for regular development testing will probably
 be `npm run open-tests`.
 
-Note that you can configure Cypress through [its environmental variables](https://docs.cypress.io/guides/guides/environment-variables.html#Setting).
-We recommend [this approach](https://docs.cypress.io/guides/guides/environment-variables.html#Option-2-cypress-env-json)
-of adding to your own `cypress.env.json` at project root. You can set
-your own [configuration options](https://docs.cypress.io/guides/references/configuration.html#Options).
-Of particular interest may be setting `"video": false` if you wish to speed
-up the tests and are not concerned with being able to check this after
-running the headless tests (or during the running of headed tests in the
-case of `open-tests`/`cypress:open`).
+End-to-end tests now run with Playwright. Use `npm run test:e2e` to build the
+app, start `vite preview`, and execute the Playwright suite against
+`http://localhost:8000/src/editor/index.html`.
 
 1. `npm test`. Headless testing comprised of:
     1. `npm run instrument` - You can call this alone if you don't
@@ -178,10 +173,7 @@ case of `open-tests`/`cypress:open`).
             `test-no-cov-no-core-rollup`.
             1. `npm run test-only-no-report` - Should not be needed alone.
                 1. `npm start` - Starts the server
-                1. `npm run cypress:run` - Runs Cypress tests (`cypress run`).
-                    `cypress:run` is made of subroutines which also merge
-                    Mocha results (since Cypress produces separate files)
-                    and updates the testing and coverage badges.
+                1. `npm run test:e2e` - Runs Playwright e2e tests.
             1. `npm run report` (see above)
 1. `npm run test-no-core-rollup` - This applies the same headless testing
     steps as `npm test` minus the time-consuming `npm run rollup`. This
@@ -190,11 +182,3 @@ case of `open-tests`/`cypress:open`).
     1. `instrument` (see above)
     1. `npm run test-no-cov-no-core-rollup`. As with `test-no-cov` but no
         `npm run rollup` routine (part of `prep`).
-1. `open-tests`
-    1. `instrument` (see above)
-    1. `cypress:open` - Useful without `instrument` if you are not concerned
-        at the moment with coverage. Note that the hot-reloading does not
-        currently reinstrument even if you ran through `open-tests`.
-        1. `npm start`
-        1. `cypress:open-no-start`. Runs `cypress open`, the headed mode. Useful
-            for testing single files with hot reloading.

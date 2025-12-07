@@ -647,6 +647,8 @@ class EditorStartup {
     })
     // run callbacks stored by this.ready
     await this.runCallbacks()
+    // Signal readiness to same-document listeners (tests/debugging hooks)
+    document.dispatchEvent(new CustomEvent('svgedit:ready', { detail: this }))
   }
 
   /**
@@ -672,8 +674,8 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
-            const extPath = this.configObj.curConfig.extPath
-            const imported = await import(`${extPath}/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`)
+            // Vite cannot statically analyze these dynamic extension imports.
+            const imported = await import(/* @vite-ignore */ `${this.configObj.curConfig.extPath}/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`)
             const { name = extname, init: initfn } = imported.default
             return this.addExtension(name, (initfn && initfn.bind(this)), { langParam: 'en' }) /** @todo  change to current lng */
           } catch (err) {
@@ -696,7 +698,7 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
-            const imported = await import(encodeURI(pathName))
+            const imported = await import(/* @vite-ignore */ encodeURI(pathName))
             const { name, init: initfn } = imported.default
             return this.addExtension(name, (initfn && initfn.bind(this, config)), {})
           } catch (err) {

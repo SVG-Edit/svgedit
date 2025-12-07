@@ -168,6 +168,8 @@ export default {
     set_link_url: 'Set link URL (leave empty to remove)',
     to_path: 'Convert to Path',
     reorient_path: 'Reorient path',
+    flip_horizontal: 'Flip Horizontally',
+    flip_vertical: 'Flip Vertically',
     ungroup: 'Ungroup Elements',
     docprops: 'Document Properties',
     editor_homepage: 'SVG-Edit Home Page',

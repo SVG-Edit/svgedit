@@ -10,6 +10,7 @@
   --input-color: #B2B2B2;
   --orange-color: #f9bc01;
   --global-se-spin-input-width: 82px;
+  --top-toolbar-min-height: 80px;
 }
 
 .svg_editor * {
@@ -18,7 +19,7 @@
 
 .svg_editor {
   display: grid;
-  grid-template-rows: auto 15px 1fr 40px;
+  grid-template-rows: minmax(var(--top-toolbar-min-height), auto) 15px 1fr 40px;
   grid-template-columns: 40px 15px 50px 1fr 15px;
   grid-template-areas:
     "main main   main top top"
@@ -39,13 +40,6 @@
   padding-left: 5px;
   padding-right: 3px;
   font-weight: bold;
-}
-
-/* on smaller screen, allow 2 lines for the toolbar */
-@media screen and (max-width:1250px) {
-  .svg_editor {
-    grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
-  }
 }
 
 /* class to open the right panel */
@@ -311,7 +305,9 @@ hr {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
+  align-content: flex-start;
   background-color: var(--main-bg-color);
+  min-height: var(--top-toolbar-min-height);
 }
 
 #tools_top>* {

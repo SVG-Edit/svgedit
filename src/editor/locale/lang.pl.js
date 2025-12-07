@@ -28,7 +28,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Panel boczny'
   },
   properties: {
     id: 'Identyfikator elementu',
@@ -70,7 +71,7 @@ export default {
     straight_segments: 'Prosty',
     curve_segments: 'Zaokrąglony',
     text_contents: 'Zmień text',
-    font_family_label: 'Font:',
+    font_family_label: 'Czcionka:',
     font_family: 'Zmień krój czcionki',
     font_size: 'Zmień rozmiar czcionki',
     bold: 'Pogrubienie textu',
@@ -101,7 +102,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'Identyfikator',
+    class_label: 'klasa',
+    label: 'etykieta'
   },
   tools: {
     main_menu: 'Menu główne',
@@ -180,7 +197,9 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Odwróć poziomo',
+    flip_vertical: 'Odwróć w pionie'
   },
   layers: {
     layer: 'Warstwa',
@@ -277,10 +296,13 @@ export default {
     enterUniqueLayerName: 'Podaj unikalną nazwę warstwy',
     enterNewLayerName: 'Podaj nazwe nowej warstwy',
     layerHasThatName: 'Warstwa już tak się nazywa',
-    QmoveElemsToLayer: 'Przenies zaznaczone elementy do warstwy \'%s\'?',
-    QwantToClear: 'Jesteś pewien, że chcesz wyczyścić pole robocze?\nHistoria projektu również zostanie skasowana',
-    QwantToOpen: 'Jesteś pewien, że chcesz otworzyć nowy plik?\nHistoria projektu również zostanie skasowana',
-    QerrorsRevertToSource: 'Błąd parsowania źródła Twojego pliku SVG.\nPrzywrócić orginalne źródło pliku SVG?',
+    QmoveElemsToLayer: "Przenies zaznaczone elementy do warstwy '%s'?",
+    QwantToClear: 'Jesteś pewien, że chcesz wyczyścić pole robocze?\n' +
+      'Historia projektu również zostanie skasowana',
+    QwantToOpen: 'Jesteś pewien, że chcesz otworzyć nowy plik?\n' +
+      'Historia projektu również zostanie skasowana',
+    QerrorsRevertToSource: 'Błąd parsowania źródła Twojego pliku SVG.\n' +
+      'Przywrócić orginalne źródło pliku SVG?',
     QignoreSourceChanges: 'Zignorowac zmiany w źródle pliku SVG?',
     featNotSupported: 'Funkcjonalność niedostępna',
     enterNewImgURL: 'Podaj adres URL nowego obrazu',
@@ -292,7 +314,7 @@ export default {
     enterNewLinkURL: 'Wpisz nowy adres URL hiperłącza',
     errorLoadingSVG: 'Błąd: Nie można załadować danych SVG',
     URLLoadFail: 'Nie można załadować z adresu URL',
-    retrieving: 'Retrieving \'%s\' ...',
+    retrieving: "Retrieving '%s' ...",
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',

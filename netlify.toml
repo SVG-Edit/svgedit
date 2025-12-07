@@ -9,10 +9,15 @@
   # the build. This is relative to the base directory if one has been set, or the
   # root directory if a base has not been set. This sample publishes the
   # directory located at the absolute path "root/project/build-output"
-  publish = "dist/"
+  publish = "dist/editor"
 
   # Default build command.
-  command = "npm run build"
+  # Download Playwright's Chromium into node_modules/.cache (PLAYWRIGHT_BROWSERS_PATH=0) so tests can find it without sudo/system paths.
+  command = "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium && npm run build"
+
+[build.environment]
+  # Keep Playwright browsers in node_modules/.cache so installs and tests share the same location.
+  PLAYWRIGHT_BROWSERS_PATH = "0"
 
 [context."release-v6.0.0"]
   publish = "/"
@@ -21,5 +26,3 @@
 [context."release-v5.1.0"]
   publish = "/"
   command = "echo 'branch release-v5.1.0 already built'"
-
-

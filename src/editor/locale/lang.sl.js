@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Stranska plošča'
   },
   properties: {
     id: 'ID elementa',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Raven odsek',
     curve_segments: 'Ukrivljen odsek',
     text_contents: 'Spremeni besedilo',
-    font_family_label: 'Font:',
+    font_family_label: 'Pisava:',
     font_family: 'Spremeni tip pisave',
     font_size: 'Spremeni velikost pisave',
     bold: 'Krepko',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'Identifikator',
+    class_label: 'razred',
+    label: 'oznaka'
   },
   tools: {
     main_menu: 'Glavni meni',
@@ -179,7 +196,9 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Obrni vodoravno',
+    flip_vertical: 'Obrnite navpično'
   },
   layers: {
     layer: 'Sloj',
@@ -277,9 +296,12 @@ export default {
     enterNewLayerName: 'Vnesite ime novega sloja',
     layerHasThatName: 'Sloje že ima to ime',
     QmoveElemsToLayer: "Premaknem izbrane elemente v sloj '%s'?",
-    QwantToClear: 'Ali želite počistiti risbo?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!',
-    QwantToOpen: 'Ali želite odpreti novo datoteko?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!',
-    QerrorsRevertToSource: 'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
+    QwantToClear: 'Ali želite počistiti risbo?\n' +
+      'To bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!',
+    QwantToOpen: 'Ali želite odpreti novo datoteko?\n' +
+      'To bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!',
+    QerrorsRevertToSource: 'There were parsing errors in your SVG source.\n' +
+      'Revert back to original SVG source?',
     QignoreSourceChanges: 'Ignoriram spremembe, narejene v SVG kodi?',
     featNotSupported: 'Ni podprto',
     enterNewImgURL: 'Vnesite nov URL slike',
@@ -291,7 +313,7 @@ export default {
     enterNewLinkURL: 'Vnesite novo URL povezavo',
     errorLoadingSVG: 'Napaka: Ne morem naložiti SVG podatkov',
     URLLoadFail: 'Ne morem naložiti z URL',
-    retrieving: 'Retrieving \'%s\' ...',
+    retrieving: "Retrieving '%s' ...",
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',

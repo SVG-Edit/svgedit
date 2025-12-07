@@ -138,7 +138,7 @@ export function getParents (elem, selector) {
 export function getParentsUntil (elem, parent, selector) {
   const parents = []
   const parentType = parent?.charAt(0)
-  const selectorType = selector?.selector.charAt(0)
+  const selectorType = selector?.charAt(0)
   // Get matches
   for (; elem && elem !== document; elem = elem.parentNode) {
     // Check if parent has been reached

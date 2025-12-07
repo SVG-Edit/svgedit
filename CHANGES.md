@@ -1,5 +1,11 @@
 # SVG-Edit CHANGES
 
+## 7.4.0
+- Scripts: adapt `build` and `publish` for root-managed builds/publishes across workspaces.
+- Docs: Update release/publish instructions to reflect workspace versioning and the new `scripts/version-bump.mjs` helper.
+- Improve the toolbar behavior
+- Add Flip buttons
+
 ## 7.3.8
 - Update svgcanvas to 7.2.7
 
