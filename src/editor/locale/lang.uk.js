@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Оберіть Колір Обводу та Прозорість',
     pick_fill_paint_opacity: 'Оберіть Колір Заливки та Прозорість',
     group_identify_label: 'Група ідентифікаційних міток',
-    export_type_label: 'Оберіть тип зображення для експорту:'
+    export_type_label: 'Оберіть тип зображення для експорту:',
+    panel: 'Панель'
   },
   properties: {
     id: 'Ідентифікатор елемента',
@@ -99,7 +100,7 @@ export default {
     cy_label: 'cy',
     w_label: 'ш',
     h_label: 'в',
-    id_label: 'id',
+    id_label: 'ідентифікатор',
     class_label: 'клас',
     label: 'етикетка',
     class: 'Клас елемента',
@@ -192,7 +193,9 @@ export default {
     ellipse_circle_tool: 'Еліпс/Коло',
     square_rect_tool: 'Квадрат/Прямокутник',
     remember_this_choice: 'Запамʼятати цей вибір?',
-    remember_this_choice_title: 'Якщо ви вирішите не використовувати Storage, запам’ятовуючи цей вибір - URL-адреса зміниться, щоб уникнути повторного запиту.'
+    remember_this_choice_title: 'Якщо ви вирішите не використовувати Storage, запам’ятовуючи цей вибір - URL-адреса зміниться, щоб уникнути повторного запиту.',
+    flip_horizontal: 'Відобразити горизонтально',
+    flip_vertical: 'Відобразити вертикально'
   },
   layers: {
     layer: 'Шар',
@@ -289,10 +292,11 @@ export default {
     enterUniqueLayerName: 'Введіть унікальну назву шару',
     enterNewLayerName: 'Введіть назву нового шару',
     layerHasThatName: 'Шар уже має таку назву',
-    QmoveElemsToLayer: 'Перемістити виділені елементи на шар \'%s\'?',
+    QmoveElemsToLayer: "Перемістити виділені елементи на шар '%s'?",
     QwantToClear: 'Ви хочете очистити малюнок?\nЦе також зітре історію ваших дій!',
     QwantToOpen: 'Бажаєте відкрити новий файл?\nЦе також зітре історію ваших дій!',
-    QerrorsRevertToSource: 'Виявлено помилки парсінгу вашої SVG.\nПовернутися до оригінального джерела SVG?',
+    QerrorsRevertToSource: 'Виявлено помилки парсінгу вашої SVG.\n' +
+      'Повернутися до оригінального джерела SVG?',
     QignoreSourceChanges: 'Ігнорувати зміни, внесені до джерела SVG?',
     featNotSupported: 'Функція не підтримується',
     enterNewImgURL: 'Введіть URL-адресу нового зображення',
@@ -304,7 +308,7 @@ export default {
     enterNewLinkURL: 'Введіть нову URL-адресу гіперпосилання',
     errorLoadingSVG: 'Помилка: неможливо завантажити дані SVG',
     URLLoadFail: 'Неможливо завантажити з URL',
-    retrieving: 'Отримання \'%s\' ...',
+    retrieving: "Отримання '%s' ...",
     popupWindowBlocked: 'Спливаюче вікно може бути заблоковано браузером',
     exportNoBlur: 'Розмиті елементи відображатимуться як нерозмиті',
     exportNoforeignObject: 'foreignObject елементи не відображатимуться',

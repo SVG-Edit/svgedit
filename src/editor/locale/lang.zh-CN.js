@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: '请选择描边颜色和不透明度',
     pick_fill_paint_opacity: '请选择填充颜色和不透明度',
     group_identify_label: '分组标识标签',
-    export_type_label: '选择导出格式:'
+    export_type_label: '选择导出格式:',
+    panel: '面板'
   },
   properties: {
     id: '元素ID',
@@ -69,7 +70,7 @@ export default {
     straight_segments: '直线',
     curve_segments: '曲线',
     text_contents: '更改文本内容',
-    font_family_label: 'Font:',
+    font_family_label: '字体：',
     font_family: '更改字体样式',
     font_size: '更改字体大小',
     bold: '粗体',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: '不在本地保存我的偏好设置或 SVG 内容',
     jgraduate_pad: '填充间距',
     jgraduate_reflect: '镜像',
-    jgraduate_repeat: '重复'
+    jgraduate_repeat: '重复',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'ID',
+    class_label: '类',
+    label: '标签'
   },
   tools: {
     main_menu: '主菜单',
@@ -179,8 +196,9 @@ export default {
     ellipse_circle_tool: '椭圆/圆形工具',
     square_rect_tool: '矩形工具',
     remember_this_choice: '记住我的选择',
-    remember_this_choice_title:
-      '如果你允许了本地存储并记住本次选择，页面将会刷新并且不再显示该提示'
+    remember_this_choice_title: '如果你允许了本地存储并记住本次选择，页面将会刷新并且不再显示该提示',
+    flip_horizontal: '水平翻转',
+    flip_vertical: '垂直翻转'
   },
   layers: {
     layer: '图层',
@@ -277,15 +295,14 @@ export default {
     enterUniqueLayerName: '请输入一个唯一的图层名称',
     enterNewLayerName: '请输入新的图层名称',
     layerHasThatName: '图层已经采用了该名称',
-    QmoveElemsToLayer: '您确定移动所选元素到图层\'%s\'吗?',
+    QmoveElemsToLayer: "您确定移动所选元素到图层'%s'吗?",
     QwantToClear: '您希望清除当前绘制的所有图形吗?\n该操作将无法撤消!',
     QwantToOpen: '您希望打开一个新文档吗?\n该操作将无法撤消!',
     QerrorsRevertToSource: 'SVG文件解析错误.\n是否还原到最初的SVG文件?',
     QignoreSourceChanges: '忽略对SVG文件所作的更改么?',
     featNotSupported: '不支持该功能',
     enterNewImgURL: '请输入新图像的URLL',
-    defsFailOnSave:
-      '注意: 由于您所使用的浏览器存在缺陷, 该图像无法正确显示 (不支持渐变或相关元素). 修复该缺陷后可正确显示.',
+    defsFailOnSave: '注意: 由于您所使用的浏览器存在缺陷, 该图像无法正确显示 (不支持渐变或相关元素). 修复该缺陷后可正确显示.',
     loadingImage: '正在加载图像, 请稍候...',
     saveFromBrowser: '在浏览器中右键点击“另存为” ，可将图像保存为{{type}}文件',
     noteTheseIssues: '同时注意以下几点: ',
@@ -293,15 +310,13 @@ export default {
     enterNewLinkURL: '输入新建链接的URL地址',
     errorLoadingSVG: '错误: 无法加载SVG数据',
     URLLoadFail: '无法从URL中加载',
-    retrieving: '检索 \'%s\'...',
+    retrieving: "检索 '%s'...",
     popupWindowBlocked: '弹出窗口可能被浏览器阻止',
     exportNoBlur: '模糊的元素将显示为未模糊状态',
     exportNoforeignObject: 'foreignObject 元素将不会显示',
     exportNoDashArray: '描边将显示为填充效果',
     exportNoText: '文字显示可能与预期不符',
-    editorPreferencesMsg:
-      '默认情况下，只要您的设备支持，SVG-Edit 会将您的编辑偏好设置和 SVG 内容本地保存在您的电脑上，这样您每次重新打开 SVG-Edit 时，就无需再费力重新设置或导入内容了。但如果您出于隐私考虑，不希望这些信息留在您的设备上，只需在下方切换选项，轻松关闭这一默认功能即可！',
-    source_dialog_note:
-      '将此框中的内容复制到文本编辑器中，然后以 .svg 为扩展名保存该文件。'
+    editorPreferencesMsg: '默认情况下，只要您的设备支持，SVG-Edit 会将您的编辑偏好设置和 SVG 内容本地保存在您的电脑上，这样您每次重新打开 SVG-Edit 时，就无需再费力重新设置或导入内容了。但如果您出于隐私考虑，不希望这些信息留在您的设备上，只需在下方切换选项，轻松关闭这一默认功能即可！',
+    source_dialog_note: '将此框中的内容复制到文本编辑器中，然后以 .svg 为扩展名保存该文件。'
   }
 }

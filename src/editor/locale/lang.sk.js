@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Bočný panel'
   },
   properties: {
     id: 'Zmeniť ID elementu',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Rovný',
     curve_segments: 'Krivka',
     text_contents: 'Zmeniť text',
-    font_family_label: 'Font:',
+    font_family_label: 'písmo:',
     font_family: 'Zmeniť font',
     font_size: 'Zmeniť veľkosť písma',
     bold: 'Tučné',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'Identifikátor',
+    class_label: 'trieda',
+    label: 'štítok'
   },
   tools: {
     main_menu: 'Hlavné menu',
@@ -179,7 +196,9 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Prevrátiť vodorovne',
+    flip_vertical: 'Prevrátiť vertikálne'
   },
   layers: {
     layer: 'Vrstva',
@@ -291,7 +310,7 @@ export default {
     enterNewLinkURL: 'Zadajte nové URL odkazu (hyperlink)',
     errorLoadingSVG: 'Chyba: Nedajú sa načítať SVG data',
     URLLoadFail: 'Nemožno čítať z URL',
-    retrieving: 'Retrieving \'%s\' ...',
+    retrieving: "Retrieving '%s' ...",
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',

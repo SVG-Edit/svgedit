@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:'
+    export_type_label: 'Select an image type for export:',
+    panel: 'Panneau'
   },
   properties: {
     id: "Identifier l'élément",
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Droit',
     curve_segments: 'Courbe',
     text_contents: 'Changer le contenu du texte',
-    font_family_label: 'Font:',
+    font_family_label: 'Fonte:',
     font_family: 'Changer la famille de police',
     font_size: 'Changer la taille de la police',
     bold: 'Texte en gras',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'identifiant',
+    class_label: 'classe',
+    label: 'étiquette'
   },
   tools: {
     main_menu: 'Menu principal',
@@ -156,7 +173,7 @@ export default {
     reorient_path: 'Réorienter le chemin',
     ungroup: 'Dégrouper les éléments',
     docprops: 'Propriétés du document',
-    editor_homepage: 'Page d\'accueil de SVG-Edit',
+    editor_homepage: "Page d'accueil de SVG-Edit",
     move_bottom: 'Déplacer vers le bas',
     move_top: 'Déplacer vers le haut',
     node_clone: 'Cloner le nœud',
@@ -179,7 +196,9 @@ export default {
     ellipse_circle_tool: 'Outil Ellipse/Cercle',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Se souvenir de ce choix ?',
-    remember_this_choice_title: 'Si vous choisissez de désactiver le stockage tout en mémorisant ce choix, l\'URL changera afin d\'éviter de vous le demander à nouveau.'
+    remember_this_choice_title: "Si vous choisissez de désactiver le stockage tout en mémorisant ce choix, l'URL changera afin d'éviter de vous le demander à nouveau.",
+    flip_horizontal: 'Retourner horizontalement',
+    flip_vertical: 'Retourner verticalement'
   },
   layers: {
     layer: 'Calque',
@@ -264,7 +283,7 @@ export default {
     jgraduate_ellip: 'Ellip:',
     jgraduate_set_ellip: 'Click to set Ellip',
     jgraduate_angle: 'Angle:',
-    jgraduate_set_angle: 'Cliquez pour définir l\'angle',
+    jgraduate_set_angle: "Cliquez pour définir l'angle",
     jgraduate_deg: 'deg:',
     jgraduate_opac: 'Opac:',
     jgraduate_set_opac: 'Click to set Opac'
@@ -277,9 +296,12 @@ export default {
     enterNewLayerName: 'Veuillez entrer le nouveau nom du calque',
     layerHasThatName: 'Le calque porte déjà ce nom',
     QmoveElemsToLayer: 'Déplacer les éléments sélectionnés vers le calque « %s » ?',
-    QwantToClear: "Voulez-vous effacer le dessin ?\nL'historique de vos actions sera également effacé !",
-    QwantToOpen: "Voulez-vous ouvrir un nouveau document ?\nVous perdrez l'historique de vos modifications !",
-    QerrorsRevertToSource: 'Il y a des erreurs de syntaxe dans votre code source SVG.\nRestaurer le code source SVG antérieur aux modifications ?',
+    QwantToClear: 'Voulez-vous effacer le dessin ?\n' +
+      "L'historique de vos actions sera également effacé !",
+    QwantToOpen: 'Voulez-vous ouvrir un nouveau document ?\n' +
+      "Vous perdrez l'historique de vos modifications !",
+    QerrorsRevertToSource: 'Il y a des erreurs de syntaxe dans votre code source SVG.\n' +
+      'Restaurer le code source SVG antérieur aux modifications ?',
     QignoreSourceChanges: 'Ignorer les modifications faites à la source SVG ?',
     featNotSupported: 'Fonction non supportée',
     enterNewImgURL: "Entrer la nouvelle URL de l'image",

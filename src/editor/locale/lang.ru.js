@@ -27,7 +27,8 @@ export default {
     pick_stroke_paint_opacity: 'Выберите цвет обводки (Stroke Paint) и прозрачносить (Opacity)',
     pick_fill_paint_opacity: 'Выберите цвет заливки (Fill Paint) и прозрачность (Opacity)',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Выберите типа изображения для экспорта:'
+    export_type_label: 'Выберите типа изображения для экспорта:',
+    panel: 'Панель'
   },
   properties: {
     id: 'Идентификатор элемента',
@@ -69,7 +70,7 @@ export default {
     straight_segments: 'Отрезок',
     curve_segments: 'Сплайн',
     text_contents: 'Изменить содержание текста',
-    font_family_label: 'Font:',
+    font_family_label: 'Шрифт:',
     font_family: 'Изменить семейство шрифтов',
     font_size: 'Изменить размер шрифта',
     bold: 'Жирный',
@@ -100,7 +101,23 @@ export default {
     no_prefs_or_content: 'Не сохранять локально ни настройки ни содержимое SVG',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat'
+    jgraduate_repeat: 'Repeat',
+    r_label: 'r',
+    x_label: 'x',
+    y_label: 'y',
+    x1_label: 'x1',
+    y1_label: 'y1',
+    x2_label: 'x2',
+    y2_label: 'y2',
+    rx_label: 'rx',
+    ry_label: 'ry',
+    cx_label: 'cx',
+    cy_label: 'cy',
+    w_label: 'w',
+    h_label: 'h',
+    id_label: 'идентификатор',
+    class_label: 'класс',
+    label: 'метка'
   },
   tools: {
     main_menu: 'Главное меню',
@@ -179,7 +196,10 @@ export default {
     ellipse_circle_tool: 'Овал/Круг',
     square_rect_tool: 'Квадрат/Прямоугольник',
     remember_this_choice: 'Запомнить выбор?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    flip_horizontal: 'Перевернуть по горизонтали',
+    flip_vertical: 'Перевернуть вертикально',
+    delete: 'Удалить'
   },
   layers: {
     layer: 'Слой',
@@ -279,7 +299,8 @@ export default {
     QmoveElemsToLayer: "Переместить выделенные элементы на слой '%s'?",
     QwantToClear: 'Вы хотите очистить?\nИстория действий будет забыта!',
     QwantToOpen: 'Открыть новый файл?\nИстория действий будет забыта!',
-    QerrorsRevertToSource: 'Была проблема при парсинге вашего SVG исходного кода.\nЗаменить его предыдущим SVG кодом?',
+    QerrorsRevertToSource: 'Была проблема при парсинге вашего SVG исходного кода.\n' +
+      'Заменить его предыдущим SVG кодом?',
     QignoreSourceChanges: 'Забыть без сохранения?',
     featNotSupported: 'Возможность не реализована',
     enterNewImgURL: 'Введите новый URL изображения',
@@ -291,7 +312,7 @@ export default {
     enterNewLinkURL: 'Введите новую ссылку URL',
     errorLoadingSVG: 'Ошибка: Не удалось загрузить SVG данные',
     URLLoadFail: 'Не удалось загрузить по ссылке URL',
-    retrieving: 'Получение \'%s\' ...',
+    retrieving: "Получение '%s' ...",
     popupWindowBlocked: 'Всплывающее окно могло заблокироваться браузером',
     exportNoBlur: 'Размытые элементы отображены как неразмытые',
     exportNoforeignObject: 'foreignObject элементы не отобразятся',
