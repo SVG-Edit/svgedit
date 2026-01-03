@@ -2,6 +2,7 @@
 import 'pathseg'
 import { NS } from '../../packages/svgcanvas/core/namespaces.js'
 import * as utilities from '../../packages/svgcanvas/core/utilities.js'
+import { convertPath as convertPathActions } from '../../packages/svgcanvas/core/path-actions.js'
 import * as pathModule from '../../packages/svgcanvas/core/path.js'
 import { Path, Segment } from '../../packages/svgcanvas/core/path-method.js'
 import { init as unitsInit } from '../../packages/svgcanvas/core/units.js'
@@ -40,6 +41,12 @@ describe('path', function () {
       }
     ]
   }
+
+  it('Test svgedit.path.init exposes recalcRotatedPath', function () {
+    const [mockPathContext] = getMockContexts()
+    pathModule.init(mockPathContext)
+    assert.equal(typeof mockPathContext.recalcRotatedPath, 'function')
+  })
 
   it('Test svgedit.path.replacePathSeg', function () {
     const path = document.createElementNS(NS.SVG, 'path')
@@ -137,6 +144,63 @@ describe('path', function () {
     assert.equal(path.pathSegList.getItem(1).y, 15)
   })
 
+  it('Test svgedit.path.Segment.move for quadratic curve', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q11,12 15,16')
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts()
+    pathModule.init(mockPathContext)
+    utilities.init(mockUtilitiesContext)
+    const pathObj = new Path(path)
+
+    pathObj.segs[1].move(-3, 4)
+    const seg = path.pathSegList.getItem(1)
+
+    assert.equal(seg.pathSegTypeAsLetter, 'Q')
+    assert.equal(seg.x, 12)
+    assert.equal(seg.y, 20)
+    assert.equal(seg.x1, 11)
+    assert.equal(seg.y1, 12)
+  })
+
+  it('Test svgedit.path.Segment.move for smooth cubic curve', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 S13,14 15,16')
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts()
+    pathModule.init(mockPathContext)
+    utilities.init(mockUtilitiesContext)
+    const pathObj = new Path(path)
+
+    pathObj.segs[1].move(5, -6)
+    const seg = path.pathSegList.getItem(1)
+
+    assert.equal(seg.pathSegTypeAsLetter, 'S')
+    assert.equal(seg.x, 20)
+    assert.equal(seg.y, 10)
+    assert.equal(seg.x2, 18)
+    assert.equal(seg.y2, 8)
+  })
+
+  it('Test moving start point moves next quadratic control point', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q10,0 20,0')
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts()
+    pathModule.init(mockPathContext)
+    utilities.init(mockUtilitiesContext)
+    const pathObj = new Path(path)
+
+    pathObj.segs[0].move(5, 5)
+    const seg = path.pathSegList.getItem(1)
+
+    assert.equal(seg.pathSegTypeAsLetter, 'Q')
+    assert.equal(seg.x, 20)
+    assert.equal(seg.y, 0)
+    assert.equal(seg.x1, 15)
+    assert.equal(seg.y1, 5)
+  })
+
   it('Test svgedit.path.Segment.moveCtrl', function () {
     const path = document.createElementNS(NS.SVG, 'path')
     path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z')
@@ -178,5 +242,43 @@ describe('path', function () {
 
     const rel = pathModule.convertPath(path, true)
     assert.equal(rel, 'm40,55l20,0l0,20')
+  })
+
+  it('Test convertPath resets after closepath when relative', function () {
+    unitsInit({
+      getRoundDigits () { return 5 }
+    })
+
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 L20,10 Z L15,10')
+    const expected = 'm10,10l10,0zl5,0'
+
+    assert.equal(pathModule.convertPath(path, true), expected)
+    assert.equal(convertPathActions(path, true), expected)
+  })
+
+  it('Test recalcRotatedPath preserves zero control points', function () {
+    const svg = document.createElementNS(NS.SVG, 'svg')
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 C0,10 0,20 30,30')
+    path.setAttribute('transform', 'rotate(45 0 0)')
+    svg.append(path)
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts(svg)
+    pathModule.init(mockPathContext)
+    utilities.init(mockUtilitiesContext)
+    const pathObj = new Path(path)
+    pathObj.oldbbox = utilities.getBBox(path)
+
+    pathModule.recalcRotatedPath()
+
+    const seg = path.pathSegList.getItem(1)
+    assert.equal(seg.pathSegTypeAsLetter, 'C')
+    assert.closeTo(seg.x1, 0, 1e-6)
+    assert.closeTo(seg.y1, 10, 1e-6)
+    assert.closeTo(seg.x2, 0, 1e-6)
+    assert.closeTo(seg.y2, 20, 1e-6)
+    assert.closeTo(seg.x, 30, 1e-6)
+    assert.closeTo(seg.y, 30, 1e-6)
   })
 })

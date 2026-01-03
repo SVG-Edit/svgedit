@@ -6,6 +6,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
+import { NS } from './namespaces.js'
 import { getHref, setHref, getRotationAngle, getBBox } from './utilities.js'
 
 /**
@@ -155,7 +156,11 @@ export class MoveElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling)
+      const reference =
+        this.newNextSibling && this.newNextSibling.parentNode === this.newParent
+          ? this.newNextSibling
+          : null
+      this.elem = this.newParent.insertBefore(this.elem, reference)
     })
   }
 
@@ -167,7 +172,11 @@ export class MoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling)
+      const reference =
+        this.oldNextSibling && this.oldNextSibling.parentNode === this.oldParent
+          ? this.oldNextSibling
+          : null
+      this.elem = this.oldParent.insertBefore(this.elem, reference)
     })
   }
 }
@@ -197,7 +206,11 @@ export class InsertElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.elem = this.parent.insertBefore(this.elem, this.nextSibling)
+      const reference =
+        this.nextSibling && this.nextSibling.parentNode === this.parent
+          ? this.nextSibling
+          : null
+      this.elem = this.parent.insertBefore(this.elem, reference)
     })
   }
 
@@ -255,10 +268,11 @@ export class RemoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      if (!this.nextSibling) {
-        console.error('Reference element was lost')
-      }
-      this.parent.insertBefore(this.elem, this.nextSibling) // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
+      const reference =
+        this.nextSibling && this.nextSibling.parentNode === this.parent
+          ? this.nextSibling
+          : null
+      this.parent.insertBefore(this.elem, reference) // Don't use `before` or `prepend` as `reference` may be `null`
     })
   }
 }
@@ -308,19 +322,21 @@ export class ChangeElementCommand extends Command {
     super.apply(handler, () => {
       let bChangedTransform = false
       Object.entries(this.newValues).forEach(([attr, value]) => {
-        if (value) {
-          if (attr === '#text') {
-            this.elem.textContent = value
-          } else if (attr === '#href') {
-            setHref(this.elem, value)
+        const isNullishOrEmpty = value === null || value === undefined || value === ''
+        if (attr === '#text') {
+          this.elem.textContent = value === null || value === undefined ? '' : String(value)
+        } else if (attr === '#href') {
+          if (isNullishOrEmpty) {
+            this.elem.removeAttribute('href')
+            this.elem.removeAttributeNS(NS.XLINK, 'href')
           } else {
-            this.elem.setAttribute(attr, value)
+            setHref(this.elem, String(value))
           }
-        } else if (attr === '#text') {
-          this.elem.textContent = ''
-        } else {
+        } else if (isNullishOrEmpty) {
           this.elem.setAttribute(attr, '')
           this.elem.removeAttribute(attr)
+        } else {
+          this.elem.setAttribute(attr, value)
         }
 
         if (attr === 'transform') { bChangedTransform = true }
@@ -331,6 +347,7 @@ export class ChangeElementCommand extends Command {
         const angle = getRotationAngle(this.elem)
         if (angle) {
           const bbox = getBBox(this.elem)
+          if (!bbox) return
           const cx = bbox.x + bbox.width / 2
           const cy = bbox.y + bbox.height / 2
           const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('')
@@ -352,18 +369,20 @@ export class ChangeElementCommand extends Command {
     super.unapply(handler, () => {
       let bChangedTransform = false
       Object.entries(this.oldValues).forEach(([attr, value]) => {
-        if (value) {
-          if (attr === '#text') {
-            this.elem.textContent = value
-          } else if (attr === '#href') {
-            setHref(this.elem, value)
+        const isNullishOrEmpty = value === null || value === undefined || value === ''
+        if (attr === '#text') {
+          this.elem.textContent = value === null || value === undefined ? '' : String(value)
+        } else if (attr === '#href') {
+          if (isNullishOrEmpty) {
+            this.elem.removeAttribute('href')
+            this.elem.removeAttributeNS(NS.XLINK, 'href')
           } else {
-            this.elem.setAttribute(attr, value)
+            setHref(this.elem, String(value))
           }
-        } else if (attr === '#text') {
-          this.elem.textContent = ''
-        } else {
+        } else if (isNullishOrEmpty) {
           this.elem.removeAttribute(attr)
+        } else {
+          this.elem.setAttribute(attr, value)
         }
         if (attr === 'transform') { bChangedTransform = true }
       })
@@ -372,6 +391,7 @@ export class ChangeElementCommand extends Command {
         const angle = getRotationAngle(this.elem)
         if (angle) {
           const bbox = getBBox(this.elem)
+          if (!bbox) return
           const cx = bbox.x + bbox.width / 2
           const cy = bbox.y + bbox.height / 2
           const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('')

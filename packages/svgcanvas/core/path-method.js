@@ -353,7 +353,7 @@ export class Segment {
     this.item = item
     this.type = item.pathSegType
 
-    this.ctrlpts = []
+    this.ctrlpts = null
     this.ptgrip = null
     this.segsel = null
   }
@@ -375,8 +375,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE')
-    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1')?.setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2')?.setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**
@@ -450,27 +450,25 @@ export class Segment {
   move (dx, dy) {
     const { item } = this
 
-    const curPts = this.ctrlpts
-      ? [
-          item.x += dx, item.y += dy,
-          item.x1, item.y1, item.x2 += dx, item.y2 += dy
-        ]
-      : [item.x += dx, item.y += dy]
+    item.x += dx
+    item.y += dy
+
+    // `x2/y2` are the control point attached to this node (when present)
+    if ('x2' in item) { item.x2 += dx }
+    if ('y2' in item) { item.y2 += dy }
 
     replacePathSegMethod(
       this.type,
       this.index,
-      // type 10 means ARC
-      this.type === 10 ? ptObjToArrMethod(this.type, item) : curPts
+      ptObjToArrMethod(this.type, item)
     )
 
-    if (this.next?.ctrlpts) {
-      const next = this.next.item
-      const nextPts = [
-        next.x, next.y,
-        next.x1 += dx, next.y1 += dy, next.x2, next.y2
-      ]
-      replacePathSegMethod(this.next.type, this.next.index, nextPts)
+    const next = this.next?.item
+    // `x1/y1` are the control point attached to this node on the next segment (when present)
+    if (next && 'x1' in next && 'y1' in next) {
+      next.x1 += dx
+      next.y1 += dy
+      replacePathSegMethod(this.next.type, this.next.index, ptObjToArrMethod(this.next.type, next))
     }
 
     if (this.mate) {

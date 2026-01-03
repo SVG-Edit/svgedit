@@ -4,21 +4,42 @@
 */
 const dataStorage = {
   _storage: new WeakMap(),
+  _isValidKey: function (element) {
+    return element !== null && (typeof element === 'object' || typeof element === 'function')
+  },
   put: function (element, key, obj) {
-    if (!this._storage.has(element)) {
-      this._storage.set(element, new Map())
+    if (!this._isValidKey(element)) {
+      return
     }
-    this._storage.get(element).set(key, obj)
+    let elementMap = this._storage.get(element)
+    if (!elementMap) {
+      elementMap = new Map()
+      this._storage.set(element, elementMap)
+    }
+    elementMap.set(key, obj)
   },
   get: function (element, key) {
+    if (!this._isValidKey(element)) {
+      return undefined
+    }
     return this._storage.get(element)?.get(key)
   },
   has: function (element, key) {
-    return this._storage.has(element) && this._storage.get(element).has(key)
+    if (!this._isValidKey(element)) {
+      return false
+    }
+    return this._storage.get(element)?.has(key) === true
   },
   remove: function (element, key) {
-    const ret = this._storage.get(element).delete(key)
-    if (this._storage.get(element).size === 0) {
+    if (!this._isValidKey(element)) {
+      return false
+    }
+    const elementMap = this._storage.get(element)
+    if (!elementMap) {
+      return false
+    }
+    const ret = elementMap.delete(key)
+    if (elementMap.size === 0) {
       this._storage.delete(element)
     }
     return ret

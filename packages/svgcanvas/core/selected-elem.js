@@ -104,14 +104,17 @@ const moveToBottomSelectedElem = () => {
     let t = selected
     const oldParent = t.parentNode
     const oldNextSibling = t.nextSibling
-    let { firstChild } = t.parentNode
-    if (firstChild.tagName === 'title') {
-      firstChild = firstChild.nextSibling
+    let firstChild = t.parentNode.firstElementChild
+    if (firstChild?.tagName === 'title') {
+      firstChild = firstChild.nextElementSibling
     }
     // This can probably be removed, as the defs should not ever apppear
     // inside a layer group
-    if (firstChild.tagName === 'defs') {
-      firstChild = firstChild.nextSibling
+    if (firstChild?.tagName === 'defs') {
+      firstChild = firstChild.nextElementSibling
+    }
+    if (!firstChild) {
+      return
     }
     t = t.parentNode.insertBefore(t, firstChild)
     // If the element actually moved position, add the command and fire the changed
@@ -702,7 +705,7 @@ const flipSelectedElements = (scaleX, scaleY) => {
  * @returns {void}
  */
 const copySelectedElements = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.getSelectedElements().filter(Boolean)
   const data = JSON.stringify(
     selectedElements.map(x => svgCanvas.getJsonFromSvgElements(x))
   )
@@ -712,7 +715,7 @@ const copySelectedElements = () => {
 
   // Context menu might not exist (it is provided by editor.js).
   const canvMenu = document.getElementById('se-cmenu_canvas')
-  canvMenu.setAttribute('enablemenuitems', '#paste,#paste_in_place')
+  canvMenu?.setAttribute('enablemenuitems', '#paste,#paste_in_place')
 }
 
 /**
@@ -1047,6 +1050,10 @@ const convertToGroup = elem => {
     svgCanvas.call('selected', [elem])
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol')
+    if (!elem) {
+      console.warn('Unable to convert <use>: missing symbol reference')
+      return
+    }
 
     ts = $elem.getAttribute('transform') || ''
     const pos = {
@@ -1065,14 +1072,15 @@ const convertToGroup = elem => {
     // Not ideal, but works
     ts += ' translate(' + (pos.x || 0) + ',' + (pos.y || 0) + ')'
 
-    const prev = $elem.previousElementSibling
+    const useParent = $elem.parentNode
+    const useNextSibling = $elem.nextSibling
 
     // Remove <use> element
     batchCmd.addSubCommand(
       new RemoveElementCommand(
         $elem,
-        $elem.nextElementSibling,
-        $elem.parentNode
+        useNextSibling,
+        useParent
       )
     )
     $elem.remove()
@@ -1124,7 +1132,9 @@ const convertToGroup = elem => {
     // now give the g itself a new id
     g.id = svgCanvas.getNextId()
 
-    prev.after(g)
+    if (useParent) {
+      useParent.insertBefore(g, useNextSibling)
+    }
 
     if (parent) {
       if (!hasMore) {
@@ -1197,7 +1207,16 @@ const ungroupSelectedElement = () => {
   }
   if (g.tagName === 'use') {
     // Somehow doesn't have data set, so retrieve
-    const symbol = getElement(getHref(g).substr(1))
+    const href = getHref(g)
+    if (!href || !href.startsWith('#')) {
+      console.warn('Unexpected <use> without local reference:', g)
+      return
+    }
+    const symbol = getElement(href.substr(1))
+    if (!symbol) {
+      console.warn('Unexpected <use> without resolved reference:', g)
+      return
+    }
     dataStorage.put(g, 'symbol', symbol)
     dataStorage.put(g, 'ref', symbol)
     convertToGroup(g)

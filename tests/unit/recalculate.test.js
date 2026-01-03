@@ -119,6 +119,25 @@ describe('recalculate', function () {
   }
 
   /**
+   * Initialize for tests and set up a `g` element with a `rect` child.
+   * @returns {SVGRectElement}
+   */
+  function setUpGroupWithRect () {
+    setUp()
+    elem = document.createElementNS(NS.SVG, 'g')
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '200')
+    rect.setAttribute('y', '150')
+    rect.setAttribute('width', '250')
+    rect.setAttribute('height', '120')
+
+    elem.append(rect)
+    svg.append(elem)
+    return rect
+  }
+
+  /**
    * Tear down the tests (empty the svg element).
    * @returns {void}
    */
@@ -169,8 +188,64 @@ describe('recalculate', function () {
     assert.equal(tspan.getAttribute('y'), '200')
   })
 
+  it('Test recalculateDimensions() on group with simple translate', function () {
+    const rect = setUpGroupWithRect()
+    elem.setAttribute('transform', 'translate(100,50)')
+
+    recalculate.recalculateDimensions(elem)
+
+    assert.equal(elem.hasAttribute('transform'), false)
+    assert.equal(rect.hasAttribute('transform'), false)
+    assert.equal(rect.getAttribute('x'), '300')
+    assert.equal(rect.getAttribute('y'), '200')
+    assert.equal(rect.getAttribute('width'), '250')
+    assert.equal(rect.getAttribute('height'), '120')
+  })
+
+  it('Test recalculateDimensions() on group with simple scale', function () {
+    const rect = setUpGroupWithRect()
+    elem.setAttribute('transform', 'translate(10,20) scale(2) translate(-10,-20)')
+
+    recalculate.recalculateDimensions(elem)
+
+    assert.equal(elem.hasAttribute('transform'), false)
+    assert.equal(rect.hasAttribute('transform'), false)
+    assert.equal(rect.getAttribute('x'), '390')
+    assert.equal(rect.getAttribute('y'), '280')
+    assert.equal(rect.getAttribute('width'), '500')
+    assert.equal(rect.getAttribute('height'), '240')
+  })
+
   // TODO: Since recalculateDimensions() and surrounding code is
   // probably the largest, most complicated and strange piece of
   // code in SVG-edit, we need to write a whole lot of unit tests
   // for it here.
+
+  it('updateClipPath() skips empty clipPaths safely', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-empty'
+    svg.append(clipPath)
+
+    // Should not throw when clipPath has no children.
+    recalculate.updateClipPath('url(#clip-empty)', 5, 5)
+  })
+
+  it('updateClipPath() appends translate to path child when present', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-path'
+    const path = document.createElementNS(NS.SVG, 'path')
+    clipPath.append(path)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-path)', 2, -3)
+
+    const tlist = path.transform.baseVal
+    assert.equal(tlist.numberOfItems, 1)
+    const xform = tlist.getItem(0)
+    assert.equal(xform.type, SVGTransform.SVG_TRANSFORM_TRANSLATE)
+    assert.equal(xform.matrix.e, 2)
+    assert.equal(xform.matrix.f, -3)
+  })
 })

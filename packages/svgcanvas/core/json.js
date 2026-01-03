@@ -27,7 +27,7 @@ let svgdoc_ = null
 */
 export const init = (canvas) => {
   svgCanvas = canvas
-  svgdoc_ = canvas.getDOMDocument()
+  svgdoc_ = canvas.getDOMDocument?.() || (typeof document !== 'undefined' ? document : null)
 }
 /**
 * @function module:json.getJsonFromSvgElements Iterate element and return json format
@@ -35,8 +35,12 @@ export const init = (canvas) => {
 * @returns {svgRootElement}
 */
 export const getJsonFromSvgElements = (data) => {
+  if (!data) return null
+
   // Text node
-  if (data.nodeType === 3) return data.nodeValue
+  if (data.nodeType === 3 || data.nodeType === 4) return data.nodeValue
+  // Ignore non-element nodes (e.g., comments)
+  if (data.nodeType !== 1) return null
 
   const retval = {
     element: data.tagName,
@@ -46,13 +50,25 @@ export const getJsonFromSvgElements = (data) => {
   }
 
   // Iterate attributes
-  for (let i = 0, attr; (attr = data.attributes[i]); i++) {
-    retval.attr[attr.name] = attr.value
+  const attributes = data.attributes
+  if (attributes) {
+    for (let i = 0; i < attributes.length; i++) {
+      const attr = attributes[i]
+      if (!attr) continue
+      retval.attr[attr.name] = attr.value
+    }
   }
 
   // Iterate children
-  for (let i = 0, node; (node = data.childNodes[i]); i++) {
-    retval.children[i] = getJsonFromSvgElements(node)
+  const childNodes = data.childNodes
+  if (childNodes) {
+    for (let i = 0; i < childNodes.length; i++) {
+      const node = childNodes[i]
+      const child = getJsonFromSvgElements(node)
+      if (child !== null && child !== undefined) {
+        retval.children.push(child)
+      }
+    }
   }
 
   return retval
@@ -65,11 +81,29 @@ export const getJsonFromSvgElements = (data) => {
 */
 
 export const addSVGElementsFromJson = (data) => {
+  if (!svgdoc_) { return null }
+  if (data === null || data === undefined) return svgdoc_.createTextNode('')
   if (typeof data === 'string') return svgdoc_.createTextNode(data)
 
-  let shape = getElement(data.attr.id)
+  const attrs = data.attr || {}
+  const id = attrs.id
+  let shape = null
+  if (typeof id === 'string' && id) {
+    try {
+      shape = getElement(id)
+    } catch (e) {
+      // Ignore (CSS selector may be invalid); fallback to getElementById below
+    }
+    if (!shape) {
+      const byId = svgdoc_.getElementById?.(id)
+      const svgRoot = svgCanvas?.getSvgRoot?.()
+      if (byId && (!svgRoot || svgRoot.contains(byId))) {
+        shape = byId
+      }
+    }
+  }
   // if shape is a path but we need to create a rect/ellipse, then remove the path
-  const currentLayer = svgCanvas.getDrawing().getCurrentLayer()
+  const currentLayer = svgCanvas?.getDrawing?.()?.getCurrentLayer?.()
   if (shape && data.element !== shape.tagName) {
     shape.remove()
     shape = null
@@ -81,8 +115,10 @@ export const addSVGElementsFromJson = (data) => {
       (svgCanvas.getCurrentGroup() || currentLayer).append(shape)
     }
   }
-  const curShape = svgCanvas.getCurShape()
+  const curShape = svgCanvas.getCurShape?.() || {}
   if (data.curStyles) {
+    const curOpacity = Number(curShape.opacity)
+    const opacity = Number.isFinite(curOpacity) ? (curOpacity / 2) : 0.5
     assignAttributes(shape, {
       fill: curShape.fill,
       stroke: curShape.stroke,
@@ -92,17 +128,23 @@ export const addSVGElementsFromJson = (data) => {
       'stroke-linecap': curShape.stroke_linecap,
       'stroke-opacity': curShape.stroke_opacity,
       'fill-opacity': curShape.fill_opacity,
-      opacity: curShape.opacity / 2,
+      opacity,
       style: 'pointer-events:inherit'
     }, 100)
   }
-  assignAttributes(shape, data.attr, 100)
+  assignAttributes(shape, attrs, 100)
   cleanupElement(shape)
 
   // Children
   if (data.children) {
+    while (shape.firstChild) {
+      shape.firstChild.remove()
+    }
     data.children.forEach((child) => {
-      shape.append(addSVGElementsFromJson(child))
+      const childNode = addSVGElementsFromJson(child)
+      if (childNode) {
+        shape.append(childNode)
+      }
     })
   }
 

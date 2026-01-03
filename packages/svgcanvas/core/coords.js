@@ -22,6 +22,28 @@ import { convertToNum } from './units.js'
 
 let svgCanvas = null
 
+const flipBoxCoordinate = value => {
+  if (value == null) return null
+  const str = String(value).trim()
+  if (!str) return null
+  if (str.endsWith('%')) {
+    const num = Number.parseFloat(str.slice(0, -1))
+    if (Number.isNaN(num)) return str
+    return `${100 - num}%`
+  }
+  const num = Number.parseFloat(str)
+  if (Number.isNaN(num)) return str
+  return String(1 - num)
+}
+
+const flipAttributeInBoxUnits = (elem, attr) => {
+  const value = elem.getAttribute(attr)
+  if (value == null) return
+  const flipped = flipBoxCoordinate(value)
+  if (flipped == null) return
+  elem.setAttribute(attr, flipped)
+}
+
 /**
  * Initialize the coords module with the SVG canvas.
  * @function module:coords.init
@@ -69,8 +91,8 @@ export const remapElement = (selected, changes, m) => {
   const scalew = w => m.a * w
   const scaleh = h => m.d * h
   const doSnapping =
-    svgCanvas.getGridSnapping() &&
-    selected.parentNode.parentNode.localName === 'svg'
+    svgCanvas.getGridSnapping?.() &&
+    selected?.parentNode?.parentNode?.localName === 'svg'
   const finishUp = () => {
     if (doSnapping) {
       Object.entries(changes).forEach(([attr, value]) => {
@@ -86,23 +108,45 @@ export const remapElement = (selected, changes, m) => {
     const attrVal = selected.getAttribute(type)
     if (attrVal?.startsWith('url(') && (m.a < 0 || m.d < 0)) {
       const grad = getRefElem(attrVal)
+      if (!grad) return
+
+      const tagName = (grad.tagName || '').toLowerCase()
+      if (!['lineargradient', 'radialgradient'].includes(tagName)) return
+
+      // userSpaceOnUse gradients do not need object-bounding-box correction.
+      if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') return
+
       const newgrad = grad.cloneNode(true)
       if (m.a < 0) {
         // Flip x
-        const x1 = newgrad.getAttribute('x1')
-        const x2 = newgrad.getAttribute('x2')
-        newgrad.setAttribute('x1', -(x1 - 1))
-        newgrad.setAttribute('x2', -(x2 - 1))
+        if (tagName === 'lineargradient') {
+          flipAttributeInBoxUnits(newgrad, 'x1')
+          flipAttributeInBoxUnits(newgrad, 'x2')
+        } else {
+          flipAttributeInBoxUnits(newgrad, 'cx')
+          flipAttributeInBoxUnits(newgrad, 'fx')
+        }
       }
 
       if (m.d < 0) {
         // Flip y
-        const y1 = newgrad.getAttribute('y1')
-        const y2 = newgrad.getAttribute('y2')
-        newgrad.setAttribute('y1', -(y1 - 1))
-        newgrad.setAttribute('y2', -(y2 - 1))
+        if (tagName === 'lineargradient') {
+          flipAttributeInBoxUnits(newgrad, 'y1')
+          flipAttributeInBoxUnits(newgrad, 'y2')
+        } else {
+          flipAttributeInBoxUnits(newgrad, 'cy')
+          flipAttributeInBoxUnits(newgrad, 'fy')
+        }
       }
-      newgrad.id = svgCanvas.getCurrentDrawing().getNextId()
+
+      const drawing = svgCanvas.getCurrentDrawing?.() || svgCanvas.getDrawing?.()
+      const generatedId = drawing?.getNextId?.() ??
+        (grad.id ? `${grad.id}-mirrored` : `mirrored-grad-${Date.now()}`)
+      if (!generatedId) {
+        console.warn('Unable to mirror gradient: no drawing context available')
+        return
+      }
+      newgrad.id = generatedId
       findDefs().append(newgrad)
       selected.setAttribute(type, 'url(#' + newgrad.id + ')')
     }
@@ -265,25 +309,79 @@ export const remapElement = (selected, changes, m) => {
       break
     }
     case 'path': {
+      const supportsPathData =
+        typeof selected.getPathData === 'function' &&
+        typeof selected.setPathData === 'function'
+
       // Handle path segments
-      const segList = selected.pathSegList
-      const len = segList.numberOfItems
+      const segList = supportsPathData ? null : selected.pathSegList
+      const len = supportsPathData ? selected.getPathData().length : segList.numberOfItems
+      const det = m.a * m.d - m.b * m.c
+      const shouldToggleArcSweep = det < 0
       changes.d = []
-      for (let i = 0; i < len; ++i) {
-        const seg = segList.getItem(i)
-        changes.d[i] = {
-          type: seg.pathSegType,
-          x: seg.x,
-          y: seg.y,
-          x1: seg.x1,
-          y1: seg.y1,
-          x2: seg.x2,
-          y2: seg.y2,
-          r1: seg.r1,
-          r2: seg.r2,
-          angle: seg.angle,
-          largeArcFlag: seg.largeArcFlag,
-          sweepFlag: seg.sweepFlag
+      if (supportsPathData) {
+        const pathDataSegments = selected.getPathData()
+        for (let i = 0; i < len; ++i) {
+          const seg = pathDataSegments[i]
+          const t = seg.type
+          const type = pathMap.indexOf(t)
+          if (type === -1) continue
+          const values = seg.values || []
+          const entry = { type }
+          switch (t.toUpperCase()) {
+            case 'M':
+            case 'L':
+            case 'T':
+              [entry.x, entry.y] = values
+              break
+            case 'H':
+              [entry.x] = values
+              break
+            case 'V':
+              [entry.y] = values
+              break
+            case 'C':
+              [entry.x1, entry.y1, entry.x2, entry.y2, entry.x, entry.y] = values
+              break
+            case 'S':
+              [entry.x2, entry.y2, entry.x, entry.y] = values
+              break
+            case 'Q':
+              [entry.x1, entry.y1, entry.x, entry.y] = values
+              break
+            case 'A':
+              [
+                entry.r1,
+                entry.r2,
+                entry.angle,
+                entry.largeArcFlag,
+                entry.sweepFlag,
+                entry.x,
+                entry.y
+              ] = values
+              break
+            default:
+              break
+          }
+          changes.d[i] = entry
+        }
+      } else {
+        for (let i = 0; i < len; ++i) {
+          const seg = segList.getItem(i)
+          changes.d[i] = {
+            type: seg.pathSegType,
+            x: seg.x,
+            y: seg.y,
+            x1: seg.x1,
+            y1: seg.y1,
+            x2: seg.x2,
+            y2: seg.y2,
+            r1: seg.r1,
+            r2: seg.r2,
+            angle: seg.angle,
+            largeArcFlag: seg.largeArcFlag,
+            sweepFlag: seg.sweepFlag
+          }
         }
       }
 
@@ -302,41 +400,65 @@ export const remapElement = (selected, changes, m) => {
           const thisx = seg.x !== undefined ? seg.x : currentpt.x // For V commands
           const thisy = seg.y !== undefined ? seg.y : currentpt.y // For H commands
           const pt = remap(thisx, thisy)
-          const pt1 = remap(seg.x1, seg.y1)
-          const pt2 = remap(seg.x2, seg.y2)
           seg.x = pt.x
           seg.y = pt.y
-          seg.x1 = pt1.x
-          seg.y1 = pt1.y
-          seg.x2 = pt2.x
-          seg.y2 = pt2.y
-          seg.r1 = scalew(seg.r1)
-          seg.r2 = scaleh(seg.r2)
+          if (seg.x1 !== undefined && seg.y1 !== undefined) {
+            const pt1 = remap(seg.x1, seg.y1)
+            seg.x1 = pt1.x
+            seg.y1 = pt1.y
+          }
+          if (seg.x2 !== undefined && seg.y2 !== undefined) {
+            const pt2 = remap(seg.x2, seg.y2)
+            seg.x2 = pt2.x
+            seg.y2 = pt2.y
+          }
+          if (type === 10) {
+            seg.r1 = Math.abs(scalew(seg.r1))
+            seg.r2 = Math.abs(scaleh(seg.r2))
+            if (shouldToggleArcSweep) {
+              seg.sweepFlag = Number(seg.sweepFlag) ? 0 : 1
+              if (typeof seg.angle === 'number') {
+                seg.angle = -seg.angle
+              }
+            }
+          }
         } else {
           // For relative segments, scale x, y, x1, y1, x2, y2
-          seg.x = scalew(seg.x)
-          seg.y = scaleh(seg.y)
-          seg.x1 = scalew(seg.x1)
-          seg.y1 = scaleh(seg.y1)
-          seg.x2 = scalew(seg.x2)
-          seg.y2 = scaleh(seg.y2)
-          seg.r1 = scalew(seg.r1)
-          seg.r2 = scaleh(seg.r2)
+          if (seg.x !== undefined) seg.x = scalew(seg.x)
+          if (seg.y !== undefined) seg.y = scaleh(seg.y)
+          if (seg.x1 !== undefined) seg.x1 = scalew(seg.x1)
+          if (seg.y1 !== undefined) seg.y1 = scaleh(seg.y1)
+          if (seg.x2 !== undefined) seg.x2 = scalew(seg.x2)
+          if (seg.y2 !== undefined) seg.y2 = scaleh(seg.y2)
+          if (type === 11) {
+            seg.r1 = Math.abs(scalew(seg.r1))
+            seg.r2 = Math.abs(scaleh(seg.r2))
+            if (shouldToggleArcSweep) {
+              seg.sweepFlag = Number(seg.sweepFlag) ? 0 : 1
+              if (typeof seg.angle === 'number') {
+                seg.angle = -seg.angle
+              }
+            }
+          }
         }
       }
 
       let dstr = ''
+      const newPathData = []
       changes.d.forEach(seg => {
         const { type } = seg
-        dstr += pathMap[type]
+        const letter = pathMap[type]
+        dstr += letter
         switch (type) {
           case 13: // relative horizontal line (h)
           case 12: // absolute horizontal line (H)
             dstr += seg.x + ' '
+            newPathData.push({ type: letter, values: [seg.x] })
             break
           case 15: // relative vertical line (v)
           case 14: // absolute vertical line (V)
             dstr += seg.y + ' '
+            newPathData.push({ type: letter, values: [seg.y] })
             break
           case 3: // relative move (m)
           case 5: // relative line (l)
@@ -345,6 +467,7 @@ export const remapElement = (selected, changes, m) => {
           case 4: // absolute line (L)
           case 18: // absolute smooth quad (T)
             dstr += seg.x + ',' + seg.y + ' '
+            newPathData.push({ type: letter, values: [seg.x, seg.y] })
             break
           case 7: // relative cubic (c)
           case 6: // absolute cubic (C)
@@ -361,10 +484,15 @@ export const remapElement = (selected, changes, m) => {
               ',' +
               seg.y +
               ' '
+            newPathData.push({
+              type: letter,
+              values: [seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y]
+            })
             break
           case 9: // relative quad (q)
           case 8: // absolute quad (Q)
             dstr += seg.x1 + ',' + seg.y1 + ' ' + seg.x + ',' + seg.y + ' '
+            newPathData.push({ type: letter, values: [seg.x1, seg.y1, seg.x, seg.y] })
             break
           case 11: // relative elliptical arc (a)
           case 10: // absolute elliptical arc (A)
@@ -383,17 +511,38 @@ export const remapElement = (selected, changes, m) => {
               ',' +
               seg.y +
               ' '
+            newPathData.push({
+              type: letter,
+              values: [
+                seg.r1,
+                seg.r2,
+                seg.angle,
+                Number(seg.largeArcFlag),
+                Number(seg.sweepFlag),
+                seg.x,
+                seg.y
+              ]
+            })
             break
           case 17: // relative smooth cubic (s)
           case 16: // absolute smooth cubic (S)
             dstr += seg.x2 + ',' + seg.y2 + ' ' + seg.x + ',' + seg.y + ' '
+            newPathData.push({ type: letter, values: [seg.x2, seg.y2, seg.x, seg.y] })
             break
           default:
             break
         }
       })
 
-      selected.setAttribute('d', dstr.trim())
+      const d = dstr.trim()
+      selected.setAttribute('d', d)
+      if (supportsPathData) {
+        try {
+          selected.setPathData(newPathData)
+        } catch (e) {
+          // Fallback to 'd' attribute if setPathData is unavailable or throws.
+        }
+      }
       break
     }
     default:

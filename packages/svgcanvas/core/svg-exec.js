@@ -164,6 +164,9 @@ const svgToString = (elem, indent) => {
       // }
       if (curConfig.dynamicOutput) {
         vb = elem.getAttribute('viewBox')
+        if (!vb) {
+          vb = [0, 0, res.w, res.h].join(' ')
+        }
         out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
       } else {
         if (unit !== 'px') {
@@ -525,8 +528,14 @@ const setSvgString = (xmlString, preventUndo) => {
     if (content.getAttribute('viewBox')) {
       const viBox = content.getAttribute('viewBox')
       const vb = viBox.split(/[ ,]+/)
-      attrs.width = vb[2]
-      attrs.height = vb[3]
+      const vbWidth = Number(vb[2])
+      const vbHeight = Number(vb[3])
+      if (Number.isFinite(vbWidth)) {
+        attrs.width = vbWidth
+      }
+      if (Number.isFinite(vbHeight)) {
+        attrs.height = vbHeight
+      }
       // handle content that doesn't have a viewBox
     } else {
       ;['width', 'height'].forEach(dim => {
@@ -558,16 +567,25 @@ const setSvgString = (xmlString, preventUndo) => {
     // Percentage width/height, so let's base it on visible elements
     if (percs) {
       const bb = getStrokedBBoxDefaultVisible()
-      attrs.width = bb.width + bb.x
-      attrs.height = bb.height + bb.y
+      if (bb && typeof bb === 'object') {
+        attrs.width = bb.width + bb.x
+        attrs.height = bb.height + bb.y
+      } else {
+        if (attrs.width == null) {
+          attrs.width = 100
+        }
+        if (attrs.height == null) {
+          attrs.height = 100
+        }
+      }
     }
 
     // Just in case negative numbers are given or
     // result from the percs calculation
-    if (attrs.width <= 0) {
+    if (!Number.isFinite(attrs.width) || attrs.width <= 0) {
       attrs.width = 100
     }
-    if (attrs.height <= 0) {
+    if (!Number.isFinite(attrs.height) || attrs.height <= 0) {
       attrs.height = 100
     }
 
@@ -666,13 +684,23 @@ const importSvgString = (xmlString, preserveDimension) => {
 
       // TODO: properly handle preserveAspectRatio
       const // canvasw = +svgContent.getAttribute('width'),
-        canvash = Number(svgCanvas.getSvgContent().getAttribute('height'))
+        rawCanvash = Number(svgCanvas.getSvgContent().getAttribute('height'))
+      const canvash =
+        Number.isFinite(rawCanvash) && rawCanvash > 0
+          ? rawCanvash
+          : (Number(svgCanvas.getCurConfig().dimensions?.[1]) || 100)
       // imported content should be 1/3 of the canvas on its largest dimension
 
+      const vbWidth = vb[2]
+      const vbHeight = vb[3]
+      const importW = Number.isFinite(vbWidth) && vbWidth > 0 ? vbWidth : (innerw > 0 ? innerw : 100)
+      const importH = Number.isFinite(vbHeight) && vbHeight > 0 ? vbHeight : (innerh > 0 ? innerh : 100)
+      const safeImportW = Number.isFinite(importW) && importW > 0 ? importW : 100
+      const safeImportH = Number.isFinite(importH) && importH > 0 ? importH : 100
       ts =
-        innerh > innerw
-          ? 'scale(' + canvash / 3 / vb[3] + ')'
-          : 'scale(' + canvash / 3 / vb[2] + ')'
+        safeImportH > safeImportW
+          ? 'scale(' + canvash / 3 / safeImportH + ')'
+          : 'scale(' + canvash / 3 / safeImportW + ')'
 
       // Hack to make recalculateDimensions understand how to scale
       ts = 'translate(0) ' + ts + ' translate(0)'
@@ -905,10 +933,14 @@ const rasterExport = (
 
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Canvas 2D context not available'))
+          return
+        }
 
-        const width = svgElement.clientWidth || svgElement.getAttribute('width')
-        const height =
-          svgElement.clientHeight || svgElement.getAttribute('height')
+        const res = svgCanvas.getResolution()
+        const width = res.w
+        const height = res.h
         canvas.width = width
         canvas.height = height
 
@@ -1142,7 +1174,11 @@ const setUseDataMethod = parent => {
 
   Array.prototype.forEach.call(elems, (el, _) => {
     const dataStorage = svgCanvas.getDataStorage()
-    const id = svgCanvas.getHref(el).substr(1)
+    const href = svgCanvas.getHref(el)
+    if (!href || !href.startsWith('#')) {
+      return
+    }
+    const id = href.substr(1)
     const refElem = svgCanvas.getElement(id)
     if (!refElem) {
       return

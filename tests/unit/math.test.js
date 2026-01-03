@@ -93,6 +93,14 @@ describe('math', function () {
       'Modified matrix matching identity values should be identity'
     )
 
+    const mAlmostIdentity = svg.createSVGMatrix()
+    mAlmostIdentity.a = 1 + 5e-11
+    mAlmostIdentity.f = 5e-11
+    assert.ok(
+      isIdentity(mAlmostIdentity),
+      'Matrix close to identity should be considered identity'
+    )
+
     m.e = 10
     assert.notOk(isIdentity(m), 'Matrix with translation is not identity')
   })
@@ -106,6 +114,22 @@ describe('math', function () {
       isIdentity(iDefault),
       'No arguments should return identity matrix'
     )
+
+    // Ensure single matrix returns a new matrix and does not mutate the input
+    const tiny = svg.createSVGMatrix()
+    tiny.b = 1e-12
+    const tinyResult = matrixMultiply(tiny)
+    assert.notStrictEqual(
+      tinyResult,
+      tiny,
+      'Single-argument call should return a new matrix instance'
+    )
+    assert.equal(
+      tiny.b,
+      1e-12,
+      'Input matrix should not be mutated by rounding'
+    )
+    assert.equal(tinyResult.b, 0, 'Result should round near-zero values to 0')
 
     // Translate there and back
     const tr1 = svg.createSVGMatrix().translate(100, 50)

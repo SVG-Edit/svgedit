@@ -5,7 +5,7 @@
 */
 
 /**
-* Common namepaces constants in alpha order.
+* Common namespaces constants in alpha order.
 * @enum {string}
 * @type {PlainObject}
 * @memberof module:namespaces
@@ -29,7 +29,7 @@ export const NS = {
 
 /**
 * @function module:namespaces.getReverseNS
-* @returns {string} The NS with key values switched and lowercase
+* @returns {PlainObject<string, string>} The namespace URI map with values swapped to their lowercase keys
 */
 export const getReverseNS = function () {
   const reverseNS = {}

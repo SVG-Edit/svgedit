@@ -66,7 +66,12 @@ export const getTransformList = elem => {
  * @returns {boolean} True if it's an identity matrix (1,0,0,1,0,0)
  */
 export const isIdentity = m =>
-  m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0
+  Math.abs(m.a - 1) < NEAR_ZERO &&
+  Math.abs(m.b) < NEAR_ZERO &&
+  Math.abs(m.c) < NEAR_ZERO &&
+  Math.abs(m.d - 1) < NEAR_ZERO &&
+  Math.abs(m.e) < NEAR_ZERO &&
+  Math.abs(m.f) < NEAR_ZERO
 
 /**
  * Multiplies multiple matrices together (m1 * m2 * ...).
@@ -81,7 +86,32 @@ export const matrixMultiply = (...args) => {
     return svg.createSVGMatrix()
   }
 
-  const m = args.reduceRight((prev, curr) => curr.multiply(prev))
+  if (typeof DOMMatrix === 'function' && typeof DOMMatrix.fromMatrix === 'function') {
+    const result = args.reduce(
+      (acc, curr) => acc.multiply(DOMMatrix.fromMatrix(curr)),
+      new DOMMatrix()
+    )
+    // normalize near-zero
+    if (Math.abs(result.a) < NEAR_ZERO) result.a = 0
+    if (Math.abs(result.b) < NEAR_ZERO) result.b = 0
+    if (Math.abs(result.c) < NEAR_ZERO) result.c = 0
+    if (Math.abs(result.d) < NEAR_ZERO) result.d = 0
+    if (Math.abs(result.e) < NEAR_ZERO) result.e = 0
+    if (Math.abs(result.f) < NEAR_ZERO) result.f = 0
+    return result
+  }
+
+  let m = svg.createSVGMatrix()
+  for (const curr of args) {
+    const next = svg.createSVGMatrix()
+    next.a = m.a * curr.a + m.c * curr.b
+    next.b = m.b * curr.a + m.d * curr.b
+    next.c = m.a * curr.c + m.c * curr.d
+    next.d = m.b * curr.c + m.d * curr.d
+    next.e = m.a * curr.e + m.c * curr.f + m.e
+    next.f = m.b * curr.e + m.d * curr.f + m.f
+    m = next
+  }
 
   // Round near-zero values to zero
   if (Math.abs(m.a) < NEAR_ZERO) m.a = 0

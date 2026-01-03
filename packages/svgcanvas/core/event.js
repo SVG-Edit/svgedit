@@ -84,6 +84,7 @@ const updateTransformList = (svgRoot, element, dx, dy) => {
   const xform = svgRoot.createSVGTransform()
   xform.setTranslate(dx, dy)
   const tlist = getTransformList(element)
+  if (!tlist) { return }
   if (tlist.numberOfItems) {
     const firstItem = tlist.getItem(0)
     if (firstItem.type === 2) { // SVG_TRANSFORM_TRANSLATE = 2
@@ -222,6 +223,7 @@ const mouseMoveEvent = (evt) => {
       // while the mouse is down, when mouse goes up, we use this to recalculate
       // the shape's coordinates
       tlist = getTransformList(selected)
+      if (!tlist) { break }
       const hasMatrix = hasMatrixTransform(tlist)
       box = hasMatrix ? svgCanvas.getInitBbox() : getBBox(selected)
       let left = box.x
@@ -548,10 +550,21 @@ const mouseMoveEvent = (evt) => {
 *
 * @returns {void}
 */
-const mouseOutEvent = () => {
+const mouseOutEvent = (evt) => {
   const { $id } = svgCanvas
   if (svgCanvas.getCurrentMode() !== 'select' && svgCanvas.getStarted()) {
-    const event = new Event('mouseup')
+    const event = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      clientX: evt?.clientX ?? 0,
+      clientY: evt?.clientY ?? 0,
+      button: evt?.button ?? 0,
+      buttons: evt?.buttons ?? 0,
+      altKey: evt?.altKey ?? false,
+      ctrlKey: evt?.ctrlKey ?? false,
+      metaKey: evt?.metaKey ?? false,
+      shiftKey: evt?.shiftKey ?? false
+    })
     $id('svgcanvas').dispatchEvent(event)
   }
 }
@@ -979,7 +992,10 @@ const mouseDownEvent = (evt) => {
     svgCanvas.cloneSelectedElements(0, 0)
   }
 
-  svgCanvas.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse())
+  const rootGroup = $id('svgcontent')?.querySelector('g')
+  const screenCTM = rootGroup?.getScreenCTM?.()
+  if (!screenCTM) { return }
+  svgCanvas.setRootSctm(screenCTM.inverse())
 
   const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm())
   const mouseX = pt.x * zoom
@@ -1040,7 +1056,7 @@ const mouseDownEvent = (evt) => {
 
   const tlist = getTransformList(mouseTarget)
   // consolidate transforms using standard SVG but keep the transformation used for the move/scale
-  if (tlist.numberOfItems > 1) {
+  if (tlist?.numberOfItems > 1) {
     const firstTransform = tlist.getItem(0)
     tlist.removeItem(0)
     tlist.consolidate()
@@ -1073,6 +1089,7 @@ const mouseDownEvent = (evt) => {
           for (const selectedElement of selectedElements) {
             if (!selectedElement) { continue }
             const slist = getTransformList(selectedElement)
+            if (!slist) { continue }
             if (slist.numberOfItems) {
               slist.insertItemBefore(svgRoot.createSVGTransform(), 0)
             } else {
@@ -1105,13 +1122,14 @@ const mouseDownEvent = (evt) => {
       }
       assignAttributes(svgCanvas.getRubberBox(), {
         x: realX * zoom,
-        y: realX * zoom,
+        y: realY * zoom,
         width: 0,
         height: 0,
         display: 'inline'
       }, 100)
       break
     case 'resize': {
+      if (!tlist) { break }
       svgCanvas.setStarted(true)
       svgCanvas.setStartX(x)
       svgCanvas.setStartY(y)
@@ -1339,7 +1357,10 @@ const DOMMouseScrollEvent = (e) => {
 
   e.preventDefault()
 
-  svgCanvas.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse())
+  const rootGroup = $id('svgcontent')?.querySelector('g')
+  const screenCTM = rootGroup?.getScreenCTM?.()
+  if (!screenCTM) { return }
+  svgCanvas.setRootSctm(screenCTM.inverse())
 
   const workarea = document.getElementById('workarea')
   const scrbar = 15

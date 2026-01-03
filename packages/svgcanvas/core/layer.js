@@ -49,10 +49,10 @@ class Layer {
 
     addLayerClass(this.group_)
     walkTree(this.group_, function (e) {
-      e.setAttribute('style', 'pointer-events:inherit')
+      e.style.pointerEvents = 'inherit'
     })
 
-    this.group_.setAttribute('style', svgElem ? 'pointer-events:all' : 'pointer-events:none')
+    this.group_.style.pointerEvents = svgElem ? 'all' : 'none'
   }
 
   /**
@@ -76,7 +76,7 @@ class Layer {
    * @returns {void}
    */
   activate () {
-    this.group_.setAttribute('style', 'pointer-events:all')
+    this.group_.style.pointerEvents = 'all'
   }
 
   /**
@@ -84,7 +84,7 @@ class Layer {
    * @returns {void}
    */
   deactivate () {
-    this.group_.setAttribute('style', 'pointer-events:none')
+    this.group_.style.pointerEvents = 'none'
   }
 
   /**

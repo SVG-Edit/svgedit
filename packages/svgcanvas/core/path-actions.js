@@ -64,7 +64,7 @@ export const convertPath = function (pth, toRel) {
       case 'z': // z,Z closepath (Z/z)
       case 'Z':
         d += 'z'
-        if (lastM && !toRel) {
+        if (lastM) {
           curx = lastM[0]
           cury = lastM[1]
         }

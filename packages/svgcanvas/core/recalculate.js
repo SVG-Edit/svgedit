@@ -5,7 +5,8 @@
  */
 
 import { convertToNum } from './units.js'
-import { getRotationAngle, getBBox, getRefElem } from './utilities.js'
+import { NS } from './namespaces.js'
+import { getRotationAngle, getBBox, getHref, getRefElem } from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
 import {
@@ -41,15 +42,17 @@ export const init = canvas => {
 export const updateClipPath = (attr, tx, ty) => {
   const clipPath = getRefElem(attr)
   if (!clipPath) return
-  const path = clipPath.firstChild
+  const path = clipPath.firstElementChild
+  if (!path) return
   const cpXform = getTransformList(path)
+  if (!cpXform) {
+    path.setAttribute('transform', `translate(${tx},${ty})`)
+    return
+  }
   const newTranslate = svgCanvas.getSvgRoot().createSVGTransform()
   newTranslate.setTranslate(tx, ty)
 
   cpXform.appendItem(newTranslate)
-
-  // Update clipPath's dimensions
-  recalculateDimensions(path)
 }
 
 /**
@@ -211,14 +214,305 @@ export const recalculateDimensions = selected => {
 
   // Handle group elements ('g' or 'a')
   if ((selected.tagName === 'g' && !gsvg) || selected.tagName === 'a') {
-    // Group handling code
-    // [Group handling code remains unchanged]
-    // For brevity, group handling code is not included here
-    // Ensure to handle group elements correctly as per original logic
-    // This includes processing child elements and applying transformations appropriately
-    // ... [Start of group handling code]
-    // The group handling code is complex and extensive; it remains the same as in the original code.
-    // ... [End of group handling code]
+    const box = getBBox(selected)
+
+    oldcenter = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+    newcenter = transformPoint(
+      box.x + box.width / 2,
+      box.y + box.height / 2,
+      transformListToTransform(tlist).matrix
+    )
+
+    const gangle = getRotationAngle(selected)
+    if (gangle) {
+      const a = gangle * Math.PI / 180
+      const s = Math.abs(a) > (1.0e-10) ? Math.sin(a) / (1 - Math.cos(a)) : 2 / a
+      for (let i = 0; i < tlist.numberOfItems; ++i) {
+        const xform = tlist.getItem(i)
+        if (xform.type === SVGTransform.SVG_TRANSFORM_ROTATE) {
+          const rm = xform.matrix
+          oldcenter.y = (s * rm.e + rm.f) / 2
+          oldcenter.x = (rm.e - s * rm.f) / 2
+          tlist.removeItem(i)
+          break
+        }
+      }
+    }
+
+    const N = tlist.numberOfItems
+    let tx = 0
+    let ty = 0
+    let operation = 0
+
+    let firstM
+    if (N) {
+      firstM = tlist.getItem(0).matrix
+    }
+
+    let oldStartTransform
+    if (
+      N >= 3 &&
+      tlist.getItem(N - 2).type === SVGTransform.SVG_TRANSFORM_SCALE &&
+      tlist.getItem(N - 3).type === SVGTransform.SVG_TRANSFORM_TRANSLATE &&
+      tlist.getItem(N - 1).type === SVGTransform.SVG_TRANSFORM_TRANSLATE
+    ) {
+      operation = 3 // scale
+
+      const tm = tlist.getItem(N - 3).matrix
+      const sm = tlist.getItem(N - 2).matrix
+      const tmn = tlist.getItem(N - 1).matrix
+
+      const children = selected.childNodes
+      let c = children.length
+      while (c--) {
+        const child = children.item(c)
+        if (child.nodeType !== 1) continue
+
+        const childTlist = getTransformList(child)
+        if (!childTlist) continue
+
+        const m = transformListToTransform(childTlist).matrix
+
+        const angle = getRotationAngle(child)
+        oldStartTransform = svgCanvas.getStartTransform()
+        svgCanvas.setStartTransform(child.getAttribute('transform'))
+
+        if (angle || hasMatrixTransform(childTlist)) {
+          const e2t = svgroot.createSVGTransform()
+          e2t.setMatrix(matrixMultiply(tm, sm, tmn, m))
+          childTlist.clear()
+          childTlist.appendItem(e2t)
+        } else {
+          const t2n = matrixMultiply(m.inverse(), tmn, m)
+          const t2 = svgroot.createSVGMatrix()
+          t2.e = -t2n.e
+          t2.f = -t2n.f
+
+          const s2 = matrixMultiply(
+            t2.inverse(),
+            m.inverse(),
+            tm,
+            sm,
+            tmn,
+            m,
+            t2n.inverse()
+          )
+
+          const translateOrigin = svgroot.createSVGTransform()
+          const scale = svgroot.createSVGTransform()
+          const translateBack = svgroot.createSVGTransform()
+          translateOrigin.setTranslate(t2n.e, t2n.f)
+          scale.setScale(s2.a, s2.d)
+          translateBack.setTranslate(t2.e, t2.f)
+          childTlist.appendItem(translateBack)
+          childTlist.appendItem(scale)
+          childTlist.appendItem(translateOrigin)
+        }
+
+        const recalculatedDimensions = recalculateDimensions(child)
+        if (recalculatedDimensions) {
+          batchCmd.addSubCommand(recalculatedDimensions)
+        }
+        svgCanvas.setStartTransform(oldStartTransform)
+      }
+
+      tlist.removeItem(N - 1)
+      tlist.removeItem(N - 2)
+      tlist.removeItem(N - 3)
+    } else if (N >= 3 && tlist.getItem(N - 1).type === SVGTransform.SVG_TRANSFORM_MATRIX) {
+      operation = 3 // scale (matrix imposition)
+      const m = transformListToTransform(tlist).matrix
+      const e2t = svgroot.createSVGTransform()
+      e2t.setMatrix(m)
+      tlist.clear()
+      tlist.appendItem(e2t)
+    } else if (
+      (N === 1 ||
+        (N > 1 && tlist.getItem(1).type !== SVGTransform.SVG_TRANSFORM_SCALE)) &&
+      tlist.getItem(0).type === SVGTransform.SVG_TRANSFORM_TRANSLATE
+    ) {
+      operation = 2 // translate
+      const tM = transformListToTransform(tlist).matrix
+      tlist.removeItem(0)
+      const mInv = transformListToTransform(tlist).matrix.inverse()
+      const m2 = matrixMultiply(mInv, tM)
+
+      tx = m2.e
+      ty = m2.f
+
+      if (tx !== 0 || ty !== 0) {
+        const children = selected.childNodes
+        let c = children.length
+
+        const clipPathsDone = []
+        while (c--) {
+          const child = children.item(c)
+          if (child.nodeType !== 1) continue
+
+          const clipPathAttr = child.getAttribute('clip-path')
+          if (clipPathAttr && !clipPathsDone.includes(clipPathAttr)) {
+            updateClipPath(clipPathAttr, tx, ty)
+            clipPathsDone.push(clipPathAttr)
+          }
+
+          const childTlist = getTransformList(child)
+          if (!childTlist) continue
+
+          oldStartTransform = svgCanvas.getStartTransform()
+          svgCanvas.setStartTransform(child.getAttribute('transform'))
+
+          const newxlate = svgroot.createSVGTransform()
+          newxlate.setTranslate(tx, ty)
+          if (childTlist.numberOfItems) {
+            childTlist.insertItemBefore(newxlate, 0)
+          } else {
+            childTlist.appendItem(newxlate)
+          }
+          const recalculatedDimensions = recalculateDimensions(child)
+          if (recalculatedDimensions) {
+            batchCmd.addSubCommand(recalculatedDimensions)
+          }
+
+          const uses = selected.getElementsByTagNameNS(NS.SVG, 'use')
+          const href = '#' + child.id
+          let u = uses.length
+          while (u--) {
+            const useElem = uses.item(u)
+            if (href === getHref(useElem)) {
+              const usexlate = svgroot.createSVGTransform()
+              usexlate.setTranslate(-tx, -ty)
+              const useTlist = getTransformList(useElem)
+              useTlist?.insertItemBefore(usexlate, 0)
+              const useRecalc = recalculateDimensions(useElem)
+              if (useRecalc) {
+                batchCmd.addSubCommand(useRecalc)
+              }
+            }
+          }
+
+          svgCanvas.setStartTransform(oldStartTransform)
+        }
+      }
+    } else if (
+      N === 1 &&
+      tlist.getItem(0).type === SVGTransform.SVG_TRANSFORM_MATRIX &&
+      !gangle
+    ) {
+      operation = 1
+      const m = tlist.getItem(0).matrix
+      const children = selected.childNodes
+      let c = children.length
+      while (c--) {
+        const child = children.item(c)
+        if (child.nodeType !== 1) continue
+
+        const childTlist = getTransformList(child)
+        if (!childTlist) continue
+
+        oldStartTransform = svgCanvas.getStartTransform()
+        svgCanvas.setStartTransform(child.getAttribute('transform'))
+
+        const em = matrixMultiply(m, transformListToTransform(childTlist).matrix)
+        const e2m = svgroot.createSVGTransform()
+        e2m.setMatrix(em)
+        childTlist.clear()
+        childTlist.appendItem(e2m)
+
+        const recalculatedDimensions = recalculateDimensions(child)
+        if (recalculatedDimensions) {
+          batchCmd.addSubCommand(recalculatedDimensions)
+        }
+        svgCanvas.setStartTransform(oldStartTransform)
+
+        const sw = child.getAttribute('stroke-width')
+        if (child.getAttribute('stroke') !== 'none' && !Number.isNaN(Number(sw))) {
+          const avg = (Math.abs(em.a) + Math.abs(em.d)) / 2
+          child.setAttribute('stroke-width', Number(sw) * avg)
+        }
+      }
+      tlist.clear()
+    } else {
+      if (gangle) {
+        const newRot = svgroot.createSVGTransform()
+        newRot.setRotate(gangle, newcenter.x, newcenter.y)
+        if (tlist.numberOfItems) {
+          tlist.insertItemBefore(newRot, 0)
+        } else {
+          tlist.appendItem(newRot)
+        }
+      }
+      if (tlist.numberOfItems === 0) {
+        selected.removeAttribute('transform')
+      }
+      return null
+    }
+
+    if (operation === 2) {
+      if (gangle) {
+        newcenter = {
+          x: oldcenter.x + firstM.e,
+          y: oldcenter.y + firstM.f
+        }
+
+        const newRot = svgroot.createSVGTransform()
+        newRot.setRotate(gangle, newcenter.x, newcenter.y)
+        if (tlist.numberOfItems) {
+          tlist.insertItemBefore(newRot, 0)
+        } else {
+          tlist.appendItem(newRot)
+        }
+      }
+    } else if (operation === 3) {
+      const m = transformListToTransform(tlist).matrix
+      const roldt = svgroot.createSVGTransform()
+      roldt.setRotate(gangle, oldcenter.x, oldcenter.y)
+      const rold = roldt.matrix
+      const rnew = svgroot.createSVGTransform()
+      rnew.setRotate(gangle, newcenter.x, newcenter.y)
+      const rnewInv = rnew.matrix.inverse()
+      const mInv = m.inverse()
+      const extrat = matrixMultiply(mInv, rnewInv, rold, m)
+
+      tx = extrat.e
+      ty = extrat.f
+
+      if (tx !== 0 || ty !== 0) {
+        const children = selected.childNodes
+        let c = children.length
+        while (c--) {
+          const child = children.item(c)
+          if (child.nodeType !== 1) continue
+
+          const childTlist = getTransformList(child)
+          if (!childTlist) continue
+
+          oldStartTransform = svgCanvas.getStartTransform()
+          svgCanvas.setStartTransform(child.getAttribute('transform'))
+
+          const newxlate = svgroot.createSVGTransform()
+          newxlate.setTranslate(tx, ty)
+          if (childTlist.numberOfItems) {
+            childTlist.insertItemBefore(newxlate, 0)
+          } else {
+            childTlist.appendItem(newxlate)
+          }
+
+          const recalculatedDimensions = recalculateDimensions(child)
+          if (recalculatedDimensions) {
+            batchCmd.addSubCommand(recalculatedDimensions)
+          }
+          svgCanvas.setStartTransform(oldStartTransform)
+        }
+      }
+
+      if (gangle) {
+        if (tlist.numberOfItems) {
+          tlist.insertItemBefore(rnew, 0)
+        } else {
+          tlist.appendItem(rnew)
+        }
+      }
+    }
   } else {
     // Non-group elements
 
