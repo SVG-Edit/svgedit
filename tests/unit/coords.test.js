@@ -168,6 +168,41 @@ describe('coords', function () {
     assert.equal(circle.getAttribute('r'), '125')
   })
 
+  it('Test remapElement flips radial gradients on negative scale', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const grad = document.createElementNS(NS.SVG, 'radialGradient')
+    grad.id = 'grad1'
+    grad.setAttribute('cx', '0.2')
+    grad.setAttribute('cy', '0.3')
+    grad.setAttribute('fx', '0.4')
+    grad.setAttribute('fy', '0.5')
+    defs.append(grad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '0')
+    rect.setAttribute('y', '0')
+    rect.setAttribute('width', '10')
+    rect.setAttribute('height', '10')
+    rect.setAttribute('fill', 'url(#grad1)')
+    svg.append(rect)
+
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    m.e = 0
+    m.f = 0
+
+    coords.remapElement(rect, { x: 0, y: 0, width: 10, height: 10 }, m)
+
+    const newId = rect.getAttribute('fill').replace('url(#', '').replace(')', '')
+    const mirrored = defs.ownerDocument.getElementById(newId)
+    assert.ok(mirrored)
+    assert.equal(mirrored.getAttribute('cx'), '0.8')
+    assert.equal(mirrored.getAttribute('fx'), '0.6')
+  })
+
   it('Test remapElement(translate) for ellipse', function () {
     const ellipse = document.createElementNS(NS.SVG, 'ellipse')
     ellipse.setAttribute('cx', '200')

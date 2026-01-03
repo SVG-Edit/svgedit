@@ -235,17 +235,50 @@ describe('recalculate', function () {
     setUp()
     const clipPath = document.createElementNS(NS.SVG, 'clipPath')
     clipPath.id = 'clip-path'
-    const path = document.createElementNS(NS.SVG, 'path')
-    clipPath.append(path)
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '0')
+    rect.setAttribute('y', '0')
+    rect.setAttribute('width', '5')
+    rect.setAttribute('height', '5')
+    clipPath.append(rect)
     svg.append(clipPath)
 
     recalculate.updateClipPath('url(#clip-path)', 2, -3)
 
-    const tlist = path.transform.baseVal
-    assert.equal(tlist.numberOfItems, 1)
-    const xform = tlist.getItem(0)
-    assert.equal(xform.type, SVGTransform.SVG_TRANSFORM_TRANSLATE)
-    assert.equal(xform.matrix.e, 2)
-    assert.equal(xform.matrix.f, -3)
+    assert.equal(rect.getAttribute('x'), '2')
+    assert.equal(rect.getAttribute('y'), '-3')
+    assert.equal(rect.transform.baseVal.numberOfItems, 0)
+  })
+
+  it('updateClipPath() shifts circle clipPath geometry', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-circle'
+    const circle = document.createElementNS(NS.SVG, 'circle')
+    circle.setAttribute('cx', '4')
+    circle.setAttribute('cy', '5')
+    circle.setAttribute('r', '2')
+    clipPath.append(circle)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-circle)', -1, 3)
+
+    assert.equal(circle.getAttribute('cx'), '3')
+    assert.equal(circle.getAttribute('cy'), '8')
+    assert.equal(circle.transform.baseVal.numberOfItems, 0)
+  })
+
+  it('updateClipPath() shifts polyline points', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-poly'
+    const poly = document.createElementNS(NS.SVG, 'polyline')
+    poly.setAttribute('points', '0,0 2,0 2,2')
+    clipPath.append(poly)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-poly)', 3, -2)
+
+    assert.equal(poly.getAttribute('points'), '3,-2 5,-2 5,0')
   })
 })

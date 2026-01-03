@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "7.4.0",
+  "version": "7.4.1",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/editor/Editor.js",
   "module": "dist/editor/Editor.js",
@@ -82,7 +82,7 @@
     ]
   },
   "dependencies": {
-    "@svgedit/svgcanvas": "7.4.0",
+    "@svgedit/svgcanvas": "7.4.1",
     "browser-fs-access": "0.38.0",
     "elix": "15.0.1",
     "i18next": "25.7.3",

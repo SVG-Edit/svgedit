@@ -6,7 +6,13 @@
 
 import { convertToNum } from './units.js'
 import { NS } from './namespaces.js'
-import { getRotationAngle, getBBox, getHref, getRefElem } from './utilities.js'
+import {
+  getRotationAngle,
+  getBBox,
+  getHref,
+  getRefElem,
+  findDefs
+} from './utilities.js'
 import { BatchCommand, ChangeElementCommand } from './history.js'
 import { remapElement } from './coords.js'
 import {
@@ -37,22 +43,93 @@ export const init = canvas => {
  * @param {string} attr - The clip-path attribute value containing the clipPath's ID
  * @param {number} tx - The translation's x value
  * @param {number} ty - The translation's y value
- * @returns {void}
+ * @param {Element} elem - The element referencing the clipPath
+ * @returns {string|undefined} The clip-path attribute used after updates.
  */
-export const updateClipPath = (attr, tx, ty) => {
+export const updateClipPath = (attr, tx, ty, elem) => {
   const clipPath = getRefElem(attr)
-  if (!clipPath) return
+  if (!clipPath) return undefined
+  if (elem && clipPath.id) {
+    const svgContent = svgCanvas.getSvgContent?.()
+    if (svgContent) {
+      const refSelector = `[clip-path="url(#${clipPath.id})"]`
+      const users = svgContent.querySelectorAll(refSelector)
+      if (users.length > 1) {
+        const newClipPath = clipPath.cloneNode(true)
+        newClipPath.id = svgCanvas.getNextId()
+        findDefs().append(newClipPath)
+        elem.setAttribute('clip-path', `url(#${newClipPath.id})`)
+        return updateClipPath(`url(#${newClipPath.id})`, tx, ty)
+      }
+    }
+  }
   const path = clipPath.firstElementChild
-  if (!path) return
+  if (!path) return attr
   const cpXform = getTransformList(path)
   if (!cpXform) {
-    path.setAttribute('transform', `translate(${tx},${ty})`)
+    const tag = (path.tagName || '').toLowerCase()
+    if (tag === 'rect') {
+      const x = convertToNum('x', path.getAttribute('x') || 0) + tx
+      const y = convertToNum('y', path.getAttribute('y') || 0) + ty
+      path.setAttribute('x', x)
+      path.setAttribute('y', y)
+    } else if (tag === 'circle' || tag === 'ellipse') {
+      const cx = convertToNum('cx', path.getAttribute('cx') || 0) + tx
+      const cy = convertToNum('cy', path.getAttribute('cy') || 0) + ty
+      path.setAttribute('cx', cx)
+      path.setAttribute('cy', cy)
+    } else if (tag === 'line') {
+      path.setAttribute('x1', convertToNum('x1', path.getAttribute('x1') || 0) + tx)
+      path.setAttribute('y1', convertToNum('y1', path.getAttribute('y1') || 0) + ty)
+      path.setAttribute('x2', convertToNum('x2', path.getAttribute('x2') || 0) + tx)
+      path.setAttribute('y2', convertToNum('y2', path.getAttribute('y2') || 0) + ty)
+    } else if (tag === 'polyline' || tag === 'polygon') {
+      const points = (path.getAttribute('points') || '').trim()
+      if (points) {
+        const updated = points.split(/\s+/).map((pair) => {
+          const [x, y] = pair.split(',')
+          const nx = Number(x) + tx
+          const ny = Number(y) + ty
+          return `${nx},${ny}`
+        })
+        path.setAttribute('points', updated.join(' '))
+      }
+    } else {
+      path.setAttribute('transform', `translate(${tx},${ty})`)
+    }
+    return attr
+  }
+  if (cpXform.numberOfItems) {
+    const translate = svgCanvas.getSvgRoot().createSVGMatrix()
+    translate.e = tx
+    translate.f = ty
+    const combined = matrixMultiply(transformListToTransform(cpXform).matrix, translate)
+    const merged = svgCanvas.getSvgRoot().createSVGTransform()
+    merged.setMatrix(combined)
+    cpXform.clear()
+    cpXform.appendItem(merged)
+    return attr
+  }
+  const tag = (path.tagName || '').toLowerCase()
+  if ((tag === 'polyline' || tag === 'polygon') && !path.points?.numberOfItems) {
+    const points = (path.getAttribute('points') || '').trim()
+    if (points) {
+      const updated = points.split(/\s+/).map((pair) => {
+        const [x, y] = pair.split(',')
+        const nx = Number(x) + tx
+        const ny = Number(y) + ty
+        return `${nx},${ny}`
+      })
+      path.setAttribute('points', updated.join(' '))
+    }
     return
   }
   const newTranslate = svgCanvas.getSvgRoot().createSVGTransform()
   newTranslate.setTranslate(tx, ty)
 
   cpXform.appendItem(newTranslate)
+  recalculateDimensions(path)
+  return attr
 }
 
 /**
@@ -63,6 +140,13 @@ export const updateClipPath = (attr, tx, ty) => {
  */
 export const recalculateDimensions = selected => {
   if (!selected) return null
+  if (
+    (selected.tagName === 'g' || selected.tagName === 'a' || selected.getAttribute?.('clip-path')) &&
+    selected.querySelector?.('[clip-path]')
+  ) {
+    // Keep transforms when clip-paths are present to avoid mutating defs.
+    return null
+  }
   const svgroot = svgCanvas.getSvgRoot()
   const dataStorage = svgCanvas.getDataStorage()
   const tlist = getTransformList(selected)
@@ -341,6 +425,11 @@ export const recalculateDimensions = selected => {
       ty = m2.f
 
       if (tx !== 0 || ty !== 0) {
+        const selectedClipPath = selected.getAttribute?.('clip-path')
+        if (selectedClipPath) {
+          updateClipPath(selectedClipPath, tx, ty, selected)
+        }
+
         const children = selected.childNodes
         let c = children.length
 
@@ -351,8 +440,8 @@ export const recalculateDimensions = selected => {
 
           const clipPathAttr = child.getAttribute('clip-path')
           if (clipPathAttr && !clipPathsDone.includes(clipPathAttr)) {
-            updateClipPath(clipPathAttr, tx, ty)
-            clipPathsDone.push(clipPathAttr)
+            const updatedAttr = updateClipPath(clipPathAttr, tx, ty, child)
+            clipPathsDone.push(updatedAttr || clipPathAttr)
           }
 
           const childTlist = getTransformList(child)

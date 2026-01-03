@@ -1337,6 +1337,41 @@ const convertGradientsMethod = elem => {
         grad.setAttribute('x2', (gCoords.x2 - bb.x) / bb.width)
         grad.setAttribute('y2', (gCoords.y2 - bb.y) / bb.height)
         grad.removeAttribute('gradientUnits')
+      } else if (grad.tagName === 'radialGradient') {
+        const getNum = (value, fallback) => {
+          const num = Number(value)
+          return Number.isFinite(num) ? num : fallback
+        }
+        let cx = getNum(grad.getAttribute('cx'), 0.5)
+        let cy = getNum(grad.getAttribute('cy'), 0.5)
+        let r = getNum(grad.getAttribute('r'), 0.5)
+        let fx = getNum(grad.getAttribute('fx'), cx)
+        let fy = getNum(grad.getAttribute('fy'), cy)
+
+        // If has transform, convert
+        const tlist = getTransformList(grad)
+        if (tlist?.numberOfItems > 0) {
+          const m = transformListToTransform(tlist).matrix
+          const cpt = transformPoint(cx, cy, m)
+          const fpt = transformPoint(fx, fy, m)
+          const rpt = transformPoint(cx + r, cy, m)
+          cx = cpt.x
+          cy = cpt.y
+          fx = fpt.x
+          fy = fpt.y
+          r = Math.hypot(rpt.x - cpt.x, rpt.y - cpt.y)
+          grad.removeAttribute('gradientTransform')
+        }
+
+        if (!bb.width || !bb.height) {
+          return
+        }
+        grad.setAttribute('cx', (cx - bb.x) / bb.width)
+        grad.setAttribute('cy', (cy - bb.y) / bb.height)
+        grad.setAttribute('fx', (fx - bb.x) / bb.width)
+        grad.setAttribute('fy', (fy - bb.y) / bb.height)
+        grad.setAttribute('r', r / Math.max(bb.width, bb.height))
+        grad.removeAttribute('gradientUnits')
       }
     }
   })

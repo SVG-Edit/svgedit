@@ -281,4 +281,19 @@ describe('path', function () {
     assert.closeTo(seg.x, 30, 1e-6)
     assert.closeTo(seg.y, 30, 1e-6)
   })
+
+  it('Test convertPath handles relative arcs', function () {
+    unitsInit({
+      getRoundDigits () { return 5 }
+    })
+
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 a10,20 30 0 1 40,50')
+
+    const abs = pathModule.convertPath(path)
+    assert.ok(abs.includes('A10,20 30 0 1 40,50'))
+
+    const rel = pathModule.convertPath(path, true)
+    assert.ok(rel.includes('a10,20 30 0 1 40,50'))
+  })
 })

@@ -27,6 +27,32 @@ const NEAR_ZERO = 1e-10
 // Create a throwaway SVG element for matrix operations
 const svg = document.createElementNS(NS.SVG, 'svg')
 
+const createTransformFromMatrix = m => {
+  try {
+    return svg.createSVGTransformFromMatrix(m)
+  } catch (e) {
+    const t = svg.createSVGTransform()
+    try {
+      t.setMatrix(m)
+      return t
+    } catch (err) {
+      const fallback = svg.createSVGMatrix()
+      fallback.a = m.a
+      fallback.b = m.b
+      fallback.c = m.c
+      fallback.d = m.d
+      fallback.e = m.e
+      fallback.f = m.f
+      try {
+        return svg.createSVGTransformFromMatrix(fallback)
+      } catch (e2) {
+        t.setMatrix(fallback)
+        return t
+      }
+    }
+  }
+}
+
 /**
  * Transforms a point by a given matrix without DOM calls.
  * @function transformPoint
@@ -98,7 +124,14 @@ export const matrixMultiply = (...args) => {
     if (Math.abs(result.d) < NEAR_ZERO) result.d = 0
     if (Math.abs(result.e) < NEAR_ZERO) result.e = 0
     if (Math.abs(result.f) < NEAR_ZERO) result.f = 0
-    return result
+    const out = svg.createSVGMatrix()
+    out.a = result.a
+    out.b = result.b
+    out.c = result.c
+    out.d = result.d
+    out.e = result.e
+    out.f = result.f
+    return out
   }
 
   let m = svg.createSVGMatrix()
@@ -202,7 +235,7 @@ export const transformBox = (l, t, w, h, m) => {
  */
 export const transformListToTransform = (tlist, min = 0, max = null) => {
   if (!tlist) {
-    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix())
+    return createTransformFromMatrix(svg.createSVGMatrix())
   }
 
   const start = Number.parseInt(min, 10)
@@ -220,7 +253,14 @@ export const transformListToTransform = (tlist, min = 0, max = null) => {
     combinedMatrix = matrixMultiply(combinedMatrix, currentMatrix)
   }
 
-  return svg.createSVGTransformFromMatrix(combinedMatrix)
+  const out = svg.createSVGMatrix()
+  out.a = combinedMatrix.a
+  out.b = combinedMatrix.b
+  out.c = combinedMatrix.c
+  out.d = combinedMatrix.d
+  out.e = combinedMatrix.e
+  out.f = combinedMatrix.f
+  return createTransformFromMatrix(out)
 }
 
 /**
