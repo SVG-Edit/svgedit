@@ -822,6 +822,7 @@ export const pathActionsMethod = (function () {
     reorient () {
       const elem = svgCanvas.getSelectedElements()[0]
       if (!elem) { return }
+      if (elem.nodeName !== 'path') { return }
       const angl = getRotationAngle(elem)
       if (angl === 0) { return }
 
