@@ -109,6 +109,8 @@ export default defineConfig({
         'packages/svgcanvas/core/coords.js',
         'packages/svgcanvas/core/recalculate.js',
         'packages/svgcanvas/core/utilities.js',
+        'packages/svgcanvas/core/layer.js',
+        'packages/svgcanvas/core/sanitize.js',
         'packages/svgcanvas/common/util.js',
         'packages/svgcanvas/core/touch.js'
       ]

@@ -1,4 +1,5 @@
 import { preventClickDefault } from './utilities.js'
+import dataStorage from './dataStorage.js'
 
 /**
  * Create a clone of an element, updating its ID and its children's IDs when needed.
@@ -8,10 +9,15 @@ import { preventClickDefault } from './utilities.js'
  * @returns {Element} The cloned element
  */
 export const copyElem = function (el, getNextId) {
+  const ownerDocument = el?.ownerDocument || document
   // manually create a copy of the element
-  const newEl = document.createElementNS(el.namespaceURI, el.nodeName)
-  Object.values(el.attributes).forEach((attr) => {
-    newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value)
+  const newEl = ownerDocument.createElementNS(el.namespaceURI, el.nodeName)
+  Array.from(el.attributes).forEach((attr) => {
+    if (attr.namespaceURI) {
+      newEl.setAttributeNS(attr.namespaceURI, attr.name, attr.value)
+    } else {
+      newEl.setAttribute(attr.name, attr.value)
+    }
   })
   // set the copied element's new id
   newEl.removeAttribute('id')
@@ -24,20 +30,28 @@ export const copyElem = function (el, getNextId) {
         newEl.append(copyElem(child, getNextId))
         break
       case 3: // text node
-        newEl.textContent = child.nodeValue
+      case 4: // cdata section node
+        newEl.append(ownerDocument.createTextNode(child.nodeValue ?? ''))
         break
       default:
         break
     }
   })
 
-  if (el.dataset.gsvg) {
-    newEl.dataset.gsvg = newEl.firstChild
-  } else if (el.dataset.symbol) {
-    const ref = el.dataset.symbol
-    newEl.dataset.ref = ref
-    newEl.dataset.symbol = ref
-  } else if (newEl.tagName === 'image') {
+  if (dataStorage.has(el, 'gsvg')) {
+    const firstChild = newEl.firstElementChild || newEl.firstChild
+    if (firstChild) {
+      dataStorage.put(newEl, 'gsvg', firstChild)
+    }
+  }
+  if (dataStorage.has(el, 'symbol')) {
+    dataStorage.put(newEl, 'symbol', dataStorage.get(el, 'symbol'))
+  }
+  if (dataStorage.has(el, 'ref')) {
+    dataStorage.put(newEl, 'ref', dataStorage.get(el, 'ref'))
+  }
+
+  if (newEl.tagName === 'image') {
     preventClickDefault(newEl)
   }
 

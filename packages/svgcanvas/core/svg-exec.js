@@ -164,6 +164,9 @@ const svgToString = (elem, indent) => {
       // }
       if (curConfig.dynamicOutput) {
         vb = elem.getAttribute('viewBox')
+        if (!vb) {
+          vb = [0, 0, res.w, res.h].join(' ')
+        }
         out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
       } else {
         if (unit !== 'px') {
@@ -525,8 +528,14 @@ const setSvgString = (xmlString, preventUndo) => {
     if (content.getAttribute('viewBox')) {
       const viBox = content.getAttribute('viewBox')
       const vb = viBox.split(/[ ,]+/)
-      attrs.width = vb[2]
-      attrs.height = vb[3]
+      const vbWidth = Number(vb[2])
+      const vbHeight = Number(vb[3])
+      if (Number.isFinite(vbWidth)) {
+        attrs.width = vbWidth
+      }
+      if (Number.isFinite(vbHeight)) {
+        attrs.height = vbHeight
+      }
       // handle content that doesn't have a viewBox
     } else {
       ;['width', 'height'].forEach(dim => {
@@ -558,16 +567,25 @@ const setSvgString = (xmlString, preventUndo) => {
     // Percentage width/height, so let's base it on visible elements
     if (percs) {
       const bb = getStrokedBBoxDefaultVisible()
-      attrs.width = bb.width + bb.x
-      attrs.height = bb.height + bb.y
+      if (bb && typeof bb === 'object') {
+        attrs.width = bb.width + bb.x
+        attrs.height = bb.height + bb.y
+      } else {
+        if (attrs.width == null) {
+          attrs.width = 100
+        }
+        if (attrs.height == null) {
+          attrs.height = 100
+        }
+      }
     }
 
     // Just in case negative numbers are given or
     // result from the percs calculation
-    if (attrs.width <= 0) {
+    if (!Number.isFinite(attrs.width) || attrs.width <= 0) {
       attrs.width = 100
     }
-    if (attrs.height <= 0) {
+    if (!Number.isFinite(attrs.height) || attrs.height <= 0) {
       attrs.height = 100
     }
 
@@ -666,13 +684,23 @@ const importSvgString = (xmlString, preserveDimension) => {
 
       // TODO: properly handle preserveAspectRatio
       const // canvasw = +svgContent.getAttribute('width'),
-        canvash = Number(svgCanvas.getSvgContent().getAttribute('height'))
+        rawCanvash = Number(svgCanvas.getSvgContent().getAttribute('height'))
+      const canvash =
+        Number.isFinite(rawCanvash) && rawCanvash > 0
+          ? rawCanvash
+          : (Number(svgCanvas.getCurConfig().dimensions?.[1]) || 100)
       // imported content should be 1/3 of the canvas on its largest dimension
 
+      const vbWidth = vb[2]
+      const vbHeight = vb[3]
+      const importW = Number.isFinite(vbWidth) && vbWidth > 0 ? vbWidth : (innerw > 0 ? innerw : 100)
+      const importH = Number.isFinite(vbHeight) && vbHeight > 0 ? vbHeight : (innerh > 0 ? innerh : 100)
+      const safeImportW = Number.isFinite(importW) && importW > 0 ? importW : 100
+      const safeImportH = Number.isFinite(importH) && importH > 0 ? importH : 100
       ts =
-        innerh > innerw
-          ? 'scale(' + canvash / 3 / vb[3] + ')'
-          : 'scale(' + canvash / 3 / vb[2] + ')'
+        safeImportH > safeImportW
+          ? 'scale(' + canvash / 3 / safeImportH + ')'
+          : 'scale(' + canvash / 3 / safeImportW + ')'
 
       // Hack to make recalculateDimensions understand how to scale
       ts = 'translate(0) ' + ts + ' translate(0)'
@@ -905,10 +933,14 @@ const rasterExport = (
 
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Canvas 2D context not available'))
+          return
+        }
 
-        const width = svgElement.clientWidth || svgElement.getAttribute('width')
-        const height =
-          svgElement.clientHeight || svgElement.getAttribute('height')
+        const res = svgCanvas.getResolution()
+        const width = res.w
+        const height = res.h
         canvas.width = width
         canvas.height = height
 
@@ -1142,7 +1174,11 @@ const setUseDataMethod = parent => {
 
   Array.prototype.forEach.call(elems, (el, _) => {
     const dataStorage = svgCanvas.getDataStorage()
-    const id = svgCanvas.getHref(el).substr(1)
+    const href = svgCanvas.getHref(el)
+    if (!href || !href.startsWith('#')) {
+      return
+    }
+    const id = href.substr(1)
     const refElem = svgCanvas.getElement(id)
     if (!refElem) {
       return
@@ -1300,6 +1336,41 @@ const convertGradientsMethod = elem => {
         grad.setAttribute('y1', (gCoords.y1 - bb.y) / bb.height)
         grad.setAttribute('x2', (gCoords.x2 - bb.x) / bb.width)
         grad.setAttribute('y2', (gCoords.y2 - bb.y) / bb.height)
+        grad.removeAttribute('gradientUnits')
+      } else if (grad.tagName === 'radialGradient') {
+        const getNum = (value, fallback) => {
+          const num = Number(value)
+          return Number.isFinite(num) ? num : fallback
+        }
+        let cx = getNum(grad.getAttribute('cx'), 0.5)
+        let cy = getNum(grad.getAttribute('cy'), 0.5)
+        let r = getNum(grad.getAttribute('r'), 0.5)
+        let fx = getNum(grad.getAttribute('fx'), cx)
+        let fy = getNum(grad.getAttribute('fy'), cy)
+
+        // If has transform, convert
+        const tlist = getTransformList(grad)
+        if (tlist?.numberOfItems > 0) {
+          const m = transformListToTransform(tlist).matrix
+          const cpt = transformPoint(cx, cy, m)
+          const fpt = transformPoint(fx, fy, m)
+          const rpt = transformPoint(cx + r, cy, m)
+          cx = cpt.x
+          cy = cpt.y
+          fx = fpt.x
+          fy = fpt.y
+          r = Math.hypot(rpt.x - cpt.x, rpt.y - cpt.y)
+          grad.removeAttribute('gradientTransform')
+        }
+
+        if (!bb.width || !bb.height) {
+          return
+        }
+        grad.setAttribute('cx', (cx - bb.x) / bb.width)
+        grad.setAttribute('cy', (cy - bb.y) / bb.height)
+        grad.setAttribute('fx', (fx - bb.x) / bb.width)
+        grad.setAttribute('fy', (fy - bb.y) / bb.height)
+        grad.setAttribute('r', r / Math.max(bb.width, bb.height))
         grad.removeAttribute('gradientUnits')
       }
     }

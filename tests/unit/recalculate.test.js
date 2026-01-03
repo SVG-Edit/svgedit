@@ -119,6 +119,25 @@ describe('recalculate', function () {
   }
 
   /**
+   * Initialize for tests and set up a `g` element with a `rect` child.
+   * @returns {SVGRectElement}
+   */
+  function setUpGroupWithRect () {
+    setUp()
+    elem = document.createElementNS(NS.SVG, 'g')
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '200')
+    rect.setAttribute('y', '150')
+    rect.setAttribute('width', '250')
+    rect.setAttribute('height', '120')
+
+    elem.append(rect)
+    svg.append(elem)
+    return rect
+  }
+
+  /**
    * Tear down the tests (empty the svg element).
    * @returns {void}
    */
@@ -169,8 +188,97 @@ describe('recalculate', function () {
     assert.equal(tspan.getAttribute('y'), '200')
   })
 
+  it('Test recalculateDimensions() on group with simple translate', function () {
+    const rect = setUpGroupWithRect()
+    elem.setAttribute('transform', 'translate(100,50)')
+
+    recalculate.recalculateDimensions(elem)
+
+    assert.equal(elem.hasAttribute('transform'), false)
+    assert.equal(rect.hasAttribute('transform'), false)
+    assert.equal(rect.getAttribute('x'), '300')
+    assert.equal(rect.getAttribute('y'), '200')
+    assert.equal(rect.getAttribute('width'), '250')
+    assert.equal(rect.getAttribute('height'), '120')
+  })
+
+  it('Test recalculateDimensions() on group with simple scale', function () {
+    const rect = setUpGroupWithRect()
+    elem.setAttribute('transform', 'translate(10,20) scale(2) translate(-10,-20)')
+
+    recalculate.recalculateDimensions(elem)
+
+    assert.equal(elem.hasAttribute('transform'), false)
+    assert.equal(rect.hasAttribute('transform'), false)
+    assert.equal(rect.getAttribute('x'), '390')
+    assert.equal(rect.getAttribute('y'), '280')
+    assert.equal(rect.getAttribute('width'), '500')
+    assert.equal(rect.getAttribute('height'), '240')
+  })
+
   // TODO: Since recalculateDimensions() and surrounding code is
   // probably the largest, most complicated and strange piece of
   // code in SVG-edit, we need to write a whole lot of unit tests
   // for it here.
+
+  it('updateClipPath() skips empty clipPaths safely', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-empty'
+    svg.append(clipPath)
+
+    // Should not throw when clipPath has no children.
+    recalculate.updateClipPath('url(#clip-empty)', 5, 5)
+  })
+
+  it('updateClipPath() appends translate to path child when present', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-path'
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '0')
+    rect.setAttribute('y', '0')
+    rect.setAttribute('width', '5')
+    rect.setAttribute('height', '5')
+    clipPath.append(rect)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-path)', 2, -3)
+
+    assert.equal(rect.getAttribute('x'), '2')
+    assert.equal(rect.getAttribute('y'), '-3')
+    assert.equal(rect.transform.baseVal.numberOfItems, 0)
+  })
+
+  it('updateClipPath() shifts circle clipPath geometry', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-circle'
+    const circle = document.createElementNS(NS.SVG, 'circle')
+    circle.setAttribute('cx', '4')
+    circle.setAttribute('cy', '5')
+    circle.setAttribute('r', '2')
+    clipPath.append(circle)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-circle)', -1, 3)
+
+    assert.equal(circle.getAttribute('cx'), '3')
+    assert.equal(circle.getAttribute('cy'), '8')
+    assert.equal(circle.transform.baseVal.numberOfItems, 0)
+  })
+
+  it('updateClipPath() shifts polyline points', () => {
+    setUp()
+    const clipPath = document.createElementNS(NS.SVG, 'clipPath')
+    clipPath.id = 'clip-poly'
+    const poly = document.createElementNS(NS.SVG, 'polyline')
+    poly.setAttribute('points', '0,0 2,0 2,2')
+    clipPath.append(poly)
+    svg.append(clipPath)
+
+    recalculate.updateClipPath('url(#clip-poly)', 3, -2)
+
+    assert.equal(poly.getAttribute('points'), '3,-2 5,-2 5,0')
+  })
 })

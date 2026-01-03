@@ -46,11 +46,26 @@ export const getUndoManager = () => {
       if (eventType === EventTypes.BEFORE_UNAPPLY || eventType === EventTypes.BEFORE_APPLY) {
         svgCanvas.clearSelection()
       } else if (eventType === EventTypes.AFTER_APPLY || eventType === EventTypes.AFTER_UNAPPLY) {
+        const cmdType = cmd.type()
+        const isApply = (eventType === EventTypes.AFTER_APPLY)
+        if (cmdType === 'ChangeElementCommand' && cmd.elem === svgCanvas.getSvgContent()) {
+          const values = isApply ? cmd.newValues : cmd.oldValues
+          if (values.width !== null && values.width !== undefined && values.width !== '') {
+            const newContentW = Number(values.width)
+            if (Number.isFinite(newContentW) && newContentW > 0) {
+              svgCanvas.contentW = newContentW
+            }
+          }
+          if (values.height !== null && values.height !== undefined && values.height !== '') {
+            const newContentH = Number(values.height)
+            if (Number.isFinite(newContentH) && newContentH > 0) {
+              svgCanvas.contentH = newContentH
+            }
+          }
+        }
         const elems = cmd.elements()
         svgCanvas.pathActions.clear()
         svgCanvas.call('changed', elems)
-        const cmdType = cmd.type()
-        const isApply = (eventType === EventTypes.AFTER_APPLY)
         if (cmdType === 'MoveElementCommand') {
           const parent = isApply ? cmd.newParent : cmd.oldParent
           if (parent === svgCanvas.getSvgContent()) {

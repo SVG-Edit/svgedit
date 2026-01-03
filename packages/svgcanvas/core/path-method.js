@@ -16,6 +16,190 @@ import {
   getElement
 } from './utilities.js'
 
+const TYPE_TO_CMD = {
+  1: 'Z',
+  2: 'M',
+  3: 'm',
+  4: 'L',
+  5: 'l',
+  6: 'C',
+  7: 'c',
+  8: 'Q',
+  9: 'q',
+  10: 'A',
+  11: 'a',
+  12: 'H',
+  13: 'h',
+  14: 'V',
+  15: 'v',
+  16: 'S',
+  17: 's',
+  18: 'T',
+  19: 't'
+}
+
+const CMD_TO_TYPE = Object.fromEntries(
+  Object.entries(TYPE_TO_CMD).map(([k, v]) => [v, Number(k)])
+)
+
+class PathDataListShim {
+  constructor (elem) {
+    this.elem = elem
+  }
+
+  _getData () {
+    return this.elem.getPathData()
+  }
+
+  _setData (data) {
+    this.elem.setPathData(data)
+  }
+
+  get numberOfItems () {
+    return this._getData().length
+  }
+
+  _entryToSeg (entry) {
+    const { type, values = [] } = entry
+    const cmd = CMD_TO_TYPE[type] || CMD_TO_TYPE[type?.toUpperCase?.()]
+    const seg = { pathSegType: cmd }
+    const U = String(type).toUpperCase()
+    switch (U) {
+      case 'H':
+        [seg.x] = values
+        break
+      case 'V':
+        [seg.y] = values
+        break
+      case 'M':
+      case 'L':
+      case 'T':
+        [seg.x, seg.y] = values
+        break
+      case 'S':
+        [seg.x2, seg.y2, seg.x, seg.y] = values
+        break
+      case 'C':
+        [seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y] = values
+        break
+      case 'Q':
+        [seg.x1, seg.y1, seg.x, seg.y] = values
+        break
+      case 'A':
+        [
+          seg.r1,
+          seg.r2,
+          seg.angle,
+          seg.largeArcFlag,
+          seg.sweepFlag,
+          seg.x,
+          seg.y
+        ] = values
+        break
+      default:
+        break
+    }
+    return seg
+  }
+
+  _segToEntry (seg) {
+    const type = TYPE_TO_CMD[seg.pathSegType] || seg.type
+    if (!type) {
+      return { type: 'Z', values: [] }
+    }
+    const U = String(type).toUpperCase()
+    let values = []
+    switch (U) {
+      case 'H':
+        values = [seg.x]
+        break
+      case 'V':
+        values = [seg.y]
+        break
+      case 'M':
+      case 'L':
+      case 'T':
+        values = [seg.x, seg.y]
+        break
+      case 'S':
+        values = [seg.x2, seg.y2, seg.x, seg.y]
+        break
+      case 'C':
+        values = [seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y]
+        break
+      case 'Q':
+        values = [seg.x1, seg.y1, seg.x, seg.y]
+        break
+      case 'A':
+        values = [
+          seg.r1,
+          seg.r2,
+          seg.angle,
+          Number(seg.largeArcFlag),
+          Number(seg.sweepFlag),
+          seg.x,
+          seg.y
+        ]
+        break
+      default:
+        values = []
+    }
+    return { type, values }
+  }
+
+  getItem (index) {
+    const entry = this._getData()[index]
+    return entry ? this._entryToSeg(entry) : null
+  }
+
+  replaceItem (seg, index) {
+    const data = this._getData()
+    data[index] = this._segToEntry(seg)
+    this._setData(data)
+    return seg
+  }
+
+  insertItemBefore (seg, index) {
+    const data = this._getData()
+    data.splice(index, 0, this._segToEntry(seg))
+    this._setData(data)
+    return seg
+  }
+
+  appendItem (seg) {
+    const data = this._getData()
+    data.push(this._segToEntry(seg))
+    this._setData(data)
+    return seg
+  }
+
+  removeItem (index) {
+    const data = this._getData()
+    data.splice(index, 1)
+    this._setData(data)
+  }
+
+  clear () {
+    this._setData([])
+  }
+}
+
+if (
+  typeof SVGPathElement !== 'undefined' &&
+  typeof SVGPathElement.prototype.getPathData === 'function' &&
+  typeof SVGPathElement.prototype.setPathData === 'function' &&
+  !('pathSegList' in SVGPathElement.prototype)
+) {
+  Object.defineProperty(SVGPathElement.prototype, 'pathSegList', {
+    get () {
+      if (!this._pathSegListShim) {
+        this._pathSegListShim = new PathDataListShim(this)
+      }
+      return this._pathSegListShim
+    }
+  })
+}
+
 let svgCanvas = null
 
 /**
@@ -287,7 +471,24 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
   const pth = elem || path.elem
   const pathFuncs = svgCanvas.getPathFuncs()
   const func = 'createSVGPathSeg' + pathFuncs[type]
-  const seg = pth[func](...pts)
+  const segData = svgCanvas.getSegData?.()
+  const props = segData?.[type] || segData?.[type - 1]
+  if (props && pts.length < props.length) {
+    const currentSeg = pth.pathSegList?.getItem?.(index)
+    if (currentSeg) {
+      pts = props.map((prop, i) => (pts[i] !== undefined ? pts[i] : currentSeg[prop]))
+    }
+  }
+  let seg
+  if (typeof pth[func] === 'function') {
+    seg = pth[func](...pts)
+  } else {
+    const safeProps = props || []
+    seg = { pathSegType: type }
+    safeProps.forEach((prop, i) => {
+      seg[prop] = pts[i]
+    })
+  }
 
   pth.pathSegList.replaceItem(seg, index)
 }
@@ -353,7 +554,7 @@ export class Segment {
     this.item = item
     this.type = item.pathSegType
 
-    this.ctrlpts = []
+    this.ctrlpts = null
     this.ptgrip = null
     this.segsel = null
   }
@@ -375,8 +576,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE')
-    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1')?.setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2')?.setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**
@@ -450,27 +651,25 @@ export class Segment {
   move (dx, dy) {
     const { item } = this
 
-    const curPts = this.ctrlpts
-      ? [
-          item.x += dx, item.y += dy,
-          item.x1, item.y1, item.x2 += dx, item.y2 += dy
-        ]
-      : [item.x += dx, item.y += dy]
+    item.x += dx
+    item.y += dy
+
+    // `x2/y2` are the control point attached to this node (when present)
+    if ('x2' in item) { item.x2 += dx }
+    if ('y2' in item) { item.y2 += dy }
 
     replacePathSegMethod(
       this.type,
       this.index,
-      // type 10 means ARC
-      this.type === 10 ? ptObjToArrMethod(this.type, item) : curPts
+      ptObjToArrMethod(this.type, item)
     )
 
-    if (this.next?.ctrlpts) {
-      const next = this.next.item
-      const nextPts = [
-        next.x, next.y,
-        next.x1 += dx, next.y1 += dy, next.x2, next.y2
-      ]
-      replacePathSegMethod(this.next.type, this.next.index, nextPts)
+    const next = this.next?.item
+    // `x1/y1` are the control point attached to this node on the next segment (when present)
+    if (next && 'x1' in next && 'y1' in next) {
+      next.x1 += dx
+      next.y1 += dy
+      replacePathSegMethod(this.next.type, this.next.index, ptObjToArrMethod(this.next.type, next))
     }
 
     if (this.mate) {

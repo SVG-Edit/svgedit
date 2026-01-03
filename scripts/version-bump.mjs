@@ -31,6 +31,18 @@ function bumpVersion (version, type) {
   throw new Error(`Unknown bump type: ${type}`)
 }
 
+function updateWorkspaceDependencyVersions (pkg, workspaceNames, newVersion) {
+  const dependencyFields = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
+  for (const field of dependencyFields) {
+    const dependencies = pkg[field]
+    if (!dependencies) continue
+    for (const dependencyName of Object.keys(dependencies)) {
+      if (!workspaceNames.has(dependencyName)) continue
+      dependencies[dependencyName] = newVersion
+    }
+  }
+}
+
 function isGreaterVersion (a, b) {
   const pa = parseSemver(a)
   const pb = parseSemver(b)
@@ -121,6 +133,7 @@ async function chooseVersion (current) {
 
 async function main () {
   const { rootPackage, workspaces } = loadPackages()
+  const workspaceNames = new Set(workspaces.map(({ pkg }) => pkg.name))
   console.log('Current versions:')
   console.log(`- ${rootPackage.name} (root): ${rootPackage.version}`)
   for (const ws of workspaces) {
@@ -131,9 +144,11 @@ async function main () {
 
   console.log(`\nUpdating all packages to ${newVersion}...`)
   rootPackage.version = newVersion
+  updateWorkspaceDependencyVersions(rootPackage, workspaceNames, newVersion)
   writeJson(rootPackagePath, rootPackage)
   for (const ws of workspaces) {
     ws.pkg.version = newVersion
+    updateWorkspaceDependencyVersions(ws.pkg, workspaceNames, newVersion)
     writeJson(ws.packagePath, ws.pkg)
   }
 

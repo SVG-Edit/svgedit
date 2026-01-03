@@ -1,5 +1,5 @@
 /* eslint-disable max-len, no-console */
-import SvgCanvas from '../../packages/svgcanvas'
+import SvgCanvas from '../../packages/svgcanvas/svgcanvas.js'
 
 describe('Basic Module', function () {
   // helper functions
@@ -110,6 +110,27 @@ describe('Basic Module', function () {
   })
 
   describe('Import Module', function () {
+    it('Test setSvgString handles empty SVG', function () {
+      const ok = svgCanvas.setSvgString(
+        '<svg xmlns="' + svgns + '"></svg>'
+      )
+      assert.equal(ok, true, 'Expected setSvgString to succeed')
+
+      const svgContent = document.getElementById('svgcontent')
+      const w = Number(svgContent.getAttribute('width'))
+      const h = Number(svgContent.getAttribute('height'))
+      assert.equal(
+        Number.isFinite(w) && w > 0,
+        true,
+        'Width is a positive number (got ' + svgContent.getAttribute('width') + ')'
+      )
+      assert.equal(
+        Number.isFinite(h) && h > 0,
+        true,
+        'Height is a positive number (got ' + svgContent.getAttribute('height') + ')'
+      )
+    })
+
     it('Test import use', function () {
       svgCanvas.setSvgString(
         "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
@@ -261,6 +282,21 @@ describe('Basic Module', function () {
       assert.notEqual(circles.item(0).getAttribute('fill'), 'url(#svg_2)', 'Circle fill value not remapped')
       assert.notEqual(rects.item(0).getAttribute('stroke'), 'url(#svg_2)', 'Rectangle stroke value not remapped')
       assert.notEqual(uses.item(0).getAttributeNS(xlinkns, 'href'), '#svg_3')
+    })
+
+    it('Test importing SVG without width/height/viewBox', function () {
+      const imported = svgCanvas.importSvgString(
+        '<svg xmlns="' + svgns + '">' +
+          '<rect width="20" height="20" fill="blue"/>' +
+        '</svg>'
+      )
+      assert.equal((imported && imported.nodeName), 'use', 'Imported as a <use> element')
+      const t = imported.getAttribute('transform') || ''
+      assert.equal(
+        t.includes('Infinity') || t.includes('NaN'),
+        false,
+        'Transform is finite (got ' + t + ')'
+      )
     })
   })
 })

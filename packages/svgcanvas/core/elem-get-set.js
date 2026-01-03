@@ -122,25 +122,36 @@ const setGroupTitleMethod = (val) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const dataStorage = svgCanvas.getDataStorage()
   let elem = selectedElements[0]
+  if (!elem) { return }
   if (dataStorage.has(elem, 'gsvg')) {
     elem = dataStorage.get(elem, 'gsvg')
+  } else if (dataStorage.has(elem, 'symbol')) {
+    elem = dataStorage.get(elem, 'symbol')
   }
-
-  const ts = elem.querySelectorAll('title')
+  if (!elem) { return }
 
   const batchCmd = new BatchCommand('Set Label')
 
-  let title
+  let title = null
+  for (const child of elem.childNodes) {
+    if (child.nodeName === 'title') {
+      title = child
+      break
+    }
+  }
+
   if (val.length === 0) {
+    if (!title) { return }
     // Remove title element
-    const tsNextSibling = ts.nextSibling
-    batchCmd.addSubCommand(new RemoveElementCommand(ts[0], tsNextSibling, elem))
-    ts.remove()
-  } else if (ts.length) {
+    const { nextSibling } = title
+    title.remove()
+    batchCmd.addSubCommand(new RemoveElementCommand(title, nextSibling, elem))
+  } else if (title) {
     // Change title contents
-    title = ts[0]
-    batchCmd.addSubCommand(new ChangeElementCommand(title, { '#text': title.textContent }))
+    const oldText = title.textContent
+    if (oldText === val) { return }
     title.textContent = val
+    batchCmd.addSubCommand(new ChangeElementCommand(title, { '#text': oldText }))
   } else {
     // Add title element
     title = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title')
@@ -149,7 +160,9 @@ const setGroupTitleMethod = (val) => {
     batchCmd.addSubCommand(new InsertElementCommand(title))
   }
 
-  svgCanvas.addCommandToHistory(batchCmd)
+  if (!batchCmd.isEmpty()) {
+    svgCanvas.addCommandToHistory(batchCmd)
+  }
 }
 
 /**
@@ -160,33 +173,44 @@ const setGroupTitleMethod = (val) => {
 * @returns {void}
 */
 const setDocumentTitleMethod = (newTitle) => {
-  const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const childs = svgCanvas.getSvgContent().childNodes
-  let docTitle = false; let oldTitle = ''
+  const {
+    InsertElementCommand, RemoveElementCommand,
+    ChangeElementCommand, BatchCommand
+  } = svgCanvas.history
+  const svgContent = svgCanvas.getSvgContent()
 
   const batchCmd = new BatchCommand('Change Image Title')
 
-  for (const child of childs) {
+  /** @type {Element|null} */
+  let docTitle = null
+  for (const child of svgContent.childNodes) {
     if (child.nodeName === 'title') {
       docTitle = child
-      oldTitle = docTitle.textContent
       break
     }
   }
-  if (!docTitle) {
-    docTitle = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title')
-    svgCanvas.getSvgContent().insertBefore(docTitle, svgCanvas.getSvgContent().firstChild)
-    // svgContent.firstChild.before(docTitle); // Ok to replace above with this?
-  }
 
-  if (newTitle.length) {
+  if (!docTitle) {
+    if (!newTitle.length) { return }
+    docTitle = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title')
     docTitle.textContent = newTitle
+    svgContent.insertBefore(docTitle, svgContent.firstChild)
+    batchCmd.addSubCommand(new InsertElementCommand(docTitle))
+  } else if (newTitle.length) {
+    const oldTitle = docTitle.textContent
+    if (oldTitle === newTitle) { return }
+    docTitle.textContent = newTitle
+    batchCmd.addSubCommand(new ChangeElementCommand(docTitle, { '#text': oldTitle }))
   } else {
     // No title given, so element is not necessary
+    const { nextSibling } = docTitle
     docTitle.remove()
+    batchCmd.addSubCommand(new RemoveElementCommand(docTitle, nextSibling, svgContent))
   }
-  batchCmd.addSubCommand(new ChangeElementCommand(docTitle, { '#text': oldTitle }))
-  svgCanvas.addCommandToHistory(batchCmd)
+
+  if (!batchCmd.isEmpty()) {
+    svgCanvas.addCommandToHistory(batchCmd)
+  }
 }
 
 /**
@@ -201,7 +225,6 @@ const setDocumentTitleMethod = (newTitle) => {
 */
 const setResolutionMethod = (x, y) => {
   const { ChangeElementCommand, BatchCommand } = svgCanvas.history
-  const zoom = svgCanvas.getZoom()
   const res = svgCanvas.getResolution()
   const { w, h } = res
   let batchCmd
@@ -220,8 +243,10 @@ const setResolutionMethod = (x, y) => {
         dy.push(bbox.y * -1)
       })
 
-      const cmd = svgCanvas.moveSelectedElements(dx, dy, true)
-      batchCmd.addSubCommand(cmd)
+      const cmd = svgCanvas.moveSelectedElements(dx, dy, false)
+      if (cmd) {
+        batchCmd.addSubCommand(cmd)
+      }
       svgCanvas.clearSelection()
 
       x = Math.round(bbox.width)
@@ -230,26 +255,25 @@ const setResolutionMethod = (x, y) => {
       return false
     }
   }
-  if (x !== w || y !== h) {
+  const newW = convertToNum('width', x)
+  const newH = convertToNum('height', y)
+  if (newW !== w || newH !== h) {
     if (!batchCmd) {
       batchCmd = new BatchCommand('Change Image Dimensions')
     }
+    const svgContent = svgCanvas.getSvgContent()
+    const oldViewBox = svgContent.getAttribute('viewBox')
 
-    x = convertToNum('width', x)
-    y = convertToNum('height', y)
+    svgContent.setAttribute('width', newW)
+    svgContent.setAttribute('height', newH)
 
-    svgCanvas.getSvgContent().setAttribute('width', x)
-    svgCanvas.getSvgContent().setAttribute('height', y)
-
-    svgCanvas.contentW = x
-    svgCanvas.contentH = y
-    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { width: w, height: h }))
-
-    svgCanvas.getSvgContent().setAttribute('viewBox', [0, 0, x / zoom, y / zoom].join(' '))
-    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { viewBox: ['0 0', w, h].join(' ') }))
+    svgCanvas.contentW = newW
+    svgCanvas.contentH = newH
+    svgContent.setAttribute('viewBox', [0, 0, newW, newH].join(' '))
+    batchCmd.addSubCommand(new ChangeElementCommand(svgContent, { width: w, height: h, viewBox: oldViewBox }))
 
     svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [svgCanvas.getSvgContent()])
+    svgCanvas.call('changed', [svgContent])
   }
   return true
 }
@@ -286,20 +310,36 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
   let spacer = 0.85
   let bb
   const calcZoom = (bb) => {
-    if (!bb) { return false }
+    if (!bb) { return undefined }
+    if (!Number.isFinite(editorW) || !Number.isFinite(editorH) || editorW <= 0 || editorH <= 0) {
+      return undefined
+    }
+    if (!Number.isFinite(bb.width) || !Number.isFinite(bb.height) || bb.width <= 0 || bb.height <= 0) {
+      return undefined
+    }
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100
     const zoom = Math.min(wZoom, hZoom)
+    if (!Number.isFinite(zoom) || zoom <= 0) {
+      return undefined
+    }
     svgCanvas.setZoom(zoom)
     return { zoom, bbox: bb }
   }
 
-  if (typeof val === 'object') {
+  if (val && typeof val === 'object') {
     bb = val
     if (bb.width === 0 || bb.height === 0) {
-      const newzoom = bb.zoom ? bb.zoom : zoom * bb.factor
-      svgCanvas.setZoom(newzoom)
-      return { zoom, bbox: bb }
+      let newzoom = zoom
+      if (Number.isFinite(bb.zoom) && bb.zoom > 0) {
+        newzoom = bb.zoom
+      } else if (Number.isFinite(bb.factor) && bb.factor > 0) {
+        newzoom = zoom * bb.factor
+      }
+      if (Number.isFinite(newzoom) && newzoom > 0) {
+        svgCanvas.setZoom(newzoom)
+      }
+      return { zoom: newzoom, bbox: bb }
     }
     return calcZoom(bb)
   }
@@ -307,12 +347,7 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
   switch (val) {
     case 'selection': {
       if (!selectedElements[0]) { return undefined }
-      const selectedElems = selectedElements.map((n, _) => {
-        if (n) {
-          return n
-        }
-        return undefined
-      })
+      const selectedElems = selectedElements.filter(Boolean)
       bb = getStrokedBBoxDefaultVisible(selectedElems)
       break
     } case 'canvas': {
@@ -340,13 +375,22 @@ const setBBoxZoomMethod = (val, editorW, editorH) => {
 * @returns {void}
 */
 const setZoomMethod = (zoomLevel) => {
+  if (!Number.isFinite(zoomLevel) || zoomLevel <= 0) {
+    return
+  }
   const selectedElements = svgCanvas.getSelectedElements()
   const res = svgCanvas.getResolution()
-  svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel)
+  const w = res.w / zoomLevel
+  const h = res.h / zoomLevel
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
+    return
+  }
+  svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + w + ' ' + h)
   svgCanvas.setZoom(zoomLevel)
   selectedElements.forEach((elem) => {
     if (!elem) { return }
-    svgCanvas.selectorManager.requestSelector(elem).resize()
+    const selector = svgCanvas.selectorManager.requestSelector(elem)
+    selector && selector.resize()
   })
   svgCanvas.pathActions.zoomChange()
   svgCanvas.runExtensions('zoomChanged', zoomLevel)
@@ -412,6 +456,7 @@ const setGradientMethod = (type) => {
     svgCanvas.getCurProperties(type + '_paint').type === 'solidColor') { return }
   const canvas = svgCanvas
   let grad = canvas[type + 'Grad']
+  if (!grad) { return }
   // find out if there is a duplicate gradient already in the defs
   const duplicateGrad = findDuplicateGradient(grad)
   const defs = findDefs()
@@ -435,12 +480,21 @@ const setGradientMethod = (type) => {
 * @returns {SVGGradientElement} The existing gradient if found, `null` if not
 */
 const findDuplicateGradient = (grad) => {
+  if (!grad) {
+    return null
+  }
+  if (!['linearGradient', 'radialGradient'].includes(grad.tagName)) {
+    return null
+  }
   const defs = findDefs()
   const existingGrads = defs.querySelectorAll('linearGradient, radialGradient')
   let i = existingGrads.length
   const radAttrs = ['r', 'cx', 'cy', 'fx', 'fy']
   while (i--) {
     const og = existingGrads[i]
+    if (og.tagName !== grad.tagName) {
+      continue
+    }
     if (grad.tagName === 'linearGradient') {
       if (grad.getAttribute('x1') !== og.getAttribute('x1') ||
         grad.getAttribute('y1') !== og.getAttribute('y1') ||
@@ -892,18 +946,31 @@ const setImageURLMethod = (val) => {
   const setsize = (!attrs.width || !attrs.height)
 
   const curHref = getHref(elem)
+  const hrefChanged = curHref !== val
 
   // Do nothing if no URL change or size change
-  if (curHref === val && !setsize) {
+  if (!hrefChanged && !setsize) {
     return
   }
 
   const batchCmd = new BatchCommand('Change Image URL')
 
-  setHref(elem, val)
-  batchCmd.addSubCommand(new ChangeElementCommand(elem, {
-    '#href': curHref
-  }))
+  if (hrefChanged) {
+    setHref(elem, val)
+    batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+      '#href': curHref
+    }))
+  }
+
+  let finalized = false
+  const finalize = () => {
+    if (finalized) { return }
+    finalized = true
+    if (batchCmd.isEmpty()) { return }
+    svgCanvas.addCommandToHistory(batchCmd)
+    svgCanvas.call('changed', [elem])
+  }
+
   const img = new Image()
   img.onload = function () {
     const changes = {
@@ -913,11 +980,14 @@ const setImageURLMethod = (val) => {
     elem.setAttribute('width', this.width)
     elem.setAttribute('height', this.height)
 
-    svgCanvas.selectorManager.requestSelector(elem).resize()
+    const selector = svgCanvas.selectorManager.requestSelector(elem)
+    selector && selector.resize()
 
     batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
-    svgCanvas.addCommandToHistory(batchCmd)
-    svgCanvas.call('changed', [elem])
+    finalize()
+  }
+  img.onerror = function () {
+    finalize()
   }
   img.src = val
 }
@@ -969,15 +1039,27 @@ const setRectRadiusMethod = (val) => {
   const { ChangeElementCommand } = svgCanvas.history
   const selectedElements = svgCanvas.getSelectedElements()
   const selected = selectedElements[0]
-  if (selected?.tagName === 'rect') {
-    const r = Number(selected.getAttribute('rx'))
-    if (r !== val) {
-      selected.setAttribute('rx', val)
-      selected.setAttribute('ry', val)
-      svgCanvas.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'))
-      svgCanvas.call('changed', [selected])
-    }
+  if (selected?.tagName !== 'rect') { return }
+
+  const radius = Number(val)
+  if (!Number.isFinite(radius) || radius < 0) {
+    return
   }
+
+  const oldRx = selected.getAttribute('rx')
+  const oldRy = selected.getAttribute('ry')
+  const currentRx = Number(oldRx)
+  const currentRy = Number(oldRy)
+  const hasCurrentRx = oldRx !== null && Number.isFinite(currentRx)
+  const hasCurrentRy = oldRy !== null && Number.isFinite(currentRy)
+  const already = (radius === 0 && oldRx === null && oldRy === null) ||
+    (hasCurrentRx && hasCurrentRy && currentRx === radius && currentRy === radius)
+  if (already) { return }
+
+  selected.setAttribute('rx', radius)
+  selected.setAttribute('ry', radius)
+  svgCanvas.addCommandToHistory(new ChangeElementCommand(selected, { rx: oldRx, ry: oldRy }, 'Radius'))
+  svgCanvas.call('changed', [selected])
 }
 
 /**
@@ -1021,7 +1103,9 @@ const setSegTypeMethod = (newType) => {
 */
 const setBackgroundMethod = (color, url) => {
   const bg = getElement('canvasBackground')
+  if (!bg) { return }
   const border = bg.querySelector('rect')
+  if (!border) { return }
   let bgImg = getElement('background_image')
   let bgPattern = getElement('background_pattern')
   border.setAttribute('fill', color === 'chessboard' ? '#fff' : color)

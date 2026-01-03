@@ -64,7 +64,7 @@ export const convertPath = function (pth, toRel) {
       case 'z': // z,Z closepath (Z/z)
       case 'Z':
         d += 'z'
-        if (lastM && !toRel) {
+        if (lastM) {
           curx = lastM[0]
           cury = lastM[1]
         }
@@ -822,6 +822,7 @@ export const pathActionsMethod = (function () {
     reorient () {
       const elem = svgCanvas.getSelectedElements()[0]
       if (!elem) { return }
+      if (elem.nodeName !== 'path') { return }
       const angl = getRotationAngle(elem)
       if (angl === 0) { return }
 
