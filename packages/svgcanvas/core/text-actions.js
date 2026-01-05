@@ -306,8 +306,8 @@ export const textActionsMethod = (function () {
 
     const index = getIndexFromPoint(pt.x, pt.y)
     const str = curtext.textContent
-    const first = str.substr(0, index).replace(/[a-z\d]+$/i, '').length
-    const m = str.substr(index).match(/^[a-z\d]+/i)
+    const first = str.slice(0, index).replace(/[a-z\d]+$/i, '').length
+    const m = str.slice(index).match(/^[a-z\d]+/i)
     const last = (m ? m[0].length : 0) + index
     setSelection(first, last)
 

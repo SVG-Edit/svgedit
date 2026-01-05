@@ -8,7 +8,7 @@ import dataStorage from './dataStorage.js'
  * @param {module:utilities.GetNextID} getNextId - The getter of the next unique ID.
  * @returns {Element} The cloned element
  */
-export const copyElem = function (el, getNextId) {
+export const copyElem = (el, getNextId) => {
   const ownerDocument = el?.ownerDocument || document
   // manually create a copy of the element
   const newEl = ownerDocument.createElementNS(el.namespaceURI, el.nodeName)
@@ -24,7 +24,7 @@ export const copyElem = function (el, getNextId) {
   newEl.id = getNextId()
 
   // now create copies of all children
-  el.childNodes.forEach(function (child) {
+  el.childNodes.forEach((child) => {
     switch (child.nodeType) {
       case 1: // element node
         newEl.append(copyElem(child, getNextId))

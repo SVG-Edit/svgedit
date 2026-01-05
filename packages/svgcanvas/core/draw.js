@@ -12,6 +12,7 @@ import { NS } from './namespaces.js'
 import { toXml, getElement } from './utilities.js'
 import { copyElem as utilCopyElem } from './copy-elem.js'
 import { getParentsUntil } from '../common/util.js'
+import { warn } from '../common/logger.js'
 
 const visElems =
   'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(
@@ -209,7 +210,7 @@ export class Drawing {
    */
   getId () {
     return this.nonce_
-      ? this.idPrefix + this.nonce_ + '_' + this.obj_num
+      ? `${this.idPrefix}${this.nonce_}_${this.obj_num}`
       : this.idPrefix + this.obj_num
   }
 
@@ -258,12 +259,12 @@ export class Drawing {
    */
   releaseId (id) {
     // confirm if this is a valid id for this Document, else return false
-    const front = this.idPrefix + (this.nonce_ ? this.nonce_ + '_' : '')
+    const front = `${this.idPrefix}${this.nonce_ ? `${this.nonce_}_` : ''}`
     if (typeof id !== 'string' || !id.startsWith(front)) {
       return false
     }
     // extract the obj_num of this id
-    const suffix = id.substr(front.length)
+    const suffix = id.slice(front.length)
     if (!/^[0-9]+$/.test(suffix)) {
       return false
     }
@@ -877,7 +878,7 @@ export const cloneLayer = (name, hrService) => {
     .getCurrentDrawing()
     .cloneLayer(name, historyRecordingService(hrService))
   if (!newLayer) {
-    console.warn('cloneLayer: no layer returned')
+    warn('cloneLayer: no layer returned', null, 'draw')
     return
   }
 
@@ -897,7 +898,7 @@ export const deleteCurrentLayer = () => {
   const { BatchCommand, RemoveElementCommand } = svgCanvas.history
   const currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer()
   if (!currentLayer) {
-    console.warn('deleteCurrentLayer: no current layer')
+    warn('deleteCurrentLayer: no current layer', null, 'draw')
     return false
   }
   const { nextSibling } = currentLayer
@@ -996,7 +997,7 @@ export const setLayerVisibility = (layerName, bVisible) => {
   const drawing = svgCanvas.getCurrentDrawing()
   const layerGroup = drawing.getLayerByName(layerName)
   if (!layerGroup) {
-    console.warn('setLayerVisibility: layer not found', layerName)
+    warn('setLayerVisibility: layer not found', layerName, 'draw')
     return false
   }
   const oldDisplay = layerGroup.getAttribute('display')
@@ -1051,7 +1052,7 @@ export const moveSelectedToLayer = layerName => {
   }
 
   if (batchCmd.isEmpty()) {
-    console.warn('moveSelectedToLayer: no elements moved')
+    warn('moveSelectedToLayer: no elements moved', null, 'draw')
     return false
   }
   svgCanvas.addCommandToHistory(batchCmd)

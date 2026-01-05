@@ -141,7 +141,7 @@ export class MoveElementCommand extends Command {
   constructor (elem, oldNextSibling, oldParent, text) {
     super()
     this.elem = elem
-    this.text = text ? ('Move ' + elem.tagName + ' to ' + text) : ('Move ' + elem.tagName)
+    this.text = text ? `Move ${elem.tagName} to ${text}` : `Move ${elem.tagName}`
     this.oldNextSibling = oldNextSibling
     this.oldParent = oldParent
     this.newNextSibling = elem.nextSibling
@@ -193,7 +193,7 @@ export class InsertElementCommand extends Command {
   constructor (elem, text) {
     super()
     this.elem = elem
-    this.text = text || ('Create ' + elem.tagName)
+    this.text = text || `Create ${elem.tagName}`
     this.parent = elem.parentNode
     this.nextSibling = this.elem.nextSibling
   }
@@ -242,7 +242,7 @@ export class RemoveElementCommand extends Command {
   constructor (elem, oldNextSibling, oldParent, text) {
     super()
     this.elem = elem
-    this.text = text || ('Delete ' + elem.tagName)
+    this.text = text || `Delete ${elem.tagName}`
     this.nextSibling = oldNextSibling
     this.parent = oldParent
   }
@@ -298,7 +298,7 @@ export class ChangeElementCommand extends Command {
   constructor (elem, attrs, text) {
     super()
     this.elem = elem
-    this.text = text ? ('Change ' + elem.tagName + ' ' + text) : ('Change ' + elem.tagName)
+    this.text = text ? `Change ${elem.tagName} ${text}` : `Change ${elem.tagName}`
     this.newValues = {}
     this.oldValues = attrs
     for (const attr in attrs) {

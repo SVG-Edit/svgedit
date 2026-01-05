@@ -201,7 +201,7 @@ class SvgCanvas {
           this.curConfig.initFill.color,
         fill_paint: null,
         fill_opacity: this.curConfig.initFill.opacity,
-        stroke: '#' + this.curConfig.initStroke.color,
+        stroke: `#${this.curConfig.initStroke.color}`,
         stroke_paint: null,
         stroke_opacity: this.curConfig.initStroke.opacity,
         stroke_width: this.curConfig.initStroke.width,
@@ -288,9 +288,9 @@ class SvgCanvas {
      */
     const storageChange = ev => {
       if (!ev.newValue) return // This is a call from removeItem.
-      if (ev.key === CLIPBOARD_ID + '_startup') {
+      if (ev.key === `${CLIPBOARD_ID}_startup`) {
         // Another tab asked for our sessionStorage.
-        localStorage.removeItem(CLIPBOARD_ID + '_startup')
+        localStorage.removeItem(`${CLIPBOARD_ID}_startup`)
         this.flashStorage()
       } else if (ev.key === CLIPBOARD_ID) {
         // Another tab sent data.
@@ -301,7 +301,7 @@ class SvgCanvas {
     // Listen for changes to localStorage.
     window.addEventListener('storage', storageChange, false)
     // Ask other tabs for sessionStorage (this is ONLY to trigger event).
-    localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random())
+    localStorage.setItem(`${CLIPBOARD_ID}_startup`, Math.random())
 
     pasteInit(this)
 
@@ -902,7 +902,7 @@ class SvgCanvas {
     })
     Object.values(attrs).forEach(val => {
       if (val?.startsWith('url(')) {
-        const id = getUrlFromAttr(val).substr(1)
+        const id = getUrlFromAttr(val).slice(1)
         const ref = getElement(id)
         if (!ref) {
           findDefs().append(this.removedElements[id])
@@ -1138,11 +1138,11 @@ class SvgCanvas {
    * @returns {void}
    */
   setPaintOpacity (type, val, preventUndo) {
-    this.curShape[type + '_opacity'] = val
+    this.curShape[`${type}_opacity`] = val
     if (!preventUndo) {
-      this.changeSelectedAttribute(type + '-opacity', val)
+      this.changeSelectedAttribute(`${type}-opacity`, val)
     } else {
-      this.changeSelectedAttributeNoUndo(type + '-opacity', val)
+      this.changeSelectedAttributeNoUndo(`${type}-opacity`, val)
     }
   }
 
@@ -1167,7 +1167,7 @@ class SvgCanvas {
     if (elem) {
       const filterUrl = elem.getAttribute('filter')
       if (filterUrl) {
-        const blur = getElement(elem.id + '_blur')
+        const blur = getElement(`${elem.id}_blur`)
         if (blur) {
           val = blur.firstChild.getAttribute('stdDeviation')
         } else {

@@ -38,7 +38,7 @@ export const setBlurNoUndo = function (val) {
 
   let filter = svgCanvas.getFilter()
   if (!filter) {
-    filter = svgCanvas.getElement(elem.id + '_blur')
+    filter = svgCanvas.getElement(`${elem.id}_blur`)
   }
 
   if (val === 0) {
@@ -59,7 +59,7 @@ export const setBlurNoUndo = function (val) {
       filter = svgCanvas.addSVGElementsFromJson({
         element: 'filter',
         attr: {
-          id: elem.id + '_blur'
+          id: `${elem.id}_blur`
         }
       })
       filter.append(blurElem)
@@ -67,7 +67,7 @@ export const setBlurNoUndo = function (val) {
     }
 
     if (svgCanvas.getFilterHidden() || !elem.getAttribute('filter')) {
-      svgCanvas.changeSelectedAttributeNoUndo('filter', 'url(#' + filter.id + ')')
+      svgCanvas.changeSelectedAttributeNoUndo('filter', `url(#${filter.id})`)
       svgCanvas.setFilterHidden(false)
     }
 
@@ -159,7 +159,7 @@ export const setBlur = function (val, complete) {
     return
   }
   const elemId = elem.id
-  let filter = svgCanvas.getElement(elemId + '_blur')
+  let filter = svgCanvas.getElement(`${elemId}_blur`)
   svgCanvas.setFilter(filter)
 
   val = Number(val) || 0
@@ -193,7 +193,7 @@ export const setBlur = function (val, complete) {
     filter = svgCanvas.addSVGElementsFromJson({
       element: 'filter',
       attr: {
-        id: elemId + '_blur'
+        id: `${elemId}_blur`
       }
     })
     filter.append(newblur)

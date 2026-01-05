@@ -301,12 +301,12 @@ export const addPointGripMethod = function (index, x, y) {
   // create the container of all the point grips
   const pointGripContainer = getGripContainerMethod()
 
-  let pointGrip = getElement('pathpointgrip_' + index)
+  let pointGrip = getElement(`pathpointgrip_${index}`)
   // create it
   if (!pointGrip) {
     pointGrip = document.createElementNS(NS.SVG, 'circle')
     const atts = {
-      id: 'pathpointgrip_' + index,
+      id: `pathpointgrip_${index}`,
       display: 'none',
       r: 4,
       fill: '#0FF',
@@ -430,7 +430,7 @@ export const getControlPointsMethod = function (seg) {
   for (let i = 1; i < 3; i++) {
     const id = index + 'c' + i
 
-    const ctrlLine = cpt['c' + i + '_line'] = getCtrlLineMethod(id)
+    const ctrlLine = cpt[`c${i}_line`] = getCtrlLineMethod(id)
 
     const pt = getGripPtMethod(seg, { x: item['x' + i], y: item['y' + i] })
     const gpt = getGripPtMethod(seg, { x: segItems[i - 1].x, y: segItems[i - 1].y })
@@ -443,10 +443,10 @@ export const getControlPointsMethod = function (seg) {
       display: 'inline'
     })
 
-    cpt['c' + i + '_line'] = ctrlLine
+    cpt[`c${i}_line`] = ctrlLine
 
     // create it
-    const pointGrip = cpt['c' + i] = addCtrlGripMethod(id)
+    const pointGrip = cpt[`c${i}`] = addCtrlGripMethod(id)
 
     assignAttributes(pointGrip, {
       cx: pt.x,
@@ -500,13 +500,13 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
 */
 export const getSegSelectorMethod = function (seg, update) {
   const { index } = seg
-  let segLine = getElement('segline_' + index)
+  let segLine = getElement(`segline_${index}`)
   if (!segLine) {
     const pointGripContainer = getGripContainerMethod()
     // create segline
     segLine = document.createElementNS(NS.SVG, 'path')
     assignAttributes(segLine, {
-      id: 'segline_' + index,
+      id: `segline_${index}`,
       display: 'none',
       fill: 'none',
       stroke: '#0FF',
@@ -576,8 +576,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    document.getElementById('ctrlpointgrip_' + this.index + 'c1')?.setAttribute('fill', y ? '#0FF' : '#EEE')
-    document.getElementById('ctrlpointgrip_' + this.index + 'c2')?.setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById(`ctrlpointgrip_${this.index}c1`)?.setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById(`ctrlpointgrip_${this.index}c2`)?.setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**

@@ -10,6 +10,7 @@ import { isWebkit } from '../common/browser.js'
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
 import { transformListToTransform, transformBox, transformPoint, matrixMultiply, getTransformList } from './math.js'
 import { NS } from './namespaces'
+import { warn } from '../common/logger.js'
 
 let svgCanvas
 let selectorManager_ // A Singleton
@@ -341,10 +342,10 @@ export class SelectorManager {
       const grip = svgCanvas.createSVGElement({
         element: 'circle',
         attr: {
-          id: ('selectorGrip_resize_' + dir),
+          id: `selectorGrip_resize_${dir}`,
           fill: '#22C',
           r: gripRadius,
-          style: ('cursor:' + dir + '-resize'),
+          style: `cursor:${dir}-resize`,
           // This expands the mouse-able area of the grips making them
           // easier to grab with the mouse.
           // This works in Opera and WebKit, but does not work in Firefox
@@ -462,7 +463,7 @@ export class SelectorManager {
     const sel = this.selectorMap[elem.id]
     if (!sel?.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.warn('WARNING! selector was released but was already unlocked')
+      warn('WARNING! selector was released but was already unlocked', null, 'select')
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {

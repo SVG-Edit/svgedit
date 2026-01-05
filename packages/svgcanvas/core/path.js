@@ -606,7 +606,7 @@ export const reorientGrads = (elem, m) => {
         }
         newgrad.id = svgCanvas.getNextId()
         findDefs().append(newgrad)
-        elem.setAttribute(type, 'url(#' + newgrad.id + ')')
+        elem.setAttribute(type, `url(#${newgrad.id})`)
       }
     }
   }
@@ -800,10 +800,10 @@ const pathDSegment = (letter, points, morePoints, lastPoint) => {
   })
   let segment = letter + points.join(' ')
   if (morePoints) {
-    segment += ' ' + morePoints.join(' ')
+    segment += ` ${morePoints.join(' ')}`
   }
   if (lastPoint) {
-    segment += ' ' + shortFloat(lastPoint)
+    segment += ` ${shortFloat(lastPoint)}`
   }
   return segment
 }

@@ -140,8 +140,15 @@ export const updateClipPath = (attr, tx, ty, elem) => {
  */
 export const recalculateDimensions = selected => {
   if (!selected) return null
+
+  // Don't recalculate dimensions for groups - this would push their transforms down to children
+  // Groups should maintain their transform attribute on the group element itself
+  if (selected.tagName === 'g' || selected.tagName === 'a') {
+    return null
+  }
+
   if (
-    (selected.tagName === 'g' || selected.tagName === 'a' || selected.getAttribute?.('clip-path')) &&
+    (selected.getAttribute?.('clip-path')) &&
     selected.querySelector?.('[clip-path]')
   ) {
     // Keep transforms when clip-paths are present to avoid mutating defs.
@@ -463,7 +470,7 @@ export const recalculateDimensions = selected => {
           }
 
           const uses = selected.getElementsByTagNameNS(NS.SVG, 'use')
-          const href = '#' + child.id
+          const href = `#${child.id}`
           let u = uses.length
           while (u--) {
             const useElem = uses.item(u)

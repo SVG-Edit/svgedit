@@ -200,7 +200,11 @@ export const dataURLToObjectURL = dataurl => {
     return ''
   }
   const arr = dataurl.split(',')
-  const mime = arr[0].match(/:(.*?);/)[1]
+  const matchResult = arr[0].match(/:(.*?);/)
+  if (!matchResult || !matchResult[1]) {
+    return ''
+  }
+  const mime = matchResult[1]
   const bstr = atob(arr[1])
   /*
   const [prefix, suffix] = dataurl.split(','),
@@ -360,14 +364,17 @@ export const getUrlFromAttr = function (attrVal) {
   if (attrVal) {
     // url('#somegrad')
     if (attrVal.startsWith('url("')) {
-      return attrVal.substring(5, attrVal.indexOf('"', 6))
+      const endIndex = attrVal.indexOf('"', 6)
+      return endIndex > 0 ? attrVal.substring(5, endIndex) : null
     }
     // url('#somegrad')
     if (attrVal.startsWith("url('")) {
-      return attrVal.substring(5, attrVal.indexOf("'", 6))
+      const endIndex = attrVal.indexOf("'", 6)
+      return endIndex > 0 ? attrVal.substring(5, endIndex) : null
     }
     if (attrVal.startsWith('url(')) {
-      return attrVal.substring(4, attrVal.indexOf(')'))
+      const endIndex = attrVal.indexOf(')')
+      return endIndex > 0 ? attrVal.substring(4, endIndex) : null
     }
   }
   return null
@@ -1263,7 +1270,7 @@ export const getRefElem = attrVal => {
   if (!attrVal) return null
   const url = getUrlFromAttr(attrVal)
   if (!url) return null
-  const id = url[0] === '#' ? url.substr(1) : url
+  const id = url[0] === '#' ? url.slice(1) : url
   return getElement(id)
 }
 /**
@@ -1310,9 +1317,9 @@ export const getElement = id => {
 export const assignAttributes = (elem, attrs, suspendLength, unitCheck) => {
   for (const [key, value] of Object.entries(attrs)) {
     const ns =
-      key.substr(0, 4) === 'xml:'
+      key.startsWith('xml:')
         ? NS.XML
-        : key.substr(0, 6) === 'xlink:'
+        : key.startsWith('xlink:')
           ? NS.XLINK
           : null
     if (value === undefined) {

@@ -217,16 +217,14 @@ export const convertPath = function (pth, toRel) {
  * @param {Integer[]} [lastPoint] - x,y point
  * @returns {string}
  */
-function pathDSegment (letter, points, morePoints, lastPoint) {
-  points.forEach(function (pnt, i) {
-    points[i] = shortFloat(pnt)
-  })
-  let segment = letter + points.join(' ')
+const pathDSegment = (letter, points, morePoints, lastPoint) => {
+  const formattedPoints = points.map(pnt => shortFloat(pnt))
+  let segment = `${letter}${formattedPoints.join(' ')}`
   if (morePoints) {
-    segment += ' ' + morePoints.join(' ')
+    segment += ` ${morePoints.join(' ')}`
   }
   if (lastPoint) {
-    segment += ' ' + shortFloat(lastPoint)
+    segment += ` ${shortFloat(lastPoint)}`
   }
   return segment
 }
@@ -365,7 +363,7 @@ export const pathActionsMethod = (function () {
         // if pts array is empty, create path element with M at current point
         const drawnPath = svgCanvas.getDrawnPath()
         if (!drawnPath) {
-          const dAttr = 'M' + x + ',' + y + ' ' // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
+          const dAttr = `M${x},${y} `
           /* drawnPath = */ svgCanvas.setDrawnPath(svgCanvas.addSVGElementsFromJson({
             element: 'path',
             curStyles: true,
@@ -376,7 +374,7 @@ export const pathActionsMethod = (function () {
             }
           }))
           // set stretchy line to first point
-          stretchy.setAttribute('d', ['M', mouseX, mouseY, mouseX, mouseY].join(' '))
+          stretchy.setAttribute('d', `M${mouseX} ${mouseY} ${mouseX} ${mouseY}`)
           index = subpath ? path.segs.length : 0
           svgCanvas.addPointGrip(index, mouseX, mouseY)
         } else {
@@ -511,9 +509,9 @@ export const pathActionsMethod = (function () {
 
       ({ id } = evt.target)
       let curPt
-      if (id.substr(0, 14) === 'pathpointgrip_') {
+      if (id.startsWith('pathpointgrip_')) {
         // Select this point
-        curPt = path.cur_pt = Number.parseInt(id.substr(14))
+        curPt = path.cur_pt = Number.parseInt(id.slice(14))
         path.dragging = [startX, startY]
         const seg = path.segs[curPt]
 

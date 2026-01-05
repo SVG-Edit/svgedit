@@ -194,10 +194,12 @@ describe('recalculate', function () {
 
     recalculate.recalculateDimensions(elem)
 
-    assert.equal(elem.hasAttribute('transform'), false)
+    // Groups should preserve their transforms, not flatten them into children
+    assert.equal(elem.hasAttribute('transform'), true)
+    assert.equal(elem.getAttribute('transform'), 'translate(100,50)')
     assert.equal(rect.hasAttribute('transform'), false)
-    assert.equal(rect.getAttribute('x'), '300')
-    assert.equal(rect.getAttribute('y'), '200')
+    assert.equal(rect.getAttribute('x'), '200')
+    assert.equal(rect.getAttribute('y'), '150')
     assert.equal(rect.getAttribute('width'), '250')
     assert.equal(rect.getAttribute('height'), '120')
   })
@@ -208,12 +210,14 @@ describe('recalculate', function () {
 
     recalculate.recalculateDimensions(elem)
 
-    assert.equal(elem.hasAttribute('transform'), false)
+    // Groups should preserve their transforms, not flatten them into children
+    assert.equal(elem.hasAttribute('transform'), true)
+    assert.equal(elem.getAttribute('transform'), 'translate(10,20) scale(2) translate(-10,-20)')
     assert.equal(rect.hasAttribute('transform'), false)
-    assert.equal(rect.getAttribute('x'), '390')
-    assert.equal(rect.getAttribute('y'), '280')
-    assert.equal(rect.getAttribute('width'), '500')
-    assert.equal(rect.getAttribute('height'), '240')
+    assert.equal(rect.getAttribute('x'), '200')
+    assert.equal(rect.getAttribute('y'), '150')
+    assert.equal(rect.getAttribute('width'), '250')
+    assert.equal(rect.getAttribute('height'), '120')
   })
 
   // TODO: Since recalculateDimensions() and surrounding code is

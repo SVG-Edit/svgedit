@@ -408,7 +408,7 @@ const setZoomMethod = (zoomLevel) => {
 const setColorMethod = (type, val, preventUndo) => {
   const selectedElements = svgCanvas.getSelectedElements()
   svgCanvas.setCurShape(type, val)
-  svgCanvas.setCurProperties(type + '_paint', { type: 'solidColor' })
+  svgCanvas.setCurProperties(`${type}_paint`, { type: 'solidColor' })
   const elems = []
   /**
 *
@@ -452,8 +452,8 @@ const setColorMethod = (type, val, preventUndo) => {
 * @returns {void}
 */
 const setGradientMethod = (type) => {
-  if (!svgCanvas.getCurProperties(type + '_paint') ||
-    svgCanvas.getCurProperties(type + '_paint').type === 'solidColor') { return }
+  if (!svgCanvas.getCurProperties(`${type}_paint`) ||
+    svgCanvas.getCurProperties(`${type}_paint`).type === 'solidColor') { return }
   const canvas = svgCanvas
   let grad = canvas[type + 'Grad']
   if (!grad) { return }
@@ -568,10 +568,10 @@ const setPaintMethod = (type, paint) => {
   svgCanvas.setPaintOpacity(type, p.alpha / 100, true)
 
   // now set the current paint object
-  svgCanvas.setCurProperties(type + '_paint', p)
+  svgCanvas.setCurProperties(`${type}_paint`, p)
   switch (p.type) {
     case 'solidColor':
-      svgCanvas.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none')
+      svgCanvas.setColor(type, p.solidColor !== 'none' ? `#${p.solidColor}` : 'none')
       break
     case 'linearGradient':
     case 'radialGradient':

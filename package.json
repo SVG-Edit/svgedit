@@ -86,9 +86,9 @@
     "browser-fs-access": "0.38.0",
     "elix": "15.0.1",
     "i18next": "25.7.3",
-    "jspdf": "3.0.4",
+    "jspdf": "4.0.0",
     "pathseg": "1.2.1",
-    "svg2pdf.js": "2.6.0"
+    "svg2pdf.js": "2.7.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
@@ -110,6 +110,6 @@
     "vitest": "^4.0.16"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.54.0"
+    "@rollup/rollup-linux-x64-gnu": "4.55.1"
   }
 }

@@ -8,6 +8,7 @@
 import { jsPDF as JsPDF } from 'jspdf'
 import 'svg2pdf.js'
 import * as history from './history.js'
+import { error } from '../common/logger.js'
 import {
   text2xml,
   cleanupElement,
@@ -541,7 +542,7 @@ const setSvgString = (xmlString, preventUndo) => {
       ;['width', 'height'].forEach(dim => {
         // Set to 100 if not given
         const val = content.getAttribute(dim) || '100%'
-        if (String(val).substr(-1) === '%') {
+        if (String(val).slice(-1) === '%') {
           // Use user units if percentage given
           percs = true
         } else {
@@ -614,7 +615,7 @@ const setSvgString = (xmlString, preventUndo) => {
     if (!preventUndo) svgCanvas.addCommandToHistory(batchCmd)
     svgCanvas.call('sourcechanged', [svgCanvas.getSvgContent()])
   } catch (e) {
-    console.error(e)
+    error('Error setting SVG string', e, 'svg-exec')
     return false
   }
 
@@ -766,7 +767,7 @@ const importSvgString = (xmlString, preserveDimension) => {
     svgCanvas.addCommandToHistory(batchCmd)
     svgCanvas.call('changed', [svgCanvas.getSvgContent()])
   } catch (e) {
-    console.error(e)
+    error('Error importing SVG string', e, 'svg-exec')
     return null
   }
 
@@ -893,8 +894,8 @@ const convertImagesToBase64 = async svgElement => {
           }
           reader.readAsDataURL(blob)
         })
-      } catch (error) {
-        console.error('Failed to fetch image:', error)
+      } catch (err) {
+        error('Failed to fetch image', err, 'svg-exec')
       }
     }
   })
@@ -1045,7 +1046,7 @@ const exportPDF = (
         }
 
         img.onerror = err => {
-          console.error('Failed to load SVG into image element:', err)
+          error('Failed to load SVG into image element', err, 'svg-exec')
           reject(err)
         }
 

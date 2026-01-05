@@ -4,6 +4,8 @@
  * @license MIT
  */
 
+import { warn } from '../common/logger.js'
+
 import {
   snapToGrid,
   assignAttributes,
@@ -143,12 +145,12 @@ export const remapElement = (selected, changes, m) => {
       const generatedId = drawing?.getNextId?.() ??
         (grad.id ? `${grad.id}-mirrored` : `mirrored-grad-${Date.now()}`)
       if (!generatedId) {
-        console.warn('Unable to mirror gradient: no drawing context available')
+        warn('Unable to mirror gradient: no drawing context available', null, 'coords')
         return
       }
       newgrad.id = generatedId
       findDefs().append(newgrad)
-      selected.setAttribute(type, 'url(#' + newgrad.id + ')')
+      selected.setAttribute(type, `url(#${newgrad.id})`)
     }
   })
 
@@ -452,12 +454,12 @@ export const remapElement = (selected, changes, m) => {
         switch (type) {
           case 13: // relative horizontal line (h)
           case 12: // absolute horizontal line (H)
-            dstr += seg.x + ' '
+            dstr += `${seg.x} `
             newPathData.push({ type: letter, values: [seg.x] })
             break
           case 15: // relative vertical line (v)
           case 14: // absolute vertical line (V)
-            dstr += seg.y + ' '
+            dstr += `${seg.y} `
             newPathData.push({ type: letter, values: [seg.y] })
             break
           case 3: // relative move (m)
@@ -466,24 +468,12 @@ export const remapElement = (selected, changes, m) => {
           case 2: // absolute move (M)
           case 4: // absolute line (L)
           case 18: // absolute smooth quad (T)
-            dstr += seg.x + ',' + seg.y + ' '
+            dstr += `${seg.x},${seg.y} `
             newPathData.push({ type: letter, values: [seg.x, seg.y] })
             break
           case 7: // relative cubic (c)
           case 6: // absolute cubic (C)
-            dstr +=
-              seg.x1 +
-              ',' +
-              seg.y1 +
-              ' ' +
-              seg.x2 +
-              ',' +
-              seg.y2 +
-              ' ' +
-              seg.x +
-              ',' +
-              seg.y +
-              ' '
+            dstr += `${seg.x1},${seg.y1} ${seg.x2},${seg.y2} ${seg.x},${seg.y} `
             newPathData.push({
               type: letter,
               values: [seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y]
@@ -491,7 +481,7 @@ export const remapElement = (selected, changes, m) => {
             break
           case 9: // relative quad (q)
           case 8: // absolute quad (Q)
-            dstr += seg.x1 + ',' + seg.y1 + ' ' + seg.x + ',' + seg.y + ' '
+            dstr += `${seg.x1},${seg.y1} ${seg.x},${seg.y} `
             newPathData.push({ type: letter, values: [seg.x1, seg.y1, seg.x, seg.y] })
             break
           case 11: // relative elliptical arc (a)
@@ -526,7 +516,7 @@ export const remapElement = (selected, changes, m) => {
             break
           case 17: // relative smooth cubic (s)
           case 16: // absolute smooth cubic (S)
-            dstr += seg.x2 + ',' + seg.y2 + ' ' + seg.x + ',' + seg.y + ' '
+            dstr += `${seg.x2},${seg.y2} ${seg.x},${seg.y} `
             newPathData.push({ type: letter, values: [seg.x2, seg.y2, seg.x, seg.y] })
             break
           default:

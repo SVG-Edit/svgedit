@@ -20,6 +20,7 @@
  */
 
 import { NS } from './namespaces.js'
+import { warn } from '../common/logger.js'
 
 // Constants
 const NEAR_ZERO = 1e-10
@@ -82,7 +83,7 @@ export const getTransformList = elem => {
   if (elem.patternTransform?.baseVal) {
     return elem.patternTransform.baseVal
   }
-  console.warn('No transform list found. Check browser compatibility.', elem)
+  warn('No transform list found. Check browser compatibility.', elem, 'math')
 }
 
 /**

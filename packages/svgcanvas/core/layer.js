@@ -208,7 +208,7 @@ Layer.CLASS_NAME = 'layer'
 /**
  * @property {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
  */
-Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
+Layer.CLASS_REGEX = new RegExp(`(\\s|^)${Layer.CLASS_NAME}(\\s|$)`)
 
 /**
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
@@ -221,7 +221,7 @@ function addLayerClass (elem) {
   if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
-    elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)
+    elem.setAttribute('class', `${classes} ${Layer.CLASS_NAME}`)
   }
 }
 

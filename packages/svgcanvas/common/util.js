@@ -46,7 +46,7 @@ export function getClosest (elem, selector) {
   let attribute; let value
   // If selector is a data attribute, split attribute from value
   if (firstChar === '[') {
-    selector = selector.substr(1, selector.length - 2)
+    selector = selector.slice(1, -1)
     attribute = selector.split('=')
     if (attribute.length > 1) {
       value = true
@@ -58,18 +58,18 @@ export function getClosest (elem, selector) {
     // If selector is a class
     if (firstChar === '.') {
       if (supports) {
-        if (elem.classList.contains(selector.substr(1))) {
+        if (elem.classList.contains(selector.slice(1))) {
           return elem
         }
       } else {
-        if (new RegExp('(^|\\s)' + selector.substr(1) + '(\\s|$)').test(elem.className)) {
+        if (new RegExp(`(^|\\s)${selector.slice(1)}(\\s|$)`).test(elem.className)) {
           return elem
         }
       }
     }
     // If selector is an ID
     if (firstChar === '#') {
-      if (elem.id === selector.substr(1)) {
+      if (elem.id === selector.slice(1)) {
         return elem
       }
     }
@@ -107,19 +107,19 @@ export function getParents (elem, selector) {
     if (selector) {
       // If selector is a class
       if (firstChar === '.') {
-        if (elem.classList.contains(selector.substr(1))) {
+        if (elem.classList.contains(selector.slice(1))) {
           parents.push(elem)
         }
       }
       // If selector is an ID
       if (firstChar === '#') {
-        if (elem.id === selector.substr(1)) {
+        if (elem.id === selector.slice(1)) {
           parents.push(elem)
         }
       }
       // If selector is a data attribute
       if (firstChar === '[') {
-        if (elem.hasAttribute(selector.substr(1, selector.length - 1))) {
+        if (elem.hasAttribute(selector.slice(1, -1))) {
           parents.push(elem)
         }
       }
@@ -145,19 +145,19 @@ export function getParentsUntil (elem, parent, selector) {
     if (parent) {
       // If parent is a class
       if (parentType === '.') {
-        if (elem.classList.contains(parent.substr(1))) {
+        if (elem.classList.contains(parent.slice(1))) {
           break
         }
       }
       // If parent is an ID
       if (parentType === '#') {
-        if (elem.id === parent.substr(1)) {
+        if (elem.id === parent.slice(1)) {
           break
         }
       }
       // If parent is a data attribute
       if (parentType === '[') {
-        if (elem.hasAttribute(parent.substr(1, parent.length - 1))) {
+        if (elem.hasAttribute(parent.slice(1, -1))) {
           break
         }
       }
@@ -169,19 +169,19 @@ export function getParentsUntil (elem, parent, selector) {
     if (selector) {
       // If selector is a class
       if (selectorType === '.') {
-        if (elem.classList.contains(selector.substr(1))) {
+        if (elem.classList.contains(selector.slice(1))) {
           parents.push(elem)
         }
       }
       // If selector is an ID
       if (selectorType === '#') {
-        if (elem.id === selector.substr(1)) {
+        if (elem.id === selector.slice(1)) {
           parents.push(elem)
         }
       }
       // If selector is a data attribute
       if (selectorType === '[') {
-        if (elem.hasAttribute(selector.substr(1, selector.length - 1))) {
+        if (elem.hasAttribute(selector.slice(1, -1))) {
           parents.push(elem)
         }
       }
