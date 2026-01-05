@@ -131,22 +131,24 @@ const svgWhiteList_ = {
 }
 
 // add generic attributes to all elements of the whitelist
-Object.keys(svgWhiteList_).forEach((element) => { svgWhiteList_[element] = [...svgWhiteList_[element], ...svgGenericWhiteList] })
+for (const [element, attrs] of Object.entries(svgWhiteList_)) {
+  svgWhiteList_[element] = [...attrs, ...svgGenericWhiteList]
+}
 
 // Produce a Namespace-aware version of svgWhitelist
 const svgWhiteListNS_ = {}
-Object.entries(svgWhiteList_).forEach(([elt, atts]) => {
+for (const [elt, atts] of Object.entries(svgWhiteList_)) {
   const attNS = {}
-  Object.entries(atts).forEach(([_i, att]) => {
+  for (const att of atts) {
     if (att.includes(':')) {
-      const v = att.split(':')
-      attNS[v[1]] = NS[(v[0]).toUpperCase()]
+      const [prefix, localName] = att.split(':')
+      attNS[localName] = NS[prefix.toUpperCase()]
     } else {
       attNS[att] = att === 'xmlns' ? NS.XMLNS : null
     }
-  })
+  }
   svgWhiteListNS_[elt] = attNS
-})
+}
 
 /**
 * Sanitizes the input node and its children.

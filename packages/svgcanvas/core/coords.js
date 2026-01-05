@@ -24,26 +24,28 @@ import { convertToNum } from './units.js'
 
 let svgCanvas = null
 
-const flipBoxCoordinate = value => {
+const flipBoxCoordinate = (value) => {
   if (value == null) return null
   const str = String(value).trim()
   if (!str) return null
+
   if (str.endsWith('%')) {
     const num = Number.parseFloat(str.slice(0, -1))
-    if (Number.isNaN(num)) return str
-    return `${100 - num}%`
+    return Number.isNaN(num) ? str : `${100 - num}%`
   }
+
   const num = Number.parseFloat(str)
-  if (Number.isNaN(num)) return str
-  return String(1 - num)
+  return Number.isNaN(num) ? str : String(1 - num)
 }
 
 const flipAttributeInBoxUnits = (elem, attr) => {
   const value = elem.getAttribute(attr)
   if (value == null) return
+
   const flipped = flipBoxCoordinate(value)
-  if (flipped == null) return
-  elem.setAttribute(attr, flipped)
+  if (flipped != null) {
+    elem.setAttribute(attr, flipped)
+  }
 }
 
 /**
@@ -56,28 +58,9 @@ export const init = canvas => {
   svgCanvas = canvas
 }
 
-// This is how we map path segment types to their corresponding commands
+// Map path segment types to their corresponding commands
 const pathMap = [
-  0,
-  'z',
-  'M',
-  'm',
-  'L',
-  'l',
-  'C',
-  'c',
-  'Q',
-  'q',
-  'A',
-  'a',
-  'H',
-  'h',
-  'V',
-  'v',
-  'S',
-  's',
-  'T',
-  't'
+  0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'
 ]
 
 /**
@@ -90,19 +73,21 @@ const pathMap = [
  */
 export const remapElement = (selected, changes, m) => {
   const remap = (x, y) => transformPoint(x, y, m)
-  const scalew = w => m.a * w
-  const scaleh = h => m.d * h
+  const scalew = (w) => m.a * w
+  const scaleh = (h) => m.d * h
   const doSnapping =
     svgCanvas.getGridSnapping?.() &&
     selected?.parentNode?.parentNode?.localName === 'svg'
+
   const finishUp = () => {
     if (doSnapping) {
-      Object.entries(changes).forEach(([attr, value]) => {
+      for (const [attr, value] of Object.entries(changes)) {
         changes[attr] = snapToGrid(value)
-      })
+      }
     }
     assignAttributes(selected, changes, 1000, true)
   }
+
   const box = getBBox(selected)
 
   // Handle gradients and patterns

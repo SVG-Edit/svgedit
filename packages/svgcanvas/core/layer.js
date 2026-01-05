@@ -40,11 +40,8 @@ class Layer {
       const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
       layerTitle.textContent = name
       this.group_.append(layerTitle)
-      if (group) {
-        group.insertAdjacentElement('afterend', this.group_)
-      } else {
-        svgElem.append(this.group_)
-      }
+
+      group ? group.insertAdjacentElement('afterend', this.group_) : svgElem.append(this.group_)
     }
 
     addLayerClass(this.group_)
@@ -93,7 +90,7 @@ class Layer {
    * @returns {void}
    */
   setVisible (visible) {
-    const expected = visible === undefined || visible ? 'inline' : 'none'
+    const expected = (visible === undefined || visible) ? 'inline' : 'none'
     const oldDisplay = this.group_.getAttribute('display')
     if (oldDisplay !== expected) {
       this.group_.setAttribute('display', expected)
@@ -114,10 +111,7 @@ class Layer {
    */
   getOpacity () {
     const opacity = this.group_.getAttribute('opacity')
-    if (!opacity) {
-      return 1
-    }
-    return Number.parseFloat(opacity)
+    return opacity ? Number.parseFloat(opacity) : 1
   }
 
   /**
