@@ -38,6 +38,18 @@ describe('clearSvgContentElementInit', () => {
     expect(svgContent.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg')
   })
 
+  it('resets stale svgcontent attributes', () => {
+    const { canvas, svgContent } = buildCanvas(false)
+    svgContent.setAttribute('viewBox', '0 0 10 10')
+    svgContent.setAttribute('class', 'stale')
+    initClear(canvas)
+
+    clearSvgContentElementInit()
+
+    expect(svgContent.getAttribute('viewBox')).toBe(null)
+    expect(svgContent.getAttribute('class')).toBe(null)
+  })
+
   it('honors show_outside_canvas by leaving overflow visible', () => {
     const { canvas, svgContent } = buildCanvas(true)
     initClear(canvas)

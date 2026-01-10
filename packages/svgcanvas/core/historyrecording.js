@@ -79,7 +79,9 @@ class HistoryRecordingService {
       this.batchCommandStack_.pop()
       const { length: len } = this.batchCommandStack_
       this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null
-      this.addCommand_(batchCommand)
+      if (!batchCommand.isEmpty()) {
+        this.addCommand_(batchCommand)
+      }
     }
     return this
   }
@@ -157,5 +159,5 @@ class HistoryRecordingService {
  * @memberof module:history.HistoryRecordingService
  * @property {module:history.HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
  */
-HistoryRecordingService.NO_HISTORY = new HistoryRecordingService()
+HistoryRecordingService.NO_HISTORY = new HistoryRecordingService(null)
 export default HistoryRecordingService

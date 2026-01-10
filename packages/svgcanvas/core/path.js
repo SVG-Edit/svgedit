@@ -236,6 +236,7 @@ export const init = (canvas) => {
   svgCanvas.getPointFromGrip = getPointFromGripMethod
   svgCanvas.setLinkControlPoints = setLinkControlPoints
   svgCanvas.reorientGrads = reorientGrads
+  svgCanvas.recalcRotatedPath = recalcRotatedPath
   svgCanvas.getSegData = () => { return segData }
   svgCanvas.getUIStrings = () => { return uiStrings }
   svgCanvas.getPathObj = () => { return path }
@@ -466,14 +467,17 @@ const getRotVals = (x, y) => {
 * @returns {void}
 */
 export const recalcRotatedPath = () => {
-  const currentPath = path.elem
+  const currentPath = path?.elem
+  if (!currentPath) { return }
   angle = getRotationAngle(currentPath, true)
   if (!angle) { return }
   // selectedBBoxes[0] = path.oldbbox;
   const oldbox = path.oldbbox // selectedBBoxes[0],
+  if (!oldbox) { return }
   oldcx = oldbox.x + oldbox.width / 2
   oldcy = oldbox.y + oldbox.height / 2
   const box = getBBox(currentPath)
+  if (!box) { return }
   newcx = box.x + box.width / 2
   newcy = box.y + box.height / 2
 
@@ -487,6 +491,7 @@ export const recalcRotatedPath = () => {
   newcy = r * Math.sin(theta) + oldcy
 
   const list = currentPath.pathSegList
+  if (!list) { return }
 
   let i = list.numberOfItems
   while (i) {
@@ -495,13 +500,33 @@ export const recalcRotatedPath = () => {
     const type = seg.pathSegType
     if (type === 1) { continue }
 
-    const rvals = getRotVals(seg.x, seg.y)
-    const points = [rvals.x, rvals.y]
-    if (seg.x1 && seg.x2) {
-      const cVals1 = getRotVals(seg.x1, seg.y1)
-      const cVals2 = getRotVals(seg.x2, seg.y2)
-      points.splice(points.length, 0, cVals1.x, cVals1.y, cVals2.x, cVals2.y)
+    const props = segData[type]
+    if (!props) { continue }
+
+    const newVals = {}
+    if (seg.x !== null && seg.x !== undefined && seg.y !== null && seg.y !== undefined) {
+      const rvals = getRotVals(seg.x, seg.y)
+      newVals.x = rvals.x
+      newVals.y = rvals.y
     }
+    if (seg.x1 !== null && seg.x1 !== undefined && seg.y1 !== null && seg.y1 !== undefined) {
+      const cVals1 = getRotVals(seg.x1, seg.y1)
+      newVals.x1 = cVals1.x
+      newVals.y1 = cVals1.y
+    }
+    if (seg.x2 !== null && seg.x2 !== undefined && seg.y2 !== null && seg.y2 !== undefined) {
+      const cVals2 = getRotVals(seg.x2, seg.y2)
+      newVals.x2 = cVals2.x
+      newVals.y2 = cVals2.y
+    }
+
+    const points = props.map((prop) => {
+      if (Object.prototype.hasOwnProperty.call(newVals, prop)) {
+        return newVals[prop]
+      }
+      const val = seg[prop]
+      return val === null || val === undefined ? 0 : val
+    })
     replacePathSeg(type, i, points)
   } // loop for each point
 
@@ -512,8 +537,18 @@ export const recalcRotatedPath = () => {
   // now we must set the new transform to be rotated around the new center
   const Rnc = svgCanvas.getSvgRoot().createSVGTransform()
   const tlist = getTransformList(currentPath)
+  if (!tlist) { return }
   Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy)
-  tlist.replaceItem(Rnc, 0)
+  if (tlist.numberOfItems) {
+    if (typeof tlist.replaceItem === 'function') {
+      tlist.replaceItem(Rnc, 0)
+    } else {
+      tlist.removeItem(0)
+      tlist.insertItemBefore(Rnc, 0)
+    }
+  } else {
+    tlist.appendItem(Rnc)
+  }
 }
 
 // ====================================
@@ -571,7 +606,7 @@ export const reorientGrads = (elem, m) => {
         }
         newgrad.id = svgCanvas.getNextId()
         findDefs().append(newgrad)
-        elem.setAttribute(type, 'url(#' + newgrad.id + ')')
+        elem.setAttribute(type, `url(#${newgrad.id})`)
       }
     }
   }
@@ -618,7 +653,7 @@ export const convertPath = (pth, toRel) => {
     switch (type) {
       case 1: // z,Z closepath (Z/z)
         d += 'z'
-        if (lastM && !toRel) {
+        if (lastM) {
           curx = lastM[0]
           cury = lastM[1]
         }
@@ -765,10 +800,10 @@ const pathDSegment = (letter, points, morePoints, lastPoint) => {
   })
   let segment = letter + points.join(' ')
   if (morePoints) {
-    segment += ' ' + morePoints.join(' ')
+    segment += ` ${morePoints.join(' ')}`
   }
   if (lastPoint) {
-    segment += ' ' + shortFloat(lastPoint)
+    segment += ` ${shortFloat(lastPoint)}`
   }
   return segment
 }

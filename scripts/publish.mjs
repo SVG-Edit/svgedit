@@ -138,8 +138,11 @@ async function main () {
   }
   run(`git tag ${quoteArg(releaseName)}`)
 
-  console.log('\nPublishing packages to npm...')
-  run('npm publish --workspaces --include-workspace-root')
+  console.log('\nPublishing workspace packages to npm...')
+  run('npm publish --workspaces')
+
+  console.log('\nPublishing root package to npm...')
+  run('npm publish')
 
   console.log(`\nDone. Published ${releaseName}.`)
 }

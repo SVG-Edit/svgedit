@@ -59,4 +59,20 @@ describe('locale loader', () => {
     expect(result.langParam).toBe('en')
     expect(t('common.ok')).toBe('OK')
   })
+
+  test('uses navigator.language with supported locale', async () => {
+    Reflect.deleteProperty(navigator, 'userLanguage')
+    setNavigatorProp('language', 'de')
+
+    const result = await putLocale('', goodLangs)
+    expect(result.langParam).toBe('de')
+  })
+
+  test('uses explicit lang parameter over navigator', async () => {
+    setNavigatorProp('userLanguage', 'de')
+    setNavigatorProp('language', 'de')
+
+    const result = await putLocale('en', goodLangs)
+    expect(result.langParam).toBe('en')
+  })
 })

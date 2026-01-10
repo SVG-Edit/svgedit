@@ -409,8 +409,11 @@ const setRotationAngle = (val, preventUndo) => {
       cy,
       transformListToTransform(tlist).matrix
     )
+    // Safety check: if center coordinates are invalid (NaN), fall back to untransformed bbox center
+    const centerX = Number.isFinite(center.x) ? center.x : cx
+    const centerY = Number.isFinite(center.y) ? center.y : cy
     const Rnc = svgCanvas.getSvgRoot().createSVGTransform()
-    Rnc.setRotate(val, center.x, center.y)
+    Rnc.setRotate(val, centerX, centerY)
     if (tlist.numberOfItems) {
       tlist.insertItemBefore(Rnc, 0)
     } else {
@@ -424,13 +427,20 @@ const setRotationAngle = (val, preventUndo) => {
     // we need to undo it, then redo it so it can be undo-able! :)
     // TODO: figure out how to make changes to transform list undo-able cross-browser?
     let newTransform = elem.getAttribute('transform')
+
     // new transform is something like: 'rotate(5 1.39625e-8 -11)'
     // we round the x so it becomes 'rotate(5 0 -11)'
-    if (newTransform) {
-      const newTransformArray = newTransform.split(/[ ,]+/)
-      const round = (num) => Math.round(Number(num) + Number.EPSILON)
-      const x = round(newTransformArray[1])
-      newTransform = `${newTransformArray[0]} ${x} ${newTransformArray[2]}`
+    // Only do this manipulation if the first transform is actually a rotation
+    if (newTransform && newTransform.startsWith('rotate(')) {
+      const match = newTransform.match(/^rotate\(([\d.\-e]+)\s+([\d.\-e]+)\s+([\d.\-e]+)\)(.*)/)
+      if (match) {
+        const angle = Number.parseFloat(match[1])
+        const round = (num) => Math.round(Number(num) + Number.EPSILON)
+        const x = round(match[2])
+        const y = round(match[3])
+        const restOfTransform = match[4] || '' // Preserve any transforms after the rotate
+        newTransform = `rotate(${angle} ${x} ${y})${restOfTransform}`
+      }
     }
 
     if (oldTransform) {

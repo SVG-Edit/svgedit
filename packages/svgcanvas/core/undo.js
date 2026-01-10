@@ -46,11 +46,26 @@ export const getUndoManager = () => {
       if (eventType === EventTypes.BEFORE_UNAPPLY || eventType === EventTypes.BEFORE_APPLY) {
         svgCanvas.clearSelection()
       } else if (eventType === EventTypes.AFTER_APPLY || eventType === EventTypes.AFTER_UNAPPLY) {
+        const cmdType = cmd.type()
+        const isApply = (eventType === EventTypes.AFTER_APPLY)
+        if (cmdType === 'ChangeElementCommand' && cmd.elem === svgCanvas.getSvgContent()) {
+          const values = isApply ? cmd.newValues : cmd.oldValues
+          if (values.width !== null && values.width !== undefined && values.width !== '') {
+            const newContentW = Number(values.width)
+            if (Number.isFinite(newContentW) && newContentW > 0) {
+              svgCanvas.contentW = newContentW
+            }
+          }
+          if (values.height !== null && values.height !== undefined && values.height !== '') {
+            const newContentH = Number(values.height)
+            if (Number.isFinite(newContentH) && newContentH > 0) {
+              svgCanvas.contentH = newContentH
+            }
+          }
+        }
         const elems = cmd.elements()
         svgCanvas.pathActions.clear()
         svgCanvas.call('changed', elems)
-        const cmdType = cmd.type()
-        const isApply = (eventType === EventTypes.AFTER_APPLY)
         if (cmdType === 'MoveElementCommand') {
           const parent = isApply ? cmd.newParent : cmd.oldParent
           if (parent === svgCanvas.getSvgContent()) {
@@ -116,7 +131,7 @@ export const getUndoManager = () => {
 * @param {Element} elem - The (text) DOM element to clone
 * @returns {Element} Cloned element
 */
-export const ffClone = function (elem) {
+export const ffClone = (elem) => {
   if (!isGecko()) { return elem }
   const clone = elem.cloneNode(true)
   elem.before(clone)
@@ -213,7 +228,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
         elem = ffClone(elem)
       }
       // Timeout needed for Opera & Firefox
-      // codedread: it is now possible for this function to be called with elements
+      // codedread: it is now possible for this to be called with elements
       // that are not in the selectedElements array, we need to only request a
       // selector if the element is in that array
       if (selectedElements.includes(elem)) {
@@ -264,7 +279,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
 * @param {Element[]} elems - The DOM elements to apply the change to
 * @returns {void}
 */
-export const changeSelectedAttributeMethod = function (attr, val, elems) {
+export const changeSelectedAttributeMethod = (attr, val, elems) => {
   const selectedElements = svgCanvas.getSelectedElements()
   elems = elems || selectedElements
   svgCanvas.undoMgr.beginUndoableChange(attr, elems)

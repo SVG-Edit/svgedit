@@ -12,6 +12,7 @@ import { NS } from './namespaces.js'
 import { toXml, getElement } from './utilities.js'
 import { copyElem as utilCopyElem } from './copy-elem.js'
 import { getParentsUntil } from '../common/util.js'
+import { warn } from '../common/logger.js'
 
 const visElems =
   'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(
@@ -32,7 +33,7 @@ let disabledElems = []
  * @param {module:history.HistoryRecordingService} [hrService] - if exists, return it instead of creating a new service.
  * @returns {module:history.HistoryRecordingService}
  */
-function historyRecordingService (hrService) {
+const historyRecordingService = (hrService) => {
   return hrService || new HistoryRecordingService(svgCanvas.undoMgr)
 }
 
@@ -41,18 +42,18 @@ function historyRecordingService (hrService) {
  * @param {Element} group The group element to search in.
  * @returns {string} The layer name or empty string.
  */
-function findLayerNameInGroup (group) {
+const findLayerNameInGroup = (group) => {
   const sel = group.querySelector('title')
   return sel ? sel.textContent : ''
 }
 
 /**
- * Verify the classList of the given element : if the classList contains 'layer', return true, then return false
+ * Checks if the given element's classList contains 'layer'.
  *
  * @param {Element} element - The given element
- * @returns {boolean} Return true if the classList contains 'layer' then return false
+ * @returns {boolean} True if the classList contains 'layer', false otherwise
  */
-function isLayerElement (element) {
+const isLayerElement = (element) => {
   return element.classList.contains('layer')
 }
 
@@ -61,7 +62,7 @@ function isLayerElement (element) {
  * @param {string[]} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
-function getNewLayerName (existingLayerNames) {
+const getNewLayerName = (existingLayerNames) => {
   let i = 1
   while (existingLayerNames.includes(`Layer ${i}`)) {
     i++
@@ -163,10 +164,10 @@ export class Drawing {
   getElem_ (id) {
     if (this.svgElem_.querySelector) {
       // querySelector lookup
-      return this.svgElem_.querySelector('#' + id)
+      return this.svgElem_.querySelector(`#${id}`)
     }
     // jQuery lookup: twice as slow as xpath in FF
-    return this.svgElem_.querySelector('[id=' + id + ']')
+    return this.svgElem_.querySelector(`[id=${id}]`)
   }
 
   /**
@@ -209,7 +210,7 @@ export class Drawing {
    */
   getId () {
     return this.nonce_
-      ? this.idPrefix + this.nonce_ + '_' + this.obj_num
+      ? `${this.idPrefix}${this.nonce_}_${this.obj_num}`
       : this.idPrefix + this.obj_num
   }
 
@@ -258,12 +259,16 @@ export class Drawing {
    */
   releaseId (id) {
     // confirm if this is a valid id for this Document, else return false
-    const front = this.idPrefix + (this.nonce_ ? this.nonce_ + '_' : '')
+    const front = `${this.idPrefix}${this.nonce_ ? `${this.nonce_}_` : ''}`
     if (typeof id !== 'string' || !id.startsWith(front)) {
       return false
     }
     // extract the obj_num of this id
-    const num = Number.parseInt(id.substr(front.length))
+    const suffix = id.slice(front.length)
+    if (!/^[0-9]+$/.test(suffix)) {
+      return false
+    }
+    const num = Number.parseInt(suffix)
 
     // if we didn't get a positive number or we already released this number
     // then return false.
@@ -612,6 +617,10 @@ export class Drawing {
     // Clone children
     const children = [...currentGroup.childNodes]
     children.forEach(child => {
+      if (child.nodeType !== 1) {
+        group.append(child.cloneNode(true))
+        return
+      }
       if (child.localName === 'title') {
         return
       }
@@ -710,10 +719,7 @@ export class Drawing {
    * @returns {Element}
    */
   copyElem (el) {
-    const that = this
-    const getNextIdClosure = function () {
-      return that.getNextId()
-    }
+    const getNextIdClosure = () => this.getNextId()
     return utilCopyElem(el, getNextIdClosure)
   }
 }
@@ -726,7 +732,7 @@ export class Drawing {
  * @param {draw.Drawing} currentDrawing
  * @returns {void}
  */
-export const randomizeIds = function (enableRandomization, currentDrawing) {
+export const randomizeIds = (enableRandomization, currentDrawing) => {
   randIds =
     enableRandomization === false
       ? RandomizeModes.NEVER_RANDOMIZE
@@ -868,6 +874,10 @@ export const cloneLayer = (name, hrService) => {
   const newLayer = svgCanvas
     .getCurrentDrawing()
     .cloneLayer(name, historyRecordingService(hrService))
+  if (!newLayer) {
+    warn('cloneLayer: no layer returned', null, 'draw')
+    return
+  }
 
   svgCanvas.clearSelection()
   leaveContext()
@@ -883,15 +893,19 @@ export const cloneLayer = (name, hrService) => {
  */
 export const deleteCurrentLayer = () => {
   const { BatchCommand, RemoveElementCommand } = svgCanvas.history
-  let currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer()
+  const currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer()
+  if (!currentLayer) {
+    warn('deleteCurrentLayer: no current layer', null, 'draw')
+    return false
+  }
   const { nextSibling } = currentLayer
   const parent = currentLayer.parentNode
-  currentLayer = svgCanvas.getCurrentDrawing().deleteCurrentLayer()
-  if (currentLayer) {
+  const removedLayer = svgCanvas.getCurrentDrawing().deleteCurrentLayer()
+  if (removedLayer && parent) {
     const batchCmd = new BatchCommand('Delete Layer')
     // store in our Undo History
     batchCmd.addSubCommand(
-      new RemoveElementCommand(currentLayer, nextSibling, parent)
+      new RemoveElementCommand(removedLayer, nextSibling, parent)
     )
     svgCanvas.addCommandToHistory(batchCmd)
     svgCanvas.clearSelection()
@@ -978,20 +992,19 @@ export const setCurrentLayerPosition = newPos => {
 export const setLayerVisibility = (layerName, bVisible) => {
   const { ChangeElementCommand } = svgCanvas.history
   const drawing = svgCanvas.getCurrentDrawing()
-  const prevVisibility = drawing.getLayerVisibility(layerName)
-  const layer = drawing.setLayerVisibility(layerName, bVisible)
-  if (layer) {
-    const oldDisplay = prevVisibility ? 'inline' : 'none'
-    svgCanvas.addCommandToHistory(
-      new ChangeElementCommand(
-        layer,
-        { display: oldDisplay },
-        'Layer Visibility'
-      )
-    )
-  } else {
+  const layerGroup = drawing.getLayerByName(layerName)
+  if (!layerGroup) {
+    warn('setLayerVisibility: layer not found', layerName, 'draw')
     return false
   }
+  const oldDisplay = layerGroup.getAttribute('display')
+  const layer = drawing.setLayerVisibility(layerName, bVisible)
+  if (!layer) {
+    return false
+  }
+  svgCanvas.addCommandToHistory(
+    new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility')
+  )
 
   if (layer === drawing.getCurrentLayer()) {
     svgCanvas.clearSelection()
@@ -1024,18 +1037,21 @@ export const moveSelectedToLayer = layerName => {
   let i = selElems.length
   while (i--) {
     const elem = selElems[i]
-    if (!elem) {
+    const oldLayer = elem?.parentNode
+    if (!elem || !oldLayer || oldLayer === layer) {
       continue
     }
     const oldNextSibling = elem.nextSibling
-    // TODO: this is pretty brittle!
-    const oldLayer = elem.parentNode
     layer.append(elem)
     batchCmd.addSubCommand(
       new MoveElementCommand(elem, oldNextSibling, oldLayer)
     )
   }
 
+  if (batchCmd.isEmpty()) {
+    warn('moveSelectedToLayer: no elements moved', null, 'draw')
+    return false
+  }
   svgCanvas.addCommandToHistory(batchCmd)
 
   return true
@@ -1081,12 +1097,13 @@ export const leaveContext = () => {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i]
       const orig = dataStorage.get(elem, 'orig_opac')
-      if (orig !== 1) {
-        elem.setAttribute('opacity', orig)
-      } else {
+      if (orig === null || orig === undefined) {
         elem.removeAttribute('opacity')
+      } else {
+        elem.setAttribute('opacity', orig)
       }
       elem.setAttribute('style', 'pointer-events: inherit')
+      dataStorage.remove(elem, 'orig_opac')
     }
     disabledElems = []
     svgCanvas.clearSelection(true)
@@ -1106,7 +1123,22 @@ export const setContext = elem => {
   const dataStorage = svgCanvas.getDataStorage()
   leaveContext()
   if (typeof elem === 'string') {
-    elem = getElement(elem)
+    const id = elem
+    try {
+      elem = getElement(id)
+    } catch (e) {
+      elem = null
+    }
+    if (!elem && typeof document !== 'undefined') {
+      const candidate = document.getElementById(id)
+      const svgContent = svgCanvas.getSvgContent?.()
+      elem = candidate && (svgContent ? svgContent.contains(candidate) : true)
+        ? candidate
+        : null
+    }
+  }
+  if (!elem) {
+    return
   }
 
   // Edit inside this group
@@ -1114,8 +1146,14 @@ export const setContext = elem => {
 
   // Disable other elements
   const parentsUntil = getParentsUntil(elem, '#svgcontent')
+  if (!parentsUntil) {
+    return
+  }
   const siblings = []
   parentsUntil.forEach(function (parent) {
+    if (!parent?.parentNode) {
+      return
+    }
     const elements = Array.prototype.filter.call(
       parent.parentNode.children,
       function (child) {
@@ -1128,9 +1166,11 @@ export const setContext = elem => {
   })
 
   siblings.forEach(function (curthis) {
-    const opac = curthis.getAttribute('opacity') || 1
     // Store the original's opacity
-    dataStorage.put(curthis, 'orig_opac', opac)
+    const origOpacity = curthis.getAttribute('opacity')
+    dataStorage.put(curthis, 'orig_opac', origOpacity)
+    const parsedOpacity = Number.parseFloat(origOpacity)
+    const opac = Number.isFinite(parsedOpacity) ? parsedOpacity : 1
     curthis.setAttribute('opacity', opac * 0.33)
     curthis.setAttribute('style', 'pointer-events: none')
     disabledElems.push(curthis)

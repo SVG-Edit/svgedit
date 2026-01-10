@@ -40,19 +40,16 @@ class Layer {
       const layerTitle = svgdoc.createElementNS(NS.SVG, 'title')
       layerTitle.textContent = name
       this.group_.append(layerTitle)
-      if (group) {
-        group.insertAdjacentElement('afterend', this.group_)
-      } else {
-        svgElem.append(this.group_)
-      }
+
+      group ? group.insertAdjacentElement('afterend', this.group_) : svgElem.append(this.group_)
     }
 
     addLayerClass(this.group_)
     walkTree(this.group_, function (e) {
-      e.setAttribute('style', 'pointer-events:inherit')
+      e.style.pointerEvents = 'inherit'
     })
 
-    this.group_.setAttribute('style', svgElem ? 'pointer-events:all' : 'pointer-events:none')
+    this.group_.style.pointerEvents = svgElem ? 'all' : 'none'
   }
 
   /**
@@ -76,7 +73,7 @@ class Layer {
    * @returns {void}
    */
   activate () {
-    this.group_.setAttribute('style', 'pointer-events:all')
+    this.group_.style.pointerEvents = 'all'
   }
 
   /**
@@ -84,7 +81,7 @@ class Layer {
    * @returns {void}
    */
   deactivate () {
-    this.group_.setAttribute('style', 'pointer-events:none')
+    this.group_.style.pointerEvents = 'none'
   }
 
   /**
@@ -93,7 +90,7 @@ class Layer {
    * @returns {void}
    */
   setVisible (visible) {
-    const expected = visible === undefined || visible ? 'inline' : 'none'
+    const expected = (visible === undefined || visible) ? 'inline' : 'none'
     const oldDisplay = this.group_.getAttribute('display')
     if (oldDisplay !== expected) {
       this.group_.setAttribute('display', expected)
@@ -114,10 +111,7 @@ class Layer {
    */
   getOpacity () {
     const opacity = this.group_.getAttribute('opacity')
-    if (!opacity) {
-      return 1
-    }
-    return Number.parseFloat(opacity)
+    return opacity ? Number.parseFloat(opacity) : 1
   }
 
   /**
@@ -208,7 +202,7 @@ Layer.CLASS_NAME = 'layer'
 /**
  * @property {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
  */
-Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
+Layer.CLASS_REGEX = new RegExp(`(\\s|^)${Layer.CLASS_NAME}(\\s|$)`)
 
 /**
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
@@ -216,12 +210,12 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)')
  * @param {SVGGElement} elem - The SVG element to update
  * @returns {void}
  */
-function addLayerClass (elem) {
+const addLayerClass = (elem) => {
   const classes = elem.getAttribute('class')
   if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)
   } else if (!Layer.CLASS_REGEX.test(classes)) {
-    elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME)
+    elem.setAttribute('class', `${classes} ${Layer.CLASS_NAME}`)
   }
 }
 

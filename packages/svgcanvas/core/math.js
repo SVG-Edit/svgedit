@@ -20,12 +20,45 @@
  */
 
 import { NS } from './namespaces.js'
+import { warn } from '../common/logger.js'
 
 // Constants
 const NEAR_ZERO = 1e-10
 
 // Create a throwaway SVG element for matrix operations
 const svg = document.createElementNS(NS.SVG, 'svg')
+
+const createTransformFromMatrix = (m) => {
+  const createFallback = (matrix) => {
+    const fallback = svg.createSVGMatrix()
+    Object.assign(fallback, {
+      a: matrix.a,
+      b: matrix.b,
+      c: matrix.c,
+      d: matrix.d,
+      e: matrix.e,
+      f: matrix.f
+    })
+    return fallback
+  }
+
+  try {
+    return svg.createSVGTransformFromMatrix(m)
+  } catch (e) {
+    const t = svg.createSVGTransform()
+    try {
+      t.setMatrix(m)
+      return t
+    } catch (err) {
+      try {
+        return svg.createSVGTransformFromMatrix(createFallback(m))
+      } catch (e2) {
+        t.setMatrix(createFallback(m))
+        return t
+      }
+    }
+  }
+}
 
 /**
  * Transforms a point by a given matrix without DOM calls.
@@ -56,7 +89,7 @@ export const getTransformList = elem => {
   if (elem.patternTransform?.baseVal) {
     return elem.patternTransform.baseVal
   }
-  console.warn('No transform list found. Check browser compatibility.', elem)
+  warn('No transform list found. Check browser compatibility.', elem, 'math')
 }
 
 /**
@@ -66,7 +99,12 @@ export const getTransformList = elem => {
  * @returns {boolean} True if it's an identity matrix (1,0,0,1,0,0)
  */
 export const isIdentity = m =>
-  m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0
+  Math.abs(m.a - 1) < NEAR_ZERO &&
+  Math.abs(m.b) < NEAR_ZERO &&
+  Math.abs(m.c) < NEAR_ZERO &&
+  Math.abs(m.d - 1) < NEAR_ZERO &&
+  Math.abs(m.e) < NEAR_ZERO &&
+  Math.abs(m.f) < NEAR_ZERO
 
 /**
  * Multiplies multiple matrices together (m1 * m2 * ...).
@@ -76,22 +114,54 @@ export const isIdentity = m =>
  * @returns {SVGMatrix} The resulting matrix
  */
 export const matrixMultiply = (...args) => {
-  // If no matrices are given, return an identity matrix
   if (args.length === 0) {
     return svg.createSVGMatrix()
   }
 
-  const m = args.reduceRight((prev, curr) => curr.multiply(prev))
+  const normalizeNearZero = (matrix) => {
+    const props = ['a', 'b', 'c', 'd', 'e', 'f']
+    for (const prop of props) {
+      if (Math.abs(matrix[prop]) < NEAR_ZERO) {
+        matrix[prop] = 0
+      }
+    }
+    return matrix
+  }
 
-  // Round near-zero values to zero
-  if (Math.abs(m.a) < NEAR_ZERO) m.a = 0
-  if (Math.abs(m.b) < NEAR_ZERO) m.b = 0
-  if (Math.abs(m.c) < NEAR_ZERO) m.c = 0
-  if (Math.abs(m.d) < NEAR_ZERO) m.d = 0
-  if (Math.abs(m.e) < NEAR_ZERO) m.e = 0
-  if (Math.abs(m.f) < NEAR_ZERO) m.f = 0
+  if (typeof DOMMatrix === 'function' && typeof DOMMatrix.fromMatrix === 'function') {
+    const result = args.reduce(
+      (acc, curr) => acc.multiply(DOMMatrix.fromMatrix(curr)),
+      new DOMMatrix()
+    )
 
-  return m
+    const out = svg.createSVGMatrix()
+    Object.assign(out, {
+      a: result.a,
+      b: result.b,
+      c: result.c,
+      d: result.d,
+      e: result.e,
+      f: result.f
+    })
+
+    return normalizeNearZero(out)
+  }
+
+  let m = svg.createSVGMatrix()
+  for (const curr of args) {
+    const next = svg.createSVGMatrix()
+    Object.assign(next, {
+      a: m.a * curr.a + m.c * curr.b,
+      b: m.b * curr.a + m.d * curr.b,
+      c: m.a * curr.c + m.c * curr.d,
+      d: m.b * curr.c + m.d * curr.d,
+      e: m.a * curr.e + m.c * curr.f + m.e,
+      f: m.b * curr.e + m.d * curr.f + m.f
+    })
+    m = next
+  }
+
+  return normalizeNearZero(m)
 }
 
 /**
@@ -172,25 +242,34 @@ export const transformBox = (l, t, w, h, m) => {
  */
 export const transformListToTransform = (tlist, min = 0, max = null) => {
   if (!tlist) {
-    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix())
+    return createTransformFromMatrix(svg.createSVGMatrix())
   }
 
   const start = Number.parseInt(min, 10)
   const end = Number.parseInt(max ?? tlist.numberOfItems - 1, 10)
-  const low = Math.min(start, end)
-  const high = Math.max(start, end)
+  const [low, high] = [Math.min(start, end), Math.max(start, end)]
 
-  let combinedMatrix = svg.createSVGMatrix()
+  const matrices = []
   for (let i = low; i <= high; i++) {
-    // If out of range, use identity
-    const currentMatrix =
-      i >= 0 && i < tlist.numberOfItems
-        ? tlist.getItem(i).matrix
-        : svg.createSVGMatrix()
-    combinedMatrix = matrixMultiply(combinedMatrix, currentMatrix)
+    const matrix = (i >= 0 && i < tlist.numberOfItems)
+      ? tlist.getItem(i).matrix
+      : svg.createSVGMatrix()
+    matrices.push(matrix)
   }
 
-  return svg.createSVGTransformFromMatrix(combinedMatrix)
+  const combinedMatrix = matrixMultiply(...matrices)
+
+  const out = svg.createSVGMatrix()
+  Object.assign(out, {
+    a: combinedMatrix.a,
+    b: combinedMatrix.b,
+    c: combinedMatrix.c,
+    d: combinedMatrix.d,
+    e: combinedMatrix.e,
+    f: combinedMatrix.f
+  })
+
+  return createTransformFromMatrix(out)
 }
 
 /**

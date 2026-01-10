@@ -93,6 +93,14 @@ describe('math', function () {
       'Modified matrix matching identity values should be identity'
     )
 
+    const mAlmostIdentity = svg.createSVGMatrix()
+    mAlmostIdentity.a = 1 + 5e-11
+    mAlmostIdentity.f = 5e-11
+    assert.ok(
+      isIdentity(mAlmostIdentity),
+      'Matrix close to identity should be considered identity'
+    )
+
     m.e = 10
     assert.notOk(isIdentity(m), 'Matrix with translation is not identity')
   })
@@ -106,6 +114,22 @@ describe('math', function () {
       isIdentity(iDefault),
       'No arguments should return identity matrix'
     )
+
+    // Ensure single matrix returns a new matrix and does not mutate the input
+    const tiny = svg.createSVGMatrix()
+    tiny.b = 1e-12
+    const tinyResult = matrixMultiply(tiny)
+    assert.notStrictEqual(
+      tinyResult,
+      tiny,
+      'Single-argument call should return a new matrix instance'
+    )
+    assert.equal(
+      tiny.b,
+      1e-12,
+      'Input matrix should not be mutated by rounding'
+    )
+    assert.equal(tinyResult.b, 0, 'Result should round near-zero values to 0')
 
     // Translate there and back
     const tr1 = svg.createSVGMatrix().translate(100, 50)
@@ -316,5 +340,31 @@ describe('math', function () {
       rectsIntersect(r1, r4),
       'Rectangles touching at the edge should not be considered intersecting'
     )
+  })
+
+  it('Test svgedit.math.rectsIntersect() with zero width', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: 0, y: 0, width: 0, height: 50 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    const result = rectsIntersect(r1, r2)
+    assert.ok(result !== undefined)
+  })
+
+  it('Test svgedit.math.rectsIntersect() with zero height', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: 0, y: 0, width: 50, height: 0 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    const result = rectsIntersect(r1, r2)
+    assert.ok(result !== undefined)
+  })
+
+  it('Test svgedit.math.rectsIntersect() with negative coords', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: -50, y: -50, width: 100, height: 100 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    assert.ok(rectsIntersect(r1, r2), 'Should intersect with negative coordinates')
   })
 })

@@ -1,5 +1,6 @@
 import {
-  getStrokedBBoxDefaultVisible
+  getStrokedBBoxDefaultVisible,
+  getUrlFromAttr
 } from './utilities.js'
 import * as hstry from './history.js'
 
@@ -27,11 +28,15 @@ export const init = (canvas) => {
 * @fires module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
 * @returns {void}
 */
-export const pasteElementsMethod = function (type, x, y) {
-  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipboardID()))
-  if (!clipb) return
-  let len = clipb.length
-  if (!len) return
+export const pasteElementsMethod = (type, x, y) => {
+  const rawClipboard = sessionStorage.getItem(svgCanvas.getClipboardID())
+  let clipb
+  try {
+    clipb = JSON.parse(rawClipboard)
+  } catch {
+    return
+  }
+  if (!Array.isArray(clipb) || !clipb.length) return
 
   const pasted = []
   const batchCmd = new BatchCommand('Paste elements')
@@ -50,7 +55,7 @@ export const pasteElementsMethod = function (type, x, y) {
 * @param {module:svgcanvas.SVGAsJSON} elem
 * @returns {void}
 */
-  function checkIDs (elem) {
+  const checkIDs = (elem) => {
     if (elem.attr?.id) {
       changedIDs[elem.attr.id] = svgCanvas.getNextId()
       elem.attr.id = changedIDs[elem.attr.id]
@@ -58,6 +63,35 @@ export const pasteElementsMethod = function (type, x, y) {
     if (elem.children) elem.children.forEach((child) => checkIDs(child))
   }
   clipb.forEach((elem) => checkIDs(elem))
+
+  // Update any internal references in the clipboard to match the new IDs.
+  /**
+  * @param {module:svgcanvas.SVGAsJSON} elem
+  * @returns {void}
+  */
+  const remapReferences = (elem) => {
+    const attrs = elem?.attr
+    if (attrs) {
+      for (const [attrName, attrVal] of Object.entries(attrs)) {
+        if (typeof attrVal !== 'string' || !attrVal) continue
+        if ((attrName === 'href' || attrName === 'xlink:href') && attrVal.startsWith('#')) {
+          const refId = attrVal.slice(1)
+          if (refId in changedIDs) {
+            attrs[attrName] = `#${changedIDs[refId]}`
+          }
+        }
+        const url = getUrlFromAttr(attrVal)
+        if (url) {
+          const refId = url.slice(1)
+          if (refId in changedIDs) {
+            attrs[attrName] = attrVal.replace(url, `#${changedIDs[refId]}`)
+          }
+        }
+      }
+    }
+    if (elem.children) elem.children.forEach((child) => remapReferences(child))
+  }
+  clipb.forEach((elem) => remapReferences(elem))
 
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**
@@ -77,12 +111,14 @@ export const pasteElementsMethod = function (type, x, y) {
 
     extChanges.remove.forEach(function (removeID) {
       clipb = clipb.filter(function (clipBoardItem) {
-        return clipBoardItem.attr.id !== removeID
+        return clipBoardItem?.attr?.id !== removeID
       })
     })
   })
 
   // Move elements to lastClickPoint
+  let len = clipb.length
+  if (!len) return
   while (len--) {
     const elem = clipb[len]
     if (!elem) { continue }
@@ -94,6 +130,7 @@ export const pasteElementsMethod = function (type, x, y) {
     svgCanvas.restoreRefElements(copy)
   }
 
+  if (!pasted.length) return
   svgCanvas.selectOnly(pasted)
 
   if (type !== 'in_place') {
@@ -108,18 +145,20 @@ export const pasteElementsMethod = function (type, x, y) {
     }
 
     const bbox = getStrokedBBoxDefaultVisible(pasted)
-    const cx = ctrX - (bbox.x + bbox.width / 2)
-    const cy = ctrY - (bbox.y + bbox.height / 2)
-    const dx = []
-    const dy = []
+    if (bbox && Number.isFinite(ctrX) && Number.isFinite(ctrY)) {
+      const cx = ctrX - (bbox.x + bbox.width / 2)
+      const cy = ctrY - (bbox.y + bbox.height / 2)
+      const dx = []
+      const dy = []
 
-    pasted.forEach(function (_item) {
-      dx.push(cx)
-      dy.push(cy)
-    })
+      pasted.forEach(function (_item) {
+        dx.push(cx)
+        dy.push(cy)
+      })
 
-    const cmd = svgCanvas.moveSelectedElements(dx, dy, false)
-    if (cmd) batchCmd.addSubCommand(cmd)
+      const cmd = svgCanvas.moveSelectedElements(dx, dy, false)
+      if (cmd) batchCmd.addSubCommand(cmd)
+    }
   }
 
   svgCanvas.addCommandToHistory(batchCmd)

@@ -14,7 +14,7 @@ import { text2xml } from './utilities.js'
 * @param {ArgumentsArray} dimensions - dimensions of width and height
 * @returns {svgRootElement}
 */
-export const svgRootElement = function (svgdoc, dimensions) {
+export const svgRootElement = (svgdoc, dimensions) => {
   return svgdoc.importNode(
     text2xml(
       `<svg id="svgroot" xmlns="${NS.SVG}" xlinkns="${NS.XLINK}" width="${dimensions[0]}" 

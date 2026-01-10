@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { copyFile, mkdir } from 'node:fs/promises'
+import { copyFile, mkdir, readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { existsSync } from 'node:fs'
 
@@ -37,12 +37,57 @@ const ensureBrowser = async () => {
   }
 }
 
+const getLatestMtime = async (root) => {
+  let latest = 0
+  const entries = await readdir(root, { withFileTypes: true })
+  for (const entry of entries) {
+    const fullPath = join(root, entry.name)
+    if (entry.isDirectory()) {
+      const childLatest = await getLatestMtime(fullPath)
+      if (childLatest > latest) latest = childLatest
+    } else {
+      const fileStat = await stat(fullPath)
+      if (fileStat.mtimeMs > latest) latest = fileStat.mtimeMs
+    }
+  }
+  return latest
+}
+
 const ensureBuild = async () => {
   const distIndex = join(process.cwd(), 'dist', 'editor', 'index.html')
-  if (existsSync(distIndex)) return
+  const distEditor = join(process.cwd(), 'dist', 'editor', 'Editor.js')
 
-  console.log('Building dist/editor for Playwright preview (missing build output)...')
-  await run('npm', ['run', 'build'])
+  // Check if build exists and has coverage instrumentation
+  let needsBuild = !existsSync(distIndex)
+
+  if (!needsBuild && existsSync(distEditor)) {
+    // Check if build has coverage instrumentation
+    const editorContent = await readFile(distEditor, 'utf-8')
+    const hasCoverage = editorContent.includes('__coverage__')
+    if (!hasCoverage) {
+      console.log('Existing build lacks coverage instrumentation, rebuilding...')
+      needsBuild = true
+    }
+  }
+
+  if (!needsBuild) {
+    const distStat = await stat(distIndex)
+    const roots = [
+      join(process.cwd(), 'packages', 'svgcanvas', 'core'),
+      join(process.cwd(), 'src')
+    ]
+    const latestSource = Math.max(
+      ...(await Promise.all(roots.map(getLatestMtime)))
+    )
+    if (latestSource > distStat.mtimeMs) {
+      needsBuild = true
+    }
+  }
+
+  if (needsBuild) {
+    console.log('Building dist/editor for Playwright preview...')
+    await run('npm', ['run', 'build'])
+  }
 }
 
 const seedNycFromVitest = async () => {

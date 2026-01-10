@@ -8,60 +8,127 @@
 
 const NSSVG = 'http://www.w3.org/2000/svg'
 
-const { userAgent } = navigator
+/**
+ * Browser capabilities and detection object.
+ * Uses modern feature detection and lazy evaluation patterns.
+ */
+class BrowserDetector {
+  #userAgent = navigator.userAgent
+  #cachedResults = new Map()
 
-// Note: Browser sniffing should only be used if no other detection method is possible
-const isWebkit_ = userAgent.includes('AppleWebKit')
-const isGecko_ = userAgent.includes('Gecko/')
-const isChrome_ = userAgent.includes('Chrome/')
-const isMac_ = userAgent.includes('Macintosh')
-
-// text character positioning (for IE9 and now Chrome)
-const supportsGoodTextCharPos_ = (function () {
-  const svgroot = document.createElementNS(NSSVG, 'svg')
-  const svgContent = document.createElementNS(NSSVG, 'svg')
-  document.documentElement.append(svgroot)
-  svgContent.setAttribute('x', 5)
-  svgroot.append(svgContent)
-  const text = document.createElementNS(NSSVG, 'text')
-  text.textContent = 'a'
-  svgContent.append(text)
-  try { // Chrome now fails here
-    const pos = text.getStartPositionOfChar(0).x
-    return (pos === 0)
-  } catch (err) {
-    return false
-  } finally {
-    svgroot.remove()
+  /**
+   * Detects if the browser is WebKit-based
+   * @returns {boolean}
+   */
+  get isWebkit () {
+    if (!this.#cachedResults.has('isWebkit')) {
+      this.#cachedResults.set('isWebkit', this.#userAgent.includes('AppleWebKit'))
+    }
+    return this.#cachedResults.get('isWebkit')
   }
-}())
 
-// Public API
+  /**
+   * Detects if the browser is Gecko-based
+   * @returns {boolean}
+   */
+  get isGecko () {
+    if (!this.#cachedResults.has('isGecko')) {
+      this.#cachedResults.set('isGecko', this.#userAgent.includes('Gecko/'))
+    }
+    return this.#cachedResults.get('isGecko')
+  }
 
+  /**
+   * Detects if the browser is Chrome
+   * @returns {boolean}
+   */
+  get isChrome () {
+    if (!this.#cachedResults.has('isChrome')) {
+      this.#cachedResults.set('isChrome', this.#userAgent.includes('Chrome/'))
+    }
+    return this.#cachedResults.get('isChrome')
+  }
+
+  /**
+   * Detects if the platform is macOS
+   * @returns {boolean}
+   */
+  get isMac () {
+    if (!this.#cachedResults.has('isMac')) {
+      this.#cachedResults.set('isMac', this.#userAgent.includes('Macintosh'))
+    }
+    return this.#cachedResults.get('isMac')
+  }
+
+  /**
+   * Tests if the browser supports accurate text character positioning
+   * @returns {boolean}
+   */
+  get supportsGoodTextCharPos () {
+    if (!this.#cachedResults.has('supportsGoodTextCharPos')) {
+      this.#cachedResults.set('supportsGoodTextCharPos', this.#testTextCharPos())
+    }
+    return this.#cachedResults.get('supportsGoodTextCharPos')
+  }
+
+  /**
+   * Private method to test text character positioning support
+   * @returns {boolean}
+   */
+  #testTextCharPos () {
+    const svgroot = document.createElementNS(NSSVG, 'svg')
+    const svgContent = document.createElementNS(NSSVG, 'svg')
+    document.documentElement.append(svgroot)
+    svgContent.setAttribute('x', 5)
+    svgroot.append(svgContent)
+    const text = document.createElementNS(NSSVG, 'text')
+    text.textContent = 'a'
+    svgContent.append(text)
+
+    try {
+      const pos = text.getStartPositionOfChar(0).x
+      return pos === 0
+    } catch (err) {
+      return false
+    } finally {
+      svgroot.remove()
+    }
+  }
+}
+
+// Create singleton instance
+const browser = new BrowserDetector()
+
+// Export as functions for backward compatibility
 /**
  * @function module:browser.isWebkit
  * @returns {boolean}
-*/
-export const isWebkit = () => isWebkit_
+ */
+export const isWebkit = () => browser.isWebkit
+
 /**
  * @function module:browser.isGecko
  * @returns {boolean}
-*/
-export const isGecko = () => isGecko_
+ */
+export const isGecko = () => browser.isGecko
+
 /**
  * @function module:browser.isChrome
  * @returns {boolean}
-*/
-export const isChrome = () => isChrome_
+ */
+export const isChrome = () => browser.isChrome
 
 /**
  * @function module:browser.isMac
  * @returns {boolean}
-*/
-export const isMac = () => isMac_
+ */
+export const isMac = () => browser.isMac
 
 /**
  * @function module:browser.supportsGoodTextCharPos
  * @returns {boolean}
-*/
-export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_
+ */
+export const supportsGoodTextCharPos = () => browser.supportsGoodTextCharPos
+
+// Export browser instance for direct access
+export default browser

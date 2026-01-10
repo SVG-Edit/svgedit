@@ -108,15 +108,16 @@ export const dropXMLInternalSubset = str => {
  * @param {string} str - The string to be converted
  * @returns {string} The converted string
  */
-export const toXml = str => {
-  // &apos; is ok in XML, but not HTML
-  // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;') // Note: `&apos;` is XML only
+export const toXml = (str) => {
+  const xmlEntities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;' // Note: `&apos;` is XML only
+  }
+
+  return str.replace(/[&<>"']/g, (char) => xmlEntities[char])
 }
 
 // This code was written by Tyler Akins and has been placed in the
@@ -132,10 +133,9 @@ export const toXml = str => {
  * @param {string} input
  * @returns {string} Base64 output
  */
-export function encode64 (input) {
-  // base64 strings are 4/3 larger than the original string
-  input = encodeUTF8(input) // convert non-ASCII characters
-  return window.btoa(input) // Use native if available
+export const encode64 = (input) => {
+  const encoded = encodeUTF8(input) // convert non-ASCII characters
+  return window.btoa(encoded) // Use native if available
 }
 
 /**
@@ -144,23 +144,20 @@ export function encode64 (input) {
  * @param {string} input Base64-encoded input
  * @returns {string} Decoded output
  */
-export function decode64 (input) {
-  return decodeUTF8(window.atob(input))
-}
+export const decode64 = (input) => decodeUTF8(window.atob(input))
 
 /**
  * Compute a hashcode from a given string
- * @param word : the string, we want to compute the hashcode
- * @returns {number}: Hascode of the given string
+ * @param {string} word - The string we want to compute the hashcode from
+ * @returns {number} Hashcode of the given string
  */
-export function hashCode (word) {
+export const hashCode = (word) => {
+  if (word.length === 0) return 0
+
   let hash = 0
-  let chr
-  if (word.length === 0) return hash
   for (let i = 0; i < word.length; i++) {
-    chr = word.charCodeAt(i)
-    hash = (hash << 5) - hash + chr
-    hash |= 0 // Convert to 32bit integer
+    const chr = word.charCodeAt(i)
+    hash = ((hash << 5) - hash + chr) | 0 // Convert to 32bit integer
   }
   return hash
 }
@@ -170,19 +167,14 @@ export function hashCode (word) {
  * @param {string} argString
  * @returns {string}
  */
-export function decodeUTF8 (argString) {
-  return decodeURIComponent(escape(argString))
-}
+export const decodeUTF8 = (argString) => decodeURIComponent(escape(argString))
 
-// codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 /**
  * @function module:utilities.encodeUTF8
  * @param {string} argString
  * @returns {string}
  */
-export const encodeUTF8 = argString => {
-  return unescape(encodeURIComponent(argString))
-}
+export const encodeUTF8 = (argString) => unescape(encodeURIComponent(argString))
 
 /**
  * Convert dataURL to object URL.
@@ -190,7 +182,7 @@ export const encodeUTF8 = argString => {
  * @param {string} dataurl
  * @returns {string} object URL or empty string
  */
-export const dataURLToObjectURL = dataurl => {
+export const dataURLToObjectURL = (dataurl) => {
   if (
     typeof Uint8Array === 'undefined' ||
     typeof Blob === 'undefined' ||
@@ -199,19 +191,22 @@ export const dataURLToObjectURL = dataurl => {
   ) {
     return ''
   }
-  const arr = dataurl.split(',')
-  const mime = arr[0].match(/:(.*?);/)[1]
-  const bstr = atob(arr[1])
-  /*
-  const [prefix, suffix] = dataurl.split(','),
-    {groups: {mime}} = prefix.match(/:(?<mime>.*?);/),
-    bstr = atob(suffix);
-  */
-  let n = bstr.length
-  const u8arr = new Uint8Array(n)
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n)
+
+  const [prefix, suffix] = dataurl.split(',')
+  const mimeMatch = prefix?.match(/:(.*?);/)
+
+  if (!mimeMatch?.[1] || !suffix) {
+    return ''
   }
+
+  const mime = mimeMatch[1]
+  const bstr = atob(suffix)
+  const u8arr = new Uint8Array(bstr.length)
+
+  for (let i = 0; i < bstr.length; i++) {
+    u8arr[i] = bstr.charCodeAt(i)
+  }
+
   const blob = new Blob([u8arr], { type: mime })
   return URL.createObjectURL(blob)
 }
@@ -222,7 +217,7 @@ export const dataURLToObjectURL = dataurl => {
  * @param {Blob} blob A Blob object or File object
  * @returns {string} object URL or empty string
  */
-export const createObjectURL = blob => {
+export const createObjectURL = (blob) => {
   if (!blob || typeof URL === 'undefined' || !URL.createObjectURL) {
     return ''
   }
@@ -266,25 +261,28 @@ export const convertToXMLReferences = input => {
  * @throws {Error}
  * @returns {XMLDocument}
  */
-export const text2xml = sXML => {
-  if (sXML.includes('<svg:svg')) {
-    sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns')
+export const text2xml = (sXML) => {
+  let xmlString = sXML
+
+  if (xmlString.includes('<svg:svg')) {
+    xmlString = xmlString
+      .replace(/<(\/?)svg:/g, '<$1')
+      .replace('xmlns:svg', 'xmlns')
   }
 
-  let out
-  let dXML
+  let parser
   try {
-    dXML = new DOMParser()
-    dXML.async = false
+    parser = new DOMParser()
+    parser.async = false
   } catch (e) {
     throw new Error('XML Parser could not be instantiated')
   }
+
   try {
-    out = dXML.parseFromString(sXML, 'text/xml')
-  } catch (e2) {
-    throw new Error('Error parsing XML string')
+    return parser.parseFromString(xmlString, 'text/xml')
+  } catch (e) {
+    throw new Error(`Error parsing XML string: ${e.message}`)
   }
-  return out
 }
 
 /**
@@ -354,22 +352,24 @@ export const walkTreePost = (elem, cbFn) => {
  *  - `<circle fill='url("someFile.svg#foo")' />`
  * @function module:utilities.getUrlFromAttr
  * @param {string} attrVal The attribute value as a string
- * @returns {string} String with just the URL, like "someFile.svg#foo"
+ * @returns {string|null} String with just the URL, like "someFile.svg#foo"
  */
-export const getUrlFromAttr = function (attrVal) {
-  if (attrVal) {
-    // url('#somegrad')
-    if (attrVal.startsWith('url("')) {
-      return attrVal.substring(5, attrVal.indexOf('"', 6))
-    }
-    // url('#somegrad')
-    if (attrVal.startsWith("url('")) {
-      return attrVal.substring(5, attrVal.indexOf("'", 6))
-    }
-    if (attrVal.startsWith('url(')) {
-      return attrVal.substring(4, attrVal.indexOf(')'))
+export const getUrlFromAttr = (attrVal) => {
+  if (!attrVal?.startsWith('url(')) return null
+
+  const patterns = [
+    { start: 'url("', end: '"', offset: 5 },
+    { start: "url('", end: "'", offset: 5 },
+    { start: 'url(', end: ')', offset: 4 }
+  ]
+
+  for (const { start, end, offset } of patterns) {
+    if (attrVal.startsWith(start)) {
+      const endIndex = attrVal.indexOf(end, offset + 1)
+      return endIndex > 0 ? attrVal.substring(offset, endIndex) : null
     }
   }
+
   return null
 }
 
@@ -378,10 +378,8 @@ export const getUrlFromAttr = function (attrVal) {
  * @param {Element} elem
  * @returns {string} The given element's `href` value
  */
-export let getHref = function (elem) {
-  // Prefer 'href', fallback to 'xlink:href'
-  return elem.getAttribute('href') || elem.getAttributeNS(NS.XLINK, 'href')
-}
+export let getHref = (elem) =>
+  elem.getAttribute('href') ?? elem.getAttributeNS(NS.XLINK, 'href')
 
 /**
  * Sets the given element's `href` value.
@@ -390,7 +388,7 @@ export let getHref = function (elem) {
  * @param {string} val
  * @returns {void}
  */
-export let setHref = function (elem, val) {
+export let setHref = (elem, val) => {
   elem.setAttribute('href', val)
 }
 
@@ -398,21 +396,23 @@ export let setHref = function (elem, val) {
  * @function module:utilities.findDefs
  * @returns {SVGDefsElement} The document's `<defs>` element, creating it first if necessary
  */
-export const findDefs = function () {
+export const findDefs = () => {
   const svgElement = svgCanvas.getSvgContent()
-  let defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs')
-  if (defs.length > 0) {
-    defs = defs[0]
-  } else {
-    defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs')
-    if (svgElement.firstChild) {
-      // first child is a comment, so call nextSibling
-      svgElement.insertBefore(defs, svgElement.firstChild.nextSibling)
-      // svgElement.firstChild.nextSibling.before(defs); // Not safe
-    } else {
-      svgElement.append(defs)
-    }
+  const existingDefs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs')
+
+  if (existingDefs.length > 0) {
+    return existingDefs[0]
   }
+
+  const defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs')
+  const insertTarget = svgElement.firstChild?.nextSibling
+
+  if (insertTarget) {
+    svgElement.insertBefore(defs, insertTarget)
+  } else {
+    svgElement.append(defs)
+  }
+
   return defs
 }
 
@@ -425,33 +425,28 @@ export const findDefs = function () {
  * @param {SVGPathElement} path - The path DOM element to get the BBox for
  * @returns {module:utilities.BBoxObject} A BBox-like object
  */
-export const getPathBBox = function (path) {
+export const getPathBBox = (path) => {
   const seglist = path.pathSegList
-  const tot = seglist.numberOfItems
+  const totalSegments = seglist.numberOfItems
 
   const bounds = [[], []]
   const start = seglist.getItem(0)
   let P0 = [start.x, start.y]
 
-  const getCalc = function (j, P1, P2, P3) {
-    return function (t) {
-      return (
-        1 -
-        t ** 3 * P0[j] +
-        3 * 1 -
-        t ** 2 * t * P1[j] +
-        3 * (1 - t) * t ** 2 * P2[j] +
-        t ** 3 * P3[j]
-      )
-    }
+  const getCalc = (j, P1, P2, P3) => (t) => {
+    const oneMinusT = 1 - t
+    return (
+      oneMinusT ** 3 * P0[j] +
+      3 * oneMinusT ** 2 * t * P1[j] +
+      3 * oneMinusT * t ** 2 * P2[j] +
+      t ** 3 * P3[j]
+    )
   }
 
-  for (let i = 0; i < tot; i++) {
+  for (let i = 0; i < totalSegments; i++) {
     const seg = seglist.getItem(i)
 
-    if (seg.x === undefined) {
-      continue
-    }
+    if (seg.x === undefined) continue
 
     // Add actual points to limits
     bounds[0].push(P0[0])
@@ -499,15 +494,14 @@ export const getPathBBox = function (path) {
     }
   }
 
-  const x = Math.min.apply(null, bounds[0])
-  const w = Math.max.apply(null, bounds[0]) - x
-  const y = Math.min.apply(null, bounds[1])
-  const h = Math.max.apply(null, bounds[1]) - y
+  const x = Math.min(...bounds[0])
+  const y = Math.min(...bounds[1])
+
   return {
     x,
     y,
-    width: w,
-    height: h
+    width: Math.max(...bounds[0]) - x,
+    height: Math.max(...bounds[1]) - y
   }
 }
 
@@ -516,13 +510,12 @@ export const getPathBBox = function (path) {
  * usable when necessary.
  * @function module:utilities.getBBox
  * @param {Element} elem - Optional DOM element to get the BBox for
- * @returns {module:utilities.BBoxObject} Bounding box object
+ * @returns {module:utilities.BBoxObject|null} Bounding box object
  */
-export const getBBox = function (elem) {
-  const selected = elem || svgCanvas.getSelectedElements()[0]
-  if (elem.nodeType !== 1) {
-    return null
-  }
+export const getBBox = (elem) => {
+  const selected = elem ?? svgCanvas.getSelectedElements()[0]
+  if (elem.nodeType !== 1) return null
+
   const elname = selected.nodeName
 
   let ret = null
@@ -642,26 +635,23 @@ export const getBBox = function (elem) {
  * @param {module:utilities.PathSegmentArray[]} pathSegments - An array of path segments to be converted
  * @returns {string} The converted path d attribute.
  */
-export const getPathDFromSegments = function (pathSegments) {
-  let d = ''
-
-  pathSegments.forEach(function ([singleChar, pts], _j) {
-    d += singleChar
-    for (let i = 0; i < pts.length; i += 2) {
-      d += pts[i] + ',' + pts[i + 1] + ' '
+export const getPathDFromSegments = (pathSegments) => {
+  return pathSegments.map(([command, points]) => {
+    const coords = []
+    for (let i = 0; i < points.length; i += 2) {
+      coords.push(`${points[i]},${points[i + 1]}`)
     }
-  })
-
-  return d
+    return command + coords.join(' ')
+  }).join(' ')
 }
 
 /**
  * Make a path 'd' attribute from a simple SVG element shape.
  * @function module:utilities.getPathDFromElement
  * @param {Element} elem - The element to be converted
- * @returns {string} The path d attribute or `undefined` if the element type is unknown.
+ * @returns {string|undefined} The path d attribute or `undefined` if the element type is unknown.
  */
-export const getPathDFromElement = function (elem) {
+export const getPathDFromElement = (elem) => {
   // Possibly the cubed root of 6, but 1.81 works best
   let num = 1.81
   let d
@@ -691,20 +681,19 @@ export const getPathDFromElement = function (elem) {
     case 'path':
       d = elem.getAttribute('d')
       break
-    case 'line':
-      {
-        const x1 = elem.getAttribute('x1')
-        const y1 = elem.getAttribute('y1')
-        const x2 = elem.getAttribute('x2')
-        const y2 = elem.getAttribute('y2')
-        d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2
-      }
+    case 'line': {
+      const x1 = elem.getAttribute('x1')
+      const y1 = elem.getAttribute('y1')
+      const x2 = elem.getAttribute('x2')
+      const y2 = elem.getAttribute('y2')
+      d = `M${x1},${y1}L${x2},${y2}`
       break
+    }
     case 'polyline':
-      d = 'M' + elem.getAttribute('points')
+      d = `M${elem.getAttribute('points')}`
       break
     case 'polygon':
-      d = 'M' + elem.getAttribute('points') + ' Z'
+      d = `M${elem.getAttribute('points')} Z`
       break
     case 'rect': {
       rx = Number(elem.getAttribute('rx'))
@@ -762,19 +751,16 @@ export const getPathDFromElement = function (elem) {
  * @param {Element} elem - The element to be probed
  * @returns {PlainObject<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
  */
-export const getExtraAttributesForConvertToPath = function (elem) {
-  const attrs = {}
+export const getExtraAttributesForConvertToPath = (elem) => {
   // TODO: make this list global so that we can properly maintain it
   // TODO: what about @transform, @clip-rule, @fill-rule, etc?
-  ;['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'].forEach(
-    function (item) {
-      const a = elem.getAttribute(item)
-      if (a) {
-        attrs[item] = a
-      }
-    }
-  )
-  return attrs
+  const attributeNames = ['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path']
+
+  return attributeNames.reduce((attrs, name) => {
+    const value = elem.getAttribute(name)
+    if (value) attrs[name] = value
+    return attrs
+  }, {})
 }
 
 /**
@@ -785,11 +771,11 @@ export const getExtraAttributesForConvertToPath = function (elem) {
  * @param {module:path.pathActions} pathActions - If a transform exists, `pathActions.resetOrientation()` is used. See: canvas.pathActions.
  * @returns {DOMRect|false} The resulting path's bounding box object.
  */
-export const getBBoxOfElementAsPath = function (
+export const getBBoxOfElementAsPath = (
   elem,
   addSVGElementsFromJson,
   pathActions
-) {
+) => {
   const path = addSVGElementsFromJson({
     element: 'path',
     attr: getExtraAttributesForConvertToPath(elem)
@@ -801,11 +787,7 @@ export const getBBoxOfElementAsPath = function (
   }
 
   const { parentNode } = elem
-  if (elem.nextSibling) {
-    elem.before(path)
-  } else {
-    parentNode.append(path)
-  }
+  elem.nextSibling ? elem.before(path) : parentNode.append(path)
 
   const d = getPathDFromElement(elem)
   if (d) {
@@ -936,7 +918,7 @@ export const convertToPath = (elem, attrs, svgCanvas) => {
  * @param {boolean} hasAMatrixTransform - True if there is a matrix transform
  * @returns {boolean} True if the bbox can be optimized.
  */
-function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasAMatrixTransform) {
+const bBoxCanBeOptimizedOverNativeGetBBox = (angle, hasAMatrixTransform) => {
   const angleModulo90 = angle % 90
   const closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99
   const closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001
@@ -949,24 +931,21 @@ function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasAMatrixTransform) {
  * @param {Element} elem - The DOM element to be converted
  * @param {module:utilities.EditorContext#addSVGElementsFromJson} addSVGElementsFromJson - Function to add the path element to the current layer. See canvas.addSVGElementsFromJson
  * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
- * @returns {module:utilities.BBoxObject|module:math.TransformedBox|DOMRect} A single bounding box object
+ * @returns {module:utilities.BBoxObject|module:math.TransformedBox|DOMRect|null} A single bounding box object
  */
-export const getBBoxWithTransform = function (
+export const getBBoxWithTransform = (
   elem,
   addSVGElementsFromJson,
   pathActions
-) {
+) => {
   // TODO: Fix issue with rotated groups. Currently they work
   // fine in FF, but not in other browsers (same problem mentioned
   // in Issue 339 comment #2).
 
   let bb = getBBox(elem)
+  if (!bb) return null
 
-  if (!bb) {
-    return null
-  }
-
-  const transformAttr = elem.getAttribute?.('transform') || ''
+  const transformAttr = elem.getAttribute?.('transform') ?? ''
   const hasMatrixAttr = transformAttr.includes('matrix(')
   if (transformAttr.includes('rotate(') && !hasMatrixAttr) {
     const nums = transformAttr.match(/-?\d*\.?\d+/g)?.map(Number) || []
@@ -1263,7 +1242,7 @@ export const getRefElem = attrVal => {
   if (!attrVal) return null
   const url = getUrlFromAttr(attrVal)
   if (!url) return null
-  const id = url[0] === '#' ? url.substr(1) : url
+  const id = url[0] === '#' ? url.slice(1) : url
   return getElement(id)
 }
 /**
@@ -1295,7 +1274,7 @@ export const getFeGaussianBlur = ele => {
  */
 export const getElement = id => {
   // querySelector lookup
-  return svgroot_.querySelector('#' + id)
+  return svgroot_.querySelector(`#${id}`)
 }
 
 /**
@@ -1310,9 +1289,9 @@ export const getElement = id => {
 export const assignAttributes = (elem, attrs, suspendLength, unitCheck) => {
   for (const [key, value] of Object.entries(attrs)) {
     const ns =
-      key.substr(0, 4) === 'xml:'
+      key.startsWith('xml:')
         ? NS.XML
-        : key.substr(0, 6) === 'xlink:'
+        : key.startsWith('xlink:')
           ? NS.XLINK
           : null
     if (value === undefined) {

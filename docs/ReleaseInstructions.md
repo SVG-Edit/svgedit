@@ -16,7 +16,6 @@
     - Confirm `CHANGES.md` has been updated.
     - Run the full release checks (`npm run test-build` → tests, docs, and build); it exits on failure.
     - Ask before creating a release commit and tag (defaults to `v<version>`); declining aborts the publish.
-    - Publish all workspaces and the root package together.
+    - Publish all workspaces first, then the root package.
 
 You will need to be a member of the npm group to do this step.
-

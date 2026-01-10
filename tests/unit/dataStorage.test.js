@@ -17,6 +17,20 @@ describe('dataStorage', () => {
     expect(dataStorage.get(el2, 'color')).toBe('blue')
   })
 
+  it('returns safe defaults for missing or invalid elements', () => {
+    const el = document.createElement('div')
+
+    expect(dataStorage.get(el, 'missing')).toBeUndefined()
+    expect(dataStorage.has(el, 'missing')).toBe(false)
+    expect(dataStorage.remove(el, 'missing')).toBe(false)
+
+    expect(dataStorage.get(null, 'missing')).toBeUndefined()
+    expect(dataStorage.has(null, 'missing')).toBe(false)
+    expect(dataStorage.remove(null, 'missing')).toBe(false)
+
+    expect(() => dataStorage.put(null, 'key', 'value')).not.toThrow()
+  })
+
   it('removes values and cleans up empty element maps', () => {
     const el = document.createElement('span')
     dataStorage.put(el, 'foo', 1)
