@@ -31,7 +31,7 @@ const getFeGaussianBlurElem = (filterElem) => {
 * @param {Float} val - The new `stdDeviation` value
 * @returns {void}
 */
-export const setBlurNoUndo = function (val) {
+export const setBlurNoUndo = (val) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const elem = selectedElements[0]
   if (!elem) return
@@ -81,10 +81,10 @@ export const setBlurNoUndo = function (val) {
 }
 
 /**
-*
+* Finishes the blur change command and adds it to history if not empty.
 * @returns {void}
 */
-function finishChange () {
+const finishChange = () => {
   const curCommand = svgCanvas.getCurCommand()
   if (!curCommand) {
     svgCanvas.setCurCommand(null)
@@ -112,7 +112,7 @@ function finishChange () {
 * @param {Float} stdDev - The standard deviation value on which to base the offset size
 * @returns {void}
 */
-export const setBlurOffsets = function (filterElem, stdDev) {
+export const setBlurOffsets = (filterElem, stdDev) => {
   if (!filterElem || filterElem.nodeType !== 1) {
     return
   }
@@ -142,7 +142,7 @@ export const setBlurOffsets = function (filterElem, stdDev) {
 * @param {boolean} complete - Whether or not the action should be completed (to add to the undo manager)
 * @returns {void}
 */
-export const setBlur = function (val, complete) {
+export const setBlur = (val, complete) => {
   const {
     InsertElementCommand, ChangeElementCommand, BatchCommand
   } = svgCanvas.history
@@ -206,7 +206,7 @@ export const setBlur = function (val, complete) {
   }
 
   const changes = { filter: elem.getAttribute('filter') }
-  svgCanvas.changeSelectedAttributeNoUndo('filter', 'url(#' + filter.id + ')')
+  svgCanvas.changeSelectedAttributeNoUndo('filter', `url(#${filter.id})`)
   batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
   svgCanvas.setBlurOffsets(filter, val)
   svgCanvas.setCurCommand(batchCmd)

@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { copyFile, mkdir, readdir, stat } from 'node:fs/promises'
+import { copyFile, mkdir, readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { existsSync } from 'node:fs'
 
@@ -55,7 +55,22 @@ const getLatestMtime = async (root) => {
 
 const ensureBuild = async () => {
   const distIndex = join(process.cwd(), 'dist', 'editor', 'index.html')
-  if (existsSync(distIndex)) {
+  const distEditor = join(process.cwd(), 'dist', 'editor', 'Editor.js')
+
+  // Check if build exists and has coverage instrumentation
+  let needsBuild = !existsSync(distIndex)
+
+  if (!needsBuild && existsSync(distEditor)) {
+    // Check if build has coverage instrumentation
+    const editorContent = await readFile(distEditor, 'utf-8')
+    const hasCoverage = editorContent.includes('__coverage__')
+    if (!hasCoverage) {
+      console.log('Existing build lacks coverage instrumentation, rebuilding...')
+      needsBuild = true
+    }
+  }
+
+  if (!needsBuild) {
     const distStat = await stat(distIndex)
     const roots = [
       join(process.cwd(), 'packages', 'svgcanvas', 'core'),
@@ -64,11 +79,15 @@ const ensureBuild = async () => {
     const latestSource = Math.max(
       ...(await Promise.all(roots.map(getLatestMtime)))
     )
-    if (latestSource <= distStat.mtimeMs) return
+    if (latestSource > distStat.mtimeMs) {
+      needsBuild = true
+    }
   }
 
-  console.log('Building dist/editor for Playwright preview (missing build output)...')
-  await run('npm', ['run', 'build'])
+  if (needsBuild) {
+    console.log('Building dist/editor for Playwright preview...')
+    await run('npm', ['run', 'build'])
+  }
 }
 
 const seedNycFromVitest = async () => {

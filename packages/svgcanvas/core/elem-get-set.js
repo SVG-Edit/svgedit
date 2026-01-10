@@ -385,7 +385,7 @@ const setZoomMethod = (zoomLevel) => {
   if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
     return
   }
-  svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + w + ' ' + h)
+  svgCanvas.getSvgContent().setAttribute('viewBox', `0 0 ${w} ${h}`)
   svgCanvas.setZoom(zoomLevel)
   selectedElements.forEach((elem) => {
     if (!elem) { return }
@@ -470,7 +470,7 @@ const setGradientMethod = (type) => {
   } else { // use existing gradient
     grad = duplicateGrad
   }
-  svgCanvas.setColor(type, 'url(#' + grad.id + ')')
+  svgCanvas.setColor(type, `url(#${grad.id})`)
 }
 
 /**
@@ -707,7 +707,7 @@ const addTextDecorationMethod = (value) => {
     // Add the new text decoration value if it did not exist
     if (!oldValue.includes(value)) {
       batchCmd.addSubCommand(new ChangeElementCommand(elem, { 'text-decoration': oldValue }))
-      svgCanvas.changeSelectedAttributeNoUndo('text-decoration', (oldValue + ' ' + value).trim(), [elem])
+      svgCanvas.changeSelectedAttributeNoUndo('text-decoration', `${oldValue} ${value}`.trim(), [elem])
     }
   })
   if (!batchCmd.isEmpty()) {
@@ -972,13 +972,13 @@ const setImageURLMethod = (val) => {
   }
 
   const img = new Image()
-  img.onload = function () {
+  img.onload = () => {
     const changes = {
       width: elem.getAttribute('width'),
       height: elem.getAttribute('height')
     }
-    elem.setAttribute('width', this.width)
-    elem.setAttribute('height', this.height)
+    elem.setAttribute('width', img.width)
+    elem.setAttribute('height', img.height)
 
     const selector = svgCanvas.selectorManager.requestSelector(elem)
     selector && selector.resize()
@@ -986,7 +986,7 @@ const setImageURLMethod = (val) => {
     batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
     finalize()
   }
-  img.onerror = function () {
+  img.onerror = () => {
     finalize()
   }
   img.src = val

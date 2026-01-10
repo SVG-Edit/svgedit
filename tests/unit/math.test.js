@@ -341,4 +341,30 @@ describe('math', function () {
       'Rectangles touching at the edge should not be considered intersecting'
     )
   })
+
+  it('Test svgedit.math.rectsIntersect() with zero width', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: 0, y: 0, width: 0, height: 50 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    const result = rectsIntersect(r1, r2)
+    assert.ok(result !== undefined)
+  })
+
+  it('Test svgedit.math.rectsIntersect() with zero height', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: 0, y: 0, width: 50, height: 0 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    const result = rectsIntersect(r1, r2)
+    assert.ok(result !== undefined)
+  })
+
+  it('Test svgedit.math.rectsIntersect() with negative coords', function () {
+    const { rectsIntersect } = math
+    const r1 = { x: -50, y: -50, width: 100, height: 100 }
+    const r2 = { x: 0, y: 0, width: 50, height: 50 }
+
+    assert.ok(rectsIntersect(r1, r2), 'Should intersect with negative coordinates')
+  })
 })

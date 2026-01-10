@@ -183,7 +183,7 @@ const moveUpDownSelected = dir => {
   // event handler.
   if (oldNextSibling !== t.nextSibling) {
     svgCanvas.addCommandToHistory(
-      new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir)
+      new MoveElementCommand(t, oldNextSibling, oldParent, `Move ${dir}`)
     )
     svgCanvas.call('changed', [t])
   }
@@ -212,6 +212,9 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
   const batchCmd = new BatchCommand('position')
   selectedElements.forEach((selected, i) => {
     if (selected) {
+      // Store the existing transform before modifying
+      const existingTransform = selected.getAttribute('transform') || ''
+
       const xform = svgCanvas.getSvgRoot().createSVGTransform()
       const tlist = getTransformList(selected)
 
@@ -231,6 +234,12 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
       const cmd = recalculateDimensions(selected)
       if (cmd) {
         batchCmd.addSubCommand(cmd)
+      } else if ((selected.getAttribute('transform') || '') !== existingTransform) {
+        // For groups and other elements where recalculateDimensions returns null,
+        // record the transform change directly
+        batchCmd.addSubCommand(
+          new ChangeElementCommand(selected, { transform: existingTransform })
+        )
       }
 
       svgCanvas
@@ -872,10 +881,10 @@ const pushGroupProperty = (g, undoable) => {
           // Change this in future for different filters
           const suffix =
             blurElem?.tagName === 'feGaussianBlur' ? 'blur' : 'filter'
-          gfilter.id = elem.id + '_' + suffix
+          gfilter.id = `${elem.id}_${suffix}`
           svgCanvas.changeSelectedAttribute(
             'filter',
-            'url(#' + gfilter.id + ')',
+            `url(#${gfilter.id})`,
             [elem]
           )
         }

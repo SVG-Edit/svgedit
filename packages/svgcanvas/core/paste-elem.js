@@ -28,7 +28,7 @@ export const init = (canvas) => {
 * @fires module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
 * @returns {void}
 */
-export const pasteElementsMethod = function (type, x, y) {
+export const pasteElementsMethod = (type, x, y) => {
   const rawClipboard = sessionStorage.getItem(svgCanvas.getClipboardID())
   let clipb
   try {
@@ -55,7 +55,7 @@ export const pasteElementsMethod = function (type, x, y) {
 * @param {module:svgcanvas.SVGAsJSON} elem
 * @returns {void}
 */
-  function checkIDs (elem) {
+  const checkIDs = (elem) => {
     if (elem.attr?.id) {
       changedIDs[elem.attr.id] = svgCanvas.getNextId()
       elem.attr.id = changedIDs[elem.attr.id]
@@ -69,7 +69,7 @@ export const pasteElementsMethod = function (type, x, y) {
   * @param {module:svgcanvas.SVGAsJSON} elem
   * @returns {void}
   */
-  function remapReferences (elem) {
+  const remapReferences = (elem) => {
     const attrs = elem?.attr
     if (attrs) {
       for (const [attrName, attrVal] of Object.entries(attrs)) {
@@ -77,14 +77,14 @@ export const pasteElementsMethod = function (type, x, y) {
         if ((attrName === 'href' || attrName === 'xlink:href') && attrVal.startsWith('#')) {
           const refId = attrVal.slice(1)
           if (refId in changedIDs) {
-            attrs[attrName] = '#' + changedIDs[refId]
+            attrs[attrName] = `#${changedIDs[refId]}`
           }
         }
         const url = getUrlFromAttr(attrVal)
-        if (url?.startsWith('#')) {
+        if (url) {
           const refId = url.slice(1)
           if (refId in changedIDs) {
-            attrs[attrName] = attrVal.replace(url, '#' + changedIDs[refId])
+            attrs[attrName] = attrVal.replace(url, `#${changedIDs[refId]}`)
           }
         }
       }

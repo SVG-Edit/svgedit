@@ -9,7 +9,7 @@ export default class Paint {
   }
 
   static #normalizeSolidColor (color) {
-    if (color == null) return null
+    if (color === null || color === undefined) return null
     const str = String(color).trim()
     if (!str) return null
     if (str === 'none') return 'none'

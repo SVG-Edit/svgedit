@@ -504,17 +504,17 @@ export const recalcRotatedPath = () => {
     if (!props) { continue }
 
     const newVals = {}
-    if (seg.x != null && seg.y != null) {
+    if (seg.x !== null && seg.x !== undefined && seg.y !== null && seg.y !== undefined) {
       const rvals = getRotVals(seg.x, seg.y)
       newVals.x = rvals.x
       newVals.y = rvals.y
     }
-    if (seg.x1 != null && seg.y1 != null) {
+    if (seg.x1 !== null && seg.x1 !== undefined && seg.y1 !== null && seg.y1 !== undefined) {
       const cVals1 = getRotVals(seg.x1, seg.y1)
       newVals.x1 = cVals1.x
       newVals.y1 = cVals1.y
     }
-    if (seg.x2 != null && seg.y2 != null) {
+    if (seg.x2 !== null && seg.x2 !== undefined && seg.y2 !== null && seg.y2 !== undefined) {
       const cVals2 = getRotVals(seg.x2, seg.y2)
       newVals.x2 = cVals2.x
       newVals.y2 = cVals2.y
@@ -525,7 +525,7 @@ export const recalcRotatedPath = () => {
         return newVals[prop]
       }
       const val = seg[prop]
-      return val == null ? 0 : val
+      return val === null || val === undefined ? 0 : val
     })
     replacePathSeg(type, i, points)
   } // loop for each point

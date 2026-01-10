@@ -131,7 +131,7 @@ export const getUndoManager = () => {
 * @param {Element} elem - The (text) DOM element to clone
 * @returns {Element} Cloned element
 */
-export const ffClone = function (elem) {
+export const ffClone = (elem) => {
   if (!isGecko()) { return elem }
   const clone = elem.cloneNode(true)
   elem.before(clone)
@@ -228,7 +228,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
         elem = ffClone(elem)
       }
       // Timeout needed for Opera & Firefox
-      // codedread: it is now possible for this function to be called with elements
+      // codedread: it is now possible for this to be called with elements
       // that are not in the selectedElements array, we need to only request a
       // selector if the element is in that array
       if (selectedElements.includes(elem)) {
@@ -279,7 +279,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
 * @param {Element[]} elems - The DOM elements to apply the change to
 * @returns {void}
 */
-export const changeSelectedAttributeMethod = function (attr, val, elems) {
+export const changeSelectedAttributeMethod = (attr, val, elems) => {
   const selectedElements = svgCanvas.getSelectedElements()
   elems = elems || selectedElements
   svgCanvas.undoMgr.beginUndoableChange(attr, elems)

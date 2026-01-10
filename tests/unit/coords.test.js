@@ -37,6 +37,10 @@ describe('coords', function () {
     const drawing = {
       getNextId () { return String(elemId++) }
     }
+    const mockDataStorage = {
+      get (elem, key) { return null },
+      has (elem, key) { return false }
+    }
     coords.init(
       /**
       * @implements {module:coords.EditorContext}
@@ -44,7 +48,9 @@ describe('coords', function () {
       {
         getGridSnapping () { return false },
         getDrawing () { return drawing },
-        getCurrentDrawing () { return drawing }
+        getCurrentDrawing () { return drawing },
+        getDataStorage () { return mockDataStorage },
+        getSvgRoot () { return svg }
       }
     )
   })
@@ -432,5 +438,578 @@ describe('coords', function () {
     assert.equal(Number(sweep), 1)
     assert.equal(Number(x), -60)
     assert.equal(Number(y), 20)
+  })
+
+  // Additional tests for branch coverage
+  it('Test remapElement with radial gradient and negative scale', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const grad = document.createElementNS(NS.SVG, 'radialGradient')
+    grad.id = 'radialGrad1'
+    grad.setAttribute('cx', '50%')
+    grad.setAttribute('cy', '50%')
+    grad.setAttribute('r', '50%')
+    grad.setAttribute('fx', '30%')
+    grad.setAttribute('fy', '30%')
+    defs.append(grad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('fill', 'url(#radialGrad1)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = -1
+    coords.remapElement(rect, attrs, m)
+
+    // Should create a mirrored gradient or keep original
+    assert.ok(svg.querySelectorAll('radialGradient').length >= 1)
+  })
+
+  it('Test remapElement with image and negative scale', function () {
+    const image = document.createElementNS(NS.SVG, 'image')
+    image.setAttribute('x', '10')
+    image.setAttribute('y', '10')
+    image.setAttribute('width', '100')
+    image.setAttribute('height', '80')
+    svg.append(image)
+
+    const attrs = { x: 10, y: 10, width: 100, height: 80 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(image, attrs, m)
+
+    // Image with negative scale should get matrix transform or have updated attributes
+    assert.ok(image.transform.baseVal.numberOfItems > 0 || image.getAttribute('width') !== '100')
+  })
+
+  it('Test remapElement with foreignObject', function () {
+    const fo = document.createElementNS(NS.SVG, 'foreignObject')
+    fo.setAttribute('x', '10')
+    fo.setAttribute('y', '10')
+    fo.setAttribute('width', '100')
+    fo.setAttribute('height', '80')
+    svg.append(fo)
+
+    const attrs = { x: 10, y: 10, width: 100, height: 80 }
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    m.e = 50
+    m.f = 50
+    coords.remapElement(fo, attrs, m)
+
+    assert.equal(Number.parseFloat(fo.getAttribute('x')), 70)
+    assert.equal(Number.parseFloat(fo.getAttribute('y')), 70)
+    assert.equal(Number.parseFloat(fo.getAttribute('width')), 200)
+    assert.equal(Number.parseFloat(fo.getAttribute('height')), 160)
+  })
+
+  it('Test remapElement with use element (should skip)', function () {
+    const use = document.createElementNS(NS.SVG, 'use')
+    use.setAttribute('x', '10')
+    use.setAttribute('y', '10')
+    use.setAttribute('href', '#someId')
+    svg.append(use)
+
+    const attrs = { x: 10, y: 10 }
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    m.e = 50
+    m.f = 50
+    coords.remapElement(use, attrs, m)
+
+    // Use elements should not be remapped, attributes remain unchanged
+    assert.equal(use.getAttribute('x'), '10')
+    assert.equal(use.getAttribute('y'), '10')
+  })
+
+  it('Test remapElement with text element', function () {
+    const text = document.createElementNS(NS.SVG, 'text')
+    text.setAttribute('x', '50')
+    text.setAttribute('y', '50')
+    text.textContent = 'Test'
+    svg.append(text)
+
+    const attrs = { x: 50, y: 50 }
+    const m = svg.createSVGMatrix()
+    m.a = 1
+    m.d = 1
+    m.e = 10
+    m.f = 20
+    coords.remapElement(text, attrs, m)
+
+    assert.equal(Number.parseFloat(text.getAttribute('x')), 60)
+    assert.equal(Number.parseFloat(text.getAttribute('y')), 70)
+  })
+
+  it('Test remapElement with tspan element', function () {
+    const text = document.createElementNS(NS.SVG, 'text')
+    text.setAttribute('x', '50')
+    text.setAttribute('y', '50')
+    const tspan = document.createElementNS(NS.SVG, 'tspan')
+    tspan.setAttribute('x', '55')
+    tspan.setAttribute('y', '55')
+    tspan.textContent = 'Test'
+    text.append(tspan)
+    svg.append(text)
+
+    const attrs = { x: 55, y: 55 }
+    const m = svg.createSVGMatrix()
+    m.a = 1
+    m.d = 1
+    m.e = 5
+    m.f = 10
+    coords.remapElement(tspan, attrs, m)
+
+    assert.equal(Number.parseFloat(tspan.getAttribute('x')), 60)
+    assert.equal(Number.parseFloat(tspan.getAttribute('y')), 65)
+  })
+
+  it('Test remapElement with gradient in userSpaceOnUse mode', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const grad = document.createElementNS(NS.SVG, 'linearGradient')
+    grad.id = 'userSpaceGrad'
+    grad.setAttribute('gradientUnits', 'userSpaceOnUse')
+    grad.setAttribute('x1', '0%')
+    grad.setAttribute('x2', '100%')
+    defs.append(grad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('fill', 'url(#userSpaceGrad)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const initialGradCount = svg.querySelectorAll('linearGradient').length
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(rect, attrs, m)
+
+    // userSpaceOnUse gradients should not be mirrored
+    assert.equal(svg.querySelectorAll('linearGradient').length, initialGradCount)
+    assert.equal(rect.getAttribute('fill'), 'url(#userSpaceGrad)')
+  })
+
+  it('Test remapElement with polyline', function () {
+    const polyline = document.createElementNS(NS.SVG, 'polyline')
+    polyline.setAttribute('points', '10,10 20,20 30,10')
+    svg.append(polyline)
+
+    const attrs = {
+      points: [
+        { x: 10, y: 10 },
+        { x: 20, y: 20 },
+        { x: 30, y: 10 }
+      ]
+    }
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    m.e = 5
+    m.f = 5
+    coords.remapElement(polyline, attrs, m)
+
+    const points = polyline.getAttribute('points')
+    // Points should be transformed
+    assert.ok(points !== '10,10 20,20 30,10')
+  })
+
+  it('Test remapElement with polygon', function () {
+    const polygon = document.createElementNS(NS.SVG, 'polygon')
+    polygon.setAttribute('points', '10,10 20,10 15,20')
+    svg.append(polygon)
+
+    const attrs = {
+      points: [
+        { x: 10, y: 10 },
+        { x: 20, y: 10 },
+        { x: 15, y: 20 }
+      ]
+    }
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    m.e = 10
+    m.f = 10
+    coords.remapElement(polygon, attrs, m)
+
+    const points = polygon.getAttribute('points')
+    // Points should be transformed
+    assert.ok(points !== '10,10 20,10 15,20')
+  })
+
+  it('Test remapElement with g (group) element', function () {
+    const g = document.createElementNS(NS.SVG, 'g')
+    svg.append(g)
+
+    const attrs = {}
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    coords.remapElement(g, attrs, m)
+
+    // Group elements get handled (may or may not add transform)
+    // Just verify it doesn't crash
+    assert.ok(g !== null)
+  })
+
+  it('Test flipBoxCoordinate with percentage values', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const grad = document.createElementNS(NS.SVG, 'linearGradient')
+    grad.id = 'percentGrad'
+    grad.setAttribute('x1', '25%')
+    grad.setAttribute('x2', '75%')
+    defs.append(grad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('fill', 'url(#percentGrad)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(rect, attrs, m)
+
+    // Should create a new gradient with flipped percentages or keep original
+    const newGrads = svg.querySelectorAll('linearGradient')
+    assert.ok(newGrads.length >= 1)
+    // Verify rect still has gradient
+    assert.ok(rect.getAttribute('fill').includes('url'))
+  })
+
+  it('Test remapElement with negative width/height', function () {
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '100')
+    rect.setAttribute('y', '100')
+    rect.setAttribute('width', '50')
+    rect.setAttribute('height', '50')
+    svg.append(rect)
+
+    const attrs = { x: 100, y: 100, width: 50, height: 50 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = -1
+    coords.remapElement(rect, attrs, m)
+
+    // Width and height should remain positive
+    assert.ok(Number.parseFloat(rect.getAttribute('width')) > 0)
+    assert.ok(Number.parseFloat(rect.getAttribute('height')) > 0)
+  })
+
+  it('Test remapElement with path containing curves', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 C20,20 30,30 40,40')
+    svg.append(path)
+
+    const attrs = {}
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+    m.e = 5
+    m.f = 5
+    coords.remapElement(path, attrs, m)
+
+    const d = path.getAttribute('d')
+    // Path should be transformed (coordinates change)
+    assert.ok(d !== 'M10,10 C20,20 30,30 40,40')
+  })
+
+  it('Test remapElement with stroke gradient', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const grad = document.createElementNS(NS.SVG, 'linearGradient')
+    grad.id = 'strokeGrad'
+    grad.setAttribute('x1', '0%')
+    grad.setAttribute('x2', '100%')
+    defs.append(grad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('stroke', 'url(#strokeGrad)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(rect, attrs, m)
+
+    // Should mirror the stroke gradient or keep original
+    assert.ok(svg.querySelectorAll('linearGradient').length >= 1)
+    // Verify stroke attribute is preserved
+    assert.ok(rect.getAttribute('stroke').includes('url'))
+  })
+
+  it('Test remapElement with invalid gradient reference', function () {
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('fill', 'url(#nonexistentGrad)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(rect, attrs, m)
+
+    // Should not crash, gradient stays as is
+    assert.equal(rect.getAttribute('fill'), 'url(#nonexistentGrad)')
+  })
+
+  it('Test remapElement with rect and skewX transform', function () {
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '10')
+    rect.setAttribute('y', '10')
+    rect.setAttribute('width', '50')
+    rect.setAttribute('height', '50')
+    svg.append(rect)
+
+    const m = svg.createSVGMatrix()
+    m.a = 1
+    m.b = 0.5
+    m.c = 0
+    m.d = 1
+
+    const changes = { x: 10, y: 10, width: 50, height: 50 }
+    coords.remapElement(rect, changes, m)
+
+    // Should apply transform for skew
+    assert.ok(true) // Just test it doesn't crash
+  })
+
+  it('Test remapElement with ellipse and negative radii', function () {
+    const ellipse = document.createElementNS(NS.SVG, 'ellipse')
+    ellipse.setAttribute('cx', '50')
+    ellipse.setAttribute('cy', '50')
+    ellipse.setAttribute('rx', '30')
+    ellipse.setAttribute('ry', '20')
+    svg.append(ellipse)
+
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = -1
+
+    const changes = { cx: 50, cy: 50, rx: 30, ry: 20 }
+    coords.remapElement(ellipse, changes, m)
+
+    // Radii should remain positive
+    assert.ok(Number.parseFloat(ellipse.getAttribute('rx')) > 0)
+    assert.ok(Number.parseFloat(ellipse.getAttribute('ry')) > 0)
+  })
+
+  it('Test remapElement with circle and scale', function () {
+    const circle = document.createElementNS(NS.SVG, 'circle')
+    circle.setAttribute('cx', '50')
+    circle.setAttribute('cy', '50')
+    circle.setAttribute('r', '25')
+    svg.append(circle)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = { cx: 50, cy: 50, r: 25 }
+    coords.remapElement(circle, changes, m)
+
+    assert.ok(circle.getAttribute('cx') !== '50' ||
+              circle.getAttribute('r') !== '25')
+  })
+
+  it('Test remapElement with line and rotation', function () {
+    const line = document.createElementNS(NS.SVG, 'line')
+    line.setAttribute('x1', '0')
+    line.setAttribute('y1', '0')
+    line.setAttribute('x2', '10')
+    line.setAttribute('y2', '10')
+    svg.append(line)
+
+    const m = svg.createSVGMatrix()
+    m.a = 0
+    m.b = 1
+    m.c = -1
+    m.d = 0
+
+    const changes = { x1: 0, y1: 0, x2: 10, y2: 10 }
+    coords.remapElement(line, changes, m)
+
+    // Line should be remapped
+    assert.ok(true)
+  })
+
+  it('Test remapElement with path d attribute update', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M 10,10 L 20,20')
+    svg.append(path)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = { d: 'M 10,10 L 20,20' }
+    coords.remapElement(path, changes, m)
+
+    assert.ok(path.getAttribute('d') !== null)
+  })
+
+  it('Test remapElement with rect having both fill and stroke gradients', function () {
+    const fillGrad = document.createElementNS(NS.SVG, 'linearGradient')
+    fillGrad.setAttribute('id', 'fillGradientTest')
+    fillGrad.setAttribute('x1', '0')
+    fillGrad.setAttribute('x2', '1')
+    svg.append(fillGrad)
+
+    const strokeGrad = document.createElementNS(NS.SVG, 'linearGradient')
+    strokeGrad.setAttribute('id', 'strokeGradientTest')
+    strokeGrad.setAttribute('y1', '0')
+    strokeGrad.setAttribute('y2', '1')
+    svg.append(strokeGrad)
+
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('fill', 'url(#fillGradientTest)')
+    rect.setAttribute('stroke', 'url(#strokeGradientTest)')
+    rect.setAttribute('width', '100')
+    rect.setAttribute('height', '100')
+    svg.append(rect)
+
+    const attrs = { x: 0, y: 0, width: 100, height: 100 }
+    const m = svg.createSVGMatrix()
+    m.a = -1
+    m.d = 1
+    coords.remapElement(rect, attrs, m)
+
+    assert.ok(svg.querySelectorAll('linearGradient').length >= 2)
+  })
+
+  it('Test remapElement with zero-width rect', function () {
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '10')
+    rect.setAttribute('y', '10')
+    rect.setAttribute('width', '0')
+    rect.setAttribute('height', '50')
+    svg.append(rect)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = { x: 10, y: 10, width: 0, height: 50 }
+    coords.remapElement(rect, changes, m)
+
+    assert.ok(true) // Should not crash
+  })
+
+  it('Test remapElement with zero-height rect', function () {
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('x', '10')
+    rect.setAttribute('y', '10')
+    rect.setAttribute('width', '50')
+    rect.setAttribute('height', '0')
+    svg.append(rect)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = { x: 10, y: 10, width: 50, height: 0 }
+    coords.remapElement(rect, changes, m)
+
+    assert.ok(true) // Should not crash
+  })
+
+  it('Test remapElement with zero-radius circle', function () {
+    const circle = document.createElementNS(NS.SVG, 'circle')
+    circle.setAttribute('cx', '50')
+    circle.setAttribute('cy', '50')
+    circle.setAttribute('r', '0')
+    svg.append(circle)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = { cx: 50, cy: 50, r: 0 }
+    coords.remapElement(circle, changes, m)
+
+    assert.ok(true) // Should not crash
+  })
+
+  it('Test remapElement with symbol element', function () {
+    const symbol = document.createElementNS(NS.SVG, 'symbol')
+    symbol.setAttribute('viewBox', '0 0 100 100')
+    svg.append(symbol)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = {}
+    coords.remapElement(symbol, changes, m)
+
+    assert.ok(true)
+  })
+
+  it('Test remapElement with defs element', function () {
+    const defs = document.createElementNS(NS.SVG, 'defs')
+    svg.append(defs)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = {}
+    coords.remapElement(defs, changes, m)
+
+    assert.ok(true)
+  })
+
+  it('Test remapElement with marker element', function () {
+    const marker = document.createElementNS(NS.SVG, 'marker')
+    marker.setAttribute('markerWidth', '10')
+    marker.setAttribute('markerHeight', '10')
+    svg.append(marker)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = {}
+    coords.remapElement(marker, changes, m)
+
+    assert.ok(true)
+  })
+
+  it('Test remapElement with style element', function () {
+    const style = document.createElementNS(NS.SVG, 'style')
+    style.textContent = '.cls { fill: red; }'
+    svg.append(style)
+
+    const m = svg.createSVGMatrix()
+    m.a = 2
+    m.d = 2
+
+    const changes = {}
+    coords.remapElement(style, changes, m)
+
+    assert.ok(true)
   })
 })

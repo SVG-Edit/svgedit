@@ -64,7 +64,7 @@ let typeMap_ = {}
  * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
  * @returns {void}
  */
-export const init = function (elementContainer) {
+export const init = (elementContainer) => {
   elementContainer_ = elementContainer
 
   // Get correct em/ex values by creating a temporary SVG.
@@ -126,7 +126,7 @@ export const shortFloat = (val) => {
     return Number(Number(val).toFixed(digits))
   }
   if (Array.isArray(val)) {
-    return shortFloat(val[0]) + ',' + shortFloat(val[1])
+    return `${shortFloat(val[0])},${shortFloat(val[1])}`
   }
   return Number.parseFloat(val).toFixed(digits) - 0
 }
@@ -239,7 +239,7 @@ export const isValidUnit = (attr, val, selectedElement) => {
     // Not a number, check if it has a valid unit
     val = val.toLowerCase()
     return Object.keys(typeMap_).some((unit) => {
-      const re = new RegExp('^-?[\\d\\.]+' + unit + '$')
+      const re = new RegExp(`^-?[\\d\\.]+${unit}$`)
       return re.test(val)
     })
   }

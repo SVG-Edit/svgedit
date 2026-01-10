@@ -210,7 +210,7 @@ Layer.CLASS_REGEX = new RegExp(`(\\s|^)${Layer.CLASS_NAME}(\\s|$)`)
  * @param {SVGGElement} elem - The SVG element to update
  * @returns {void}
  */
-function addLayerClass (elem) {
+const addLayerClass = (elem) => {
   const classes = elem.getAttribute('class')
   if (!classes || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME)

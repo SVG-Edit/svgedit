@@ -25,7 +25,7 @@ import { convertToNum } from './units.js'
 let svgCanvas = null
 
 const flipBoxCoordinate = (value) => {
-  if (value == null) return null
+  if (value === null || value === undefined) return null
   const str = String(value).trim()
   if (!str) return null
 
@@ -40,10 +40,10 @@ const flipBoxCoordinate = (value) => {
 
 const flipAttributeInBoxUnits = (elem, attr) => {
   const value = elem.getAttribute(attr)
-  if (value == null) return
+  if (value === null || value === undefined) return
 
   const flipped = flipBoxCoordinate(value)
-  if (flipped != null) {
+  if (flipped !== null && flipped !== undefined) {
     elem.setAttribute(attr, flipped)
   }
 }

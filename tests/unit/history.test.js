@@ -565,4 +565,29 @@ describe('history', function () {
 
     MockCommand.prototype.unapply = function () { /* empty fn */ }
   })
+
+  it('Test BatchCommand with elements() method', function () {
+    const batch = new history.BatchCommand('test batch with elements')
+
+    // Create some mock commands that reference elements
+    class MockElementCommand {
+      constructor (elem) { this.elem = elem }
+      elements () { return [this.elem] }
+      apply () { /* empty fn */ }
+      unapply () { /* empty fn */ }
+      getText () { return 'mock' }
+    }
+
+    const elem1 = document.createElementNS(NS.SVG, 'rect')
+    const cmd1 = new MockElementCommand(elem1)
+    batch.addSubCommand(cmd1)
+
+    const elems = batch.elements()
+    assert.ok(Array.isArray(elems))
+  })
+
+  it('Test BatchCommand getText()', function () {
+    const batch = new history.BatchCommand('my test batch')
+    assert.equal(batch.getText(), 'my test batch')
+  })
 })

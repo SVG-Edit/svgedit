@@ -132,7 +132,7 @@ const svgToString = (elem, indent) => {
   const nsMap = svgCanvas.getNsMap()
   const out = []
   const unit = curConfig.baseUnit
-  const unitRe = new RegExp('^-?[\\d\\.]+' + unit + '$')
+  const unitRe = new RegExp(`^-?[\\d\\.]+${unit}$`)
 
   if (elem) {
     cleanupElement(elem)
@@ -168,7 +168,7 @@ const svgToString = (elem, indent) => {
         if (!vb) {
           vb = [0, 0, res.w, res.h].join(' ')
         }
-        out.push(' viewBox="' + vb + '" xmlns="' + NS.SVG + '"')
+        out.push(` viewBox="${vb}" xmlns="${NS.SVG}"`)
       } else {
         if (unit !== 'px') {
           res.w = convertUnit(res.w, unit) + unit
@@ -197,14 +197,14 @@ const svgToString = (elem, indent) => {
           nsMap[uri] !== 'xml'
         ) {
           nsuris[uri] = true
-          out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"')
+          out.push(` xmlns:${nsMap[uri]}="${uri}"`)
         }
         if (el.attributes.length > 0) {
           for (const [, attr] of Object.entries(el.attributes)) {
             const u = attr.namespaceURI
             if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
               nsuris[u] = true
-              out.push(' xmlns:' + nsMap[u] + '="' + u + '"')
+              out.push(` xmlns:${nsMap[u]}="${u}"`)
             }
           }
         }
@@ -473,7 +473,7 @@ const setSvgString = (xmlString, preventUndo) => {
 
     Object.entries(ids).forEach(([key, value]) => {
       if (value > 1) {
-        const nodes = content.querySelectorAll('[id="' + key + '"]')
+        const nodes = content.querySelectorAll(`[id="${key}"]`)
         for (let i = 1; i < nodes.length; i++) {
           nodes[i].setAttribute('id', svgCanvas.getNextId())
         }
@@ -572,10 +572,10 @@ const setSvgString = (xmlString, preventUndo) => {
         attrs.width = bb.width + bb.x
         attrs.height = bb.height + bb.y
       } else {
-        if (attrs.width == null) {
+        if (attrs.width === null || attrs.width === undefined) {
           attrs.width = 100
         }
-        if (attrs.height == null) {
+        if (attrs.height === null || attrs.height === undefined) {
           attrs.height = 100
         }
       }
@@ -704,7 +704,7 @@ const importSvgString = (xmlString, preserveDimension) => {
           : 'scale(' + canvash / 3 / safeImportW + ')'
 
       // Hack to make recalculateDimensions understand how to scale
-      ts = 'translate(0) ' + ts + ' translate(0)'
+      ts = `translate(0) ${ts} translate(0)`
 
       symbol = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'symbol')
       const defs = findDefs()
@@ -1145,7 +1145,7 @@ const uniquifyElemsMethod = g => {
       let j = attrs.length
       while (j--) {
         const attr = attrs[j]
-        attr.ownerElement.setAttribute(attr.name, 'url(#' + newid + ')')
+        attr.ownerElement.setAttribute(attr.name, `url(#${newid})`)
       }
 
       // remap all href attributes

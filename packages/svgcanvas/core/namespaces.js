@@ -31,10 +31,10 @@ export const NS = {
 * @function module:namespaces.getReverseNS
 * @returns {PlainObject<string, string>} The namespace URI map with values swapped to their lowercase keys
 */
-export const getReverseNS = function () {
+export const getReverseNS = () => {
   const reverseNS = {}
-  Object.entries(NS).forEach(([name, URI]) => {
+  for (const [name, URI] of Object.entries(NS)) {
     reverseNS[URI] = name.toLowerCase()
-  })
+  }
   return reverseNS
 }

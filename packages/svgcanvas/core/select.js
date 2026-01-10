@@ -13,9 +13,33 @@ import { NS } from './namespaces'
 import { warn } from '../common/logger.js'
 
 let svgCanvas
-let selectorManager_ // A Singleton
 // change radius if touch screen
 const gripRadius = window.ontouchstart ? 10 : 4
+
+/**
+ * Private singleton manager for selector state
+ */
+class SelectModule {
+  #selectorManager = null
+
+  /**
+   * Initialize the select module with canvas
+   * @param {Object} canvas - The SVG canvas instance
+   * @returns {void}
+   */
+  init (canvas) {
+    svgCanvas = canvas
+    this.#selectorManager = new SelectorManager()
+  }
+
+  /**
+   * Get the singleton SelectorManager instance
+   * @returns {SelectorManager} The SelectorManager instance
+   */
+  getSelectorManager () {
+    return this.#selectorManager
+  }
+}
 
 /**
 * Private class for DOM element selection boxes.
@@ -39,14 +63,14 @@ export class Selector {
     // this holds a reference to the <g> element that holds all visual elements of the selector
     this.selectorGroup = svgCanvas.createSVGElement({
       element: 'g',
-      attr: { id: ('selectorGroup' + this.id) }
+      attr: { id: `selectorGroup${this.id}` }
     })
 
     // this holds a reference to the path rect
     this.selectorRect = svgCanvas.createSVGElement({
       element: 'path',
       attr: {
-        id: ('selectedBox' + this.id),
+        id: `selectedBox${this.id}`,
         fill: 'none',
         stroke: '#22C',
         'stroke-width': '1',
@@ -92,11 +116,11 @@ export class Selector {
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none'
-    selectorManager_.selectorGripsGroup.setAttribute('display', bShow)
+    selectModule.getSelectorManager().selectorGripsGroup.setAttribute('display', bShow)
     const elem = this.selectedElement
     this.hasGrips = show
     if (elem && show) {
-      this.selectorGroup.append(selectorManager_.selectorGripsGroup)
+      this.selectorGroup.append(selectModule.getSelectorManager().selectorGripsGroup)
       Selector.updateGripCursors(getRotationAngle(elem))
     }
   }
@@ -109,7 +133,7 @@ export class Selector {
   resize (bbox) {
     const dataStorage = svgCanvas.getDataStorage()
     const selectedBox = this.selectorRect
-    const mgr = selectorManager_
+    const mgr = selectModule.getSelectorManager()
     const selectedGrips = mgr.selectorGrips
     const selected = this.selectedElement
     const zoom = svgCanvas.getZoom()
@@ -131,7 +155,7 @@ export class Selector {
     while (currentElt.parentNode) {
       if (currentElt.parentNode && currentElt.parentNode.tagName === 'g' && currentElt.parentNode.transform) {
         if (currentElt.parentNode.transform.baseVal.numberOfItems) {
-          parentTransformationMatrix = matrixMultiply(transformListToTransform(getTransformList(selected.parentNode)).matrix, parentTransformationMatrix)
+          parentTransformationMatrix = matrixMultiply(transformListToTransform(getTransformList(currentElt.parentNode)).matrix, parentTransformationMatrix)
         }
       }
       currentElt = currentElt.parentNode
@@ -214,10 +238,7 @@ export class Selector {
         nbah = (maxy - miny)
       }
 
-      const dstr = 'M' + nbax + ',' + nbay +
-        ' L' + (nbax + nbaw) + ',' + nbay +
-        ' ' + (nbax + nbaw) + ',' + (nbay + nbah) +
-        ' ' + nbax + ',' + (nbay + nbah) + 'z'
+      const dstr = `M${nbax},${nbay} L${nbax + nbaw},${nbay} ${nbax + nbaw},${nbay + nbah} ${nbax},${nbay + nbah}z`
 
       const xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : ''
 
@@ -258,15 +279,15 @@ export class Selector {
   * @returns {void}
   */
   static updateGripCursors (angle) {
-    const dirArr = Object.keys(selectorManager_.selectorGrips)
+    const dirArr = Object.keys(selectModule.getSelectorManager().selectorGrips)
     let steps = Math.round(angle / 45)
     if (steps < 0) { steps += 8 }
     while (steps > 0) {
       dirArr.push(dirArr.shift())
       steps--
     }
-    Object.values(selectorManager_.selectorGrips).forEach((gripElement, i) => {
-      gripElement.setAttribute('style', ('cursor:' + dirArr[i] + '-resize'))
+    Object.values(selectModule.getSelectorManager().selectorGrips).forEach((gripElement, i) => {
+      gripElement.setAttribute('style', `cursor:${dirArr[i]}-resize`)
     })
   }
 }
@@ -542,6 +563,9 @@ export class SelectorManager {
  * @property {module:select.Dimensions} dimensions
  */
 
+// Export singleton instance for backward compatibility
+const selectModule = new SelectModule()
+
 /**
  * Initializes this module.
  * @function module:select.init
@@ -550,12 +574,11 @@ export class SelectorManager {
  * @returns {void}
  */
 export const init = (canvas) => {
-  svgCanvas = canvas
-  selectorManager_ = new SelectorManager()
+  selectModule.init(canvas)
 }
 
 /**
  * @function module:select.getSelectorManager
  * @returns {module:select.SelectorManager} The SelectorManager instance.
  */
-export const getSelectorManager = () => selectorManager_
+export const getSelectorManager = () => selectModule.getSelectorManager()

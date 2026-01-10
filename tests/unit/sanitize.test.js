@@ -134,4 +134,39 @@ describe('sanitize', function () {
     assert.equal(svg.querySelector('foo'), null)
     assert.equal(rect.parentNode, svg)
   })
+
+  it('sanitizeSvg() handles element with id attribute', function () {
+    const rect = createSvgElement('rect')
+    rect.setAttribute('id', 'myRect')
+    rect.setAttribute('x', '10')
+    rect.setAttribute('y', '20')
+    svg.append(rect)
+
+    sanitize.sanitizeSvg(rect)
+
+    assert.equal(rect.getAttribute('id'), 'myRect')
+  })
+
+  it('sanitizeSvg() handles comment nodes', function () {
+    const g = createSvgElement('g')
+    const comment = document.createComment('This is a comment')
+    g.append(comment)
+    svg.append(g)
+
+    sanitize.sanitizeSvg(g)
+    assert.ok(true)
+  })
+
+  it('sanitizeSvg() handles nested groups', function () {
+    const g1 = createSvgElement('g')
+    const g2 = createSvgElement('g')
+    const rect = createSvgElement('rect')
+    g2.append(rect)
+    g1.append(g2)
+    svg.append(g1)
+
+    sanitize.sanitizeSvg(g1)
+
+    assert.ok(svg.querySelector('rect'))
+  })
 })

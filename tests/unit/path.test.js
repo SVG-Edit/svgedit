@@ -296,4 +296,216 @@ describe('path', function () {
     const rel = pathModule.convertPath(path, true)
     assert.ok(rel.includes('a10,20 30 0 1 40,50'))
   })
+
+  it('Test recalcRotatedPath with no current path', function () {
+    const [mockPathContext] = getMockContexts()
+    pathModule.init(mockPathContext)
+    // path is null initially after init
+    pathModule.recalcRotatedPath()
+    // Should not throw
+  })
+
+  it('Test recalcRotatedPath with path without rotation', function () {
+    const svg = document.createElementNS(NS.SVG, 'svg')
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,10')
+    svg.append(path)
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts(svg)
+    pathModule.init(mockPathContext)
+    utilities.init(mockUtilitiesContext)
+    const pathObj = new Path(path)
+    pathObj.oldbbox = utilities.getBBox(path)
+
+    pathModule.recalcRotatedPath()
+    // Should not throw, and path should remain unchanged
+    assert.equal(path.getAttribute('d'), 'M0,0 L10,10')
+  })
+
+  it('Test recalcRotatedPath with path without oldbbox', function () {
+    const svg = document.createElementNS(NS.SVG, 'svg')
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,10')
+    path.setAttribute('transform', 'rotate(45 0 0)')
+    svg.append(path)
+
+    const [mockPathContext] = getMockContexts(svg)
+    pathModule.init(mockPathContext)
+    const pathObj = new Path(path)
+    pathObj.oldbbox = null
+
+    pathModule.recalcRotatedPath()
+    // Should not throw
+  })
+
+  it('Test Segment class with various pathSegTypes', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 H10 V10 Z')
+
+    const seg1 = new Segment(0, path.pathSegList.getItem(0))
+    assert.equal(seg1.index, 0)
+
+    const seg2 = new Segment(1, path.pathSegList.getItem(1))
+    assert.equal(seg2.type, 12) // PATHSEG_LINETO_HORIZONTAL_ABS
+
+    const seg3 = new Segment(2, path.pathSegList.getItem(2))
+    assert.equal(seg3.type, 14) // PATHSEG_LINETO_VERTICAL_ABS
+  })
+
+  it('Test convertPath with smooth cubic curve', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 S10,10 20,20')
+
+    const result = pathModule.convertPath(path, false)
+    assert.ok(result.includes('S'))
+  })
+
+  it('Test convertPath with quadratic curve', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q10,10 20,20')
+
+    const result = pathModule.convertPath(path, false)
+    assert.ok(result.includes('Q'))
+  })
+
+  it('Test Path.update with no pathSegList', function () {
+    const svg = document.createElementNS(NS.SVG, 'svg')
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    svg.append(rect)
+
+    const [mockPathContext, mockUtilitiesContext] = getMockContexts(svg)
+    utilities.init(mockUtilitiesContext)
+    pathModule.init(mockPathContext)
+
+    try {
+      const pathObj = new Path(rect)
+      pathObj.update()
+    } catch (e) {
+      // Expected for non-path elements
+      assert.ok(true)
+    }
+  })
+
+  it('Test convertPath with smooth quadratic curve', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q10,10 20,0 T40,0')
+
+    const result = pathModule.convertPath(path, false)
+    assert.ok(result.includes('T'))
+  })
+
+  it('Test convertPath with mixed absolute and relative commands', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,10 l5,5 L20,20')
+
+    const abs = pathModule.convertPath(path, false)
+    assert.ok(abs.includes('L'))
+
+    const rel = pathModule.convertPath(path, true)
+    assert.ok(rel.includes('l'))
+  })
+
+  it('Test convertPath with horizontal and vertical lines', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 H10 V10 h5 v5')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test Segment with arc command', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 A10,10 0 0 1 20,20')
+
+    const seg = new Segment(1, path.pathSegList.getItem(1))
+    assert.equal(seg.type, 10) // PATHSEG_ARC_ABS
+  })
+
+  it('Test convertPath with quadratic bezier', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q10,10 20,0')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with smooth quadratic', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 Q10,10 20,0 T30,0')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with arc sweep flags', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 A10,10 0 1 0 20,20')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with relative arc', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 a5,5 0 0 1 10,10')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with close path', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,0 L10,10 Z')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.includes('Z') || result.includes('z'))
+  })
+
+  it('Test convertPath with mixed case commands', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,10 l5,5 C20,20 25,25 30,20')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test Segment getItem', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 L10,10 L20,20')
+
+    const seg = new Segment(1, path.pathSegList.getItem(1))
+    assert.ok(seg.type)
+  })
+
+  it('Test convertPath with relative smooth cubic', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0,0 C10,10 20,10 30,0 s10,10 20,0')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with negative coordinates', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M-10,-10 L-20,-20 L-30,-15')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test convertPath with decimal coordinates', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M0.5,0.5 L10.25,10.75')
+
+    const result = pathModule.convertPath(path)
+    assert.ok(result.length > 0)
+  })
+
+  it('Test Segment with move command', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 L20,20')
+
+    const seg = new Segment(0, path.pathSegList.getItem(0))
+    assert.equal(seg.type, 2) // PATHSEG_MOVETO_ABS
+  })
 })

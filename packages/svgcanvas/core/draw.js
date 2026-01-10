@@ -33,7 +33,7 @@ let disabledElems = []
  * @param {module:history.HistoryRecordingService} [hrService] - if exists, return it instead of creating a new service.
  * @returns {module:history.HistoryRecordingService}
  */
-function historyRecordingService (hrService) {
+const historyRecordingService = (hrService) => {
   return hrService || new HistoryRecordingService(svgCanvas.undoMgr)
 }
 
@@ -42,18 +42,18 @@ function historyRecordingService (hrService) {
  * @param {Element} group The group element to search in.
  * @returns {string} The layer name or empty string.
  */
-function findLayerNameInGroup (group) {
+const findLayerNameInGroup = (group) => {
   const sel = group.querySelector('title')
   return sel ? sel.textContent : ''
 }
 
 /**
- * Verify the classList of the given element : if the classList contains 'layer', return true, then return false
+ * Checks if the given element's classList contains 'layer'.
  *
  * @param {Element} element - The given element
- * @returns {boolean} Return true if the classList contains 'layer' then return false
+ * @returns {boolean} True if the classList contains 'layer', false otherwise
  */
-function isLayerElement (element) {
+const isLayerElement = (element) => {
   return element.classList.contains('layer')
 }
 
@@ -62,7 +62,7 @@ function isLayerElement (element) {
  * @param {string[]} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
-function getNewLayerName (existingLayerNames) {
+const getNewLayerName = (existingLayerNames) => {
   let i = 1
   while (existingLayerNames.includes(`Layer ${i}`)) {
     i++
@@ -164,10 +164,10 @@ export class Drawing {
   getElem_ (id) {
     if (this.svgElem_.querySelector) {
       // querySelector lookup
-      return this.svgElem_.querySelector('#' + id)
+      return this.svgElem_.querySelector(`#${id}`)
     }
     // jQuery lookup: twice as slow as xpath in FF
-    return this.svgElem_.querySelector('[id=' + id + ']')
+    return this.svgElem_.querySelector(`[id=${id}]`)
   }
 
   /**
@@ -719,10 +719,7 @@ export class Drawing {
    * @returns {Element}
    */
   copyElem (el) {
-    const that = this
-    const getNextIdClosure = function () {
-      return that.getNextId()
-    }
+    const getNextIdClosure = () => this.getNextId()
     return utilCopyElem(el, getNextIdClosure)
   }
 }
@@ -735,7 +732,7 @@ export class Drawing {
  * @param {draw.Drawing} currentDrawing
  * @returns {void}
  */
-export const randomizeIds = function (enableRandomization, currentDrawing) {
+export const randomizeIds = (enableRandomization, currentDrawing) => {
   randIds =
     enableRandomization === false
       ? RandomizeModes.NEVER_RANDOMIZE

@@ -622,7 +622,7 @@ export class UndoManager {
     const p = this.undoChangeStackPointer--
     const changeset = this.undoableChangeStack[p]
     const { attrName } = changeset
-    const batchCmd = new BatchCommand('Change ' + attrName)
+    const batchCmd = new BatchCommand(`Change ${attrName}`)
     let i = changeset.elements.length
     while (i--) {
       const elem = changeset.elements[i]

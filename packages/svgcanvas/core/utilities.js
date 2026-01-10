@@ -1274,7 +1274,7 @@ export const getFeGaussianBlur = ele => {
  */
 export const getElement = id => {
   // querySelector lookup
-  return svgroot_.querySelector('#' + id)
+  return svgroot_.querySelector(`#${id}`)
 }
 
 /**
