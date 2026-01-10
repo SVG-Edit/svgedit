@@ -85,7 +85,7 @@
     "@svgedit/svgcanvas": "7.4.1",
     "browser-fs-access": "0.38.0",
     "elix": "15.0.1",
-    "i18next": "25.7.3",
+    "i18next": "25.7.4",
     "jspdf": "4.0.0",
     "pathseg": "1.2.1",
     "svg2pdf.js": "2.7.0"
@@ -104,7 +104,7 @@
     "remark-lint-ordered-list-marker-value": "4.0.1",
     "rimraf": "6.1.2",
     "standard": "17.1.2",
-    "vite": "^7.3.0",
+    "vite": "^7.3.1",
     "vite-plugin-istanbul": "^7.2.1",
     "vite-plugin-string": "^1.2.3",
     "vitest": "^4.0.16"
