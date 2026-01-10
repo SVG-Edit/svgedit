@@ -8,6 +8,7 @@
 
 import { getReverseNS, NS } from './namespaces.js'
 import { getHref, getRefElem, setHref, getUrlFromAttr } from './utilities.js'
+import { warn } from '../common/logger.js'
 
 const REVERSE_NS = getReverseNS()
 
@@ -130,22 +131,24 @@ const svgWhiteList_ = {
 }
 
 // add generic attributes to all elements of the whitelist
-Object.keys(svgWhiteList_).forEach((element) => { svgWhiteList_[element] = [...svgWhiteList_[element], ...svgGenericWhiteList] })
+for (const [element, attrs] of Object.entries(svgWhiteList_)) {
+  svgWhiteList_[element] = [...attrs, ...svgGenericWhiteList]
+}
 
 // Produce a Namespace-aware version of svgWhitelist
 const svgWhiteListNS_ = {}
-Object.entries(svgWhiteList_).forEach(([elt, atts]) => {
+for (const [elt, atts] of Object.entries(svgWhiteList_)) {
   const attNS = {}
-  Object.entries(atts).forEach(([_i, att]) => {
+  for (const att of atts) {
     if (att.includes(':')) {
-      const v = att.split(':')
-      attNS[v[1]] = NS[(v[0]).toUpperCase()]
+      const [prefix, localName] = att.split(':')
+      attNS[localName] = NS[prefix.toUpperCase()]
     } else {
       attNS[att] = att === 'xmlns' ? NS.XMLNS : null
     }
-  })
+  }
   svgWhiteListNS_[elt] = attNS
-})
+}
 
 /**
 * Sanitizes the input node and its children.
@@ -205,7 +208,7 @@ export const sanitizeSvg = (node) => {
             const seAttrNS = (attrName.startsWith('se:')) ? NS.SE : ((attrName.startsWith('oi:')) ? NS.OI : null)
             seAttrs.push([attrName, attr.value, seAttrNS])
           } else {
-            console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed: ${node.outerHTML}`)
+            warn(`attribute ${attrName} in element ${node.nodeName} not in whitelist is removed: ${node.outerHTML}`, null, 'sanitize')
             node.removeAttributeNS(attrNsURI, attrLocalName)
           }
         }
@@ -247,14 +250,14 @@ export const sanitizeSvg = (node) => {
         'radialGradient', 'textPath', 'use'].includes(node.nodeName) && href[0] !== '#') {
       // remove the attribute (but keep the element)
       setHref(node, '')
-      console.warn(`sanitizeSvg: attribute href in element ${node.nodeName} pointing to a non-local reference (${href}) is removed: ${node.outerHTML}`)
+      warn(`attribute href in element ${node.nodeName} pointing to a non-local reference (${href}) is removed: ${node.outerHTML}`, null, 'sanitize')
       node.removeAttributeNS(NS.XLINK, 'href')
       node.removeAttribute('href')
     }
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
     if (node.nodeName === 'use' && !getHref(node)) {
-      console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href or href is removed: ${node.outerHTML}`)
+      warn(`element ${node.nodeName} without a xlink:href or href is removed: ${node.outerHTML}`, null, 'sanitize')
       node.remove()
       return
     }
@@ -285,7 +288,7 @@ export const sanitizeSvg = (node) => {
         // simply check for first character being a '#'
         if (val && val[0] !== '#') {
           node.setAttribute(attr, '')
-          console.warn(`sanitizeSvg: attribute ${attr} in element ${node.nodeName} pointing to a non-local reference (${val}) is removed: ${node.outerHTML}`)
+          warn(`attribute ${attr} in element ${node.nodeName} pointing to a non-local reference (${val}) is removed: ${node.outerHTML}`, null, 'sanitize')
           node.removeAttribute(attr)
         }
       }
@@ -298,7 +301,7 @@ export const sanitizeSvg = (node) => {
   } else {
     // remove all children from this node and insert them before this node
     // TODO: in the case of animation elements this will hardly ever be correct
-    console.warn(`sanitizeSvg: element ${node.nodeName} not supported is removed: ${node.outerHTML}`)
+    warn(`element ${node.nodeName} not supported is removed: ${node.outerHTML}`, null, 'sanitize')
     const children = []
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node))

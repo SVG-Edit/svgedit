@@ -6,6 +6,8 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
+import { error } from '../common/logger.js'
+
 const NSSVG = 'http://www.w3.org/2000/svg'
 
 const wAttrs = ['x', 'x1', 'cx', 'rx', 'width']
@@ -62,7 +64,7 @@ let typeMap_ = {}
  * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
  * @returns {void}
  */
-export const init = function (elementContainer) {
+export const init = (elementContainer) => {
   elementContainer_ = elementContainer
 
   // Get correct em/ex values by creating a temporary SVG.
@@ -124,7 +126,7 @@ export const shortFloat = (val) => {
     return Number(Number(val).toFixed(digits))
   }
   if (Array.isArray(val)) {
-    return shortFloat(val[0]) + ',' + shortFloat(val[1])
+    return `${shortFloat(val[0])},${shortFloat(val[1])}`
   }
   return Number.parseFloat(val).toFixed(digits) - 0
 }
@@ -214,8 +216,8 @@ export const convertToNum = (attr, val) => {
     }
     return num * Math.sqrt((width * width) + (height * height)) / Math.sqrt(2)
   }
-  const unit = val.substr(-2)
-  const num = val.substr(0, val.length - 2)
+  const unit = val.slice(-2)
+  const num = val.slice(0, -2)
   // Note that this multiplication turns the string into a number
   return num * typeMap_[unit]
 }
@@ -237,7 +239,7 @@ export const isValidUnit = (attr, val, selectedElement) => {
     // Not a number, check if it has a valid unit
     val = val.toLowerCase()
     return Object.keys(typeMap_).some((unit) => {
-      const re = new RegExp('^-?[\\d\\.]+' + unit + '$')
+      const re = new RegExp(`^-?[\\d\\.]+${unit}$`)
       return re.test(val)
     })
   }
@@ -253,7 +255,7 @@ export const isValidUnit = (attr, val, selectedElement) => {
     try {
       const elem = elementContainer_.getElement(val)
       result = (!elem || elem === selectedElement)
-    } catch (e) { console.error(e) }
+    } catch (e) { error('Error getting element by ID', e, 'units') }
     return result
   }
   return true

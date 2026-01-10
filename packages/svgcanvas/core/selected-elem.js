@@ -9,6 +9,7 @@
 import { NS } from './namespaces.js'
 import * as hstry from './history.js'
 import * as pathModule from './path.js'
+import { warn, error } from '../common/logger.js'
 import {
   getStrokedBBoxDefaultVisible,
   setHref,
@@ -104,14 +105,17 @@ const moveToBottomSelectedElem = () => {
     let t = selected
     const oldParent = t.parentNode
     const oldNextSibling = t.nextSibling
-    let { firstChild } = t.parentNode
-    if (firstChild.tagName === 'title') {
-      firstChild = firstChild.nextSibling
+    let firstChild = t.parentNode.firstElementChild
+    if (firstChild?.tagName === 'title') {
+      firstChild = firstChild.nextElementSibling
     }
     // This can probably be removed, as the defs should not ever apppear
     // inside a layer group
-    if (firstChild.tagName === 'defs') {
-      firstChild = firstChild.nextSibling
+    if (firstChild?.tagName === 'defs') {
+      firstChild = firstChild.nextElementSibling
+    }
+    if (!firstChild) {
+      return
     }
     t = t.parentNode.insertBefore(t, firstChild)
     // If the element actually moved position, add the command and fire the changed
@@ -179,7 +183,7 @@ const moveUpDownSelected = dir => {
   // event handler.
   if (oldNextSibling !== t.nextSibling) {
     svgCanvas.addCommandToHistory(
-      new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir)
+      new MoveElementCommand(t, oldNextSibling, oldParent, `Move ${dir}`)
     )
     svgCanvas.call('changed', [t])
   }
@@ -208,6 +212,9 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
   const batchCmd = new BatchCommand('position')
   selectedElements.forEach((selected, i) => {
     if (selected) {
+      // Store the existing transform before modifying
+      const existingTransform = selected.getAttribute('transform') || ''
+
       const xform = svgCanvas.getSvgRoot().createSVGTransform()
       const tlist = getTransformList(selected)
 
@@ -227,6 +234,12 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
       const cmd = recalculateDimensions(selected)
       if (cmd) {
         batchCmd.addSubCommand(cmd)
+      } else if ((selected.getAttribute('transform') || '') !== existingTransform) {
+        // For groups and other elements where recalculateDimensions returns null,
+        // record the transform change directly
+        batchCmd.addSubCommand(
+          new ChangeElementCommand(selected, { transform: existingTransform })
+        )
       }
 
       svgCanvas
@@ -265,9 +278,11 @@ const cloneSelectedElements = (x, y) => {
   const index = el => {
     if (!el) return -1
     let i = 0
+    let current = el
     do {
       i++
-    } while (el === el.previousElementSibling)
+      current = current.previousElementSibling
+    } while (current)
     return i
   }
 
@@ -702,7 +717,7 @@ const flipSelectedElements = (scaleX, scaleY) => {
  * @returns {void}
  */
 const copySelectedElements = () => {
-  const selectedElements = svgCanvas.getSelectedElements()
+  const selectedElements = svgCanvas.getSelectedElements().filter(Boolean)
   const data = JSON.stringify(
     selectedElements.map(x => svgCanvas.getJsonFromSvgElements(x))
   )
@@ -712,7 +727,7 @@ const copySelectedElements = () => {
 
   // Context menu might not exist (it is provided by editor.js).
   const canvMenu = document.getElementById('se-cmenu_canvas')
-  canvMenu.setAttribute('enablemenuitems', '#paste,#paste_in_place')
+  canvMenu?.setAttribute('enablemenuitems', '#paste,#paste_in_place')
 }
 
 /**
@@ -866,10 +881,10 @@ const pushGroupProperty = (g, undoable) => {
           // Change this in future for different filters
           const suffix =
             blurElem?.tagName === 'feGaussianBlur' ? 'blur' : 'filter'
-          gfilter.id = elem.id + '_' + suffix
+          gfilter.id = `${elem.id}_${suffix}`
           svgCanvas.changeSelectedAttribute(
             'filter',
-            'url(#' + gfilter.id + ')',
+            `url(#${gfilter.id})`,
             [elem]
           )
         }
@@ -976,20 +991,29 @@ const pushGroupProperty = (g, undoable) => {
         changes = {}
         changes.transform = oldxform || ''
 
+        // Simply prepend the group's transform to the child's transform list
+        // New transform = [group transform] [child transform]
+        // This preserves the correct application order
         const newxform = svgCanvas.getSvgRoot().createSVGTransform()
+        newxform.setMatrix(m)
 
-        // [ gm ] [ chm ] = [ chm ] [ gm' ]
-        // [ gm' ] = [ chmInv ] [ gm ] [ chm ]
-        const chm = transformListToTransform(chtlist).matrix
-        const chmInv = chm.inverse()
-        const gm = matrixMultiply(chmInv, m, chm)
-        newxform.setMatrix(gm)
-        chtlist.appendItem(newxform)
+        // Insert group's transform at the beginning of child's transform list
+        if (chtlist.numberOfItems) {
+          chtlist.insertItemBefore(newxform, 0)
+        } else {
+          chtlist.appendItem(newxform)
+        }
+
+        // Record the transform change for undo/redo
+        if (undoable) {
+          batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
+        }
       }
-      const cmd = recalculateDimensions(elem)
-      if (cmd) {
-        batchCmd.addSubCommand(cmd)
-      }
+      // NOTE: We intentionally do NOT call recalculateDimensions here because:
+      // 1. It reorders transforms (moves rotate before translate), changing the visual result
+      // 2. It recalculates rotation centers, causing elements to jump
+      // 3. The prepended group transform is already in the correct position
+      // Just leave the transforms as-is after prepending the group's transform
     }
   }
 
@@ -1047,6 +1071,10 @@ const convertToGroup = elem => {
     svgCanvas.call('selected', [elem])
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol')
+    if (!elem) {
+      warn('Unable to convert <use>: missing symbol reference', null, 'selected-elem')
+      return
+    }
 
     ts = $elem.getAttribute('transform') || ''
     const pos = {
@@ -1065,14 +1093,15 @@ const convertToGroup = elem => {
     // Not ideal, but works
     ts += ' translate(' + (pos.x || 0) + ',' + (pos.y || 0) + ')'
 
-    const prev = $elem.previousElementSibling
+    const useParent = $elem.parentNode
+    const useNextSibling = $elem.nextSibling
 
     // Remove <use> element
     batchCmd.addSubCommand(
       new RemoveElementCommand(
         $elem,
-        $elem.nextElementSibling,
-        $elem.parentNode
+        useNextSibling,
+        useParent
       )
     )
     $elem.remove()
@@ -1124,7 +1153,9 @@ const convertToGroup = elem => {
     // now give the g itself a new id
     g.id = svgCanvas.getNextId()
 
-    prev.after(g)
+    if (useParent) {
+      useParent.insertBefore(g, useNextSibling)
+    }
 
     if (parent) {
       if (!hasMore) {
@@ -1152,7 +1183,7 @@ const convertToGroup = elem => {
       try {
         recalculateDimensions(n)
       } catch (e) {
-        console.error(e)
+        error('Error recalculating dimensions', e, 'selected-elem')
       }
     })
 
@@ -1173,7 +1204,7 @@ const convertToGroup = elem => {
 
     svgCanvas.addCommandToHistory(batchCmd)
   } else {
-    console.warn('Unexpected element to ungroup:', elem)
+    warn('Unexpected element to ungroup:', elem, 'selected-elem')
   }
 }
 
@@ -1197,7 +1228,16 @@ const ungroupSelectedElement = () => {
   }
   if (g.tagName === 'use') {
     // Somehow doesn't have data set, so retrieve
-    const symbol = getElement(getHref(g).substr(1))
+    const href = getHref(g)
+    if (!href || !href.startsWith('#')) {
+      warn('Unexpected <use> without local reference:', g, 'selected-elem')
+      return
+    }
+    const symbol = getElement(href.slice(1))
+    if (!symbol) {
+      warn('Unexpected <use> without resolved reference:', g, 'selected-elem')
+      return
+    }
     dataStorage.put(g, 'symbol', symbol)
     dataStorage.put(g, 'ref', symbol)
     convertToGroup(g)
@@ -1281,7 +1321,7 @@ const updateCanvas = (w, h) => {
     height: svgCanvas.contentH * zoom,
     x,
     y,
-    viewBox: '0 0 ' + svgCanvas.contentW + ' ' + svgCanvas.contentH
+    viewBox: `0 0 ${svgCanvas.contentW} ${svgCanvas.contentH}`
   })
 
   assignAttributes(bg, {
@@ -1301,7 +1341,7 @@ const updateCanvas = (w, h) => {
 
   svgCanvas.selectorManager.selectorParentGroup.setAttribute(
     'transform',
-    'translate(' + x + ',' + y + ')'
+    `translate(${x},${y})`
   )
 
   /**

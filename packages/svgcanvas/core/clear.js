@@ -24,7 +24,15 @@ export const clearSvgContentElementInit = () => {
   // empty
   while (el.firstChild) { el.removeChild(el.firstChild) }
 
-  // TODO: Clear out all other attributes first?
+  // Reset any stale attributes from the previous document.
+  for (const attr of Array.from(el.attributes)) {
+    if (attr.namespaceURI) {
+      el.removeAttributeNS(attr.namespaceURI, attr.localName)
+    } else {
+      el.removeAttribute(attr.name)
+    }
+  }
+
   const pel = svgCanvas.getSvgRoot()
   el.setAttribute('id', 'svgcontent')
   el.setAttribute('width', dimensions[0])
@@ -35,9 +43,11 @@ export const clearSvgContentElementInit = () => {
   el.setAttribute('xmlns', NS.SVG)
   el.setAttribute('xmlns:se', NS.SE)
   el.setAttribute('xmlns:xlink', NS.XLINK)
-  pel.appendChild(el)
+  if (el.parentNode !== pel) {
+    pel.appendChild(el)
+  }
 
   // TODO: make this string optional and set by the client
   const comment = svgCanvas.getDOMDocument().createComment(' Created with SVG-edit - https://github.com/SVG-Edit/svgedit')
-  svgCanvas.getSvgContent().append(comment)
+  el.append(comment)
 }

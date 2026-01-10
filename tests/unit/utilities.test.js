@@ -372,4 +372,40 @@ describe('utilities', function () {
     assert.equal(mockCount.addToSelection, 0)
     assert.equal(mockCount.addCommandToHistory, 0)
   })
+
+  it('Test isNullish with null', function () {
+    const { isNullish } = utilities
+    const result = isNullish(null)
+    assert.ok(result === true)
+  })
+
+  it('Test isNullish with undefined', function () {
+    const { isNullish } = utilities
+    const result = isNullish(undefined)
+    assert.ok(result === true)
+  })
+
+  it('Test isNullish with value', function () {
+    const { isNullish } = utilities
+    const result = isNullish('test')
+    assert.ok(result === false)
+  })
+
+  it('Test isNullish with zero', function () {
+    const { isNullish } = utilities
+    const result = isNullish(0)
+    assert.ok(result === false)
+  })
+
+  it('Test isNullish with empty string', function () {
+    const { isNullish } = utilities
+    const result = isNullish('')
+    assert.ok(result === false)
+  })
+
+  it('Test isNullish with boolean false', function () {
+    const { isNullish } = utilities
+    const result = isNullish(false)
+    assert.ok(result === false)
+  })
 })

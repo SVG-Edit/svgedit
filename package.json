@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "7.4.0",
+  "version": "7.4.1",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/editor/Editor.js",
   "module": "dist/editor/Editor.js",
@@ -82,21 +82,21 @@
     ]
   },
   "dependencies": {
-    "@svgedit/svgcanvas": "workspace:*",
+    "@svgedit/svgcanvas": "7.4.1",
     "browser-fs-access": "0.38.0",
     "elix": "15.0.1",
-    "i18next": "25.7.1",
-    "jspdf": "3.0.4",
+    "i18next": "25.7.4",
+    "jspdf": "4.0.0",
     "pathseg": "1.2.1",
-    "svg2pdf.js": "2.6.0"
+    "svg2pdf.js": "2.7.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@rollup/plugin-dynamic-import-vars": "2.1.5",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/coverage-v8": "^4.0.16",
     "jamilih": "0.63.1",
     "jsdoc": "4.0.5",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.4.0",
     "npm-run-all": "4.1.5",
     "nyc": "17.1.0",
     "open-cli": "8.0.0",
@@ -104,12 +104,12 @@
     "remark-lint-ordered-list-marker-value": "4.0.1",
     "rimraf": "6.1.2",
     "standard": "17.1.2",
-    "vite": "^7.2.6",
+    "vite": "^7.3.1",
     "vite-plugin-istanbul": "^7.2.1",
     "vite-plugin-string": "^1.2.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.16"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.53.3"
+    "@rollup/rollup-linux-x64-gnu": "4.55.1"
   }
 }

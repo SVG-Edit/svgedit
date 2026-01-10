@@ -2,197 +2,138 @@
  * @param {any} obj
  * @returns {any}
  */
-export function findPos (obj) {
-  let curleft = 0
-  let curtop = 0
-  if (obj.offsetParent) {
+export const findPos = (obj) => {
+  let left = 0
+  let top = 0
+
+  if (obj?.offsetParent) {
+    let current = obj
     do {
-      curleft += obj.offsetLeft
-      curtop += obj.offsetTop
-    // eslint-disable-next-line no-cond-assign
-    } while (obj = obj.offsetParent)
-    return { left: curleft, top: curtop }
+      left += current.offsetLeft
+      top += current.offsetTop
+      current = current.offsetParent
+    } while (current)
   }
-  return { left: curleft, top: curtop }
+
+  return { left, top }
 }
 
-export function isObject (item) {
-  return (item && typeof item === 'object' && !Array.isArray(item))
-}
+export const isObject = (item) =>
+  item && typeof item === 'object' && !Array.isArray(item)
 
-export function mergeDeep (target, source) {
-  const output = Object.assign({}, target)
+export const mergeDeep = (target, source) => {
+  const output = { ...target }
+
   if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach((key) => {
+    for (const key of Object.keys(source)) {
       if (isObject(source[key])) {
-        if (!(key in target)) { Object.assign(output, { [key]: source[key] }) } else { output[key] = mergeDeep(target[key], source[key]) }
+        output[key] = key in target
+          ? mergeDeep(target[key], source[key])
+          : source[key]
       } else {
-        Object.assign(output, { [key]: source[key] })
+        output[key] = source[key]
       }
-    })
+    }
   }
+
   return output
 }
 
 /**
  * Get the closest matching element up the DOM tree.
+ * Uses native Element.closest() when possible for better performance.
  * @param  {Element} elem     Starting element
  * @param  {String}  selector Selector to match against (class, ID, data attribute, or tag)
- * @return {Boolean|Element}  Returns null if not match found
+ * @return {Element|null}     Returns null if no match found
  */
-export function getClosest (elem, selector) {
+export const getClosest = (elem, selector) => {
+  // Use native closest for standard CSS selectors
+  if (elem?.closest) {
+    try {
+      return elem.closest(selector)
+    } catch (e) {
+      // Fallback for invalid selectors
+    }
+  }
+
+  // Fallback implementation for edge cases
+  const selectorMatcher = {
+    '.': (el, sel) => el.classList?.contains(sel.slice(1)),
+    '#': (el, sel) => el.id === sel.slice(1),
+    '[': (el, sel) => {
+      const [attr, val] = sel.slice(1, -1).split('=').map(s => s.replace(/["']/g, ''))
+      return val ? el.getAttribute(attr) === val : el.hasAttribute(attr)
+    },
+    tag: (el, sel) => el.tagName?.toLowerCase() === sel
+  }
+
   const firstChar = selector.charAt(0)
-  const supports = 'classList' in document.documentElement
-  let attribute; let value
-  // If selector is a data attribute, split attribute from value
-  if (firstChar === '[') {
-    selector = selector.substr(1, selector.length - 2)
-    attribute = selector.split('=')
-    if (attribute.length > 1) {
-      value = true
-      attribute[1] = attribute[1].replace(/"/g, '').replace(/'/g, '')
-    }
+  const matcher = selectorMatcher[firstChar] || selectorMatcher.tag
+
+  for (let current = elem; current && current !== document && current.nodeType === 1; current = current.parentNode) {
+    if (matcher(current, selector)) return current
   }
-  // Get closest match
-  for (; elem && elem !== document && elem.nodeType === 1; elem = elem.parentNode) {
-    // If selector is a class
-    if (firstChar === '.') {
-      if (supports) {
-        if (elem.classList.contains(selector.substr(1))) {
-          return elem
-        }
-      } else {
-        if (new RegExp('(^|\\s)' + selector.substr(1) + '(\\s|$)').test(elem.className)) {
-          return elem
-        }
-      }
-    }
-    // If selector is an ID
-    if (firstChar === '#') {
-      if (elem.id === selector.substr(1)) {
-        return elem
-      }
-    }
-    // If selector is a data attribute
-    if (firstChar === '[') {
-      if (elem.hasAttribute(attribute[0])) {
-        if (value) {
-          if (elem.getAttribute(attribute[0]) === attribute[1]) {
-            return elem
-          }
-        } else {
-          return elem
-        }
-      }
-    }
-    // If selector is a tag
-    if (elem.tagName.toLowerCase() === selector) {
-      return elem
-    }
-  }
+
   return null
 }
 
 /**
- * Get all DOM element up the tree that contain a class, ID, or data attribute
+ * Get all DOM elements up the tree that match a selector
  * @param  {Node} elem The base element
  * @param  {String} selector The class, id, data attribute, or tag to look for
- * @return {Array} Null if no match
+ * @return {Array|null} Array of matching elements or null if no match
  */
-export function getParents (elem, selector) {
+export const getParents = (elem, selector) => {
   const parents = []
+  const matchers = {
+    '.': (el, sel) => el.classList?.contains(sel.slice(1)),
+    '#': (el, sel) => el.id === sel.slice(1),
+    '[': (el, sel) => el.hasAttribute(sel.slice(1, -1)),
+    tag: (el, sel) => el.tagName?.toLowerCase() === sel
+  }
+
   const firstChar = selector?.charAt(0)
-  // Get matches
-  for (; elem && elem !== document; elem = elem.parentNode) {
-    if (selector) {
-      // If selector is a class
-      if (firstChar === '.') {
-        if (elem.classList.contains(selector.substr(1))) {
-          parents.push(elem)
-        }
-      }
-      // If selector is an ID
-      if (firstChar === '#') {
-        if (elem.id === selector.substr(1)) {
-          parents.push(elem)
-        }
-      }
-      // If selector is a data attribute
-      if (firstChar === '[') {
-        if (elem.hasAttribute(selector.substr(1, selector.length - 1))) {
-          parents.push(elem)
-        }
-      }
-      // If selector is a tag
-      if (elem.tagName.toLowerCase() === selector) {
-        parents.push(elem)
-      }
-    } else {
-      parents.push(elem)
+  const matcher = selector ? (matchers[firstChar] || matchers.tag) : null
+
+  for (let current = elem; current && current !== document; current = current.parentNode) {
+    if (!selector || matcher(current, selector)) {
+      parents.push(current)
     }
   }
-  // Return parents if any exist
-  return parents.length ? parents : null
+
+  return parents.length > 0 ? parents : null
 }
 
-export function getParentsUntil (elem, parent, selector) {
+export const getParentsUntil = (elem, parent, selector) => {
   const parents = []
-  const parentType = parent?.charAt(0)
-  const selectorType = selector?.charAt(0)
-  // Get matches
-  for (; elem && elem !== document; elem = elem.parentNode) {
-    // Check if parent has been reached
-    if (parent) {
-      // If parent is a class
-      if (parentType === '.') {
-        if (elem.classList.contains(parent.substr(1))) {
-          break
-        }
-      }
-      // If parent is an ID
-      if (parentType === '#') {
-        if (elem.id === parent.substr(1)) {
-          break
-        }
-      }
-      // If parent is a data attribute
-      if (parentType === '[') {
-        if (elem.hasAttribute(parent.substr(1, parent.length - 1))) {
-          break
-        }
-      }
-      // If parent is a tag
-      if (elem.tagName.toLowerCase() === parent) {
-        break
-      }
+
+  const matchers = {
+    '.': (el, sel) => el.classList?.contains(sel.slice(1)),
+    '#': (el, sel) => el.id === sel.slice(1),
+    '[': (el, sel) => el.hasAttribute(sel.slice(1, -1)),
+    tag: (el, sel) => el.tagName?.toLowerCase() === sel
+  }
+
+  const getMatcherFn = (selectorStr) => {
+    if (!selectorStr) return null
+    const firstChar = selectorStr.charAt(0)
+    return matchers[firstChar] || matchers.tag
+  }
+
+  const parentMatcher = getMatcherFn(parent)
+  const selectorMatcher = getMatcherFn(selector)
+
+  for (let current = elem; current && current !== document; current = current.parentNode) {
+    // Check if we've reached the parent boundary
+    if (parent && parentMatcher?.(current, parent)) {
+      break
     }
-    if (selector) {
-      // If selector is a class
-      if (selectorType === '.') {
-        if (elem.classList.contains(selector.substr(1))) {
-          parents.push(elem)
-        }
-      }
-      // If selector is an ID
-      if (selectorType === '#') {
-        if (elem.id === selector.substr(1)) {
-          parents.push(elem)
-        }
-      }
-      // If selector is a data attribute
-      if (selectorType === '[') {
-        if (elem.hasAttribute(selector.substr(1, selector.length - 1))) {
-          parents.push(elem)
-        }
-      }
-      // If selector is a tag
-      if (elem.tagName.toLowerCase() === selector) {
-        parents.push(elem)
-      }
-    } else {
-      parents.push(elem)
+
+    // Add to results if matches selector (or no selector specified)
+    if (!selector || selectorMatcher?.(current, selector)) {
+      parents.push(current)
     }
   }
-  // Return parents if any exist
-  return parents.length ? parents : null
+
+  return parents.length > 0 ? parents : null
 }

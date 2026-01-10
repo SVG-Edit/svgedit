@@ -474,6 +474,47 @@ describe('history', function () {
     change.apply()
     assert.equal(justCalled, 'setHref')
 
+    // Ensure numeric zero values are not treated like "remove attribute".
+    const rectZero = document.createElementNS(NS.SVG, 'rect')
+    rectZero.setAttribute('x', '5')
+    change = new history.ChangeElementCommand(rectZero, { x: 0 })
+    change.unapply()
+    assert.equal(rectZero.getAttribute('x'), '0')
+    change.apply()
+    assert.equal(rectZero.getAttribute('x'), '5')
+
+    // Ensure "#href" can be removed when the previous value was null.
+    const rectHref = document.createElementNS(NS.SVG, 'rect')
+    rectHref.setAttribute('href', '#newhref')
+    let calls = []
+    utilities.mock({
+      getHref (elem) {
+        assert.equal(elem, rectHref)
+        calls.push('getHref')
+        return rectHref.getAttribute('href')
+      },
+      setHref (elem, val) {
+        assert.equal(elem, rectHref)
+        calls.push('setHref')
+        rectHref.setAttribute('href', val)
+      },
+      getRotationAngle () { return 0 }
+    })
+
+    calls = []
+    change = new history.ChangeElementCommand(rectHref, { '#href': null })
+    assert.deepEqual(calls, ['getHref'])
+
+    calls = []
+    change.unapply()
+    assert.equal(rectHref.hasAttribute('href'), false)
+    assert.deepEqual(calls, [])
+
+    calls = []
+    change.apply()
+    assert.equal(rectHref.getAttribute('href'), '#newhref')
+    assert.deepEqual(calls, ['setHref'])
+
     const line = document.createElementNS(NS.SVG, 'line')
     line.setAttribute('class', 'newClass')
     change = new history.ChangeElementCommand(line, { class: 'oldClass' })
@@ -523,5 +564,30 @@ describe('history', function () {
     assert.equal(concatResult, 'cba')
 
     MockCommand.prototype.unapply = function () { /* empty fn */ }
+  })
+
+  it('Test BatchCommand with elements() method', function () {
+    const batch = new history.BatchCommand('test batch with elements')
+
+    // Create some mock commands that reference elements
+    class MockElementCommand {
+      constructor (elem) { this.elem = elem }
+      elements () { return [this.elem] }
+      apply () { /* empty fn */ }
+      unapply () { /* empty fn */ }
+      getText () { return 'mock' }
+    }
+
+    const elem1 = document.createElementNS(NS.SVG, 'rect')
+    const cmd1 = new MockElementCommand(elem1)
+    batch.addSubCommand(cmd1)
+
+    const elems = batch.elements()
+    assert.ok(Array.isArray(elems))
+  })
+
+  it('Test BatchCommand getText()', function () {
+    const batch = new history.BatchCommand('my test batch')
+    assert.equal(batch.getText(), 'my test batch')
   })
 })

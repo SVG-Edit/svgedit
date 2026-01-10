@@ -670,6 +670,24 @@ describe('draw.Drawing', function () {
     cleanupSVG(svg)
   })
 
+  it('Test cloneLayer() with non-element nodes', function () {
+    const drawing = new draw.Drawing(svg)
+    const layers = setupSVGWith3Layers(svg)
+    const layer3 = layers[2]
+    createSomeElementsInGroup(layer3)
+    layer3.insertBefore(document.createTextNode('\n  '), layer3.childNodes[1])
+    layer3.append(document.createComment('test-comment'))
+    drawing.identifyLayers()
+
+    const clone = drawing.cloneLayer('clone2')
+
+    assert.ok(clone)
+    assert.ok([...clone.childNodes].some(node => node.nodeType === Node.TEXT_NODE))
+    assert.ok([...clone.childNodes].some(node => node.nodeType === Node.COMMENT_NODE))
+
+    cleanupSVG(svg)
+  })
+
   it('Test getLayerVisibility()', function () {
     const drawing = new draw.Drawing(svg)
     setupSVGWith3Layers(svg)
