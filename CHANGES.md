@@ -1,11 +1,10 @@
 # SVG-Edit CHANGES
 
 ## 7.4.1
-- svgcanvas: modernize matrix math with DOMMatrix fallback guards to avoid breakage in non-DOMMatrix environments.
-- svgcanvas: improve path remapping compatibility by using `getPathData`/`setPathData` when available with `pathSegList` fallback.
-- svgcanvas: fix gradient inheritance and flipping (multi-level href chains; mirrored gradients without drawing context).
-- svgcanvas: harden clipPath translation, blur filter creation, and layer move/visibility operations with null checks and warnings.
-- Tests: expand coverage around gradients, clip paths, and math utilities; all unit/e2e suites now pass.
+- Fix: parent transform iteration and undo/redo for grouped elements
+- Fix: gradient inheritance, clipPath translation, blur filters, layer operations
+- Tests: add Playwright regression tests for 11 GitHub issues
+- Build: ensure coverage instrumentation for e2e tests
 
 ## 7.4.0
 - Scripts: adapt `build` and `publish` for root-managed builds/publishes across workspaces.
