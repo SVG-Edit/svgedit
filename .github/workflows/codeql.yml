@@ -2,9 +2,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "add-codeql-badge" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "add-codeql-badge" ]
+
   schedule:
     - cron: '30 1 * * 0'
 
