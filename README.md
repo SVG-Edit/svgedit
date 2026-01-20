@@ -5,8 +5,8 @@
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Node%20CI/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/SVG-Edit/svgedit/badge.svg)](https://snyk.io/test/github/SVG-Edit/svgedit)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
-[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+[![CodeQL](https://github.com/hernandez-ajhc/svgedit/actions/workflows/codeql.yml/badge.svg)](https://github.com/hernandez-ajhc/svgedit/actions/workflows/codeql.yml)
+
 
 **SVGEdit** is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser. **SVGEdit** is based on a powerful SVG canvas **@svgedit/svgcanvas**
