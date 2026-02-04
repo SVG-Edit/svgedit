@@ -6,7 +6,7 @@
  */
 
 import { NS } from './namespaces.js'
-import { transformPoint, getMatrix } from './math.js'
+import { transformPoint, matrixMultiply, getTransformList, transformListToTransform } from './math.js'
 import {
   assignAttributes,
   getElement,
@@ -43,6 +43,40 @@ class TextActions {
   #lastX = null
   #lastY = null
   #allowDbl = false
+
+  /**
+   * Get the accumulated transformation matrix from the element up to the SVG content element.
+   * This includes transforms from all parent groups, fixing the issue where text cursor
+   * appears in the wrong position when editing text inside a transformed group.
+   * @param {Element} elem - The element to get the accumulated matrix for
+   * @returns {SVGMatrix|null} The accumulated transformation matrix, or null if none
+   * @private
+   */
+  #getAccumulatedMatrix = (elem) => {
+    const svgContent = svgCanvas.getSvgContent()
+    const matrices = []
+
+    let current = elem
+    while (current && current !== svgContent && current.nodeType === 1) {
+      const tlist = getTransformList(current)
+      if (tlist && tlist.numberOfItems > 0) {
+        const matrix = transformListToTransform(tlist).matrix
+        matrices.unshift(matrix) // Add to beginning to maintain correct order
+      }
+      current = current.parentNode
+    }
+
+    if (matrices.length === 0) {
+      return null
+    }
+
+    if (matrices.length === 1) {
+      return matrices[0]
+    }
+
+    // Multiply all matrices together
+    return matrixMultiply(...matrices)
+  }
 
   /**
    *
@@ -526,11 +560,12 @@ class TextActions {
     const str = this.#curtext.textContent
     const len = str.length
 
-    const xform = this.#curtext.getAttribute('transform')
-
     this.#textbb = utilsGetBBox(this.#curtext)
 
-    this.#matrix = xform ? getMatrix(this.#curtext) : null
+    // Calculate accumulated transform matrix including all parent groups
+    // This fixes the issue where text cursor appears in wrong position
+    // when editing text inside a group with transforms
+    this.#matrix = this.#getAccumulatedMatrix(this.#curtext)
 
     this.#chardata = []
     this.#chardata.length = len

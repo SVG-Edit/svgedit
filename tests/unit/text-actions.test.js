@@ -18,12 +18,17 @@ describe('TextActions', () => {
     svgRoot.setAttribute('height', '480')
     document.body.append(svgRoot)
 
+    // Create svgContent element (container for SVG content)
+    const svgContent = document.createElementNS(NS.SVG, 'svg')
+    svgContent.id = 'svgcontent'
+    svgRoot.append(svgContent)
+
     textElement = document.createElementNS(NS.SVG, 'text')
     textElement.setAttribute('x', '100')
     textElement.setAttribute('y', '100')
     textElement.setAttribute('id', 'text1')
     textElement.textContent = 'Test'
-    svgRoot.append(textElement)
+    svgContent.append(textElement)
 
     // Mock text measurement methods
     textElement.getStartPositionOfChar = vi.fn((i) => ({ x: 100 + i * 10, y: 100 }))
@@ -55,6 +60,7 @@ describe('TextActions', () => {
     // Mock svgCanvas
     svgCanvas = {
       getSvgRoot: () => svgRoot,
+      getSvgContent: () => svgContent,
       getZoom: () => 1,
       setCurrentMode: vi.fn(),
       clearSelection: vi.fn(),
