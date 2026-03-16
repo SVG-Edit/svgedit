@@ -201,7 +201,9 @@ class SvgCanvas {
           this.curConfig.initFill.color,
         fill_paint: null,
         fill_opacity: this.curConfig.initFill.opacity,
-        stroke: `#${this.curConfig.initStroke.color}`,
+        stroke:
+          (this.curConfig.initStroke.color === 'none' ? '' : '#') +
+          this.curConfig.initStroke.color,
         stroke_paint: null,
         stroke_opacity: this.curConfig.initStroke.opacity,
         stroke_width: this.curConfig.initStroke.width,

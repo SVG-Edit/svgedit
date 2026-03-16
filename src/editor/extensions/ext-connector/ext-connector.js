@@ -447,7 +447,10 @@ export default {
               attr: {
                 id: 'conn_' + svgCanvas.getNextId(),
                 points: `${x},${y} ${x},${y} ${startX},${startY}`,
-                stroke: `#${initStroke.color}`,
+                stroke:
+                  initStroke.color === 'none'
+                    ? 'none'
+                    : `#${initStroke.color}`,
                 'stroke-width':
                   !startElem.stroke_width || startElem.stroke_width === 0
                     ? initStroke.width
