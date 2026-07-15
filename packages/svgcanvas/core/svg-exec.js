@@ -138,9 +138,11 @@ const svgToString = (elem, indent) => {
     cleanupElement(elem)
     const attrs = [...elem.attributes]
     const childs = elem.childNodes
-    attrs.sort((a, b) => {
-      return a.name > b.name ? -1 : 1
-    })
+
+    // Do not sort attributes!
+    // attrs.sort((a, b) => {
+    //   return a.name > b.name ? -1 : 1
+    // })
 
     for (let i = 0; i < indent; i++) {
       out.push(' ')
@@ -250,7 +252,8 @@ const svgToString = (elem, indent) => {
       }
 
       const mozAttrs = ['-moz-math-font-style', '_moz-math-font-style']
-      for (let i = attrs.length - 1; i >= 0; i--) {
+      // Do not iterate attributes in reverse order!
+      for (let i = 0; i < attrs.length; i++) {
         const attr = attrs[i]
         let attrVal = toXml(attr.value)
         // remove bogus attributes added by Gecko
@@ -265,6 +268,7 @@ const svgToString = (elem, indent) => {
             continue
           }
         }
+
         if (attrVal !== '') {
           if (attrVal.startsWith('pointer-events')) {
             continue
@@ -276,7 +280,8 @@ const svgToString = (elem, indent) => {
           if (attr.localName === 'd') {
             attrVal = svgCanvas.pathActions.convertPath(elem, true)
           }
-          if (!isNaN(attrVal)) {
+          // Properly parse attribute value if it is a number!
+          if (!isNaN(attrVal) && !isNaN(parseFloat(attrVal))) {
             attrVal = shortFloat(attrVal)
           } else if (unitRe.test(attrVal)) {
             attrVal = shortFloat(attrVal) + unit
@@ -308,6 +313,23 @@ const svgToString = (elem, indent) => {
             out.push(attrVal)
             out.push('"')
           }
+        } else {
+          // Do not skip data attribute even they are empty!
+          if ((/^data[-]/i).test(attr.localName)) {
+            // map various namespaces to our fixed namespace prefixes
+            // (the default xmlns attribute itself does not get a prefix)
+            if (
+              !attr.namespaceURI ||
+              attr.namespaceURI === NS.SVG ||
+              nsMap[attr.namespaceURI]
+            ) {
+              out.push(' ')
+              out.push(attr.nodeName)
+              out.push('="')
+              out.push(attrVal)
+              out.push('"')
+            }
+          }
         }
       }
     }
@@ -326,7 +348,11 @@ const svgToString = (elem, indent) => {
             break
           case 3: {
             // text node
-            const str = child.nodeValue.replace(/^\s+|\s+$/g, '')
+            let str = child.nodeValue
+            // Do not trim values of <text> tags, they may have xml:space="preserve" attribute".
+            if (child.parentElement?.nodeName !== 'text') {
+              str = child.nodeValue.replace(/^\s+|\s+$/g, '')
+            }
             if (str !== '') {
               bOneLine = true
               out.push(String(toXml(str)))
@@ -628,6 +654,7 @@ const setSvgString = (xmlString, preventUndo) => {
  * @function module:svgcanvas.SvgCanvas#importSvgString
  * @param {string} xmlString - The SVG as XML text.
  * @param {boolean} preserveDimension - A boolean to force to preserve initial dimension of the imported svg (force svgEdit don't apply a transformation on the imported svg)
+ * @param {boolean} doNotUseExisting - Do not use existing imported elements.
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {null|Element} This function returns null if the import was unsuccessful, or the element otherwise.
  * @todo
@@ -637,7 +664,7 @@ const setSvgString = (xmlString, preventUndo) => {
  * arbitrary transform lists, but makes some assumptions about how the transform list
  * was obtained
  */
-const importSvgString = (xmlString, preserveDimension) => {
+const importSvgString = (xmlString, preserveDimension, doNotUseExisting) => {
   const dataStorage = svgCanvas.getDataStorage()
   let j
   let ts
@@ -645,7 +672,6 @@ const importSvgString = (xmlString, preserveDimension) => {
   try {
     // Get unique ID
     const uid = hashCode(xmlString)
-
     let useExisting = false
     // Look for symbol and make sure symbol exists in image
     if (svgCanvas.getImportIds(uid) && svgCanvas.getImportIds(uid).symbol) {
@@ -657,7 +683,7 @@ const importSvgString = (xmlString, preserveDimension) => {
 
     const batchCmd = new BatchCommand('Import Image')
     let symbol
-    if (useExisting) {
+    if (useExisting && !doNotUseExisting) {
       symbol = svgCanvas.getImportIds(uid).symbol
       ts = svgCanvas.getImportIds(uid).xform
     } else {
@@ -1290,14 +1316,14 @@ const convertGradientsMethod = elem => {
             (tmpFillStrokeElems[0].tagName === 'linearGradient' ||
               tmpFillStrokeElems[0].tagName === 'radialGradient') &&
             tmpFillStrokeElems[0].getAttribute('gradientUnits') ===
-              'userSpaceOnUse'
+            'userSpaceOnUse'
           ) {
             fillStrokeElems = svgContent.querySelectorAll(
               '[fill="url(#' +
-                tmpFillStrokeElems[0].id +
-                ')"],[stroke="url(#' +
-                tmpFillStrokeElems[0].id +
-                ')"]'
+              tmpFillStrokeElems[0].id +
+              ')"],[stroke="url(#' +
+              tmpFillStrokeElems[0].id +
+              ')"]'
             )
           } else {
             return
