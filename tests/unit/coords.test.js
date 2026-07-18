@@ -887,7 +887,7 @@ describe('coords', function () {
       { type: 'L', values: [50, 50] },
       { type: 'Z', values: [] }
     ]
-    path.getPathData = () => parsedPathData
+    path.getPathData = () => parsedPathData.map(seg => ({ type: seg.type, values: [...seg.values] }))
     let setPathDataArg = null
     path.setPathData = (data) => { setPathDataArg = data }
 

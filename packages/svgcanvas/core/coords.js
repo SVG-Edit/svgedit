@@ -63,6 +63,10 @@ const pathMap = [
   0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'
 ]
 
+// ClosePath has no separate absolute/relative command, so pathMap only
+// lists the lowercase 'z'; derive its type rather than hardcoding it.
+const CLOSEPATH_TYPE = pathMap.indexOf('z')
+
 /**
  * Applies coordinate changes to an element based on the given matrix.
  * @function module:coords.remapElement
@@ -311,9 +315,7 @@ export const remapElement = (selected, changes, m) => {
         for (let i = 0; i < len; ++i) {
           const seg = pathDataSegments[i]
           const t = seg.type
-          // ClosePath has no separate absolute/relative command, so pathMap
-          // only lists the lowercase 'z'; normalize 'Z' to it here.
-          const type = t === 'Z' ? pathMap.indexOf('z') : pathMap.indexOf(t)
+          const type = t === 'Z' ? CLOSEPATH_TYPE : pathMap.indexOf(t)
           if (type === -1) continue
           const values = seg.values || []
           const entry = { type }
@@ -439,7 +441,7 @@ export const remapElement = (selected, changes, m) => {
         const letter = pathMap[type]
         dstr += letter
         switch (type) {
-          case 1: // closepath (Z/z)
+          case CLOSEPATH_TYPE: // closepath (Z/z)
             newPathData.push({ type: letter, values: [] })
             break
           case 13: // relative horizontal line (h)
