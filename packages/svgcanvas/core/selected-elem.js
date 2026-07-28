@@ -721,11 +721,8 @@ const copySelectedElements = () => {
   )
   // Use sessionStorage for the clipboard data.
   sessionStorage.setItem(svgCanvas.getClipboardID(), data)
+  svgCanvas.call('clipboardChanged')
   svgCanvas.flashStorage()
-
-  // Context menu might not exist (it is provided by editor.js).
-  const canvMenu = document.getElementById('se-cmenu_canvas')
-  canvMenu?.setAttribute('enablemenuitems', '#paste,#paste_in_place')
 }
 
 /**

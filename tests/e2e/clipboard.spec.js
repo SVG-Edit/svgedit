@@ -1,5 +1,11 @@
 import { test, expect } from './fixtures.js'
-import { clickCanvas, setSvgSource, visitAndApproveStorage } from './helpers.js'
+import {
+  clickCanvas,
+  dismissStorageDialog,
+  selectEnglishAndSnap,
+  setSvgSource,
+  visitAndApproveStorage
+} from './helpers.js'
 
 const SAMPLE_SVG = `<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
    <g class="layer">
@@ -41,5 +47,34 @@ test.describe('Clipboard', () => {
     await page.locator('#cmenu_canvas a[href="#delete"]').click()
     await expect(page.locator('#svg_1')).toHaveCount(0)
     await expect(page.locator('#svg_2')).toHaveCount(0)
+  })
+
+  test('keeps paste enabled when clipboard data arrives from another tab', async ({ page, context }) => {
+    const secondPage = await context.newPage()
+    await secondPage.goto('/index.html')
+    await dismissStorageDialog(secondPage)
+    await secondPage.waitForSelector('#svgroot', { timeout: 20000 })
+    await selectEnglishAndSnap(secondPage)
+
+    await page.locator('#testCircle').click({ button: 'right' })
+    await page.locator('#cmenu_canvas a[href="#copy"]').click()
+
+    await expect.poll(() => secondPage.evaluate(() => (
+      sessionStorage.getItem('svgedit_clipboard')
+    ))).toContain('"testCircle"')
+
+    await expect.poll(() => secondPage.evaluate(() => (
+      localStorage.getItem('svgedit_clipboard')
+    ))).toBeNull()
+
+    await secondPage.locator('#svgroot').click({
+      position: { x: 200, y: 200 },
+      button: 'right'
+    })
+    const pasteLink = secondPage.locator('#cmenu_canvas a[href="#paste"]')
+    await expect(pasteLink.locator('..')).not.toHaveClass(/disabled/)
+    await pasteLink.click()
+
+    await expect(secondPage.locator('#svgcontent circle')).toHaveCount(1)
   })
 })
