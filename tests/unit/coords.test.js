@@ -856,6 +856,59 @@ describe('coords', function () {
     assert.ok(true)
   })
 
+  it('Test remapElement(translate) for closed path (uppercase Z)', function () {
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 L50,10 L50,50 Z')
+    svg.append(path)
+
+    const m = svg.createSVGMatrix()
+    m.a = 1; m.b = 0
+    m.c = 0; m.d = 1
+    m.e = 100; m.f = -50
+
+    coords.remapElement(path, {}, m)
+
+    const d = path.getAttribute('d')
+    assert.match(d, /[Zz]\s*$/, `Expected closed path to keep close command, got: ${d}`)
+    assert.match(d, /M\s*110,-40/, `Expected start point to be translated, got: ${d}`)
+  })
+
+  it('Test remapElement(translate) for closed path via native getPathData/setPathData (uppercase Z)', function () {
+    // Simulate a browser (e.g. Firefox) that implements the native
+    // getPathData()/setPathData() API, where the close-path segment's
+    // `type` is reported as uppercase 'Z' rather than lowercase 'z'.
+    const path = document.createElementNS(NS.SVG, 'path')
+    path.setAttribute('d', 'M10,10 L50,10 L50,50 Z')
+    svg.append(path)
+
+    const parsedPathData = [
+      { type: 'M', values: [10, 10] },
+      { type: 'L', values: [50, 10] },
+      { type: 'L', values: [50, 50] },
+      { type: 'Z', values: [] }
+    ]
+    path.getPathData = () => parsedPathData.map(seg => ({ type: seg.type, values: [...seg.values] }))
+    let setPathDataArg = null
+    path.setPathData = (data) => { setPathDataArg = data }
+
+    const m = svg.createSVGMatrix()
+    m.a = 1; m.b = 0
+    m.c = 0; m.d = 1
+    m.e = 100; m.f = -50
+
+    // Should not throw destructuring 'type' off an undefined segment.
+    assert.doesNotThrow(() => coords.remapElement(path, {}, m))
+
+    const d = path.getAttribute('d')
+    assert.match(d, /[Zz]\s*$/, `Expected closed path to keep close command, got: ${d}`)
+    assert.match(d, /M\s*110,-40/, `Expected start point to be translated, got: ${d}`)
+
+    // The close-path segment must be preserved in the data passed to setPathData too.
+    assert.ok(setPathDataArg, 'Expected setPathData to be called')
+    const lastSeg = setPathDataArg[setPathDataArg.length - 1]
+    assert.equal(lastSeg.type.toUpperCase(), 'Z')
+  })
+
   it('Test remapElement with path d attribute update', function () {
     const path = document.createElementNS(NS.SVG, 'path')
     path.setAttribute('d', 'M 10,10 L 20,20')
