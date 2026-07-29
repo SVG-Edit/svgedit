@@ -297,6 +297,7 @@ class SvgCanvas {
       } else if (ev.key === CLIPBOARD_ID) {
         // Another tab sent data.
         sessionStorage.setItem(CLIPBOARD_ID, ev.newValue)
+        this.call('clipboardChanged')
       }
     }
 
@@ -774,6 +775,19 @@ class SvgCanvas {
     return CLIPBOARD_ID
   }
 
+  /**
+   * Reports whether this tab has clipboard data that can be pasted.
+   * @returns {boolean} Whether the clipboard contains at least one element.
+   */
+  hasClipboardData () {
+    try {
+      const data = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID))
+      return Array.isArray(data) && data.length > 0
+    } catch {
+      return false
+    }
+  }
+
   getSvgContent () {
     return this.svgContent
   }
@@ -946,6 +960,8 @@ class SvgCanvas {
    * @returns {void}
    */
   flashStorage () {
+    if (!this.hasClipboardData()) return
+
     const data = sessionStorage.getItem(CLIPBOARD_ID)
     localStorage.setItem(CLIPBOARD_ID, data)
     setTimeout(() => {

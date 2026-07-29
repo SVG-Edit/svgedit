@@ -1166,14 +1166,9 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   enableOrDisableClipboard () {
-    let svgeditClipboard
-    try {
-      svgeditClipboard = this.localStorage.getItem('svgedit_clipboard')
-    } catch (err) {
-      /* empty fn */
-    }
+    const hasClipboardData = this.svgCanvas.hasClipboardData()
     this.canvMenu.setAttribute(
-      (svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems',
+      (hasClipboardData ? 'en' : 'dis') + 'ablemenuitems',
       '#paste,#paste_in_place'
     )
   }

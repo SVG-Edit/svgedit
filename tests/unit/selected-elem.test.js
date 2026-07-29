@@ -45,14 +45,20 @@ describe('selected-elem', () => {
   beforeEach(() => {
     createSvgCanvas()
     sessionStorage.clear()
+    localStorage.clear()
   })
 
   afterEach(() => {
     document.body.textContent = ''
     sessionStorage.clear()
+    localStorage.clear()
   })
 
   it('copies selection without requiring context menu DOM', () => {
+    let clipboardChanges = 0
+    svgCanvas.bind('clipboardChanged', () => {
+      clipboardChanges++
+    })
     const rect = svgCanvas.addSVGElementsFromJson({
       element: 'rect',
       attr: {
@@ -74,6 +80,22 @@ describe('selected-elem', () => {
     expect(parsed).toHaveLength(1)
     expect(parsed[0].element).toBe('rect')
     expect(parsed[0].attr.id).toBe('rect-copy')
+    expect(svgCanvas.hasClipboardData()).toBe(true)
+    expect(clipboardChanges).toBe(1)
+  })
+
+  it('does not flash missing or invalid clipboard data', () => {
+    expect(svgCanvas.hasClipboardData()).toBe(false)
+    svgCanvas.flashStorage()
+    expect(localStorage.getItem(svgCanvas.getClipboardID())).toBeNull()
+
+    sessionStorage.setItem(svgCanvas.getClipboardID(), '[]')
+    expect(svgCanvas.hasClipboardData()).toBe(false)
+
+    sessionStorage.setItem(svgCanvas.getClipboardID(), 'not-json')
+    expect(svgCanvas.hasClipboardData()).toBe(false)
+    svgCanvas.flashStorage()
+    expect(localStorage.getItem(svgCanvas.getClipboardID())).toBeNull()
   })
 
   it('moves element to bottom even with whitespace/title/defs nodes', () => {
