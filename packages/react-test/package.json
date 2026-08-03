@@ -30,6 +30,9 @@
   },
   "author": "OptimistikSAS",
   "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "dependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

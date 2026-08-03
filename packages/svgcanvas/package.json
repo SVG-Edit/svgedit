@@ -33,6 +33,9 @@
     "svgcanvas"
   ],
   "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "browserslist": [
     "defaults",
     "not IE 11",
