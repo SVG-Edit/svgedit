@@ -67,7 +67,9 @@ export const getUndoManager = () => {
         const elems = cmd.elements()
         svgCanvas.pathActions.clear()
         svgCanvas.call('changed', elems)
-        if (cmdType === 'MoveElementCommand') {
+        if (cmdType === 'BatchCommand' && cmd.refreshUseData) {
+          svgCanvas.setUseData(svgCanvas.getSvgContent())
+        } else if (cmdType === 'MoveElementCommand') {
           const parent = isApply ? cmd.newParent : cmd.oldParent
           if (parent === svgCanvas.getSvgContent()) {
             draw.identifyLayers()

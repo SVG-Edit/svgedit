@@ -34,6 +34,7 @@ import {
 import { recalculateDimensions, withStartTransform } from './recalculate.js'
 import { isGecko } from '../common/browser.js'
 import { getParents } from '../common/util.js'
+import { createClipboardPayload } from './clipboard.js'
 
 const {
   MoveElementCommand,
@@ -716,9 +717,7 @@ const flipSelectedElements = (scaleX, scaleY) => {
  */
 const copySelectedElements = () => {
   const selectedElements = svgCanvas.getSelectedElements().filter(Boolean)
-  const data = JSON.stringify(
-    selectedElements.map(x => svgCanvas.getJsonFromSvgElements(x))
-  )
+  const data = JSON.stringify(createClipboardPayload(svgCanvas, selectedElements))
   // Use sessionStorage for the clipboard data.
   sessionStorage.setItem(svgCanvas.getClipboardID(), data)
   svgCanvas.call('clipboardChanged')

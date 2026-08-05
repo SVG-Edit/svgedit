@@ -1174,6 +1174,31 @@ class Editor extends EditorStartup {
   }
 
   /**
+   * Asks how direct use-target conflicts should be resolved during paste.
+   * @param {Window} _win
+   * @param {{conflicts: string[]}} conflictInfo
+   * @returns {Promise<'use-existing'|'replace-existing'|'keep-both'|'cancel'>}
+   */
+  async resolveClipboardConflicts (_win, { conflicts = [] } = {}) {
+    const useExisting = this.i18next.t('notification.clipboardUseExisting')
+    const replaceExisting = this.i18next.t('notification.clipboardReplaceExisting')
+    const keepBoth = this.i18next.t('notification.clipboardKeepBoth')
+    const message = this.i18next.t('notification.clipboardDefsConflict', {
+      ids: conflicts.join(', ')
+    })
+    const response = await seConfirm(message, [
+      useExisting,
+      replaceExisting,
+      keepBoth
+    ])
+
+    if (response === useExisting) return 'use-existing'
+    if (response === replaceExisting) return 'replace-existing'
+    if (response === keepBoth) return 'keep-both'
+    return 'cancel'
+  }
+
+  /**
    * @function module:SVGthis.openPrep
    * @returns {boolean|Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
    *  and `false` after the user confirms.

@@ -143,7 +143,7 @@ export default class SvgCanvas {
   deleteSelectedElements(): void
   cutSelectedElements(): void
   copySelectedElements(): void
-  pasteElements(type?: string, x?: number, y?: number): void
+  pasteElements(type?: string, x?: number, y?: number): Promise<void>
   groupSelectedElements(type?: string, urlArg?: string): Element | null
   ungroupSelectedElement(): void
   moveToTopSelectedElement(): void
