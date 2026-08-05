@@ -77,11 +77,50 @@ describe('selected-elem', () => {
     const raw = sessionStorage.getItem(svgCanvas.getClipboardID())
     expect(raw).toBeTruthy()
     const parsed = JSON.parse(raw)
-    expect(parsed).toHaveLength(1)
-    expect(parsed[0].element).toBe('rect')
-    expect(parsed[0].attr.id).toBe('rect-copy')
+    expect(parsed.version).toBe(2)
+    expect(parsed.elements).toHaveLength(1)
+    expect(parsed.elements[0].element).toBe('rect')
+    expect(parsed.elements[0].attr.id).toBe('rect-copy')
+    expect(parsed.dependencies).toEqual([])
     expect(svgCanvas.hasClipboardData()).toBe(true)
     expect(clipboardChanges).toBe(1)
+  })
+
+  it('copies recursive external dependencies for cross-document paste', () => {
+    const defs = svgCanvas.findDefs()
+    const gradient = document.createElementNS(NS.SVG, 'linearGradient')
+    gradient.id = 'gradient-copy'
+    const stop = document.createElementNS(NS.SVG, 'stop')
+    stop.setAttribute('offset', '0%')
+    stop.setAttribute('stop-color', '#f00')
+    gradient.append(stop)
+
+    const symbol = document.createElementNS(NS.SVG, 'symbol')
+    symbol.id = 'symbol-copy'
+    const rect = document.createElementNS(NS.SVG, 'rect')
+    rect.setAttribute('width', '20')
+    rect.setAttribute('height', '20')
+    rect.setAttribute('fill', 'url(#gradient-copy)')
+    symbol.append(rect)
+    defs.append(gradient, symbol)
+
+    const use = svgCanvas.addSVGElementsFromJson({
+      element: 'use',
+      attr: { id: 'use-copy', href: '#symbol-copy' }
+    })
+    svgCanvas.selectOnly([use], true)
+    svgCanvas.copySelectedElements()
+
+    const clipboard = JSON.parse(
+      sessionStorage.getItem(svgCanvas.getClipboardID())
+    )
+    const dependencyIds = clipboard.dependencies.map((item) => item.attr.id)
+
+    expect(dependencyIds).toEqual(expect.arrayContaining([
+      'symbol-copy',
+      'gradient-copy'
+    ]))
+    expect(clipboard.useTargetIds).toEqual(['symbol-copy'])
   })
 
   it('does not flash missing or invalid clipboard data', () => {

@@ -14,6 +14,10 @@ import * as pathModule from './core/path.js'
 import * as history from './core/history.js'
 import * as draw from './core/draw.js'
 import { init as pasteInit, pasteElementsMethod } from './core/paste-elem.js'
+import {
+  hasClipboardElements,
+  resetClipboardDocumentId
+} from './core/clipboard.js'
 import { init as touchInit } from './core/touch.js'
 import { svgRootElement } from './core/svgroot.js'
 import {
@@ -782,7 +786,7 @@ class SvgCanvas {
   hasClipboardData () {
     try {
       const data = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID))
-      return Array.isArray(data) && data.length > 0
+      return hasClipboardElements(data)
     } catch {
       return false
     }
@@ -865,6 +869,7 @@ class SvgCanvas {
     this.clearSelection()
     // clear the svgcontent node
     this.clearSvgContentElement()
+    resetClipboardDocumentId(this.svgContent)
     // create new document
     this.current_drawing_ = new draw.Drawing(this.svgContent)
     // create empty first layer
