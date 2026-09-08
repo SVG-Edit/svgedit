@@ -274,7 +274,7 @@ export default {
     jgraduate_enter_value_x: '0.0から1.0の範囲でxの値を入力',
     jgraduate_enter_value_y: '0.0から1.0の範囲でyの値を入力',
     jgraduate_focal_point: '焦点',
-    jgraduate_match_center: '中心を合わせる：',
+    jgraduate_match_center: '中心に合わせる：',
     jgraduate_enter_focal_x: '0.0から1.0の間でxの値を入力',
     jgraduate_enter_focal_y: '0.0から1.0の間でyの値を入力',
     jgraduate_spread_method: '広がり方',
