@@ -650,6 +650,9 @@ const setSvgString = (xmlString, preventUndo) => {
  * @param {string} xmlString - The SVG as XML text.
  * @param {boolean} preserveDimension - A boolean to force to preserve initial dimension of the imported svg (force svgEdit don't apply a transformation on the imported svg)
  * @param {boolean} doNotUseExisting - Do not use existing imported elements.
+ * @param {boolean} [centerOnPage=false] - Center the imported element on the page as part of
+ * the same undoable step. This keeps the whole import (insert + centering) as a single
+ * history command so a single undo fully reverses it.
  * @fires module:svgcanvas.SvgCanvas#event:changed
  * @returns {null|Element} This function returns null if the import was unsuccessful, or the element otherwise.
  * @todo
@@ -659,7 +662,7 @@ const setSvgString = (xmlString, preventUndo) => {
  * arbitrary transform lists, but makes some assumptions about how the transform list
  * was obtained
  */
-const importSvgString = (xmlString, preserveDimension, doNotUseExisting) => {
+const importSvgString = (xmlString, preserveDimension, doNotUseExisting, centerOnPage = false) => {
   const dataStorage = svgCanvas.getDataStorage()
   let j
   let ts
@@ -780,6 +783,18 @@ const importSvgString = (xmlString, preserveDimension, doNotUseExisting) => {
     dataStorage.put(useEl, 'symbol', symbol)
     dataStorage.put(useEl, 'ref', symbol)
     svgCanvas.addToSelection([useEl])
+
+    // Center the imported element on the page as part of this same batch, so the
+    // whole import stays a single undoable step. Doing the alignment here (instead
+    // of committing separate history commands afterwards) ensures a single undo
+    // fully removes the imported content; otherwise the <use>/<symbol> would linger
+    // in the DOM after undo and reappear when the document is saved.
+    if (centerOnPage) {
+      const alignVerticalCmd = svgCanvas.alignSelectedElements('m', 'page', false)
+      if (alignVerticalCmd) batchCmd.addSubCommand(alignVerticalCmd)
+      const alignHorizontalCmd = svgCanvas.alignSelectedElements('c', 'page', false)
+      if (alignHorizontalCmd) batchCmd.addSubCommand(alignHorizontalCmd)
+    }
 
     // TODO: Find way to add this in a recalculateDimensions-parsable way
     // if (vb[0] !== 0 || vb[1] !== 0) {
