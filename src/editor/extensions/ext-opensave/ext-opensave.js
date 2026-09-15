@@ -75,9 +75,9 @@ export default {
         reader = new FileReader()
         reader.onloadend = (ev) => {
           // imgImport.shiftKey (shift key pressed or not) will determine if import should preserve dimension)
-          const newElement = this.svgCanvas.importSvgString(ev.target.result, imgImport.shiftKey)
-          this.svgCanvas.alignSelectedElements('m', 'page')
-          this.svgCanvas.alignSelectedElements('c', 'page')
+          // Import and center-on-page are bundled into a single undoable step so that a
+          // single undo fully reverses the import (see importSvgString `centerOnPage`).
+          const newElement = this.svgCanvas.importSvgString(ev.target.result, imgImport.shiftKey, false, true)
           // highlight imported element, otherwise we get strange empty selectbox
           this.svgCanvas.selectOnly([newElement])
           $id('se-prompt-dialog').setAttribute('close', true)

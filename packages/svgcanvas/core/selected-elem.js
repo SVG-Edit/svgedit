@@ -333,9 +333,13 @@ const cloneSelectedElements = (x, y) => {
  * @function module:selected-elem.SvgCanvas#alignSelectedElements
  * @param {string} type - String with single character indicating the alignment type
  * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
- * @returns {void}
+ * @param {boolean} [undoable=true] - Whether the resulting move is committed to the
+ * undo history. Pass `false` to have the move applied without committing and return
+ * the resulting command so a caller can bundle it into its own batch.
+ * @returns {Command|undefined} The batch command describing the move, or `undefined`
+ * if nothing moved
  */
-const alignSelectedElements = (type, relativeTo) => {
+const alignSelectedElements = (type, relativeTo, undoable = true) => {
   const selectedElements = svgCanvas.getSelectedElements()
   const bboxes = [] // angles = [];
   const len = selectedElements.length
@@ -410,7 +414,7 @@ const alignSelectedElements = (type, relativeTo) => {
     [dx, dy] = _getNormalDistances(type, selectedElements, bboxes, minx, maxx, miny, maxy)
   }
 
-  moveSelectedElements(dx, dy)
+  return moveSelectedElements(dx, dy, undoable)
 }
 
 /**
