@@ -9,7 +9,6 @@
 import { isWebkit } from '../common/browser.js'
 import { getRotationAngle, getBBox, getStrokedBBox } from './utilities.js'
 import { transformListToTransform, transformBox, transformPoint, matrixMultiply, getTransformList } from './math.js'
-import { NS } from './namespaces'
 import { warn } from '../common/logger.js'
 
 let svgCanvas
@@ -116,7 +115,11 @@ export class Selector {
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none'
-    selectModule.getSelectorManager().selectorGripsGroup.setAttribute('display', bShow)
+    const mgr = selectModule.getSelectorManager()
+    if (show) {
+      this.updateGrips()
+    }
+    mgr.selectorGripsGroup.setAttribute('display', bShow)
     const elem = this.selectedElement
     this.hasGrips = show
     if (elem && show) {
@@ -133,8 +136,6 @@ export class Selector {
   resize (bbox) {
     const dataStorage = svgCanvas.getDataStorage()
     const selectedBox = this.selectorRect
-    const mgr = selectModule.getSelectorManager()
-    const selectedGrips = mgr.selectorGrips
     const selected = this.selectedElement
     const zoom = svgCanvas.getZoom()
     let offset = 1 / zoom
@@ -149,13 +150,15 @@ export class Selector {
     }
 
     // find the transformations applied to the parent of the selected element
-    const svg = document.createElementNS(NS.SVG, 'svg')
-    let parentTransformationMatrix = svg.createSVGMatrix()
+    let parentTransformationMatrix = null
     let currentElt = selected
     while (currentElt.parentNode) {
       if (currentElt.parentNode && currentElt.parentNode.tagName === 'g' && currentElt.parentNode.transform) {
         if (currentElt.parentNode.transform.baseVal.numberOfItems) {
-          parentTransformationMatrix = matrixMultiply(transformListToTransform(getTransformList(currentElt.parentNode)).matrix, parentTransformationMatrix)
+          const parentMatrix = transformListToTransform(getTransformList(currentElt.parentNode)).matrix
+          parentTransformationMatrix = parentTransformationMatrix
+            ? matrixMultiply(parentMatrix, parentTransformationMatrix)
+            : parentMatrix
         }
       }
       currentElt = currentElt.parentNode
@@ -165,7 +168,10 @@ export class Selector {
     const tlist = getTransformList(selected)
 
     // combines the parent transformation with that of the selected element if necessary
-    const m = parentTransformationMatrix ? matrixMultiply(parentTransformationMatrix, transformListToTransform(tlist).matrix) : transformListToTransform(tlist).matrix
+    const elementMatrix = !tlist || tlist.numberOfItems === 0
+      ? { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }
+      : transformListToTransform(tlist).matrix
+    const m = parentTransformationMatrix ? matrixMultiply(parentTransformationMatrix, elementMatrix) : elementMatrix
 
     // This should probably be handled somewhere else, but for now
     // it keeps the selection box correctly positioned when zoomed
@@ -256,20 +262,30 @@ export class Selector {
       }
       selectedBox.setAttribute('d', dstr)
       this.selectorGroup.setAttribute('transform', xform)
-      Object.entries(this.gripCoords).forEach(([dir, coords]) => {
-        selectedGrips[dir].setAttribute('cx', coords[0])
-        selectedGrips[dir].setAttribute('cy', coords[1])
-      })
-
-      // we want to go 20 pixels in the negative transformed y direction, ignoring scale
-      mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw) / 2)
-      mgr.rotateGripConnector.setAttribute('y1', nbay)
-      mgr.rotateGripConnector.setAttribute('x2', nbax + (nbaw) / 2)
-      mgr.rotateGripConnector.setAttribute('y2', nbay - (gripRadius * 5))
-
-      mgr.rotateGrip.setAttribute('cx', nbax + (nbaw) / 2)
-      mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius * 5))
+      const mgr = selectModule.getSelectorManager()
+      if (this.hasGrips && mgr.selectorGripsGroup.parentNode === this.selectorGroup) {
+        this.updateGrips()
+      }
     }
+  }
+
+  updateGrips () {
+    if (!this.gripCoords.n) {
+      return
+    }
+    const mgr = selectModule.getSelectorManager()
+    Object.entries(this.gripCoords).forEach(([dir, coords]) => {
+      mgr.selectorGrips[dir].setAttribute('cx', coords[0])
+      mgr.selectorGrips[dir].setAttribute('cy', coords[1])
+    })
+    const [x, y] = this.gripCoords.n
+    const rotateY = y - (gripRadius * 5)
+    mgr.rotateGripConnector.setAttribute('x1', x)
+    mgr.rotateGripConnector.setAttribute('y1', y)
+    mgr.rotateGripConnector.setAttribute('x2', x)
+    mgr.rotateGripConnector.setAttribute('y2', rotateY)
+    mgr.rotateGrip.setAttribute('cx', x)
+    mgr.rotateGrip.setAttribute('cy', rotateY)
   }
 
   // STATIC methods
@@ -308,6 +324,7 @@ export class SelectorManager {
 
     // this will hold objects of type Selector (see above)
     this.selectors = []
+    this.firstFreeSelector = 0
 
     // this holds a map of SVG elements to their Selector object
     this.selectorMap = {}
@@ -356,6 +373,7 @@ export class SelectorManager {
 
     this.selectorMap = {}
     this.selectors = []
+    this.firstFreeSelector = 0
     this.rubberBandBox = null
 
     // add the corner grips
@@ -457,8 +475,9 @@ export class SelectorManager {
       this.selectorMap[elem.id].locked = true
       return this.selectorMap[elem.id]
     }
-    for (let i = 0; i < N; ++i) {
+    for (let i = this.firstFreeSelector; i < N; ++i) {
       if (!this.selectors[i]?.locked) {
+        this.firstFreeSelector = i + 1
         this.selectors[i].locked = true
         this.selectors[i].reset(elem, bbox)
         this.selectorMap[elem.id] = this.selectors[i]
@@ -467,6 +486,7 @@ export class SelectorManager {
     }
     // if we reached here, no available selectors were found, we create one
     this.selectors[N] = new Selector(N, elem, bbox)
+    this.firstFreeSelector = N + 1
     this.selectorParentGroup.append(this.selectors[N].selectorGroup)
     this.selectorMap[elem.id] = this.selectors[N]
     return this.selectors[N]
@@ -480,26 +500,21 @@ export class SelectorManager {
   */
   releaseSelector (elem) {
     if (!elem) { return }
-    const N = this.selectors.length
     const sel = this.selectorMap[elem.id]
     if (!sel?.locked) {
       // TODO(codedread): Ensure this exists in this module.
       warn('WARNING! selector was released but was already unlocked', null, 'select')
     }
-    for (let i = 0; i < N; ++i) {
-      if (this.selectors[i] && this.selectors[i] === sel) {
-        delete this.selectorMap[elem.id]
-        sel.locked = false
-        sel.selectedElement = null
-        sel.showGrips(false)
+    if (sel && this.selectors[sel.id] === sel) {
+      delete this.selectorMap[elem.id]
+      sel.locked = false
+      this.firstFreeSelector = Math.min(this.firstFreeSelector, sel.id)
+      sel.selectedElement = null
+      sel.showGrips(false)
 
-        // remove from DOM and store reference in JS but only if it exists in the DOM
-        try {
-          sel.selectorGroup.setAttribute('display', 'none')
-        } catch (e) { /* empty fn */ }
-
-        break
-      }
+      try {
+        sel.selectorGroup.setAttribute('display', 'none')
+      } catch (e) {}
     }
   }
 

@@ -18,6 +18,19 @@ class TopPanel {
    */
   constructor (editor) {
     this.editor = editor
+    this.toolElements = new Map()
+  }
+
+  getToolElements (className) {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(className)) {
+      return $qa(`.${className}`)
+    }
+    let elements = this.toolElements.get(className)
+    if (!elements) {
+      elements = document.getElementsByClassName(className)
+      this.toolElements.set(className, elements)
+    }
+    return elements
   }
 
   /**
@@ -25,16 +38,20 @@ class TopPanel {
    */
   displayTool (className) {
     // default display is 'none' so removing the property will make the panel visible
-    $qa(`.${className}`).map(el => el.style.removeProperty('display'))
+    const elements = this.getToolElements(className)
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.removeProperty('display')
+    }
   }
 
   /**
    * @type {module}
    */
   hideTool (className) {
-    $qa(`.${className}`).forEach(el => {
-      el.style.display = 'none'
-    })
+    const elements = this.getToolElements(className)
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.display = 'none'
+    }
   }
 
   /**
@@ -334,18 +351,9 @@ class TopPanel {
         linkHref = this.editor.svgCanvas.getHref(elem)
         this.displayTool('g_panel')
       }
-      // siblings
-      if (elem.parentNode) {
-        const selements = Array.prototype.filter.call(
-          elem.parentNode.children,
-          function (child) {
-            return child !== elem
-          }
-        )
-        if (elem.parentNode.tagName === 'a' && !selements.length) {
-          this.displayTool('a_panel')
-          linkHref = this.editor.svgCanvas.getHref(elem.parentNode)
-        }
+      if (elem.parentNode?.tagName === 'a' && elem.parentNode.children.length === 1) {
+        this.displayTool('a_panel')
+        linkHref = this.editor.svgCanvas.getHref(elem.parentNode)
       }
 
       // Hide/show the make_link buttons

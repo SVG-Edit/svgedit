@@ -177,6 +177,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
   elems = elems ?? selectedElements
   let i = elems.length
   const noXYElems = ['g', 'polyline', 'path']
+  const affectsRotationCenter = BBOX_AFFECTING_ATTRS.has(attr)
 
   while (i--) {
     let elem = elems[i]
@@ -249,8 +250,8 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       // Non-geometric attributes (stroke-width, fill, opacity, etc.) don't affect
       // the bbox center, so the rotation is already correct and must not be touched.
       // BBOX_AFFECTING_ATTRS is imported from history.js to keep the list in one place.
-      const angle = getRotationAngle(elem)
-      if (angle !== 0 && attr !== 'transform' && BBOX_AFFECTING_ATTRS.has(attr)) {
+      const angle = affectsRotationCenter ? getRotationAngle(elem) : 0
+      if (angle !== 0 && affectsRotationCenter) {
         const tlist = getTransformList(elem)
         let n = tlist.numberOfItems
         while (n--) {

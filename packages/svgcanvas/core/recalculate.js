@@ -768,11 +768,9 @@ export const recalculateDimensions = selected => {
   } else {
     // Non-group elements
 
-    // Get the bounding box of the element
-    const box = getBBox(selected)
-
-    // Handle elements without a bounding box (e.g., <defs>, <metadata>)
-    if (!box && selected.tagName !== 'path') return null
+    const deferBBox = ['rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'image', 'path'].includes(selected.tagName)
+    let box = deferBBox ? null : getBBox(selected)
+    if (!deferBBox && !box && selected.tagName !== 'path') return null
 
     let m // Transformation matrix
 
@@ -799,6 +797,11 @@ export const recalculateDimensions = selected => {
         batchCmd.addSubCommand(new ChangeElementCommand(selected, initial))
         return batchCmd
       }
+    }
+
+    if (deferBBox) {
+      box = getBBox(selected)
+      if (!box && selected.tagName !== 'path') return null
     }
 
     // Handle rotation transformations

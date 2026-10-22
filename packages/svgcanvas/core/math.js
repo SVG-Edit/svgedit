@@ -202,7 +202,7 @@ export const matrixMultiply = (...args) => {
     return matrix
   }
 
-  if (typeof DOMMatrix === 'function' && typeof DOMMatrix.fromMatrix === 'function') {
+  if (args.some(matrix => matrix.is2D === false) && typeof DOMMatrix === 'function' && typeof DOMMatrix.fromMatrix === 'function') {
     const result = args.reduce(
       (acc, curr) => acc.multiply(DOMMatrix.fromMatrix(curr)),
       new DOMMatrix()
@@ -221,21 +221,31 @@ export const matrixMultiply = (...args) => {
     return normalizeNearZero(out)
   }
 
-  let m = svg.createSVGMatrix()
+  let a = 1
+  let b = 0
+  let c = 0
+  let d = 1
+  let e = 0
+  let f = 0
   for (const curr of args) {
-    const next = svg.createSVGMatrix()
-    Object.assign(next, {
-      a: m.a * curr.a + m.c * curr.b,
-      b: m.b * curr.a + m.d * curr.b,
-      c: m.a * curr.c + m.c * curr.d,
-      d: m.b * curr.c + m.d * curr.d,
-      e: m.a * curr.e + m.c * curr.f + m.e,
-      f: m.b * curr.e + m.d * curr.f + m.f
-    })
-    m = next
+    const { a: ca, b: cb, c: cc, d: cd, e: ce, f: cf } = curr
+    const nextA = a * ca + c * cb
+    const nextB = b * ca + d * cb
+    const nextC = a * cc + c * cd
+    const nextD = b * cc + d * cd
+    const nextE = a * ce + c * cf + e
+    const nextF = b * ce + d * cf + f
+    a = nextA
+    b = nextB
+    c = nextC
+    d = nextD
+    e = nextE
+    f = nextF
   }
 
-  return normalizeNearZero(m)
+  const out = svg.createSVGMatrix()
+  Object.assign(out, { a, b, c, d, e, f })
+  return normalizeNearZero(out)
 }
 
 /**
@@ -315,7 +325,7 @@ export const transformBox = (l, t, w, h, m) => {
  * @returns {SVGTransform} A single transform from the combined matrices
  */
 export const transformListToTransform = (tlist, min = 0, max = null) => {
-  if (!tlist) {
+  if (!tlist || tlist.numberOfItems === 0) {
     return createTransformFromMatrix(svg.createSVGMatrix())
   }
 
