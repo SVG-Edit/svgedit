@@ -27,6 +27,19 @@ export class SeCMenuDialog extends HTMLElement {
     this.$moveUpLink = this._shadowRoot.querySelector('#se-move-up')
     this.$moveDownLink = this._shadowRoot.querySelector('#se-move-down')
     this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back')
+    this._menuLinks = new Map([
+      ['#cut', this.$cutLink],
+      ['#copy', this.$copyLink],
+      ['#paste', this.$pasteLink],
+      ['#paste_in_place', this.$pasteInPlaceLink],
+      ['#delete', this.$deleteLink],
+      ['#group', this.$groupLink],
+      ['#ungroup', this.$ungroupLink],
+      ['#move_front', this.$moveFrontLink],
+      ['#move_up', this.$moveUpLink],
+      ['#move_down', this.$moveDownLink],
+      ['#move_back', this.$moveBackLink]
+    ])
   }
 
   /**
@@ -81,15 +94,15 @@ export class SeCMenuDialog extends HTMLElement {
         break
       case 'enablemenuitems':
         eles = newValue.split(',')
-        eles.forEach(function (ele) {
-          const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]')
+        eles.forEach((ele) => {
+          const selEle = this._menuLinks.get(ele) || sdowRoot.querySelector('a[href*="' + ele + '"]')
           selEle.parentElement.classList.remove('disabled')
         })
         break
       case 'disablemenuitems':
         eles = newValue.split(',')
-        eles.forEach(function (ele) {
-          const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]')
+        eles.forEach((ele) => {
+          const selEle = this._menuLinks.get(ele) || sdowRoot.querySelector('a[href*="' + ele + '"]')
           selEle.parentElement.classList.add('disabled')
         })
         break

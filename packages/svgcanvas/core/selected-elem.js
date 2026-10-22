@@ -247,11 +247,15 @@ const moveSelectedElements = (dx, dy, undoable = true) => {
           new ChangeElementCommand(selected, { transform: existingTransform })
         )
       }
-
+    }
+  })
+  const selectorBounds = selectedElements.map(selected => selected ? utilsGetBBox(selected) : null)
+  selectedElements.forEach((selected, i) => {
+    if (selected) {
       svgCanvas
         .gettingSelectorManager()
-        .requestSelector(selected)
-        .resize()
+        .requestSelector(selected, selectorBounds[i])
+        .resize(selectorBounds[i])
     }
   })
   if (!batchCmd.isEmpty()) {

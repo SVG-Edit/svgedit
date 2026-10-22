@@ -100,6 +100,21 @@ const addToSelectionMethod = (elemsToAdd, showGrips) => {
   if (!elemsToAdd.length) {
     return
   }
+  const bboxes = new Map()
+  if (elemsToAdd.length > 1) {
+    for (let i = elemsToAdd.length - 1; i >= 0; i--) {
+      let elem = elemsToAdd[i]
+      if (!elem || !elem.getBBox) {
+        continue
+      }
+      if (elem.tagName === 'a' && elem.childNodes.length === 1) {
+        elem = elem.firstChild
+      }
+      if (!selectedElements.includes(elem) && !bboxes.has(elem)) {
+        bboxes.set(elem, getBBox(elem))
+      }
+    }
+  }
   // find the first null in our selectedElements array
 
   let firstNull = 0
@@ -130,7 +145,7 @@ const addToSelectionMethod = (elemsToAdd, showGrips) => {
       // only the first selectedBBoxes element is ever used in the codebase these days
       // if (j === 0) selectedBBoxes[0] = utilsGetBBox(elem);
       firstNull++
-      const sel = svgCanvas.selectorManager.requestSelector(elem)
+      const sel = svgCanvas.selectorManager.requestSelector(elem, bboxes.get(elem))
 
       if (selectedElements.length > 1) {
         sel.showGrips(false)
